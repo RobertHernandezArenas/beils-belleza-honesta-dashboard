@@ -1,0 +1,53 @@
+{
+	"name": "tp-plus-dashboard",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare",
+		"seed": "tsx --env-file=.env ./seeds/seed-db.ts",
+		"prisma:init": "pnpx prisma init --datasource-provider mysql --output ./generated",
+		"prisma:pull": "pnpx prisma db pull --schema prisma/schema.prisma",
+		"prisma:generate": "pnpx prisma generate --schema prisma/schema.prisma",
+		"prisma:migrate": "pnpx prisma migrate dev --name init --schema prisma/schema.prisma",
+		"prisma:reset": "pnpx prisma migrate reset --schema prisma/schema.prisma"
+	},
+	"dependencies": {
+		"@nuxt/eslint": "1.15.1",
+		"@nuxt/fonts": "0.13.0",
+		"@nuxt/image": "2.0.0",
+		"@pinia/nuxt": "0.11.3",
+		"@prisma/adapter-mariadb": "7.4.1",
+		"@prisma/client": "7.4.1",
+		"@tailwindcss/vite": "4.1.18",
+		"@tanstack/vue-query": "5.92.9",
+		"@types/aos": "3.0.7",
+		"aos": "2.3.4",
+		"bcryptjs": "^3.0.3",
+		"dotenv": "17.3.1",
+		"jsonwebtoken": "^9.0.3",
+		"lucide-vue-next": "0.564.0",
+		"mariadb": "^3.5.1",
+		"nuxt": "4.3.1",
+		"pinia": "3.0.4",
+		"prisma": "7.4.1",
+		"vue": "3.5.28",
+		"vue-i18n": "11.2.8",
+		"vue-router": "4.6.4",
+		"zod": "4.3.6"
+	},
+	"devDependencies": {
+		"@nuxtjs/google-fonts": "3.2.0",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/node": "25.3.0",
+		"daisyui": "^5.5.19",
+		"prettier": "3.8.1",
+		"prettier-plugin-tailwindcss": "0.7.2",
+		"tailwindcss": "4.1",
+		"ts-node": "10.9.2",
+		"tsx": "4.21.0"
+	}
+}

@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+@plugin 'daisyui';
+
+@theme {
+	--font-sans:
+		'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Segoe UI Symbol', 'Noto Color Emoji';
+	--font-condensed: 'Roboto Condensed', ui-sans-serif, system-ui;
+
+	/* Beils Palette mapped to Tailwind colors */
+	--color-bg-app: #fbfaf9;
+	--color-bg-card: #ffffff;
+	--color-bg-muted: #f4f1ee;
+	--color-bg-hover: #f2f0eb;
+
+	--color-border-subtle: #f4f1ee;
+	--color-border-default: #dbd2c6;
+	--color-border-strong: #bababa;
+
+	--color-text-primary: #1a1a1a;
+	--color-text-secondary: #404040;
+	--color-text-muted: #666666;
+	--color-text-light: #8c8c8c;
+}
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant light (&:where([data-theme=light], [data-theme=light] *));
+
+/* Force light theme colors on the root to override Daisy UI */
+:root {
+	color-scheme: light;
+}
+
+html {
+	margin: 0;
+	padding: 0;
+}
+
+button,
+a {
+	touch-action: manipulation;
+}

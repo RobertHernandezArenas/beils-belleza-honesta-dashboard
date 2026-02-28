@@ -1,0 +1,167 @@
+{
+	"common": {
+		"loading": "Cargando...",
+		"error": "Error",
+		"submit": "Enviar",
+		"cancel": "Cancelar",
+		"save": "Guardar",
+		"delete": "Eliminar",
+		"prev": "Anterior",
+		"next": "Siguiente",
+		"showing": "Mostrando",
+		"to": "a",
+		"of": "de",
+		"results": "resultados"
+	},
+	"auth": {
+		"login": {
+			"title": "Iniciar Sesión",
+			"email": "Correo Electrónico",
+			"password": "Contraseña",
+			"button": "Iniciar Sesión",
+			"error": "Error de Acceso",
+			"welcome": "Bienvenido",
+			"platform": "BEILS"
+		}
+	},
+	"nav": {
+		"dashboard": "Vista General",
+		"users": "Usuarios",
+		"clients": "Clientes",
+		"drivers": "Conductores",
+		"fleet": "Flota",
+		"routes": "Rutas",
+		"settings": "Configuración",
+		"menu": "Menú Principal",
+		"logout": "Cerrar Sesión"
+	},
+	"users": {
+		"header": {
+			"search": "Buscar usuarios...",
+			"filters": "Filtros",
+			"create": "+ Nuevo Usuario",
+			"manage": "Administra accesos y roles"
+		},
+		"filters": {
+			"role": "Rol de Usuario",
+			"status": "Estado",
+			"document": "Documento",
+			"all": "Todos"
+		},
+		"table": {
+			"user": "Usuario",
+			"role": "Rol",
+			"contact": "Contacto",
+			"status": "Estado",
+			"actions": "Acciones",
+			"empty": "No hay usuarios registrados.",
+			"itemsPerPage": "ítems por página"
+		},
+		"form": {
+			"createTitle": "Crear Nuevo Usuario",
+			"editTitle": "Editar Usuario",
+			"name": "Nombre",
+			"surname": "Apellidos",
+			"email": "Correo Electrónico",
+			"password": "Contraseña",
+			"passwordPlaceholderEdit": "(Opcional) Dejar en blanco",
+			"passwordPlaceholderNew": "Requerida",
+			"documentType": "Tipo Documento",
+			"documentNumber": "Núm Documento",
+			"phone": "Teléfono",
+			"role": "Rol",
+			"address": "Dirección",
+			"city": "Ciudad",
+			"country": "País",
+			"saveChanges": "Guardar Cambios",
+			"createUser": "Crear Usuario"
+		},
+		"delete": {
+			"title": "Eliminar Usuario",
+			"message": "¿Estás seguro de que deseas eliminar este usuario?",
+			"warning": "Esta acción no se puede deshacer.",
+			"confirm": "Sí, Eliminar"
+		},
+		"constants": {
+			"roles": {
+				"ADMIN": "Administrador",
+				"USER": "Usuario"
+			},
+			"status": {
+				"ON": "Activo",
+				"OFF": "Inactivo"
+			}
+		},
+		"messages": {
+			"created": "Usuario creado exitosamente",
+			"updated": "Usuario actualizado exitosamente",
+			"error": "Error al guardar el usuario",
+			"statusOn": "Usuario activado",
+			"statusOff": "Usuario desactivado",
+			"toggleError": "Error al cambiar el estado"
+		}
+	},
+	"overview": {
+		"hero": {
+			"title": "¡Hola de nuevo",
+			"guest": "Usuario",
+			"subtitle": "Resumen de operaciones del día"
+		},
+		"period": {
+			"yesterday": "Ayer",
+			"today": "Hoy",
+			"month": "Mes"
+		},
+		"kpis": {
+			"revenue": {
+				"title": "Ingresos Mensuales"
+			},
+			"fleet": {
+				"title": "Flota Activa",
+				"trend": "Operativos"
+			},
+			"routes": {
+				"title": "Rutas Completadas (Hoy)",
+				"trend": "Rutas vs Ayer"
+			},
+			"drivers": {
+				"title": "Conductores en Ruta",
+				"trend": "en Descanso"
+			}
+		},
+		"charts": {
+			"weekly": "Desempeño Semanal",
+			"details": "Detalles",
+			"days": {
+				"mon": "L",
+				"tue": "M",
+				"wed": "X",
+				"thu": "J",
+				"fri": "V",
+				"sat": "S",
+				"sun": "D"
+			}
+		},
+		"activity": {
+			"title": "Actividad Reciente",
+			"viewAll": "Ver todo el historial",
+			"timeAgo": "Hace",
+			"mock1": {
+				"title": "Nueva ruta asignada a Madrid",
+				"desc": "El conductor Juan Pérez ha iniciado la ruta #TR-0892 hacia Madrid."
+			},
+			"mock2": {
+				"title": "Mantenimiento completado",
+				"desc": "El vehículo Volvo FH (Matrícula: 1234ABC) ha finalizado su revisión."
+			},
+			"mock3": {
+				"title": "Retraso reportado en ruta #TR-0889",
+				"desc": "Retraso de 30 mins debido a tráfico denso en la A-4."
+			},
+			"mock4": {
+				"title": "Factura pagada",
+				"desc": "El cliente Logistics Corp ha realizado el pago por €4,500."
+			}
+		}
+	}
+}

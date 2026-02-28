@@ -1,0 +1,167 @@
+{
+	"common": {
+		"loading": "Ładowanie...",
+		"error": "Błąd",
+		"submit": "Wyślij",
+		"cancel": "Anuluj",
+		"save": "Zapisz",
+		"delete": "Usuń",
+		"prev": "Poprzedni",
+		"next": "Następny",
+		"showing": "Pokazuje",
+		"to": "do",
+		"of": "z",
+		"results": "wyników"
+	},
+	"auth": {
+		"login": {
+			"title": "Logowanie",
+			"email": "Email",
+			"password": "Hasło",
+			"button": "Zaloguj się",
+			"error": "Błąd dostępu",
+			"welcome": "Witaj",
+			"platform": "BEILS"
+		}
+	},
+	"nav": {
+		"dashboard": "Przegląd",
+		"users": "Użytkownicy",
+		"clients": "Klienci",
+		"drivers": "Kierowcy",
+		"fleet": "Flota",
+		"routes": "Trasy",
+		"settings": "Ustawienia",
+		"menu": "Menu Główne",
+		"logout": "Wyloguj Się"
+	},
+	"users": {
+		"header": {
+			"search": "Szukaj użytkowników...",
+			"filters": "Filtry",
+			"create": "+ Nowy Użytkownik",
+			"manage": "Zarządzaj dostępem i rolami"
+		},
+		"filters": {
+			"role": "Rola Użytkownika",
+			"status": "Status",
+			"document": "Dokument",
+			"all": "Wszyscy"
+		},
+		"table": {
+			"user": "Użytkownik",
+			"role": "Rola",
+			"contact": "Kontakt",
+			"status": "Status",
+			"actions": "Akcje",
+			"empty": "Brak zarejestrowanych użytkowników.",
+			"itemsPerPage": "elementów na stronę"
+		},
+		"form": {
+			"createTitle": "Utwórz Nowego Użytkownika",
+			"editTitle": "Edytuj Użytkownika",
+			"name": "Imię",
+			"surname": "Nazwisko",
+			"email": "Email",
+			"password": "Hasło",
+			"passwordPlaceholderEdit": "(Opcjonalnie) Pozostaw puste",
+			"passwordPlaceholderNew": "Wymagane",
+			"documentType": "Rodzaj Dokumentu",
+			"documentNumber": "Numer Dokumentu",
+			"phone": "Telefon",
+			"role": "Rola",
+			"address": "Adres",
+			"city": "Miasto",
+			"country": "Kraj",
+			"saveChanges": "Zapisz Zmiany",
+			"createUser": "Utwórz Użytkownika"
+		},
+		"delete": {
+			"title": "Usuń Użytkownika",
+			"message": "Czy na pewno chcesz usunąć tego użytkownika?",
+			"warning": "Tej akcji nie można cofnąć.",
+			"confirm": "Tak, Usuń"
+		},
+		"constants": {
+			"roles": {
+				"ADMIN": "Administrator",
+				"USER": "Użytkownik"
+			},
+			"status": {
+				"ON": "Aktywny",
+				"OFF": "Nieaktywny"
+			}
+		},
+		"messages": {
+			"created": "Użytkownik został pomyślnie utworzony",
+			"updated": "Użytkownik został pomyślnie zaktualizowany",
+			"error": "Błąd podczas zapisywania użytkownika",
+			"statusOn": "Użytkownik aktywowany",
+			"statusOff": "Użytkownik dezaktywowany",
+			"toggleError": "Błąd podczas zmiany statusu"
+		}
+	},
+	"overview": {
+		"hero": {
+			"title": "Witamy ponownie",
+			"guest": "Użytkownik",
+			"subtitle": "Podsumowanie operacji dnia"
+		},
+		"period": {
+			"yesterday": "Wczoraj",
+			"today": "Dzisiaj",
+			"month": "Miesiąc"
+		},
+		"kpis": {
+			"revenue": {
+				"title": "Miesięczny Dochód"
+			},
+			"fleet": {
+				"title": "Aktywna Flota",
+				"trend": "Operacyjnych"
+			},
+			"routes": {
+				"title": "Zakończone Trasy (Dziś)",
+				"trend": "Tras vs Wczoraj"
+			},
+			"drivers": {
+				"title": "Kierowcy w Trasie",
+				"trend": "na Przerwie"
+			}
+		},
+		"charts": {
+			"weekly": "Wyniki Tygodniowe",
+			"details": "Szczegóły",
+			"days": {
+				"mon": "P",
+				"tue": "W",
+				"wed": "Ś",
+				"thu": "C",
+				"fri": "P",
+				"sat": "S",
+				"sun": "N"
+			}
+		},
+		"activity": {
+			"title": "Ostatnia Aktywność",
+			"viewAll": "Zobacz całą historię",
+			"timeAgo": "Temu",
+			"mock1": {
+				"title": "Nowa trasa przydzielona do Madrytu",
+				"desc": "Kierowca Juan Pérez rozpoczął trasę #TR-0892 do Madrytu."
+			},
+			"mock2": {
+				"title": "Konserwacja zakończona",
+				"desc": "Pojazd Volvo FH (Rejestracja: 1234ABC) zakończył przegląd."
+			},
+			"mock3": {
+				"title": "Zgłoszono opóźnienie na trasie #TR-0889",
+				"desc": "30 min opóźnienia z powodu dużego ruchu na A-4."
+			},
+			"mock4": {
+				"title": "Faktura opłacona",
+				"desc": "Wypłacono €4,500 przez klienta Logistics Corp."
+			}
+		}
+	}
+}

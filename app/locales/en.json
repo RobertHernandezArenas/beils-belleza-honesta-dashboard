@@ -1,0 +1,167 @@
+{
+	"common": {
+		"loading": "Loading...",
+		"error": "Error",
+		"submit": "Submit",
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete",
+		"prev": "Previous",
+		"next": "Next",
+		"showing": "Showing",
+		"to": "to",
+		"of": "of",
+		"results": "results"
+	},
+	"auth": {
+		"login": {
+			"title": "Login",
+			"email": "Email",
+			"password": "Password",
+			"button": "Login",
+			"error": "Access Error",
+			"welcome": "Welcome",
+			"platform": "BEILS"
+		}
+	},
+	"nav": {
+		"dashboard": "Overview",
+		"users": "Users",
+		"clients": "Clients",
+		"drivers": "Drivers",
+		"fleet": "Fleet",
+		"routes": "Routes",
+		"settings": "Settings",
+		"menu": "Main Menu",
+		"logout": "Logout"
+	},
+	"users": {
+		"header": {
+			"search": "Search users...",
+			"filters": "Filters",
+			"create": "+ New User",
+			"manage": "Manage accesses and roles"
+		},
+		"filters": {
+			"role": "User Role",
+			"status": "Status",
+			"document": "Document",
+			"all": "All"
+		},
+		"table": {
+			"user": "User",
+			"role": "Role",
+			"contact": "Contact",
+			"status": "Status",
+			"actions": "Actions",
+			"empty": "No users found.",
+			"itemsPerPage": "items per page"
+		},
+		"form": {
+			"createTitle": "Create New User",
+			"editTitle": "Edit User",
+			"name": "Name",
+			"surname": "Surname",
+			"email": "Email",
+			"password": "Password",
+			"passwordPlaceholderEdit": "(Optional) Leave blank",
+			"passwordPlaceholderNew": "Required",
+			"documentType": "Document Type",
+			"documentNumber": "Document Num",
+			"phone": "Phone",
+			"role": "Role",
+			"address": "Address",
+			"city": "City",
+			"country": "Country",
+			"saveChanges": "Save Changes",
+			"createUser": "Create User"
+		},
+		"delete": {
+			"title": "Delete User",
+			"message": "Are you sure you want to delete this user?",
+			"warning": "This action cannot be undone.",
+			"confirm": "Yes, Delete"
+		},
+		"constants": {
+			"roles": {
+				"ADMIN": "Administrator",
+				"USER": "User"
+			},
+			"status": {
+				"ON": "Active",
+				"OFF": "Inactive"
+			}
+		},
+		"messages": {
+			"created": "User created successfully",
+			"updated": "User updated successfully",
+			"error": "Error saving user",
+			"statusOn": "User activated",
+			"statusOff": "User deactivated",
+			"toggleError": "Error toggling status"
+		}
+	},
+	"overview": {
+		"hero": {
+			"title": "Welcome back",
+			"guest": "User",
+			"subtitle": "Daily operations summary"
+		},
+		"period": {
+			"yesterday": "Yesterday",
+			"today": "Today",
+			"month": "Month"
+		},
+		"kpis": {
+			"revenue": {
+				"title": "Monthly Revenue"
+			},
+			"fleet": {
+				"title": "Active Fleet",
+				"trend": "Operational"
+			},
+			"routes": {
+				"title": "Completed Routes (Today)",
+				"trend": "Routes vs Yest."
+			},
+			"drivers": {
+				"title": "Drivers on Route",
+				"trend": "Resting"
+			}
+		},
+		"charts": {
+			"weekly": "Weekly Performance",
+			"details": "Details",
+			"days": {
+				"mon": "M",
+				"tue": "T",
+				"wed": "W",
+				"thu": "T",
+				"fri": "F",
+				"sat": "S",
+				"sun": "S"
+			}
+		},
+		"activity": {
+			"title": "Recent Activity",
+			"viewAll": "View all history",
+			"timeAgo": "Ago",
+			"mock1": {
+				"title": "New route assigned to Madrid",
+				"desc": "Driver Juan Pérez has started route #TR-0892 to Madrid."
+			},
+			"mock2": {
+				"title": "Maintenance completed",
+				"desc": "The Volvo FH vehicle (License plate: 1234ABC) has finished its revision."
+			},
+			"mock3": {
+				"title": "Delay reported on route #TR-0889",
+				"desc": "30 mins delay due to heavy traffic on the A-4."
+			},
+			"mock4": {
+				"title": "Invoice paid",
+				"desc": "Client Logistics Corp has made the payment for €4,500."
+			}
+		}
+	}
+}
