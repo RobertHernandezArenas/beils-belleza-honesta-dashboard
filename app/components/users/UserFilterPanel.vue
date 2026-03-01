@@ -2,7 +2,7 @@
 	<transition name="expand">
 		<div
 			v-show="filtersStore.showFilters"
-			class="mb-6 overflow-hidden rounded-[2rem] bg-bg-card p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+			class="mb-6 overflow-hidden rounded-4xl bg-bg-card p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 				<!-- ROL -->
 				<div>
@@ -18,7 +18,7 @@
 							:aria-pressed="filtersStore.filterRole === r"
 							:class="
 								filtersStore.filterRole === r
-									? 'border border-[#1a1a1a] bg-[#404040] text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
+									? 'border border-text-primary bg-text-secondary text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
 									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 							">
 							{{ r === 'all' ? $t('users.filters.all') : $t('users.constants.roles.' + r) }}
@@ -40,7 +40,7 @@
 							:aria-pressed="filtersStore.filterStatus === s"
 							:class="
 								filtersStore.filterStatus === s
-									? 'border border-[#1a1a1a] bg-[#404040] text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
+									? 'border border-text-primary bg-text-secondary text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
 									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 							">
 							{{ s === 'all' ? $t('users.filters.all') : $t('users.constants.status.' + s) }}
@@ -62,7 +62,7 @@
 							:aria-pressed="filtersStore.filterDocType === d"
 							:class="
 								filtersStore.filterDocType === d
-									? 'border border-[#1a1a1a] bg-[#404040] text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
+									? 'border border-text-primary bg-text-secondary text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
 									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 							">
 							{{ d === 'all' ? $t('users.filters.all') : d }}

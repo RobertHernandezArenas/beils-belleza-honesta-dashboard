@@ -137,7 +137,7 @@
 						<div class="flex items-center gap-3">
 							<div class="avatar">
 								<div
-									class="w-10 rounded-full ring-2 ring-[#dbd2c6] ring-offset-2 ring-offset-[#ffffff]">
+									class="ring-border-default ring-offset-bg-card w-10 rounded-full ring-2 ring-offset-2">
 									<img
 										:src="
 											authStore.user.avatar ||
@@ -162,7 +162,7 @@
 
 						<button
 							@click="handleLogout"
-							class="group bg-bg-card text-text-muted flex w-full items-center justify-center gap-2 rounded-xl border border-transparent px-4 py-2.5 font-bold transition-[border-color,background-color,color,box-shadow] hover:border-[#ff0000]/30 hover:bg-[#ff0000]/10 hover:text-[#ff0000] hover:shadow-xs">
+							class="group hover:text-bg-card flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff0000]/30 bg-[#ff0000]/10 px-4 py-2.5 font-bold text-[#ff0000] transition-[background-color,border-color,color,transform,box-shadow] hover:border-[#ff0000] hover:bg-[#ff0000] hover:shadow-md">
 							<LogOut class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
 							<span class="text-xs tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}

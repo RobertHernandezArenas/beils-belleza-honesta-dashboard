@@ -12,11 +12,11 @@
 		<div class="flex items-center gap-4">
 			<button
 				@click="$emit('toggle-filters')"
-				class="btn btn-ghost relative h-12 rounded-2xl px-4 font-semibold transition-colors"
+				class="btn btn-ghost ring-border-subtle relative h-12 rounded-2xl px-5 font-bold transition-all duration-300"
 				:class="
 					filtersActive
-						? 'bg-bg-muted text-text-secondary border-[#1a1a1a] hover:bg-[#eadecc]'
-						: 'bg-bg-card text-text-muted hover:bg-bg-muted hover:text-text-secondary'
+						? 'border-text-primary bg-bg-muted text-text-primary ring-text-primary shadow-sm ring-1'
+						: 'border-border-default bg-bg-card text-text-secondary hover:bg-bg-muted hover:shadow-sm'
 				">
 				<Filter class="mr-2 h-5 w-5" />
 				{{ $t('users.header.filters') }}
@@ -29,13 +29,12 @@
 			</button>
 			<button
 				@click="$emit('create')"
-				class="group text-bg-card relative flex h-12 items-center justify-center overflow-hidden rounded-2xl bg-[#404040] px-6 font-medium uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,box-shadow,color,background-color] hover:scale-105 hover:shadow-lg hover:shadow-[#1a1a1a]/20">
+				class="group text-bg-card bg-text-primary hover:bg-text-primary/90 hover:shadow-text-primary/30 relative flex h-12 items-center justify-center overflow-hidden rounded-2xl px-6 font-bold tracking-wide uppercase shadow-[0_4px_15px_rgba(26,26,26,0.3)] transition-[transform,box-shadow,color,background-color] hover:shadow-lg">
 				<span class="relative z-10 flex items-center gap-2">
-					<Plus class="h-5 w-5" />
 					{{ $t('users.header.create') }}
 				</span>
 				<div
-					class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-[#ffffff]/30 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+					class="via-bg-card/20 absolute inset-0 -translate-x-full bg-linear-to-r from-transparent to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
 			</button>
 		</div>
 	</div>
