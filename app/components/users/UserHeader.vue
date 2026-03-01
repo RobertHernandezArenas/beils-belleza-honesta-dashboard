@@ -1,10 +1,10 @@
 <template>
 	<div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 		<div>
-			<h1 class="text-4xl font-medium tracking-tighter text-[#404040]">
+			<h1 class="text-text-secondary text-4xl font-medium tracking-tighter">
 				{{ $t('nav.users') }}
 			</h1>
-			<p class="mt-1 text-sm font-bold tracking-widest text-[#8c8c8c] uppercase">
+			<p class="text-text-light mt-1 text-sm font-bold tracking-widest uppercase">
 				{{ $t('users.header.manage') || 'Administra accesos y roles' }}
 			</p>
 		</div>
@@ -15,8 +15,8 @@
 				class="btn btn-ghost relative h-12 rounded-2xl px-4 font-semibold transition-colors"
 				:class="
 					filtersActive
-						? 'border-[#1a1a1a] bg-[#f4f1ee] text-[#404040] hover:bg-[#eadecc]'
-						: 'bg-[#ffffff] text-[#666666] hover:bg-[#f4f1ee] hover:text-[#404040]'
+						? 'bg-bg-muted text-text-secondary border-[#1a1a1a] hover:bg-[#eadecc]'
+						: 'bg-bg-card text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 				">
 				<Filter class="mr-2 h-5 w-5" />
 				{{ $t('users.header.filters') }}
@@ -29,7 +29,7 @@
 			</button>
 			<button
 				@click="$emit('create')"
-				class="group relative flex h-12 items-center justify-center overflow-hidden rounded-2xl bg-[#404040] px-6 font-medium text-[#ffffff] uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,box-shadow,color,background-color] hover:scale-105 hover:shadow-lg hover:shadow-[#1a1a1a]/20">
+				class="group text-bg-card relative flex h-12 items-center justify-center overflow-hidden rounded-2xl bg-[#404040] px-6 font-medium uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,box-shadow,color,background-color] hover:scale-105 hover:shadow-lg hover:shadow-[#1a1a1a]/20">
 				<span class="relative z-10 flex items-center gap-2">
 					<Plus class="h-5 w-5" />
 					{{ $t('users.header.create') }}
@@ -41,16 +41,16 @@
 	</div>
 
 	<!-- Search Bar flotante -->
-	<div class="group relative max-w-xl">
+	<div class="group relative flex max-w-xl items-center">
 		<label for="users-search" class="sr-only">{{ $t('users.header.search') }}</label>
 		<input
 			id="users-search"
 			v-model="searchQuery"
 			type="search"
 			:placeholder="$t('users.header.search')"
-			class="input input-bordered h-14 w-full rounded-2xl border-transparent bg-[#ffffff] pl-14 text-lg font-medium text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[border-color,background-color,color,box-shadow] placeholder:text-[#8c8c8c] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+			class="input bg-bg-card text-text-primary placeholder:text-text-light focus:bg-bg-card focus:ring-border-subtle/40 h-12 w-full rounded-2xl border-transparent pr-5 pl-11 text-sm font-medium shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all duration-300 placeholder:font-normal hover:shadow-md focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pl-12 sm:text-base lg:text-lg" />
 		<Search
-			class="absolute top-4 left-5 h-6 w-6 text-[#8c8c8c] transition-colors group-focus-within:text-[#404040]"
+			class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:h-6 sm:w-6"
 			aria-hidden="true" />
 	</div>
 </template>

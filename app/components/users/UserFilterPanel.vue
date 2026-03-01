@@ -2,11 +2,11 @@
 	<transition name="expand">
 		<div
 			v-show="filtersStore.showFilters"
-			class="mb-6 overflow-hidden rounded-[2rem] bg-[#ffffff] p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+			class="mb-6 overflow-hidden rounded-[2rem] bg-bg-card p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 				<!-- ROL -->
 				<div>
-					<h3 class="mb-3 text-[10px] font-medium tracking-widest text-[#8c8c8c] uppercase">
+					<h3 class="mb-3 text-[10px] font-medium tracking-widest text-text-light uppercase">
 						{{ $t('users.filters.role') }}
 					</h3>
 					<div class="flex flex-wrap gap-2">
@@ -18,8 +18,8 @@
 							:aria-pressed="filtersStore.filterRole === r"
 							:class="
 								filtersStore.filterRole === r
-									? 'border border-[#1a1a1a] bg-[#404040] text-[#ffffff] shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
-									: 'border border-[#f4f1ee] bg-[#fbfaf9] text-[#666666] hover:bg-[#f4f1ee] hover:text-[#404040]'
+									? 'border border-[#1a1a1a] bg-[#404040] text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
+									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 							">
 							{{ r === 'all' ? $t('users.filters.all') : $t('users.constants.roles.' + r) }}
 						</button>
@@ -28,7 +28,7 @@
 
 				<!-- ESTADO -->
 				<div>
-					<h3 class="mb-3 text-[10px] font-medium tracking-widest text-[#8c8c8c] uppercase">
+					<h3 class="mb-3 text-[10px] font-medium tracking-widest text-text-light uppercase">
 						{{ $t('users.filters.status') }}
 					</h3>
 					<div class="flex flex-wrap gap-2">
@@ -40,8 +40,8 @@
 							:aria-pressed="filtersStore.filterStatus === s"
 							:class="
 								filtersStore.filterStatus === s
-									? 'border border-[#1a1a1a] bg-[#404040] text-[#ffffff] shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
-									: 'border border-[#f4f1ee] bg-[#fbfaf9] text-[#666666] hover:bg-[#f4f1ee] hover:text-[#404040]'
+									? 'border border-[#1a1a1a] bg-[#404040] text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
+									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 							">
 							{{ s === 'all' ? $t('users.filters.all') : $t('users.constants.status.' + s) }}
 						</button>
@@ -50,7 +50,7 @@
 
 				<!-- TIPO DOCUMENTO -->
 				<div>
-					<h3 class="mb-3 text-[10px] font-medium tracking-widest text-[#8c8c8c] uppercase">
+					<h3 class="mb-3 text-[10px] font-medium tracking-widest text-text-light uppercase">
 						{{ $t('users.filters.document') }}
 					</h3>
 					<div class="flex flex-wrap gap-2">
@@ -62,8 +62,8 @@
 							:aria-pressed="filtersStore.filterDocType === d"
 							:class="
 								filtersStore.filterDocType === d
-									? 'border border-[#1a1a1a] bg-[#404040] text-[#ffffff] shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
-									: 'border border-[#f4f1ee] bg-[#fbfaf9] text-[#666666] hover:bg-[#f4f1ee] hover:text-[#404040]'
+									? 'border border-[#1a1a1a] bg-[#404040] text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
+									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 							">
 							{{ d === 'all' ? $t('users.filters.all') : d }}
 						</button>

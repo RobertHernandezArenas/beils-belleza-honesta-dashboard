@@ -1,14 +1,14 @@
 <template>
-	<div class="relative overflow-hidden rounded-[2rem] bg-[#ffffff] p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+	<div class="relative overflow-hidden rounded-[2rem] bg-bg-card p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 		<!-- Glow interno del contenedor -->
 		<div
-			class="pointer-events-none absolute inset-0 z-0 bg-linear-to-b from-[#fbfaf9] to-transparent"></div>
+			class="pointer-events-none absolute inset-0 z-0 bg-linear-to-b from-bg-app to-transparent"></div>
 
 		<div class="relative z-10 w-full overflow-hidden overflow-x-auto rounded-[1.75rem]">
 			<table class="table w-full border-collapse">
-				<thead class="bg-[#f4f1ee]">
+				<thead class="bg-bg-muted">
 					<tr
-						class="border-b border-transparent text-xs font-medium tracking-wider text-[#666666] uppercase">
+						class="border-b border-transparent text-xs font-medium tracking-wider text-text-muted uppercase">
 						<th class="px-6 py-5">{{ $t('users.table.user') }}</th>
 						<th class="px-6 py-5">{{ $t('users.table.role') }}</th>
 						<th class="px-6 py-5">{{ $t('users.table.status') }}</th>
@@ -18,16 +18,16 @@
 				<tbody v-if="pending" class="min-h-[400px]">
 					<tr v-for="i in 5" :key="i" class="border-b border-transparent/60">
 						<td class="px-6 py-4">
-							<div class="skeleton h-12 w-48 rounded bg-[#f2f0eb]"></div>
+							<div class="skeleton h-12 w-48 rounded bg-bg-hover"></div>
 						</td>
 						<td class="px-6 py-4">
-							<div class="skeleton h-6 w-24 rounded bg-[#f2f0eb]"></div>
+							<div class="skeleton h-6 w-24 rounded bg-bg-hover"></div>
 						</td>
 						<td class="px-6 py-4">
-							<div class="skeleton h-6 w-20 rounded bg-[#f2f0eb]"></div>
+							<div class="skeleton h-6 w-20 rounded bg-bg-hover"></div>
 						</td>
 						<td class="px-6 py-4 text-right">
-							<div class="skeleton ml-auto h-8 w-32 rounded bg-[#f2f0eb]"></div>
+							<div class="skeleton ml-auto h-8 w-32 rounded bg-bg-hover"></div>
 						</td>
 					</tr>
 				</tbody>
@@ -35,7 +35,7 @@
 					<tr
 						v-for="user in users"
 						:key="user.user_id"
-						class="cursor-pointer transition-colors hover:bg-[#fbfaf9]"
+						class="cursor-pointer transition-colors hover:bg-bg-app"
 						@click="$emit('edit', user)">
 						<td class="px-6 py-4">
 							<div class="flex items-center gap-4">
@@ -51,10 +51,10 @@
 									</div>
 								</div>
 								<div>
-									<div class="text-base font-bold text-[#404040]">
+									<div class="text-base font-bold text-text-secondary">
 										{{ user.name }} {{ user.surname }}
 									</div>
-									<div class="text-xs font-semibold tracking-wider text-[#8c8c8c]">
+									<div class="text-xs font-semibold tracking-wider text-text-light">
 										{{ user.email }}
 									</div>
 								</div>
@@ -62,9 +62,9 @@
 						</td>
 						<td class="px-6 py-4">
 							<div class="flex items-center gap-2">
-								<ShieldCheck v-if="user.role === 'ADMIN'" class="h-4 w-4 text-[#404040]" />
-								<User v-else class="h-4 w-4 text-[#8c8c8c]" />
-								<span class="text-sm font-bold text-[#666666]">
+								<ShieldCheck v-if="user.role === 'ADMIN'" class="h-4 w-4 text-text-secondary" />
+								<User v-else class="h-4 w-4 text-text-light" />
+								<span class="text-sm font-bold text-text-muted">
 									{{ $t('users.constants.roles.' + user.role) }}
 								</span>
 							</div>
@@ -75,7 +75,7 @@
 								:class="
 									user.status === 'ON'
 										? 'border-green-300 bg-green-100 text-green-700'
-										: 'border-transparent bg-[#fbfaf9] text-[#8c8c8c]'
+										: 'border-transparent bg-bg-app text-text-light'
 								">
 								<div
 									class="h-1.5 w-1.5 rounded-full"
@@ -96,7 +96,7 @@
 											: $t('users.messages.statusOn')
 									">
 									<button
-										class="btn btn-circle btn-sm btn-ghost hover:bg-[#f2f0eb]"
+										class="btn btn-circle btn-sm btn-ghost hover:bg-bg-hover"
 										:aria-label="
 											user.status === 'ON'
 												? $t('users.messages.statusOff')
@@ -104,17 +104,17 @@
 										"
 										@click.stop="$emit('toggle-status', user)">
 										<ToggleRight v-if="user.status === 'ON'" class="h-5 w-5 text-green-600" />
-										<ToggleLeft v-else class="h-5 w-5 text-[#8c8c8c]" />
+										<ToggleLeft v-else class="h-5 w-5 text-text-light" />
 									</button>
 								</div>
 
 								<!-- Editar -->
 								<div class="tooltip tooltip-left" :data-tip="$t('users.form.editTitle')">
 									<button
-										class="btn btn-circle btn-sm btn-ghost hover:bg-[#f2f0eb]"
+										class="btn btn-circle btn-sm btn-ghost hover:bg-bg-hover"
 										:aria-label="$t('users.form.editTitle')"
 										@click.stop="$emit('edit', user)">
-										<Pencil class="h-4 w-4 text-[#666666]" />
+										<Pencil class="h-4 w-4 text-text-muted" />
 									</button>
 								</div>
 
@@ -149,10 +149,10 @@
 			<div
 				v-if="!pending && users.length === 0"
 				class="flex min-h-[400px] flex-col items-center justify-center py-16 text-center">
-				<div class="mb-4 rounded-full bg-[#fbfaf9] p-6 ring-1 ring-[#dbd2c6]">
-					<Users class="h-12 w-12 text-[#bababa]" />
+				<div class="mb-4 rounded-full bg-bg-app p-6 ring-1 ring-[#dbd2c6]">
+					<Users class="h-12 w-12 text-border-strong" />
 				</div>
-				<h3 class="text-xl font-bold text-[#404040]">{{ $t('users.table.empty') }}</h3>
+				<h3 class="text-xl font-bold text-text-secondary">{{ $t('users.table.empty') }}</h3>
 			</div>
 		</div>
 

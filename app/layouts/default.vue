@@ -1,5 +1,5 @@
 <template>
-	<div class="drawer lg:drawer-open relative h-dvh overflow-hidden bg-[#fbfaf9] font-sans text-[#404040]">
+	<div class="drawer lg:drawer-open bg-bg-app text-text-secondary relative h-dvh overflow-hidden font-sans">
 		<!-- Minimalist background without blobs -->
 
 		<input id="my-drawer-4" v-model="isDrawerOpen" type="checkbox" class="drawer-toggle" />
@@ -7,14 +7,14 @@
 		<div class="drawer-content relative z-10 flex h-dvh flex-col">
 			<!-- NAVBAR (Glassmorphism) -->
 			<nav
-				class="sticky top-0 z-50 h-[73px] w-full border-b border-transparent bg-[#ffffff]/90 px-4 py-3 shadow-xs backdrop-blur-2xl">
+				class="bg-bg-card/90 sticky top-0 z-50 h-[73px] w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
 				<div class="flex w-full items-center justify-between">
 					<div class="flex items-center gap-4">
 						<div class="lg:hidden">
 							<label
 								for="my-drawer-4"
 								aria-label="open sidebar"
-								class="btn btn-square btn-ghost text-[#404040] hover:bg-[#f4f1ee] hover:text-[#404040]">
+								class="btn btn-square btn-ghost text-text-secondary hover:bg-bg-muted hover:text-text-secondary">
 								<Transition name="swap" mode="out-in">
 									<PanelLeftClose v-if="isDrawerOpen" class="h-6 w-6" />
 									<PanelLeftOpen v-else class="h-6 w-6" />
@@ -23,44 +23,17 @@
 						</div>
 
 						<!-- Breadcrumb / Titulo en top bar -->
-						<div
-							class="hidden items-center gap-2 text-sm font-bold tracking-wide text-[#666666] md:flex">
-							<span class="text-[#404040]">BEILS</span>
-							<span class="text-[#bababa]">/</span>
-							<span class="text-[#404040] capitalize">{{ currentRouteTranslated }}</span>
-						</div>
+						<UiAppBreadcrumbs :current-label="currentRouteTranslated" />
 					</div>
 
 					<div class="flex items-center gap-4">
-						<!-- Selector de Idioma estético (Pill) -->
-						<div class="group relative">
-							<select
-								v-model="locale"
-								class="cursor-pointer appearance-none rounded-full border border-transparent bg-[#ffffff] px-4 py-1.5 pr-8 text-xs font-medium text-[#404040] uppercase shadow-inner transition-colors hover:border-[#bababa] hover:bg-[#f4f1ee] focus-visible:outline-none">
-								<option
-									v-for="l in locales"
-									:key="l.code"
-									:value="l.code"
-									class="bg-[#ffffff] text-[#404040]">
-									{{ l.code }}
-								</option>
-							</select>
-							<div
-								class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#8c8c8c] transition-colors group-hover:text-[#404040]">
-								<svg
-									class="h-3 w-3 fill-current"
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20">
-									<path
-										d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-								</svg>
-							</div>
-						</div>
+						<!-- Selector de Idioma (Trend UI 2026) -->
+						<UiLanguageSelector />
 
 						<!-- Perfil rápido superior -->
 						<button
 							v-if="authStore.user"
-							class="group relative flex items-center gap-2 rounded-full border border-transparent bg-[#ffffff] p-1 pr-3 transition-colors hover:border-[#bababa] hover:bg-[#f4f1ee]">
+							class="group bg-bg-card hover:border-border-strong hover:bg-bg-muted relative flex items-center gap-2 rounded-full border border-transparent p-1 pr-3 transition-colors">
 							<div class="avatar">
 								<div class="w-8 rounded-full ring-1 ring-[#dbd2c6] group-hover:ring-[#bababa]">
 									<img
@@ -74,7 +47,6 @@
 										class="object-cover brightness-110 saturate-0 transition-[filter] group-hover:saturate-100" />
 								</div>
 							</div>
-							<span class="text-xs font-bold text-[#404040]">{{ authStore.user.name }}</span>
 						</button>
 					</div>
 				</div>
@@ -93,32 +65,32 @@
 				aria-label="close sidebar"
 				class="drawer-overlay bg-[#404040]/40 backdrop-blur-sm lg:hidden"></label>
 			<aside
-				class="flex h-full w-72 flex-col items-start border-r border-transparent bg-[#ffffff]/90 shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-transform duration-300 lg:w-72">
+				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-transform duration-300 lg:w-72">
 				<!-- Glow lateral en sidebar -->
 				<div
-					class="pointer-events-none absolute inset-0 z-0 bg-linear-to-r from-[#fbfaf9] to-transparent"></div>
+					class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-r to-transparent"></div>
 
 				<!-- LOGO SPACE -->
 				<div
 					class="relative z-10 flex h-[73px] min-h-[73px] w-full items-center justify-start gap-3 border-b border-transparent p-6">
-            <div class="group relative shrink-0">
-              <NuxtLink to="/">
-                <NuxtImg
-                  src="/images/tp-dash.svg"
-                  class="relative w-9 brightness-0 drop-shadow-sm"
-                  alt="Logo" />
-              </NuxtLink>
-            </div>
+					<div class="group relative shrink-0">
+						<NuxtLink to="/">
+							<NuxtImg
+								src="/images/tp-dash.svg"
+								class="relative w-9 brightness-0 drop-shadow-sm"
+								alt="Logo" />
+						</NuxtLink>
+					</div>
 					<NuxtLink to="/">
-						<span class="text-xl font-bold tracking-wider text-[#404040] drop-shadow-none">
+						<span class="text-text-secondary text-xl font-bold tracking-wider drop-shadow-none">
 							BEILS
 						</span>
 					</NuxtLink>
 				</div>
 
 				<!-- Navegación -->
-				<div class="relative z-10 w-full flex-1 overflow-y-auto px-4 py-6 text-[#404040]">
-					<p class="mb-4 pl-2 text-[10px] font-medium tracking-widest text-[#8c8c8c] uppercase">
+				<div class="text-text-secondary relative z-10 w-full flex-1 overflow-y-auto px-4 py-6">
+					<p class="text-text-light mb-4 pl-2 text-[10px] font-medium tracking-widest uppercase">
 						{{ $t('nav.menu') || 'Menú Principal' }}
 					</p>
 
@@ -130,13 +102,13 @@
 								class="group flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-[background-color,color,box-shadow] duration-300"
 								:class="
 									route.path === item.to
-										? 'bg-[#404040] font-medium text-[#ffffff] shadow-md'
-										: 'text-[#666666] hover:bg-[#f4f1ee] hover:text-[#404040]'
+										? 'text-bg-card bg-[#404040] font-medium shadow-md'
+										: 'text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 								">
 								<component
 									:is="item.icon"
 									class="h-5 w-5 transition-transform group-hover:scale-110"
-									:class="route.path === item.to ? 'text-[#ffffff]' : ''" />
+									:class="route.path === item.to ? 'text-bg-card' : ''" />
 								<span
 									class="text-[13px] tracking-wider uppercase"
 									:class="route.path === item.to ? 'font-medium' : 'font-bold'">
@@ -146,7 +118,7 @@
 
 							<button
 								v-else
-								class="group flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left text-[#666666] transition-colors duration-300 hover:bg-[#f4f1ee] hover:text-[#404040]">
+								class="group text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-colors duration-300">
 								<component
 									:is="item.icon"
 									class="h-5 w-5 transition-transform group-hover:scale-110" />
@@ -160,7 +132,7 @@
 
 				<!-- Footer del Sidebar (Perfil + Logout) -->
 				<div
-					class="relative z-10 mt-auto flex w-full flex-col gap-4 border-t border-transparent bg-[#fbfaf9] p-5">
+					class="bg-bg-app relative z-10 mt-auto flex w-full flex-col gap-4 border-t border-transparent p-5">
 					<div v-if="authStore.user" class="flex flex-col gap-4">
 						<div class="flex items-center gap-3">
 							<div class="avatar">
@@ -178,11 +150,11 @@
 								</div>
 							</div>
 							<div class="flex-1 overflow-hidden">
-								<p class="truncate text-sm font-bold text-[#404040]">
+								<p class="text-text-secondary truncate text-sm font-bold">
 									{{ authStore.user.name }} {{ authStore.user.surname }}
 								</p>
 								<p
-									class="truncate text-[10px] font-semibold tracking-widest text-[#666666] uppercase">
+									class="text-text-muted truncate text-[10px] font-semibold tracking-widest uppercase">
 									{{ authStore.user.role }}
 								</p>
 							</div>
@@ -190,7 +162,7 @@
 
 						<button
 							@click="handleLogout"
-							class="group flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-[#ffffff] px-4 py-2.5 font-bold text-[#666666] transition-[border-color,background-color,color,box-shadow] hover:border-[#ff0000]/30 hover:bg-[#ff0000]/10 hover:text-[#ff0000] hover:shadow-xs">
+							class="group bg-bg-card text-text-muted flex w-full items-center justify-center gap-2 rounded-xl border border-transparent px-4 py-2.5 font-bold transition-[border-color,background-color,color,box-shadow] hover:border-[#ff0000]/30 hover:bg-[#ff0000]/10 hover:text-[#ff0000] hover:shadow-xs">
 							<LogOut class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
 							<span class="text-xs tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}
@@ -232,12 +204,6 @@
 	watch(locale, newLocale => {
 		localeCookie.value = newLocale
 	})
-
-	const locales = [
-		{ code: 'es', name: 'Español' },
-		{ code: 'en', name: 'English' },
-		{ code: 'pl', name: 'Polski' },
-	]
 	const isDrawerOpen = ref(false)
 
 	const navItems = [

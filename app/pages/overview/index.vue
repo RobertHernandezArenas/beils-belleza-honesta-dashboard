@@ -25,18 +25,18 @@
 			trend: '+12.5%',
 			trendColor: 'text-green-600',
 			icon: CircleDollarSign,
-			iconBg: 'bg-[#f4f1ee]',
-			iconColor: 'text-[#404040]',
+			iconBg: 'bg-bg-muted',
+			iconColor: 'text-text-secondary',
 		},
 		{
 			id: 2,
 			title: t('overview.kpis.fleet.title'),
 			value: '42 / 50',
 			trend: `84% ${t('overview.kpis.fleet.trend')}`,
-			trendColor: 'text-[#666666]',
+			trendColor: 'text-text-muted',
 			icon: Truck,
-			iconBg: 'bg-[#f4f1ee]',
-			iconColor: 'text-[#404040]',
+			iconBg: 'bg-bg-muted',
+			iconColor: 'text-text-secondary',
 		},
 		{
 			id: 3,
@@ -45,8 +45,8 @@
 			trend: `+5 ${t('overview.kpis.routes.trend')}`,
 			trendColor: 'text-green-600',
 			icon: Route,
-			iconBg: 'bg-[#f4f1ee]',
-			iconColor: 'text-[#404040]',
+			iconBg: 'bg-bg-muted',
+			iconColor: 'text-text-secondary',
 		},
 		{
 			id: 4,
@@ -55,8 +55,8 @@
 			trend: `-2 ${t('overview.kpis.drivers.trend')}`,
 			trendColor: 'text-red-600',
 			icon: Users,
-			iconBg: 'bg-[#f4f1ee]',
-			iconColor: 'text-[#404040]',
+			iconBg: 'bg-bg-muted',
+			iconColor: 'text-text-secondary',
 		},
 	])
 
@@ -68,8 +68,8 @@
 			description: t('overview.activity.mock1.desc'),
 			time: `${t('overview.activity.timeAgo')} 10 min`,
 			icon: MapPin,
-			color: 'text-[#404040]',
-			bg: 'bg-[#f4f1ee]',
+			color: 'text-text-secondary',
+			bg: 'bg-bg-muted',
 		},
 		{
 			id: 2,
@@ -106,31 +106,31 @@
 		<!-- HEADER / HERO -->
 		<header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
 			<div>
-				<h1 class="text-4xl font-medium tracking-tighter text-[#404040] md:text-5xl">
+				<h1 class="text-4xl font-medium tracking-tighter text-text-secondary md:text-5xl">
 					{{ $t('overview.hero.title') }},
-					<span class="font-light text-[#666666]">
+					<span class="font-light text-text-muted">
 						{{ authStore.user?.name || $t('overview.hero.guest') }}
 					</span>
 					!
 				</h1>
-				<p class="mt-2 text-sm font-semibold tracking-wider text-[#8c8c8c] uppercase">
+				<p class="mt-2 text-sm font-semibold tracking-wider text-text-light uppercase">
 					{{ $t('overview.hero.subtitle') }}
 				</p>
 			</div>
 
 			<!-- Quick Period Selector -->
 			<div
-				class="inline-flex items-center rounded-2xl border border-transparent bg-[#ffffff] p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+				class="inline-flex items-center rounded-2xl border border-transparent bg-bg-card p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 				<button
-					class="rounded-xl px-4 py-2 text-xs font-bold text-[#8c8c8c] transition duration-300 hover:bg-[#f4f1ee] hover:text-[#404040]">
+					class="rounded-xl px-4 py-2 text-xs font-bold text-text-light transition duration-300 hover:bg-bg-muted hover:text-text-secondary">
 					{{ $t('overview.period.yesterday') }}
 				</button>
 				<button
-					class="rounded-xl bg-[#404040] px-4 py-2 text-xs font-medium text-[#ffffff] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition duration-300">
+					class="rounded-xl bg-[#404040] px-4 py-2 text-xs font-medium text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition duration-300">
 					{{ $t('overview.period.today') }}
 				</button>
 				<button
-					class="rounded-xl px-4 py-2 text-xs font-bold text-[#8c8c8c] transition duration-300 hover:bg-[#f4f1ee] hover:text-[#404040]">
+					class="rounded-xl px-4 py-2 text-xs font-bold text-text-light transition duration-300 hover:bg-bg-muted hover:text-text-secondary">
 					{{ $t('overview.period.month') }}
 				</button>
 			</div>
@@ -141,17 +141,17 @@
 			<div
 				v-for="kpi in kpis"
 				:key="kpi.id"
-				class="group relative overflow-hidden rounded-[2rem] border border-transparent bg-[#ffffff] p-6 shadow-xs transition-shadow hover:shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+				class="group relative overflow-hidden rounded-[2rem] border border-transparent bg-bg-card p-6 shadow-xs transition-shadow hover:shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 				<!-- Fondo radial on Hover -->
 				<div
-					class="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-[#f4f1ee] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
+					class="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-bg-muted opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
 
 				<div class="flex items-center justify-between">
 					<div :class="['flex h-12 w-12 items-center justify-center rounded-2xl', kpi.iconBg]">
 						<component :is="kpi.icon" :class="['h-6 w-6', kpi.iconColor]" />
 					</div>
 					<div
-						class="flex items-center gap-1 rounded-full border border-[#f4f1ee] bg-[#fbfaf9] px-3 py-1">
+						class="flex items-center gap-1 rounded-full border border-border-subtle bg-bg-app px-3 py-1">
 						<TrendingUp
 							v-if="kpi.trend.includes('+') || kpi.trend.includes('Operativos')"
 							:class="['h-3 w-3', kpi.trendColor]" />
@@ -161,10 +161,10 @@
 				</div>
 
 				<div class="mt-6 flex flex-col gap-1">
-					<span class="text-xs font-bold tracking-widest text-[#8c8c8c] uppercase">
+					<span class="text-xs font-bold tracking-widest text-text-light uppercase">
 						{{ kpi.title }}
 					</span>
-					<span class="text-3xl font-medium tracking-tight text-[#404040]">{{ kpi.value }}</span>
+					<span class="text-3xl font-medium tracking-tight text-text-secondary">{{ kpi.value }}</span>
 				</div>
 			</div>
 		</section>
@@ -173,18 +173,18 @@
 		<section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
 			<!-- Gráfico Simulado (Izquierda - 2/3) -->
 			<div
-				class="flex flex-col overflow-hidden rounded-[2rem] border border-transparent bg-[#ffffff] p-1 shadow-xs lg:col-span-2">
+				class="flex flex-col overflow-hidden rounded-[2rem] border border-transparent bg-bg-card p-1 shadow-xs lg:col-span-2">
 				<div
-					class="relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] bg-[#fbfaf9] p-6">
+					class="relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] bg-bg-app p-6">
 					<div
-						class="pointer-events-none absolute inset-0 z-0 bg-linear-to-b from-[#ffffff] to-transparent"></div>
+						class="pointer-events-none absolute inset-0 z-0 bg-linear-to-b from-bg-card to-transparent"></div>
 
 					<div class="relative z-10 mb-8 flex items-center justify-between">
-						<h2 class="text-xl font-medium tracking-wide text-[#404040]">
+						<h2 class="text-xl font-medium tracking-wide text-text-secondary">
 							{{ $t('overview.charts.weekly') }}
 						</h2>
 						<button
-							class="btn btn-sm btn-ghost rounded-full border border-transparent bg-[#ffffff] text-xs font-bold text-[#666666] hover:border-[#bababa] hover:bg-[#f2f0eb] hover:text-[#404040]">
+							class="btn btn-sm btn-ghost rounded-full border border-transparent bg-bg-card text-xs font-bold text-text-muted hover:border-border-strong hover:bg-bg-hover hover:text-text-secondary">
 							{{ $t('overview.charts.details') }}
 						</button>
 					</div>
@@ -210,11 +210,11 @@
 								:style="{ height: `${h}%` }">
 								<!-- Tooltip on hover -->
 								<div
-									class="absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg border border-transparent bg-[#ffffff] px-3 py-1 opacity-0 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-opacity group-hover:opacity-100">
-									<span class="text-xs font-medium text-[#404040]">{{ h * 10 }}</span>
+									class="absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg border border-transparent bg-bg-card px-3 py-1 opacity-0 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-opacity group-hover:opacity-100">
+									<span class="text-xs font-medium text-text-secondary">{{ h * 10 }}</span>
 								</div>
 							</div>
-							<span class="mt-3 text-[10px] font-bold text-[#8c8c8c] uppercase">
+							<span class="mt-3 text-[10px] font-bold text-text-light uppercase">
 								{{
 									[
 										$t('overview.charts.days.mon'),
@@ -234,11 +234,11 @@
 
 			<!-- Actividades Recientes (Derecha - 1/3) -->
 			<div
-				class="flex flex-col overflow-hidden rounded-[2rem] border border-transparent bg-[#ffffff] p-1 shadow-xs">
+				class="flex flex-col overflow-hidden rounded-[2rem] border border-transparent bg-bg-card p-1 shadow-xs">
 				<div
-					class="relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] bg-[#fbfaf9] p-6">
+					class="relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] bg-bg-app p-6">
 					<div class="relative z-10 mb-8 flex items-center justify-between">
-						<h2 class="text-xl font-medium tracking-wide text-[#404040]">
+						<h2 class="text-xl font-medium tracking-wide text-text-secondary">
 							{{ $t('overview.activity.title') }}
 						</h2>
 					</div>
@@ -261,12 +261,12 @@
 							</div>
 
 							<div class="flex flex-col gap-1">
-								<span class="text-sm font-bold text-[#404040]">{{ act.title }}</span>
-								<p class="line-clamp-2 text-xs leading-relaxed text-[#666666]">
+								<span class="text-sm font-bold text-text-secondary">{{ act.title }}</span>
+								<p class="line-clamp-2 text-xs leading-relaxed text-text-muted">
 									{{ act.description }}
 								</p>
 								<span
-									class="mt-1 flex items-center gap-1 text-[10px] font-medium tracking-widest text-[#8c8c8c] uppercase">
+									class="mt-1 flex items-center gap-1 text-[10px] font-medium tracking-widest text-text-light uppercase">
 									<Clock class="h-3 w-3" />
 									{{ act.time }}
 								</span>
@@ -275,7 +275,7 @@
 					</div>
 
 					<button
-						class="mt-6 w-full rounded-xl border border-transparent bg-[#ffffff] py-3 text-xs font-bold text-[#666666] transition-colors hover:bg-[#f4f1ee] hover:text-[#404040]">
+						class="mt-6 w-full rounded-xl border border-transparent bg-bg-card py-3 text-xs font-bold text-text-muted transition-colors hover:bg-bg-muted hover:text-text-secondary">
 						{{ $t('overview.activity.viewAll') }}
 					</button>
 				</div>

@@ -4,25 +4,25 @@
 			<button
 				@click="prevPage"
 				:disabled="currentPage <= 1"
-				class="btn btn-sm btn-ghost border-transparent text-[#404040] hover:bg-[#f2f0eb] disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:text-[#666666] disabled:opacity-50 disabled:hover:bg-transparent">
+				class="btn btn-sm btn-ghost border-transparent text-text-secondary hover:bg-bg-hover disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:text-text-muted disabled:opacity-50 disabled:hover:bg-transparent">
 				{{ $t('common.prev') }}
 			</button>
 			<button
 				@click="nextPage"
 				:disabled="currentPage >= totalPages"
-				class="btn btn-sm btn-ghost border-transparent text-[#404040] hover:bg-[#f2f0eb] disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:text-[#666666] disabled:opacity-50 disabled:hover:bg-transparent">
+				class="btn btn-sm btn-ghost border-transparent text-text-secondary hover:bg-bg-hover disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:text-text-muted disabled:opacity-50 disabled:hover:bg-transparent">
 				{{ $t('common.next') }}
 			</button>
 		</div>
 		<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
 			<div>
-				<p class="text-sm text-[#8c8c8c]">
+				<p class="text-sm text-text-light">
 					{{ $t('common.showing') }}
-					<span class="font-medium text-[#404040]">{{ startItem }}</span>
+					<span class="font-medium text-text-secondary">{{ startItem }}</span>
 					{{ $t('common.to') }}
-					<span class="font-medium text-[#404040]">{{ endItem }}</span>
+					<span class="font-medium text-text-secondary">{{ endItem }}</span>
 					{{ $t('common.of') }}
-					<span class="font-medium text-[#404040]">{{ totalItems }}</span>
+					<span class="font-medium text-text-secondary">{{ totalItems }}</span>
 					{{ $t('common.results') }}
 				</p>
 			</div>
@@ -32,7 +32,7 @@
 						@click="prevPage"
 						aria-label="Página anterior"
 						:disabled="currentPage <= 1"
-						class="btn btn-sm join-item border-transparent bg-[#ffffff] text-[#404040] hover:bg-[#f2f0eb] focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:text-[#666666] disabled:opacity-50 disabled:hover:bg-[#ffffff]">
+						class="btn btn-sm join-item border-transparent bg-bg-card text-text-secondary hover:bg-bg-hover focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:text-text-muted disabled:opacity-50 disabled:hover:bg-bg-card">
 						<ChevronLeft class="h-4 w-4" />
 					</button>
 
@@ -43,8 +43,8 @@
 						class="btn btn-sm join-item border-transparent"
 						:class="
 							currentPage === page
-								? 'bg-[#404040] text-[#ffffff] hover:bg-[#404040]/80'
-								: 'bg-[#ffffff] text-[#404040] hover:bg-[#f2f0eb]'
+								? 'bg-[#404040] text-bg-card hover:bg-[#404040]/80'
+								: 'bg-bg-card text-text-secondary hover:bg-bg-hover'
 						">
 						{{ page }}
 					</button>
@@ -53,7 +53,7 @@
 						@click="nextPage"
 						aria-label="Página siguiente"
 						:disabled="currentPage >= totalPages"
-						class="btn btn-sm join-item border-transparent bg-[#ffffff] text-[#404040] hover:bg-[#f2f0eb] focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:text-[#666666] disabled:opacity-50 disabled:hover:bg-[#ffffff]">
+						class="btn btn-sm join-item border-transparent bg-bg-card text-text-secondary hover:bg-bg-hover focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:text-text-muted disabled:opacity-50 disabled:hover:bg-bg-card">
 						<ChevronRight class="h-4 w-4" />
 					</button>
 				</div>

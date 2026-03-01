@@ -1,7 +1,7 @@
 <template>
 	<dialog ref="deleteModal" class="modal modal-bottom sm:modal-middle">
 		<div
-			class="modal-box relative rounded-[2.5rem] border border-red-200 bg-[#ffffff] p-8 text-center text-[#1a1a1a] shadow-lg backdrop-blur-md">
+			class="modal-box relative rounded-[2.5rem] border border-red-200 bg-bg-card p-8 text-center text-text-primary shadow-lg backdrop-blur-md">
 			<!-- Glow rojo intenso -->
 			<div
 				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"></div>
@@ -11,20 +11,20 @@
 					<AlertTriangle class="h-10 w-10" />
 				</div>
 				<h3 class="mb-2 text-2xl font-black text-red-600">{{ $t('users.delete.title') }}</h3>
-				<p class="max-w-xs text-sm font-medium text-[#666666]">
+				<p class="max-w-xs text-sm font-medium text-text-muted">
 					{{ $t('users.delete.message') }}
-					<span class="my-2 block font-bold text-[#1a1a1a]">{{ userToDelete?.name }}</span>
+					<span class="my-2 block font-bold text-text-primary">{{ userToDelete?.name }}</span>
 					{{ $t('users.delete.warning') }}
 				</p>
 
 				<div class="mt-8 flex w-full gap-3">
 					<button
-						class="btn btn-ghost h-12 flex-1 rounded-xl border border-[#dbd2c6] text-[#666666] hover:bg-[#f2f0eb] hover:text-[#1a1a1a]"
+						class="btn btn-ghost h-12 flex-1 rounded-xl border border-border-default text-text-muted hover:bg-bg-hover hover:text-text-primary"
 						@click.prevent="closeModal">
 						{{ $t('common.cancel') }}
 					</button>
 					<button
-						class="btn h-12 flex-1 rounded-xl border-none bg-red-600 font-bold text-[#ffffff] shadow-md hover:bg-red-700 hover:shadow-lg"
+						class="btn h-12 flex-1 rounded-xl border-none bg-red-600 font-bold text-bg-card shadow-md hover:bg-red-700 hover:shadow-lg"
 						@click.prevent="executeDelete">
 						<span v-if="isDeleting" class="loading loading-spinner"></span>
 						{{ $t('users.delete.confirm') }}
@@ -32,7 +32,7 @@
 				</div>
 			</div>
 		</div>
-		<form method="dialog" class="modal-backdrop bg-[#1a1a1a]/40 backdrop-blur-sm">
+		<form method="dialog" class="modal-backdrop bg-text-primary/40 backdrop-blur-sm">
 			<button>close</button>
 		</form>
 	</dialog>

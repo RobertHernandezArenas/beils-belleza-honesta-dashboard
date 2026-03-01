@@ -1,14 +1,14 @@
 <template>
 	<dialog ref="userModal" class="modal">
 		<div
-			class="modal-box relative w-11/12 max-w-4xl rounded-[2rem] bg-[#ffffff] p-8 text-[#404040] shadow-lg backdrop-blur-md">
+			class="modal-box bg-bg-card text-text-secondary relative w-11/12 max-w-4xl rounded-[2rem] p-8 shadow-lg backdrop-blur-md">
 			<div
-				class="pointer-events-none absolute inset-0 z-0 rounded-[2rem] bg-linear-to-b from-[#fbfaf9] to-transparent"></div>
+				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-[2rem] bg-linear-to-b to-transparent"></div>
 
 			<button
 				type="button"
 				aria-label="Cerrar modal de usuario"
-				class="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 z-20 text-xl text-[#8c8c8c] hover:bg-[#f2f0eb] hover:text-[#404040]"
+				class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-bg-hover hover:text-text-secondary absolute top-4 right-4 z-20 text-xl"
 				@click="closeModal">
 				✕
 			</button>
@@ -22,7 +22,7 @@
 					<div class="grid gap-4 md:grid-cols-2">
 						<div class="form-control">
 							<label class="label pb-1" for="user-name">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.name') }}
 								</span>
 							</label>
@@ -30,11 +30,11 @@
 								id="user-name"
 								v-model="form.name"
 								type="text"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-surname">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.surname') }}
 								</span>
 							</label>
@@ -42,11 +42,11 @@
 								id="user-surname"
 								v-model="form.surname"
 								type="text"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-email">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.email') }}
 								</span>
 							</label>
@@ -55,11 +55,11 @@
 								v-model="form.email"
 								type="email"
 								:disabled="!isAdmin"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-[#f4f1ee] disabled:opacity-50" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 disabled:bg-bg-muted border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-password">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.password') }}
 								</span>
 							</label>
@@ -73,19 +73,19 @@
 										? $t('users.form.passwordPlaceholderEdit')
 										: $t('users.form.passwordPlaceholderNew')
 								"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 
 						<div class="form-control dropdown w-full">
 							<label class="label pb-1" id="label-doctype">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.documentType') }}
 								</span>
 							</label>
 							<div
 								tabindex="0"
 								role="button"
-								class="input input-bordered flex h-11 w-full items-center justify-between rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:outline-none"
+								class="input bg-bg-muted text-text-primary hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default flex h-11 w-full items-center justify-between rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base"
 								aria-labelledby="label-doctype">
 								<span class="font-medium">
 									{{ form.document_type === 'PASSPORT' ? 'Pasaporte' : form.document_type }}
@@ -94,7 +94,7 @@
 							</div>
 							<ul
 								tabindex="0"
-								class="menu dropdown-content z-100 mt-1 w-full rounded-xl bg-[#ffffff] p-2 text-[#404040] shadow-lg">
+								class="menu dropdown-content bg-bg-card text-text-secondary z-100 mt-1 w-full rounded-xl p-2 shadow-lg">
 								<li
 									v-for="type in [
 										{ value: 'DNI', label: 'DNI' },
@@ -103,13 +103,13 @@
 									]"
 									:key="type.value">
 									<a
-										class="rounded-lg px-4 py-2.5 font-medium transition-colors hover:bg-[#f2f0eb] hover:text-[#404040]"
+										class="hover:bg-bg-hover hover:text-text-secondary rounded-lg px-4 py-2.5 font-medium transition-colors"
 										:class="
 											form.document_type === type.value
-												? 'bg-[#404040] text-[#ffffff]'
-												: 'text-[#666666]'
+												? 'text-bg-card bg-[#404040]'
+												: 'text-text-muted'
 										"
-										@click="selectOption('document_type', type.value)">
+										@click.prevent="selectOption('document_type', type.value)">
 										{{ type.label }}
 									</a>
 								</li>
@@ -117,7 +117,7 @@
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-docnum">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.documentNumber') }}
 								</span>
 							</label>
@@ -125,12 +125,12 @@
 								id="user-docnum"
 								v-model="form.document_number"
 								type="text"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 
 						<div class="form-control">
 							<label class="label pb-1" for="user-phone">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.phone') }}
 								</span>
 							</label>
@@ -138,24 +138,25 @@
 								id="user-phone"
 								v-model="form.phone"
 								type="tel"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control dropdown w-full">
 							<label class="label pb-1" id="label-role">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.role') }}
 								</span>
 							</label>
 							<div
-								tabindex="0"
+								:tabindex="!isAdmin ? -1 : 0"
 								role="button"
-								class="input input-bordered flex h-11 w-full items-center justify-between rounded-xl border-transparent px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+								class="input border-border-default text-text-primary focus:bg-bg-card focus:ring-border-subtle/40 flex h-11 w-full items-center justify-between rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 sm:h-12 sm:text-base"
 								:class="
 									!isAdmin
-										? 'cursor-not-allowed bg-[#f4f1ee] opacity-50'
-										: 'bg-[#fbfaf9] focus-visible:outline-none'
+										? 'bg-bg-muted cursor-not-allowed opacity-50 shadow-none'
+										: 'bg-bg-muted hover:bg-bg-hover hover:shadow-sm focus-visible:outline-none'
 								"
-								@click.prevent="!isAdmin">
+								@mousedown="!isAdmin && $event.preventDefault()"
+								@click="!isAdmin && $event.stopPropagation()">
 								<span class="font-medium">
 									{{ $t('users.constants.roles.' + form.role) }}
 								</span>
@@ -163,7 +164,7 @@
 							</div>
 							<ul
 								tabindex="0"
-								class="menu dropdown-content z-100 mt-1 w-full rounded-xl bg-[#ffffff] p-2 text-[#404040] shadow-lg">
+								class="menu dropdown-content bg-bg-card text-text-secondary z-100 mt-1 w-full rounded-xl p-2 shadow-lg">
 								<li
 									v-for="role in [
 										{ label: $t('users.constants.roles.USER'), value: 'USER' },
@@ -171,12 +172,12 @@
 									]"
 									:key="role.value">
 									<a
-										class="rounded-lg py-2.5 font-bold transition-colors hover:bg-[#f2f0eb] hover:text-[#404040]"
+										class="hover:bg-bg-hover hover:text-text-secondary rounded-lg py-2.5 font-bold transition-colors"
 										v-show="isAdmin"
 										:class="
-											form.role === role.value ? 'bg-[#404040] text-[#ffffff]' : 'text-[#666666]'
+											form.role === role.value ? 'text-bg-card bg-[#404040]' : 'text-text-muted'
 										"
-										@click="selectOption('role', role.value)">
+										@click.prevent="selectOption('role', role.value)">
 										{{ role.label }}
 									</a>
 								</li>
@@ -185,7 +186,7 @@
 
 						<div class="form-control md:col-span-2">
 							<label class="label pb-1" for="user-address">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.address') }}
 								</span>
 							</label>
@@ -193,12 +194,12 @@
 								id="user-address"
 								v-model="form.address"
 								type="text"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 
 						<div class="form-control">
 							<label class="label pb-1" for="user-city">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.city') }}
 								</span>
 							</label>
@@ -206,11 +207,11 @@
 								id="user-city"
 								v-model="form.city"
 								type="text"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-country">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ $t('users.form.country') }}
 								</span>
 							</label>
@@ -218,20 +219,20 @@
 								id="user-country"
 								v-model="form.country"
 								type="text"
-								class="input input-bordered h-11 w-full rounded-xl border-transparent bg-[#fbfaf9] px-4 text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-visible:bg-[#ffffff] focus-visible:outline-none" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 					</div>
 
 					<div class="mt-8 flex justify-end gap-3">
 						<button
 							type="button"
-							class="btn btn-ghost h-12 rounded-xl px-8 text-[#666666] hover:bg-[#f2f0eb] hover:text-[#404040]"
+							class="btn btn-ghost text-text-muted hover:bg-bg-hover hover:text-text-secondary h-12 rounded-xl px-8"
 							@click.prevent="closeModal">
 							{{ $t('common.cancel') }}
 						</button>
 						<button
 							type="submit"
-							class="btn h-12 rounded-xl border-none bg-[#404040] px-8 font-bold text-[#ffffff] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:bg-[#404040]/80 hover:shadow-lg"
+							class="btn text-bg-card h-12 rounded-xl border-none bg-[#404040] px-8 font-bold shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:bg-[#404040]/80 hover:shadow-lg"
 							:disabled="isSaving">
 							<span v-if="isSaving" class="loading loading-spinner"></span>
 							{{ editingUser ? 'Guardar Cambios' : 'Crear Usuario' }}

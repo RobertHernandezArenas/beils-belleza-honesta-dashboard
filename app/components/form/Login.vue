@@ -96,16 +96,18 @@
 			class="bg-bg-card relative space-y-8 rounded-4xl border border-transparent p-8 sm:p-12 lg:shadow-xl lg:backdrop-blur-md">
 			<!-- Glow sutil dentro de la tarjeta -->
 			<div
-				class="pointer-events-none absolute inset-0 z-0 rounded-[2rem] bg-linear-to-b from-[#fbfaf9] to-transparent"></div>
+				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-4xl bg-linear-to-b to-transparent"></div>
 
 			<div class="relative z-10 w-full">
 				<!-- Loading Screen -->
 				<div v-if="isPending" class="flex h-full w-full flex-col items-center justify-center gap-5 py-10">
 					<div class="relative">
-						<div class="absolute inset-0 rounded-full bg-[#fbfaf9] blur-2xl"></div>
+						<div class="bg-bg-app absolute inset-0 rounded-full blur-2xl"></div>
 						<LogoTPLoader class="relative h-20 w-20" />
 					</div>
-					<p class="animate-pulse text-xl font-bold tracking-wide text-[#404040]">Iniciando sesión...</p>
+					<p class="text-text-secondary animate-pulse text-xl font-bold tracking-wide">
+						Iniciando sesión...
+					</p>
 				</div>
 
 				<!-- Error Screen -->
@@ -115,11 +117,11 @@
 						<AlertCircle class="h-10 w-10" />
 					</div>
 					<h2 class="mb-3 text-2xl font-bold text-red-600">Error de Acceso</h2>
-					<p class="mb-8 max-w-xs text-center text-sm font-medium text-[#666666]">
+					<p class="text-text-muted mb-8 max-w-xs text-center text-sm font-medium">
 						{{ error?.message || 'Ocurrió un error inesperado al conectar.' }}
 					</p>
 					<button
-						class="btn btn-ghost h-14 w-full rounded-2xl border border-transparent font-semibold text-[#666666] transition-colors hover:bg-[#f2f0eb] hover:text-[#404040]"
+						class="btn btn-ghost text-text-muted hover:bg-bg-hover hover:text-text-secondary h-14 w-full rounded-2xl border border-transparent font-semibold transition-colors"
 						@click="resetMutation">
 						Intentar de nuevo
 					</button>
@@ -128,22 +130,20 @@
 				<!-- Login Form -->
 				<form v-else class="flex flex-col gap-8" @submit.prevent="onSubmit">
 					<div class="flex flex-col items-center gap-3 text-center">
-						<h2 class="text-5xl font-bold tracking-[.5rem] text-[#404040]">
+						<h2 class="text-text-secondary text-5xl font-bold tracking-[.5rem]">
 							{{ t('auth.login.platform') }}
 						</h2>
-						<p class="text-xs font-bold tracking-[.23rem] text-[#8c8c8c] uppercase">
-							Belleza Honesta
-						</p>
+						<p class="text-text-light text-xs font-bold tracking-[.23rem] uppercase">Belleza Honesta</p>
 					</div>
 
 					<div class="space-y-6">
 						<div class="form-control">
 							<label class="label pb-2" for="login-email">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ t('auth.login.email') }}
 								</span>
 							</label>
-							<div class="group relative">
+							<div class="group relative flex items-center">
 								<input
 									id="login-email"
 									v-model="form.email"
@@ -152,14 +152,14 @@
 									autocomplete="username"
 									placeholder="usuario@ejemplo.com"
 									:aria-invalid="!!errors.email"
-									class="input input-bordered h-14 w-full rounded-2xl border-transparent bg-[#fbfaf9] pl-12 text-lg font-medium text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[border-color,background-color,color,box-shadow] placeholder:text-[#bababa] focus-visible:bg-[#ffffff] focus-visible:outline-none"
+									class="input bg-bg-app text-text-primary placeholder:text-border-strong hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/50 h-12 w-full rounded-2xl border-transparent pr-4 pl-11 text-sm font-medium shadow-inner transition-all duration-300 placeholder:font-normal focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pl-12 sm:text-base lg:h-16 lg:text-lg"
 									:class="{
 										'border-red-500 focus:border-red-500 focus:outline-none': errors.email,
 									}"
 									@input="clearError('email')" />
 								<Mail
-									class="absolute top-4 left-4 h-6 w-6 text-[#8c8c8c] transition-colors group-focus-within:text-[#404040]"
-									:class="{ 'text-red-500': errors.email }" />
+									class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
+									:class="{ 'text-red-500 group-focus-within:text-red-500': errors.email }" />
 							</div>
 							<span v-if="errors.email" class="mt-2 ml-1 text-xs font-bold text-red-600">
 								{{ errors.email }}
@@ -168,11 +168,11 @@
 
 						<div class="form-control">
 							<label class="label flex justify-between pb-2" for="login-password">
-								<span class="label-text text-xs font-bold tracking-wider text-[#666666] uppercase">
+								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
 									{{ t('auth.login.password') }}
 								</span>
 							</label>
-							<div class="group relative">
+							<div class="group relative flex items-center">
 								<input
 									id="login-password"
 									v-model="form.password"
@@ -181,21 +181,21 @@
 									autocomplete="current-password"
 									placeholder="••••••••"
 									:aria-invalid="!!errors.password"
-									class="input input-bordered h-14 w-full rounded-2xl border-transparent bg-[#fbfaf9] pr-12 pl-12 text-lg font-medium tracking-widest text-[#404040] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[border-color,background-color,color,box-shadow] placeholder:text-[#bababa] focus-visible:bg-[#ffffff] focus-visible:outline-none"
+									class="input bg-bg-app text-text-secondary placeholder:text-border-strong hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/50 h-12 w-full rounded-2xl border-transparent pr-11 pl-11 text-sm font-medium tracking-widest shadow-inner transition-all duration-300 placeholder:font-normal focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pr-12 sm:pl-12 sm:text-lg lg:h-16 lg:text-xl"
 									:class="{
 										'border-red-500 focus:border-red-500 focus:outline-none': errors.password,
 									}"
 									@input="clearError('password')" />
 								<Lock
-									class="absolute top-4 left-4 h-6 w-6 text-[#8c8c8c] transition-colors group-focus-within:text-[#404040]"
-									:class="{ 'text-red-500': errors.password }" />
+									class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
+									:class="{ 'text-red-500 group-focus-within:text-red-500': errors.password }" />
 								<button
 									type="button"
 									aria-label="Toggle password visibility"
-									class="absolute top-4 right-4 text-[#8c8c8c] transition-colors hover:text-[#404040] focus-visible:outline-none"
+									class="text-text-light hover:text-text-secondary absolute right-4 transition-colors duration-300 focus-visible:outline-none sm:right-5"
 									@click="showPassword = !showPassword">
-									<Eye v-if="showPassword" class="h-6 w-6" />
-									<EyeOff v-else class="h-6 w-6" />
+									<Eye v-if="showPassword" class="h-5 w-5 sm:h-6 sm:w-6" />
+									<EyeOff v-else class="h-5 w-5 sm:h-6 sm:w-6" />
 								</button>
 							</div>
 							<span
@@ -208,7 +208,7 @@
 
 					<div class="form-control mt-4">
 						<button
-							class="group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl bg-[#404040] text-lg font-medium tracking-wide text-[#ffffff] uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,color,background-color,box-shadow] hover:bg-[#404040]/80 hover:shadow-lg disabled:opacity-70 disabled:hover:scale-100"
+							class="group text-bg-card relative flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl bg-text-secondary text-lg font-medium tracking-wide uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,color,background-color,box-shadow] hover:bg-text-secondary/80 hover:shadow-lg disabled:opacity-70 disabled:hover:scale-100"
 							type="submit"
 							:disabled="isPending">
 							<span class="relative z-10 flex items-center justify-center gap-2">
@@ -216,7 +216,7 @@
 							</span>
 							<!-- Efecto de brillo en hover -->
 							<div
-								class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-[#ffffff]/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+								class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-bg-card/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
 						</button>
 					</div>
 				</form>

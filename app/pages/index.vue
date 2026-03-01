@@ -6,7 +6,7 @@
 
 <template>
 	<section
-		class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#fbfaf9] font-sans text-[#404040]">
+		class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-bg-app font-sans text-text-secondary">
 		<!-- Minimalist background without blobs -->
 		<!-- Contenedor del Formulario -->
 		<div class="relative z-10 w-full px-4">
