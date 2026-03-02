@@ -93,11 +93,15 @@ async function seedDB() {
 			const birthMonth = Math.floor(Math.random() * 12)
 			const birthDay = Math.floor(Math.random() * 28) + 1
 
+			// Limit lengths for robust Database schema insertion
+			const truncName = name.slice(0, 20)
+			const truncSurname = surname.slice(0, 20)
+
 			return {
 				email: `user${i + 1}@example.com`,
 				password: hashedPassword,
-				name,
-				surname,
+				name: truncName,
+				surname: truncSurname,
 				phone: `+34${getRandomNumber(600000000, 699999999)}`,
 				address: `Calle Falsa ${getRandomNumber(1, 100)}`,
 				city,
@@ -107,9 +111,16 @@ async function seedDB() {
 				birth_date: new Date(birthYear, birthMonth, birthDay),
 				role,
 				status,
-				avatar: `https://ui-avatars.com/api/?name=${name}+${surname}&background=random`,
+				avatar: `https://ui-avatars.com/api/?name=${truncName}+${truncSurname}&background=random`.slice(
+					0,
+					255,
+				),
 				document_type: docType,
-				document_number: `${getRandomNumber(10000000, 99999999)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
+				document_number:
+					`${getRandomNumber(10000000, 99999999)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`.slice(
+						0,
+						20,
+					),
 			}
 		})
 

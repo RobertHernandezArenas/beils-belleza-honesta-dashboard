@@ -195,6 +195,8 @@
 		CalendarDays,
 		ShoppingBag,
 		PieChart,
+		Scissors,
+		PackageSearch,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -220,6 +222,8 @@
 		{ to: '/catalogo/categorias', label: 'Categorías', icon: Layers },
 		{ to: '/catalogo/marcas', label: 'Marcas', icon: Tags },
 		{ to: '/catalogo/etiquetas', label: 'Etiquetas', icon: Hash },
+		{ to: '/servicios', label: 'Servicios', icon: Scissors },
+		{ to: '/packs', label: 'Packs & Promociones', icon: PackageSearch },
 		{ to: '/agenda', label: 'Agenda', icon: CalendarDays },
 		{ to: '/ventas', label: 'Ventas', icon: ShoppingBag },
 		{ to: '/reportes', label: 'nav.reports', icon: PieChart },
