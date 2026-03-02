@@ -188,6 +188,13 @@
 		PanelLeftClose,
 		PanelLeftOpen,
 		LogOut,
+		Package,
+		Layers,
+		Tags,
+		Hash,
+		CalendarDays,
+		ShoppingBag,
+		PieChart,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -207,13 +214,16 @@
 	const isDrawerOpen = ref(false)
 
 	const navItems = [
-		{ to: '/overview', label: 'nav.dashboard', icon: LayoutDashboard },
-		{ to: '/usuarios', label: 'nav.users', icon: UsersRound },
-		{ to: null, label: 'nav.clients', icon: Building2 },
-		{ to: null, label: 'nav.drivers', icon: IdCard },
-		{ to: null, label: 'nav.fleet', icon: Van },
-		{ to: null, label: 'nav.routes', icon: Waypoints },
-		{ to: null, label: 'nav.settings', icon: SlidersHorizontal },
+		{ to: '/', label: 'nav.dashboard', icon: LayoutDashboard },
+		{ to: '/clientes', label: 'nav.clients', icon: UsersRound },
+		{ to: '/catalogo/productos', label: 'Productos', icon: Package },
+		{ to: '/catalogo/categorias', label: 'Categorías', icon: Layers },
+		{ to: '/catalogo/marcas', label: 'Marcas', icon: Tags },
+		{ to: '/catalogo/etiquetas', label: 'Etiquetas', icon: Hash },
+		{ to: '/agenda', label: 'Agenda', icon: CalendarDays },
+		{ to: '/ventas', label: 'Ventas', icon: ShoppingBag },
+		{ to: '/reportes', label: 'nav.reports', icon: PieChart },
+		{ to: '/configuracion', label: 'nav.settings', icon: SlidersHorizontal },
 	]
 
 	const currentRouteTranslated = computed(() => {
