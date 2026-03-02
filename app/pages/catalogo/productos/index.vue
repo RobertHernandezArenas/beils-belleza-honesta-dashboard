@@ -23,6 +23,12 @@
 	const selectedCategory = ref('')
 	const selectedBrand = ref('')
 
+	const resetFilters = () => {
+		searchQuery.value = ''
+		selectedCategory.value = ''
+		selectedBrand.value = ''
+	}
+
 	// Configuración de filtro dependiente (query params)
 	const queryParams = computed(() => {
 		const params: Record<string, string> = {}
@@ -152,11 +158,7 @@
 				<div class="w-full sm:w-auto">
 					<button
 						v-if="searchQuery || selectedCategory || selectedBrand"
-						@click="
-							searchQuery = ''
-							selectedCategory = ''
-							selectedBrand = ''
-						"
+						@click="resetFilters"
 						class="btn btn-ghost text-text-muted hover:bg-bg-hover w-full rounded-xl sm:w-auto">
 						Limpiar
 					</button>

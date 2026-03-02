@@ -42,6 +42,13 @@ model User {
   document_type            DocumentType         @default(DNI)
   document_number          String               @db.VarChar(20)
   refresh_token            String?              @db.Text
+  
+  carts                    Cart[]
+  debts                    Debt[]
+  
+  client_bookings          Booking[]            @relation("ClientBookings")
+  staff_bookings           Booking[]            @relation("StaffBookings")
+
   created_at               DateTime             @default(now())
   updated_at               DateTime             @updatedAt
 
@@ -157,6 +164,7 @@ model Service {
   status      String   @default("activo") @db.VarChar(20)
   
   packItems   PackItemService[]
+  bonuses     Bonus[]
 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -207,4 +215,193 @@ model PackItemService {
 
   @@id([pack_id, service_id])
   @@map("pack_item_services")
+}
+
+// ==========================================
+// PHASE 4: MARKETING & LOYALTY
+// ==========================================
+
+model Coupon {
+  coupon_id          String   @id @default(uuid()) @db.Char(100)
+  code               String   @unique @db.VarChar(50)
+  description        String?  @db.Text
+  discount_type      String   @db.VarChar(50) // 'percentage' or 'fixed'
+  discount_value     Float    @db.Double
+  min_purchase       Float?   @db.Double
+  max_uses           Int?     
+  current_uses       Int      @default(0)
+  valid_from         DateTime?
+  valid_until        DateTime?
+  status             String   @default("activo") @db.VarChar(20)
+
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@map("coupons")
+}
+
+model Bonus {
+  bonus_id        String   @id @default(uuid()) @db.Char(100)
+  name            String   @db.VarChar(150)
+  description     String?  @db.Text
+  total_sessions  Int      
+  price           Float    @db.Double
+  status          String   @default("activo") @db.VarChar(20)
+  
+  service_id      String?  @db.Char(100)
+  service         Service? @relation(fields: [service_id], references: [service_id])
+
+  client_bonuses  ClientBonus[]
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("bonuses")
+}
+
+model ClientBonus {
+  client_bonus_id    String   @id @default(uuid()) @db.Char(100)
+  
+  // Later we can relate this directly to Client model when Phase 1 models are added/fixed if needed
+  // For now we use a generic string to store client ID reference
+  client_id          String   @db.Char(100) 
+  
+  bonus_id           String   @db.Char(100)
+  bonus              Bonus    @relation(fields: [bonus_id], references: [bonus_id])
+  
+  remaining_sessions Int
+  purchase_date      DateTime @default(now())
+  expiration_date    DateTime?
+  status             String   @default("activo") @db.VarChar(20)
+
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@map("client_bonuses")
+}
+
+model Giftcard {
+  giftcard_id        String   @id @default(uuid()) @db.Char(100)
+  code               String   @unique @db.VarChar(50)
+  initial_balance    Float    @db.Double
+  current_balance    Float    @db.Double
+  issue_date         DateTime @default(now())
+  expiration_date    DateTime?
+  status             String   @default("active") @db.VarChar(20) // active, used, expired
+  
+  // Optional reference to client who purchased or received it
+  client_id          String?  @db.Char(100)
+
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@map("giftcards")
+}
+
+// ==========================================
+// PHASE 5: SALES / PAYMENTS / TPV (Point of Sale)
+// ==========================================
+
+model Cart {
+  cart_id      String       @id @default(uuid()) @db.Char(100)
+  
+  user_id      String?      @db.Char(100)
+  user         User?        @relation(fields: [user_id], references: [user_id])
+  
+  status       String       @default("pending") @db.VarChar(20) // pending, completed, cancelled
+  subtotal     Float        @default(0) @db.Double
+  discount     Float        @default(0) @db.Double
+  total        Float        @default(0) @db.Double
+  
+  payment_method String?    @db.VarChar(50) // cash, card, transfer, mixed
+  notes        String?      @db.Text
+  
+  // Applied coupons/giftcards during checkout (stored as codes for history)
+  applied_coupon   String?  @db.VarChar(50)
+  applied_giftcard String?  @db.VarChar(50)
+
+  items        CartItem[]
+  debts        Debt[]
+  
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  cart_item_id String   @id @default(uuid()) @db.Char(100)
+  
+  cart_id      String   @db.Char(100)
+  cart         Cart     @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade)
+  
+  item_type    String   @db.VarChar(50) // 'product', 'service', 'pack', 'bonus', 'giftcard'
+  item_id      String   @db.Char(100) // The ID of the item being sold
+  name         String   @db.VarChar(150) // Snapshot of name at time of sale
+  
+  quantity     Int      @default(1)
+  unit_price   Float    @db.Double // Configured or overridden price
+  tax_rate     Float    @default(21.0) @db.Double
+  subtotal     Float    @db.Double // q * p
+  total        Float    @db.Double // subtotal + tax
+  
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("cart_items")
+}
+
+model Debt {
+  debt_id         String   @id @default(uuid()) @db.Char(100)
+  
+  user_id         String   @db.Char(100)
+  user            User     @relation(fields: [user_id], references: [user_id])
+  
+  cart_id         String?  @db.Char(100)
+  cart            Cart?    @relation(fields: [cart_id], references: [cart_id], onDelete: SetNull)
+  
+  amount          Float    @db.Double
+  remaining       Float    @db.Double
+  status          String   @default("pending") @db.VarChar(20) // pending, partial, paid
+  due_date        DateTime?
+  notes           String?  @db.Text
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("debts")
+}
+
+// ==========================================
+// PHASE 6: AGENDA / APPOINTMENTS (Bookings)
+// ==========================================
+
+model Booking {
+  booking_id    String    @id @default(uuid()) @db.Char(100)
+  
+  // The client who booked
+  client_id     String    @db.Char(100)
+  client        User      @relation("ClientBookings", fields: [client_id], references: [user_id])
+  
+  // The staff member assigned to the booking
+  staff_id      String?   @db.Char(100)
+  staff         User?     @relation("StaffBookings", fields: [staff_id], references: [user_id])
+  
+  // Service or Pack booked
+  item_type     String    @db.VarChar(50) // 'service', 'pack'
+  item_id       String    @db.Char(100)
+  
+  status        String    @default("pending") @db.VarChar(20) // pending, confirmed, completed, cancelled, no_show
+  
+  booking_date  DateTime
+  start_time    String    @db.VarChar(10) // HH:mm
+  end_time      String    @db.VarChar(10) // HH:mm
+  duration      Int       // stored in minutes for easy calculation
+  
+  notes         String?   @db.Text
+  
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@map("bookings")
 }

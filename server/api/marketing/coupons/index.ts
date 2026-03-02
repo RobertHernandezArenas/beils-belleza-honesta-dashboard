@@ -10,28 +10,28 @@ export default defineEventHandler(async event => {
 		const whereClause: any = {}
 
 		if (search) {
-			whereClause.OR = [
-				{ name: { contains: search } },
-				{ description: { contains: search } },
-				{ code: { contains: search } },
-			]
+			whereClause.OR = [{ code: { contains: search } }, { description: { contains: search } }]
 		}
 
-		const services = await prisma.service.findMany({
+		const coupons = await prisma.coupon.findMany({
 			where: whereClause,
 			orderBy: { created_at: 'desc' },
 		})
 
-		return services
+		return coupons
 	}
 
 	if (method === 'POST') {
 		const body = await readBody(event)
 
-		const service = await prisma.service.create({
-			data: body,
+		const coupon = await prisma.coupon.create({
+			data: {
+				...body,
+				valid_from: body.valid_from ? new Date(body.valid_from) : null,
+				valid_until: body.valid_until ? new Date(body.valid_until) : null,
+			},
 		})
 
-		return service
+		return coupon
 	}
 })

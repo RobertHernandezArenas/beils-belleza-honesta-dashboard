@@ -1,0 +1,53 @@
+
+
+export default defineEventHandler(async event => {
+	const method = event.node.req.method
+	const id = getRouterParam(event, 'id')
+
+	if (!id) {
+		throw createError({ statusCode: 400, statusMessage: 'Debt ID is required' })
+	}
+
+	if (method === 'GET') {
+		const debt = await prisma.debt.findUnique({
+			where: { debt_id: id },
+			include: { user: { select: { name: true, surname: true, email: true } }, cart: true },
+		})
+
+		if (!debt) {
+			throw createError({ statusCode: 404, statusMessage: 'Debt not found' })
+		}
+
+		return debt
+	}
+
+	if (method === 'PUT') {
+		const body = await readBody(event)
+
+		const payload: any = { status: body.status, notes: body.notes }
+
+		if (body.remaining !== undefined) {
+			payload.remaining = Number(body.remaining)
+			if (payload.remaining <= 0) {
+				payload.remaining = 0
+				payload.status = 'paid'
+			}
+		}
+
+		if (body.due_date) {
+			payload.due_date = new Date(body.due_date)
+		}
+
+		const updatedDebt = await prisma.debt.update({
+			where: { debt_id: id },
+			data: payload,
+		})
+
+		return updatedDebt
+	}
+
+	if (method === 'DELETE') {
+		await prisma.debt.delete({ where: { debt_id: id } })
+		return { success: true }
+	}
+})

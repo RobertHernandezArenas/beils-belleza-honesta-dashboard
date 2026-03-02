@@ -197,6 +197,11 @@
 		PieChart,
 		Scissors,
 		PackageSearch,
+		Ticket,
+		Repeat,
+		CreditCard,
+		Store,
+		Landmark,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -224,8 +229,13 @@
 		{ to: '/catalogo/etiquetas', label: 'Etiquetas', icon: Hash },
 		{ to: '/servicios', label: 'Servicios', icon: Scissors },
 		{ to: '/packs', label: 'Packs & Promociones', icon: PackageSearch },
+		{ to: '/marketing/cupones', label: 'Cupones', icon: Ticket },
+		{ to: '/marketing/bonos', label: 'Bonos', icon: Repeat },
+		{ to: '/marketing/giftcards', label: 'Tarjetas de Regalo', icon: CreditCard },
 		{ to: '/agenda', label: 'Agenda', icon: CalendarDays },
+		{ to: '/tpv', label: 'Terminal Venta', icon: Store },
 		{ to: '/ventas', label: 'Ventas', icon: ShoppingBag },
+		{ to: '/finanzas/deudas', label: 'Deudas y Cobros', icon: Landmark },
 		{ to: '/reportes', label: 'nav.reports', icon: PieChart },
 		{ to: '/configuracion', label: 'nav.settings', icon: SlidersHorizontal },
 	]
