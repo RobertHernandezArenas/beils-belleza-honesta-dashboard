@@ -73,6 +73,7 @@ El código se organiza para que la lógica de negocio no dependa de la UI:
     - `components/shared/`: Componentes de negocio reutilizables (Citas, Cards de cliente).
     - `components/features/`: Componentes específicos de un módulo (ej. `InventoryTable.vue`).
 - **Limpieza:** Los archivos `.vue` deben ser mayoritariamente declarativos. Mover la lógica pesada a `composables/`.
+- **Lógica:** Los archivos `.ts` deben ser mayoritariamente declarativos. Mover la lógica pesada a `stores/` o en su defecto a `composables/`.
 - **Naming:** PascalCase para archivos `.vue` e involucrar el nombre del módulo (ej. `ClientProfileHeader.vue`).
 - La estructura de un archivo `.vue` debe ser la siguiente:
     ```vue
@@ -93,7 +94,7 @@ El código se organiza para que la lógica de negocio no dependa de la UI:
 
 ## 🧪 Estrategia de Testing
 Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
-- **Unit Tests:** Para utilidades y lógica pura en `utils/`.
+- **Unit Tests:** (Usa Jest/vitest)Para utilidades y lógica pura en `utils/`.
 - **Composable Tests:** Probar la lógica de los stores de Pinia y composables personalizados.
 - **Component Tests:** Verificar que la UI reacciona correctamente a los cambios de estado.
 
@@ -103,6 +104,7 @@ Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
 - **Zod:** Todos los inputs del usuario deben validarse con un esquema de Zod antes de enviarse al servidor.
 - **Tipografía:** Usar `text-wrap: balance` en títulos y `tabular-nums` para columnas de precios o fechas.
 - **Loading:** Los estados de carga deben usar esqueletos (skeletons) consistentes con el diseño de DaisyUI.
+ - **Traducciones:** Usar `i18n` para traducir textos.
 
 ---
 
