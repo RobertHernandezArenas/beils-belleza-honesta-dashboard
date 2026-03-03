@@ -144,24 +144,29 @@
 		},
 		"activity": {
 			"title": "Recent Activity",
-			"viewAll": "View all history",
-			"timeAgo": "Ago",
-			"mock1": {
-				"title": "New route assigned to Madrid",
-				"desc": "Driver Juan Pérez has started route #TR-0892 to Madrid."
-			},
-			"mock2": {
-				"title": "Maintenance completed",
-				"desc": "The Volvo FH vehicle (License plate: 1234ABC) has finished its revision."
-			},
-			"mock3": {
-				"title": "Delay reported on route #TR-0889",
-				"desc": "30 mins delay due to heavy traffic on the A-4."
-			},
-			"mock4": {
-				"title": "Invoice paid",
-				"desc": "Client Logistics Corp has made the payment for €4,500."
-			}
+			"viewAll": "View all history"
+		}
+	},
+	"catalog": {
+		"brands": {
+			"title": "Registered Brands",
+			"subtitle": "Manage the brands associated with your products.",
+			"newBrand": "New Brand",
+			"emptyState": "No brands",
+			"emptyStateSub": "You haven't registered any brands for the catalog yet.",
+			"errorLoad": "Error loading brands.",
+			"edit": "Edit Brand",
+			"delete": "Delete"
+		},
+		"clients": {
+			"title": "Client Directory",
+			"subtitle": "Manage data, consents, and questionnaires of your clients.",
+			"newClient": "New Client",
+			"emptyState": "No clients",
+			"emptyStateSub": "You haven't registered any clients in the CRM yet.",
+			"errorLoad": "Error loading the client list.",
+			"edit": "Edit Profile",
+			"delete": "Delete Client"
 		}
 	}
 }

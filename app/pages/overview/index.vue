@@ -1,285 +1,420 @@
 <script lang="ts" setup>
-	import { useI18n } from 'vue-i18n'
+	import { computed } from 'vue'
+	import { useQuery } from '@tanstack/vue-query'
 	import {
 		CircleDollarSign,
-		TrendingUp,
-		TrendingDown,
-		Truck,
-		Route,
+		CalendarCheck,
 		Users,
-		Clock,
-		CheckCircle2,
 		AlertCircle,
-		MapPin,
+		ShoppingBag,
+		Clock,
+		ArrowRight,
+		PackageOpen,
 	} from 'lucide-vue-next'
 
-	const { t, locale } = useI18n()
+	definePageMeta({ layout: 'default' })
+	useHead({ title: 'Resumen | Beils Dashboard' })
+
 	const authStore = useAuthStore()
 
-	// Datos simulados para las tarjetas KPI
-	const kpis = computed(() => [
-		{
-			id: 1,
-			title: t('overview.kpis.revenue.title'),
-			value: new Intl.NumberFormat(locale.value, { style: 'currency', currency: 'USD' }).format(45231),
-			trend: '+12.5%',
-			trendColor: 'text-green-600',
-			icon: CircleDollarSign,
-			iconBg: 'bg-bg-muted',
-			iconColor: 'text-text-secondary',
-		},
-		{
-			id: 2,
-			title: t('overview.kpis.fleet.title'),
-			value: '42 / 50',
-			trend: `84% ${t('overview.kpis.fleet.trend')}`,
-			trendColor: 'text-text-muted',
-			icon: Truck,
-			iconBg: 'bg-bg-muted',
-			iconColor: 'text-text-secondary',
-		},
-		{
-			id: 3,
-			title: t('overview.kpis.routes.title'),
-			value: '128',
-			trend: `+5 ${t('overview.kpis.routes.trend')}`,
-			trendColor: 'text-green-600',
-			icon: Route,
-			iconBg: 'bg-bg-muted',
-			iconColor: 'text-text-secondary',
-		},
-		{
-			id: 4,
-			title: t('overview.kpis.drivers.title'),
-			value: '38',
-			trend: `-2 ${t('overview.kpis.drivers.trend')}`,
-			trendColor: 'text-red-600',
-			icon: Users,
-			iconBg: 'bg-bg-muted',
-			iconColor: 'text-text-secondary',
-		},
-	])
+	// Queries
+	const { data: carts, isPending: loadingCarts } = useQuery({
+		queryKey: ['carts-overview'],
+		queryFn: () => $fetch('/api/sales/carts'),
+	})
 
-	// Datos simulados para eventos recientes (Activity Feed)
-	const recentActivities = computed(() => [
-		{
-			id: 1,
-			title: t('overview.activity.mock1.title'),
-			description: t('overview.activity.mock1.desc'),
-			time: `${t('overview.activity.timeAgo')} 10 min`,
-			icon: MapPin,
-			color: 'text-text-secondary',
-			bg: 'bg-bg-muted',
-		},
-		{
-			id: 2,
-			title: t('overview.activity.mock2.title'),
-			description: t('overview.activity.mock2.desc'),
-			time: `${t('overview.activity.timeAgo')} 45 min`,
-			icon: CheckCircle2,
-			color: 'text-green-600',
-			bg: 'bg-green-100',
-		},
-		{
-			id: 3,
-			title: t('overview.activity.mock3.title'),
-			description: t('overview.activity.mock3.desc'),
-			time: `${t('overview.activity.timeAgo')} 2 h`,
-			icon: AlertCircle,
-			color: 'text-red-600',
-			bg: 'bg-red-100',
-		},
-		{
-			id: 4,
-			title: t('overview.activity.mock4.title'),
-			description: t('overview.activity.mock4.desc'),
-			time: `${t('overview.activity.timeAgo')} 3 h`,
-			icon: CircleDollarSign,
-			color: 'text-green-600',
-			bg: 'bg-green-100',
-		},
-	])
+	const { data: bookings, isPending: loadingBookings } = useQuery({
+		queryKey: ['bookings-overview'],
+		queryFn: () => $fetch('/api/agenda/bookings'),
+	})
+
+	const { data: clients, isPending: loadingClients } = useQuery({
+		queryKey: ['clients-overview'],
+		queryFn: () => $fetch('/api/users?role=CLIENT'),
+	})
+
+	const { data: debts, isPending: loadingDebts } = useQuery({
+		queryKey: ['debts-overview'],
+		queryFn: () => $fetch('/api/sales/debts'),
+	})
+
+	const { data: products, isPending: loadingProducts } = useQuery({
+		queryKey: ['products-overview'],
+		queryFn: () => $fetch('/api/catalog/products'),
+	})
+
+	const isPending = computed(
+		() =>
+			loadingCarts.value ||
+			loadingBookings.value ||
+			loadingClients.value ||
+			loadingDebts.value ||
+			loadingProducts.value,
+	)
+
+	// Fechas y formateos
+	const today = new Date()
+	const dateOptions: Intl.DateTimeFormatOptions = {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+	}
+	const formattedDate = new Intl.DateTimeFormat('es-ES', dateOptions).format(today)
+
+	const formatCurrency = (amount: number) => {
+		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
+	}
+
+	const formatTime = (dateString: string) => {
+		return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(
+			new Date(dateString),
+		)
+	}
+
+	const timeAgo = (dateString: string) => {
+		const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' })
+		const date = new Date(dateString)
+		const daysDifference = Math.round((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+
+		if (daysDifference === 0) {
+			const hoursDifference = Math.round((date.getTime() - new Date().getTime()) / (1000 * 60 * 60))
+			if (hoursDifference === 0) {
+				const minutesDifference = Math.round((date.getTime() - new Date().getTime()) / (1000 * 60))
+				return rtf.format(minutesDifference, 'minute')
+			}
+			return rtf.format(hoursDifference, 'hour')
+		}
+		return rtf.format(daysDifference, 'day')
+	}
+
+	const isToday = (dateString: string) => {
+		const d = new Date(dateString)
+		return (
+			d.getDate() === today.getDate() &&
+			d.getMonth() === today.getMonth() &&
+			d.getFullYear() === today.getFullYear()
+		)
+	}
+
+	// KPIs Calculations
+	const todayRevenue = computed(() => {
+		if (!carts.value) return 0
+		return carts.value
+			.filter((c: any) => c.status === 'completed' && isToday(c.created_at))
+			.reduce((sum: number, c: any) => sum + c.total, 0)
+	})
+
+	const todayBookingsCount = computed(() => {
+		if (!bookings.value) return 0
+		return bookings.value.filter((b: any) => isToday(b.booking_date)).length
+	})
+
+	const newClientsCount = computed(() => {
+		if (!clients.value) return 0
+		const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+		return clients.value.filter((c: any) => new Date(c.created_at) >= sevenDaysAgo).length
+	})
+
+	const totalPendingDebts = computed(() => {
+		if (!debts.value) return 0
+		return debts.value
+			.filter((d: any) => d.status === 'pending')
+			.reduce((sum: number, d: any) => sum + d.remaining_amount, 0)
+	})
+
+	// Lists
+	const upcomingBookings = computed(() => {
+		if (!bookings.value) return []
+		return bookings.value
+			.filter((b: any) => new Date(b.booking_date) >= today && b.status !== 'cancelled')
+			.sort((a: any, b: any) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
+			.slice(0, 5) // Top 5
+	})
+
+	const recentSales = computed(() => {
+		if (!carts.value) return []
+		return carts.value
+			.filter((c: any) => c.status === 'completed')
+			.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+			.slice(0, 5) // Top 5
+	})
+
+	const lowStockAlerts = computed(() => {
+		if (!products.value) return []
+		return products.value.filter((p: any) => p.stock <= (p.min_stock || 0))
+	})
 </script>
 
 <template>
-	<div class="flex h-full w-full flex-col gap-8 p-6 lg:p-10">
-		<!-- HEADER / HERO -->
-		<header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-			<div>
-				<h1 class="text-4xl font-medium tracking-tighter text-text-secondary md:text-5xl">
-					{{ $t('overview.hero.title') }},
-					<span class="font-light text-text-muted">
-						{{ authStore.user?.name || $t('overview.hero.guest') }}
-					</span>
-					!
+	<div
+		class="bg-bg-app text-text-secondary selection:bg-primary/20 min-h-screen w-full p-4 font-sans lg:p-10">
+		<div class="mx-auto max-w-[1400px]">
+			<!-- Header (Greeting) -->
+			<header class="mb-10">
+				<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
+					Hola
+					<span class="font-bold">{{ authStore.user?.name || 'Administrador' }}</span>
+					,
 				</h1>
-				<p class="mt-2 text-sm font-semibold tracking-wider text-text-light uppercase">
-					{{ $t('overview.hero.subtitle') }}
+				<p class="text-text-muted text-sm font-medium capitalize">
+					este es el resumen de tu centro para hoy {{ formattedDate }}.
 				</p>
+			</header>
+
+			<!-- Loader Global -->
+			<div v-if="isPending" class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+				<div v-for="i in 4" :key="i" class="bg-bg-card h-32 animate-pulse rounded-3xl shadow-sm"></div>
 			</div>
 
-			<!-- Quick Period Selector -->
-			<div
-				class="inline-flex items-center rounded-2xl border border-transparent bg-bg-card p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-				<button
-					class="rounded-xl px-4 py-2 text-xs font-bold text-text-light transition duration-300 hover:bg-bg-muted hover:text-text-secondary">
-					{{ $t('overview.period.yesterday') }}
-				</button>
-				<button
-					class="rounded-xl bg-[#404040] px-4 py-2 text-xs font-medium text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition duration-300">
-					{{ $t('overview.period.today') }}
-				</button>
-				<button
-					class="rounded-xl px-4 py-2 text-xs font-bold text-text-light transition duration-300 hover:bg-bg-muted hover:text-text-secondary">
-					{{ $t('overview.period.month') }}
-				</button>
-			</div>
-		</header>
-
-		<!-- KPI WIDGETS -->
-		<section class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-			<div
-				v-for="kpi in kpis"
-				:key="kpi.id"
-				class="group relative overflow-hidden rounded-[2rem] border border-transparent bg-bg-card p-6 shadow-xs transition-shadow hover:shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-				<!-- Fondo radial on Hover -->
-				<div
-					class="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-bg-muted opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"></div>
-
-				<div class="flex items-center justify-between">
-					<div :class="['flex h-12 w-12 items-center justify-center rounded-2xl', kpi.iconBg]">
-						<component :is="kpi.icon" :class="['h-6 w-6', kpi.iconColor]" />
-					</div>
+			<template v-else>
+				<!-- Top Row: KPI Cards -->
+				<section class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+					<!-- KPI: Ingresos -->
 					<div
-						class="flex items-center gap-1 rounded-full border border-border-subtle bg-bg-app px-3 py-1">
-						<TrendingUp
-							v-if="kpi.trend.includes('+') || kpi.trend.includes('Operativos')"
-							:class="['h-3 w-3', kpi.trendColor]" />
-						<TrendingDown v-if="kpi.trend.includes('-')" :class="['h-3 w-3', kpi.trendColor]" />
-						<span :class="['text-[10px] font-bold uppercase', kpi.trendColor]">{{ kpi.trend }}</span>
-					</div>
-				</div>
-
-				<div class="mt-6 flex flex-col gap-1">
-					<span class="text-xs font-bold tracking-widest text-text-light uppercase">
-						{{ kpi.title }}
-					</span>
-					<span class="text-3xl font-medium tracking-tight text-text-secondary">{{ kpi.value }}</span>
-				</div>
-			</div>
-		</section>
-
-		<!-- MAIN DASHBOARD CONTENT -->
-		<section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-			<!-- Gráfico Simulado (Izquierda - 2/3) -->
-			<div
-				class="flex flex-col overflow-hidden rounded-[2rem] border border-transparent bg-bg-card p-1 shadow-xs lg:col-span-2">
-				<div
-					class="relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] bg-bg-app p-6">
-					<div
-						class="pointer-events-none absolute inset-0 z-0 bg-linear-to-b from-bg-card to-transparent"></div>
-
-					<div class="relative z-10 mb-8 flex items-center justify-between">
-						<h2 class="text-xl font-medium tracking-wide text-text-secondary">
-							{{ $t('overview.charts.weekly') }}
-						</h2>
-						<button
-							class="btn btn-sm btn-ghost rounded-full border border-transparent bg-bg-card text-xs font-bold text-text-muted hover:border-border-strong hover:bg-bg-hover hover:text-text-secondary">
-							{{ $t('overview.charts.details') }}
-						</button>
+						class="bg-bg-card hover:bg-bg-muted/30 group rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors">
+						<div class="mb-4 flex items-center justify-between">
+							<h3 class="text-text-muted text-sm font-medium">Ingresos del Día</h3>
+							<div
+								class="bg-success/10 text-success flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								<CircleDollarSign class="h-5 w-5" />
+							</div>
+						</div>
+						<p class="text-text-primary text-3xl font-bold tracking-tight tabular-nums">
+							{{ formatCurrency(todayRevenue) }}
+						</p>
 					</div>
 
-					<!-- Bar Chart Mock -->
+					<!-- KPI: Citas -->
 					<div
-						class="relative z-10 mt-auto flex h-full min-h-[300px] items-end justify-between gap-2 md:gap-4">
-						<!-- Líneas de fondo -->
-						<div class="pointer-events-none absolute inset-0 flex flex-col justify-between">
-							<div class="h-0 w-full border-t border-transparent/60"></div>
-							<div class="h-0 w-full border-t border-transparent/60"></div>
-							<div class="h-0 w-full border-t border-transparent/60"></div>
-							<div class="h-0 w-full border-t border-transparent/60"></div>
+						class="bg-bg-card hover:bg-bg-muted/30 group rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors">
+						<div class="mb-4 flex items-center justify-between">
+							<h3 class="text-text-muted text-sm font-medium">Citas de Hoy</h3>
+							<div
+								class="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								<CalendarCheck class="h-5 w-5" />
+							</div>
+						</div>
+						<p class="text-text-primary text-3xl font-bold tracking-tight tabular-nums">
+							{{ todayBookingsCount }}
+						</p>
+					</div>
+
+					<!-- KPI: Clientes Nuevos -->
+					<div
+						class="bg-bg-card hover:bg-bg-muted/30 group rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors">
+						<div class="mb-4 flex items-center justify-between">
+							<h3 class="text-text-muted text-sm font-medium">Nuevos Clientes (7d)</h3>
+							<div
+								class="bg-info/10 text-info flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								<Users class="h-5 w-5" />
+							</div>
+						</div>
+						<p class="text-text-primary text-3xl font-bold tracking-tight tabular-nums">
+							{{ newClientsCount }}
+						</p>
+					</div>
+
+					<!-- KPI: Deudas Pendientes -->
+					<div
+						class="bg-bg-card hover:bg-bg-muted/30 group rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors">
+						<div class="mb-4 flex items-center justify-between">
+							<h3 class="text-text-muted text-sm font-medium">Deudas Pendientes</h3>
+							<div
+								class="bg-error/10 text-error flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								<AlertCircle class="h-5 w-5" />
+							</div>
+						</div>
+						<p class="text-text-primary text-3xl font-bold tracking-tight tabular-nums">
+							{{ formatCurrency(totalPendingDebts) }}
+						</p>
+					</div>
+				</section>
+
+				<!-- Banner de Alertas (Inventory) -->
+				<section v-if="lowStockAlerts.length > 0" class="animate-fade-in mb-10 w-full">
+					<div
+						class="bg-warning/5 border-warning/10 flex flex-col items-start justify-between gap-4 rounded-3xl border p-6 sm:flex-row sm:items-center">
+						<div class="flex items-center gap-4">
+							<div
+								class="bg-warning/20 text-warning-content flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+								<PackageOpen class="h-6 w-6" />
+							</div>
+							<div>
+								<h4 class="text-warning-content font-bold">Alerta de Inventario</h4>
+								<p class="text-warning-content/80 mt-0.5 text-sm">
+									Tienes {{ lowStockAlerts.length }} productos con stock bajo el mínimo.
+								</p>
+							</div>
+						</div>
+						<NuxtLink
+							to="/catalogo/productos"
+							class="btn btn-sm bg-warning text-warning-content rounded-full border-none font-bold transition-all hover:scale-105 hover:brightness-95">
+							Revisar Stock
+						</NuxtLink>
+					</div>
+				</section>
+
+				<!-- Main Layout: 2 Columns Asymmetrical -->
+				<div class="grid grid-cols-1 gap-8 lg:grid-cols-5">
+					<!-- Left Column (60%) : Próximas Citas -->
+					<section
+						class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:p-8 lg:col-span-3">
+						<div class="mb-6 flex items-center justify-between">
+							<h2 class="text-text-primary text-lg font-bold">Próximas Citas</h2>
+							<NuxtLink
+								to="/agenda"
+								class="text-primary hover:text-primary/80 flex items-center gap-1 text-sm font-bold transition-colors">
+								Ver Agenda
+								<ArrowRight class="h-4 w-4" />
+							</NuxtLink>
 						</div>
 
-						<!-- Barras -->
-						<div
-							v-for="(h, i) in [40, 65, 30, 85, 55, 95, 70]"
-							:key="i"
-							class="group relative flex h-full w-full flex-col items-center justify-end">
+						<div v-if="upcomingBookings.length > 0" class="flex flex-col gap-2">
 							<div
-								class="w-full rounded-t-xl bg-[#dbd2c6] transition-colors duration-500 ease-out group-hover:bg-[#404040]"
-								:style="{ height: `${h}%` }">
-								<!-- Tooltip on hover -->
+								v-for="booking in upcomingBookings"
+								:key="booking.booking_id"
+								class="group hover:bg-bg-muted/50 flex cursor-pointer items-center gap-4 rounded-2xl p-4 transition-colors">
+								<!-- Time -->
 								<div
-									class="absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg border border-transparent bg-bg-card px-3 py-1 opacity-0 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-opacity group-hover:opacity-100">
-									<span class="text-xs font-medium text-text-secondary">{{ h * 10 }}</span>
+									class="bg-bg-muted text-text-primary flex h-12 w-16 shrink-0 flex-col items-center justify-center rounded-xl tabular-nums">
+									<span class="text-sm font-bold">{{ formatTime(booking.booking_date) }}</span>
+								</div>
+
+								<!-- Info -->
+								<div class="flex flex-1 flex-col justify-center overflow-hidden">
+									<h4 class="text-text-primary truncate font-bold">
+										{{ booking.client?.name }} {{ booking.client?.surname }}
+									</h4>
+									<div
+										class="text-text-muted mt-0.5 flex items-center gap-2 truncate text-xs font-medium">
+										<Clock class="h-3.5 w-3.5 stroke-[2.5]" />
+										<span>{{ booking.duration }} min</span>
+										<span v-if="booking.service_item">• {{ booking.service_item.name }}</span>
+										<span v-else-if="booking.pack_item">• {{ booking.pack_item.name }}</span>
+									</div>
+								</div>
+
+								<!-- Status Badge -->
+								<div class="shrink-0">
+									<span
+										class="rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase"
+										:class="{
+											'bg-success/10 text-success': booking.status === 'confirmed',
+											'bg-warning/10 text-warning-content': booking.status === 'pending',
+											'bg-info/10 text-info': booking.status === 'completed',
+										}">
+										{{
+											booking.status === 'confirmed'
+												? 'Confirmada'
+												: booking.status === 'pending'
+													? 'Pendiente'
+													: booking.status
+										}}
+									</span>
 								</div>
 							</div>
-							<span class="mt-3 text-[10px] font-bold text-text-light uppercase">
-								{{
-									[
-										$t('overview.charts.days.mon'),
-										$t('overview.charts.days.tue'),
-										$t('overview.charts.days.wed'),
-										$t('overview.charts.days.thu'),
-										$t('overview.charts.days.fri'),
-										$t('overview.charts.days.sat'),
-										$t('overview.charts.days.sun'),
-									][i]
-								}}
-							</span>
 						</div>
-					</div>
-				</div>
-			</div>
 
-			<!-- Actividades Recientes (Derecha - 1/3) -->
-			<div
-				class="flex flex-col overflow-hidden rounded-[2rem] border border-transparent bg-bg-card p-1 shadow-xs">
-				<div
-					class="relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] bg-bg-app p-6">
-					<div class="relative z-10 mb-8 flex items-center justify-between">
-						<h2 class="text-xl font-medium tracking-wide text-text-secondary">
-							{{ $t('overview.activity.title') }}
-						</h2>
-					</div>
-
-					<div class="relative z-10 flex flex-col gap-6 overflow-y-auto">
-						<!-- Timeline items -->
-						<div v-for="(act, idx) in recentActivities" :key="act.id" class="relative pl-6">
-							<!-- Line connecting -->
-							<div
-								v-if="idx !== recentActivities.length - 1"
-								class="absolute top-6 bottom-[-24px] left-2.5 w-px bg-[#dbd2c6]"></div>
-
-							<!-- Bullet -->
-							<div
-								:class="[
-									'absolute top-1 left-0 flex h-5 w-5 items-center justify-center rounded-full',
-									act.bg,
-								]">
-								<component :is="act.icon" :class="['h-3 w-3', act.color]" />
+						<!-- Empty State -->
+						<div v-else class="flex flex-col items-center justify-center py-12 text-center">
+							<div class="bg-bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+								<CalendarCheck class="text-text-muted/50 h-8 w-8" />
 							</div>
+							<p class="text-text-primary text-lg font-bold">No hay citas próximas</p>
+							<p class="text-text-muted mt-1 text-sm">Tu agenda está libre por ahora.</p>
+						</div>
+					</section>
 
-							<div class="flex flex-col gap-1">
-								<span class="text-sm font-bold text-text-secondary">{{ act.title }}</span>
-								<p class="line-clamp-2 text-xs leading-relaxed text-text-muted">
-									{{ act.description }}
-								</p>
-								<span
-									class="mt-1 flex items-center gap-1 text-[10px] font-medium tracking-widest text-text-light uppercase">
-									<Clock class="h-3 w-3" />
-									{{ act.time }}
-								</span>
+					<!-- Right Column (40%) : Ventas Recientes -->
+					<section
+						class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:p-8 lg:col-span-2">
+						<div class="mb-6 flex items-center justify-between">
+							<h2 class="text-text-primary text-lg font-bold">Ventas Recientes</h2>
+							<NuxtLink
+								to="/finanzas/deudas"
+								class="text-primary hover:text-primary/80 flex items-center gap-1 text-sm font-bold transition-colors">
+								Historial
+								<ArrowRight class="h-4 w-4" />
+							</NuxtLink>
+						</div>
+
+						<div
+							v-if="recentSales.length > 0"
+							class="custom-scrollbar divide-bg-muted/50 flex max-h-[400px] flex-col divide-y overflow-y-auto pr-2">
+							<div
+								v-for="sale in recentSales"
+								:key="sale.cart_id"
+								class="group flex items-center justify-between py-4">
+								<div class="flex items-center gap-4">
+									<div
+										class="bg-primary/5 text-primary group-hover:bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors">
+										<ShoppingBag class="h-4 w-4" />
+									</div>
+									<div class="flex flex-col">
+										<p class="text-text-primary text-sm font-bold">
+											{{
+												sale.user?.name
+													? `${sale.user.name} ${sale.user.surname || ''}`
+													: 'Cliente Mostrador'
+											}}
+										</p>
+										<span class="text-text-muted mt-0.5 text-xs font-medium">
+											{{ timeAgo(sale.created_at) }}
+										</span>
+									</div>
+								</div>
+
+								<div class="flex flex-col text-right">
+									<span class="text-text-primary font-bold tabular-nums">
+										{{ formatCurrency(sale.total) }}
+									</span>
+									<span
+										class="text-text-muted mt-1 text-[0.65rem] font-bold tracking-wider uppercase">
+										{{ sale.payment_method }}
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<button
-						class="mt-6 w-full rounded-xl border border-transparent bg-bg-card py-3 text-xs font-bold text-text-muted transition-colors hover:bg-bg-muted hover:text-text-secondary">
-						{{ $t('overview.activity.viewAll') }}
-					</button>
+						<!-- Empty State -->
+						<div v-else class="flex flex-col items-center justify-center py-12 text-center">
+							<div class="bg-bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+								<ShoppingBag class="text-text-muted/50 h-8 w-8" />
+							</div>
+							<p class="text-text-primary text-lg font-bold">Aún no hay ventas</p>
+							<p class="text-text-muted mt-1 text-sm">Procesa tu primera venta en el TPV.</p>
+						</div>
+					</section>
 				</div>
-			</div>
-		</section>
+			</template>
+		</div>
 	</div>
 </template>
+
+<style scoped>
+	.animate-fade-in {
+		animation: fadeIn 0.4s ease-out forwards;
+	}
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 4px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background-color: var(--color-bg-muted, #f2f0eb);
+		border-radius: 20px;
+	}
+</style>

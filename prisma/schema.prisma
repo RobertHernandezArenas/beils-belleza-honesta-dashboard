@@ -48,11 +48,66 @@ model User {
   
   client_bookings          Booking[]            @relation("ClientBookings")
   staff_bookings           Booking[]            @relation("StaffBookings")
+  
+  consents                 Consent[]
+  questionnaires           Questionnaire[]
+  revokes                  Revoke[]
 
   created_at               DateTime             @default(now())
   updated_at               DateTime             @updatedAt
 
   @@map("users")
+}
+
+// ==========================================
+// PHASE 1: CLIENTS (CRM)
+// ==========================================
+
+model Consent {
+  consent_id      String   @id @default(uuid()) @db.Char(100)
+  
+  user_id         String   @db.Char(100)
+  user            User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  
+  document_url    String   @db.VarChar(255)
+  signed_date     DateTime @default(now())
+  status          String   @default("active") @db.VarChar(20)
+  notes           String?  @db.Text
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("consents")
+}
+
+model Questionnaire {
+  questionnaire_id String   @id @default(uuid()) @db.Char(100)
+  
+  user_id          String   @db.Char(100)
+  user             User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  
+  title            String   @db.VarChar(150)
+  data             Json     // Store arbitrary form data schema
+  
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("questionnaires")
+}
+
+model Revoke {
+  revoke_id       String   @id @default(uuid()) @db.Char(100)
+  
+  user_id         String   @db.Char(100)
+  user            User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  
+  reason          String?  @db.Text
+  date_revoked    DateTime @default(now())
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("revokes")
 }
 
 // ==========================================

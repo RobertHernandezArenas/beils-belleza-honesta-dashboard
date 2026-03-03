@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { ref, reactive } from 'vue'
+	import { ref, reactive, onMounted } from 'vue'
 	import { z } from 'zod'
 	import { useMutation } from '@tanstack/vue-query'
 	import { useRouter } from 'vue-router'
@@ -18,6 +18,7 @@
 	const form = reactive({
 		email: '',
 		password: '',
+		rememberMe: false,
 	})
 	// reactive errors object...
 	const errors = reactive({
@@ -38,6 +39,14 @@
 		password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'), // TODO: key for validation
 	})
 
+	onMounted(() => {
+		const savedEmail = localStorage.getItem('beils_remember_email')
+		if (savedEmail) {
+			form.email = savedEmail
+			form.rememberMe = true
+		}
+	})
+
 	// API Login Function
 	const loginFn = async (credentials: typeof form) => {
 		try {
@@ -56,6 +65,11 @@
 	const { mutate, isPending, isError, error, reset } = useMutation({
 		mutationFn: loginFn,
 		onSuccess: data => {
+			if (form.rememberMe) {
+				localStorage.setItem('beils_remember_email', form.email)
+			} else {
+				localStorage.removeItem('beils_remember_email')
+			}
 			authStore.setAuth(data.user, data.token)
 			router.push('/overview') // Redirigir al dashboard
 		},
@@ -204,11 +218,27 @@
 								{{ errors.password }}
 							</span>
 						</div>
+
+						<!-- Recordar y Recuperar -->
+						<div class="flex items-center justify-between">
+							<label class="label cursor-pointer justify-start gap-3 p-0">
+								<input
+									type="checkbox"
+									v-model="form.rememberMe"
+									class="checkbox checkbox-sm checkbox-primary border-border-default hover:border-primary rounded-lg transition-colors" />
+								<span class="label-text text-text-muted text-sm font-medium">Recordar usuario</span>
+							</label>
+							<a
+								href="#"
+								class="text-primary text-xs font-bold transition-opacity hover:opacity-80 sm:text-sm">
+								¿Olvidaste tu clave?
+							</a>
+						</div>
 					</div>
 
 					<div class="form-control mt-4">
 						<button
-							class="group text-bg-card relative flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl bg-text-secondary text-lg font-medium tracking-wide uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,color,background-color,box-shadow] hover:bg-text-secondary/80 hover:shadow-lg disabled:opacity-70 disabled:hover:scale-100"
+							class="group text-bg-card bg-text-secondary hover:bg-text-secondary/80 relative flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl text-lg font-medium tracking-wide uppercase shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,color,background-color,box-shadow] hover:shadow-lg disabled:opacity-70 disabled:hover:scale-100"
 							type="submit"
 							:disabled="isPending">
 							<span class="relative z-10 flex items-center justify-center gap-2">
@@ -216,7 +246,7 @@
 							</span>
 							<!-- Efecto de brillo en hover -->
 							<div
-								class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-bg-card/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+								class="via-bg-card/20 absolute inset-0 -translate-x-full bg-linear-to-r from-transparent to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
 						</button>
 					</div>
 				</form>

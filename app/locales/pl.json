@@ -144,24 +144,29 @@
 		},
 		"activity": {
 			"title": "Ostatnia Aktywność",
-			"viewAll": "Zobacz całą historię",
-			"timeAgo": "Temu",
-			"mock1": {
-				"title": "Nowa trasa przydzielona do Madrytu",
-				"desc": "Kierowca Juan Pérez rozpoczął trasę #TR-0892 do Madrytu."
-			},
-			"mock2": {
-				"title": "Konserwacja zakończona",
-				"desc": "Pojazd Volvo FH (Rejestracja: 1234ABC) zakończył przegląd."
-			},
-			"mock3": {
-				"title": "Zgłoszono opóźnienie na trasie #TR-0889",
-				"desc": "30 min opóźnienia z powodu dużego ruchu na A-4."
-			},
-			"mock4": {
-				"title": "Faktura opłacona",
-				"desc": "Wypłacono €4,500 przez klienta Logistics Corp."
-			}
+			"viewAll": "Zobacz całą historię"
+		}
+	},
+	"catalog": {
+		"brands": {
+			"title": "Zarejestrowane Marki",
+			"subtitle": "Zarządzaj markami powiązanymi z Twoimi produktami.",
+			"newBrand": "Nowa Marka",
+			"emptyState": "Brak marek",
+			"emptyStateSub": "Nie zarejestrowałeś jeszcze żadnych marek do katalogu.",
+			"errorLoad": "Błąd podczas ładowania marek.",
+			"edit": "Edytuj Markę",
+			"delete": "Usuń"
+		},
+		"clients": {
+			"title": "Katalog Klientów",
+			"subtitle": "Zarządzaj danymi, zgodami i ankietami swoich klientów.",
+			"newClient": "Nowy Klient",
+			"emptyState": "Brak klientów",
+			"emptyStateSub": "Nie zarejestrowałeś jeszcze żadnych klientów w CRM.",
+			"errorLoad": "Błąd podczas ładowania listy klientów.",
+			"edit": "Edytuj Profil",
+			"delete": "Usuń Klienta"
 		}
 	}
 }

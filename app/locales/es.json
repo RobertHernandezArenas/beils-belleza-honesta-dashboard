@@ -144,24 +144,29 @@
 		},
 		"activity": {
 			"title": "Actividad Reciente",
-			"viewAll": "Ver todo el historial",
-			"timeAgo": "Hace",
-			"mock1": {
-				"title": "Nueva ruta asignada a Madrid",
-				"desc": "El conductor Juan Pérez ha iniciado la ruta #TR-0892 hacia Madrid."
-			},
-			"mock2": {
-				"title": "Mantenimiento completado",
-				"desc": "El vehículo Volvo FH (Matrícula: 1234ABC) ha finalizado su revisión."
-			},
-			"mock3": {
-				"title": "Retraso reportado en ruta #TR-0889",
-				"desc": "Retraso de 30 mins debido a tráfico denso en la A-4."
-			},
-			"mock4": {
-				"title": "Factura pagada",
-				"desc": "El cliente Logistics Corp ha realizado el pago por €4,500."
-			}
+			"viewAll": "Ver todo el historial"
+		}
+	},
+	"catalog": {
+		"brands": {
+			"title": "Marcas Registradas",
+			"subtitle": "Gestiona las marcas asociadas a tus productos.",
+			"newBrand": "Nueva Marca",
+			"emptyState": "Sin marcas",
+			"emptyStateSub": "No has registrado ninguna marca para el catálogo aún.",
+			"errorLoad": "Error al cargar las marcas.",
+			"edit": "Editar Marca",
+			"delete": "Eliminar"
+		},
+		"clients": {
+			"title": "Directorio de Clientes",
+			"subtitle": "Gestiona datos, consentimientos y cuestionarios de tus clientes.",
+			"newClient": "Nuevo Cliente",
+			"emptyState": "Sin clientes",
+			"emptyStateSub": "Aún no has registrado a ningún cliente en el CRM.",
+			"errorLoad": "Error al cargar la lista de clientes.",
+			"edit": "Editar Perfil",
+			"delete": "Borrar Cliente"
 		}
 	}
 }

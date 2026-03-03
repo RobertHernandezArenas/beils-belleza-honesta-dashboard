@@ -22,7 +22,7 @@ export default defineEventHandler(async event => {
 			role: true,
 			status: true,
 			document_type: true,
-			document_id: true,
+			document_number: true,
 			phone: true,
 			created_at: true,
 		},
