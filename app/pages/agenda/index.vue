@@ -287,9 +287,9 @@
 
 						<!-- Card -->
 						<div
-							class="relative flex-1 overflow-hidden rounded-2xl border p-4 shadow-sm transition-all hover:shadow-md"
+							class="relative flex-1 rounded-2xl border p-4 shadow-sm transition-all hover:shadow-md"
 							:class="getStatusColor(booking.status)">
-							<div class="relative z-10 mb-2 flex items-start justify-between">
+							<div class="relative z-50 mb-2 flex items-start justify-between">
 								<div class="flex items-center gap-2">
 									<div
 										class="bg-bg-card/50 rounded-md px-2 py-0.5 text-[10px] font-black tracking-wider uppercase backdrop-blur-sm">
@@ -304,15 +304,15 @@
 								</div>
 
 								<!-- Dropdown -->
-								<div class="dropdown dropdown-end">
+								<div class="dropdown dropdown-end relative z-200">
 									<button
 										tabindex="0"
-										class="btn btn-ghost btn-sm btn-circle bg-bg-card/30 -mr-2 opacity-50 hover:opacity-100">
+										class="btn btn-ghost btn-sm btn-circle bg-bg-card/30 hover:bg-bg-card -mr-2 opacity-50 hover:opacity-100">
 										<MoreVertical class="h-4 w-4" />
 									</button>
 									<ul
 										tabindex="0"
-										class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[100] mt-1 w-48 rounded-xl border p-2 shadow-xl">
+										class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-48 rounded-xl border p-2 shadow-xl">
 										<li
 											class="menu-title text-text-muted px-2 py-1 text-[10px] font-bold tracking-wider uppercase">
 											Estado
