@@ -8,15 +8,43 @@ export default defineEventHandler(async event => {
 	}
 
 	const body = await readBody(event)
-	const { name, description } = body
+	const { name, description, subcategories } = body
 
 	try {
+		// First get existing subcategories to know what to create
+		const existingCategory = await prisma.category.findUnique({
+			where: { category_id: id },
+			include: { subcategories: true },
+		})
+
+		const existingSubNames = existingCategory?.subcategories.map(s => s.name) || []
+
+		const incomingSubNames = Array.isArray(subcategories) ? subcategories : []
+		const newSubNames = incomingSubNames.filter((sub: string) => !existingSubNames.includes(sub))
+		const subsToDelete = existingSubNames.filter((sub: string) => !incomingSubNames.includes(sub))
+
+		const subcategoriesUpdate: any = {}
+		if (newSubNames.length > 0) {
+			subcategoriesUpdate.create = newSubNames.map((n: string) => ({ name: n }))
+		}
+		if (subsToDelete.length > 0) {
+			subcategoriesUpdate.deleteMany = {
+				name: { in: subsToDelete },
+			}
+		}
+
+		const dataToUpdate: any = {
+			name,
+			description,
+		}
+
+		if (Object.keys(subcategoriesUpdate).length > 0) {
+			dataToUpdate.subcategories = subcategoriesUpdate
+		}
+
 		const updatedCategory = await prisma.category.update({
 			where: { category_id: id },
-			data: {
-				name,
-				description,
-			},
+			data: dataToUpdate,
 		})
 		return updatedCategory
 	} catch (error: any) {

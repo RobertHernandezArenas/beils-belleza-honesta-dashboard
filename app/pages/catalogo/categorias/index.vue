@@ -13,7 +13,15 @@
 		data: categories,
 		isPending,
 		error,
-	} = useQuery<{ category_id: string; name: string; description: string | null }[]>({
+	} = useQuery<
+		{
+			category_id: string
+			name: string
+			description: string | null
+			subcategories: { subcategory_id: string; name: string }[]
+			_count: { subcategories: number }
+		}[]
+	>({
 		queryKey: ['categories-list'],
 		queryFn: () => $fetch('/api/catalog/categories'),
 	})
@@ -113,10 +121,33 @@
 							<h3 class="text-text-primary text-lg font-bold">{{ category.name }}</h3>
 							<p
 								v-if="category.description"
-								class="text-text-muted max-w-[120px] truncate text-xs font-medium"
+								class="text-text-muted mt-0.5 line-clamp-2 max-w-[200px] text-xs font-medium"
 								:title="category.description">
 								{{ category.description }}
 							</p>
+
+							<!-- Subcategories Chips Preview -->
+							<div
+								class="mt-3 flex flex-wrap items-center gap-2"
+								v-if="category.subcategories?.length">
+								<span
+									v-for="sub in category.subcategories"
+									:key="sub.subcategory_id"
+									class="bg-primary/5 text-primary border-primary/10 rounded-lg border px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase shadow-xs">
+									{{ sub.name }}
+								</span>
+								<span
+									v-if="category._count.subcategories > category.subcategories.length"
+									class="bg-bg-muted text-text-muted border-border-default rounded-lg border px-2.5 py-1 text-[10px] font-bold tracking-wide shadow-xs">
+									+{{ category._count.subcategories - category.subcategories.length }} más
+								</span>
+							</div>
+							<div v-else class="mt-3">
+								<span
+									class="bg-bg-muted text-text-muted/60 border-border-default rounded-lg border border-dashed px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase">
+									Sin subcategorías
+								</span>
+							</div>
 						</div>
 					</div>
 

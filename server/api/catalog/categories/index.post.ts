@@ -3,7 +3,7 @@ import { prisma } from '../../../utils/prisma'
 
 export default defineEventHandler(async event => {
 	const body = await readBody(event)
-	const { name, description } = body
+	const { name, description, subcategories } = body
 
 	if (!name) {
 		throw createError({
@@ -17,6 +17,11 @@ export default defineEventHandler(async event => {
 			data: {
 				name,
 				description,
+				subcategories: subcategories?.length
+					? {
+							create: subcategories.map((subName: string) => ({ name: subName })),
+						}
+					: undefined,
 			},
 		})
 		return category
