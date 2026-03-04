@@ -13,13 +13,14 @@
 		Package as PackageIcon,
 		Scissors,
 		PackageSearch,
+		Ticket,
 	} from 'lucide-vue-next'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Terminal de Venta (TPV)' })
 
 	// Tab control
-	const activeTab = ref<'products' | 'services' | 'packs'>('services')
+	const activeTab = ref<'products' | 'services' | 'packs' | 'bonuses'>('services')
 	const searchQuery = ref('')
 	const clientSearch = ref('')
 
@@ -35,30 +36,35 @@
 	const showToast = ref(false)
 
 	// Fetch Data
-	const { data: clients } = useQuery({
+	const { data: clients } = useQuery<any[]>({
 		queryKey: ['clients-tpv'],
 		queryFn: () => $fetch('/api/clients'),
 	})
 
-	const { data: products } = useQuery({
+	const { data: products } = useQuery<any[]>({
 		queryKey: ['products-tpv'],
 		queryFn: () => $fetch('/api/catalog/products'),
 	})
 
-	const { data: services } = useQuery({
+	const { data: services } = useQuery<any[]>({
 		queryKey: ['services-tpv'],
 		queryFn: () => $fetch('/api/services'),
 	})
 
-	const { data: packs } = useQuery({
+	const { data: packs } = useQuery<any[]>({
 		queryKey: ['packs-tpv'],
 		queryFn: () => $fetch('/api/catalog/packs'),
+	})
+
+	const { data: bonuses } = useQuery<any[]>({
+		queryKey: ['bonuses-tpv'],
+		queryFn: () => $fetch('/api/marketing/bonuses'),
 	})
 
 	// Process checkout mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
 		mutationFn: async (payload: any) => {
-			const res = await $fetch('/api/sales/carts', {
+			const res: any = await $fetch('/api/sales/carts', {
 				method: 'POST',
 				body: payload,
 			})
@@ -105,6 +111,9 @@
 				(p: any) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
 			)
 		}
+		if (activeTab.value === 'bonuses' && bonuses.value) {
+			return bonuses.value.filter((b: any) => b.name.toLowerCase().includes(q))
+		}
 		return []
 	})
 
@@ -125,14 +134,14 @@
 	// Cart Operations
 	const addToCart = (item: any, type: string) => {
 		const existing = cartItems.value.find(
-			i => i.item_id === (item.product_id || item.service_id || item.pack_id),
+			i => i.item_id === (item.product_id || item.service_id || item.pack_id || item.bonus_id),
 		)
 
 		if (existing) {
 			existing.quantity++
 		} else {
 			cartItems.value.push({
-				item_id: item.product_id || item.service_id || item.pack_id,
+				item_id: item.product_id || item.service_id || item.pack_id || item.bonus_id,
 				item_type: type,
 				name: item.name,
 				unit_price: item.price,
@@ -201,14 +210,14 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary flex h-screen w-full flex-col overflow-hidden lg:flex-row">
+	<div class="bg-bg-app text-text-secondary flex h-dvh w-full flex-col overflow-hidden md:flex-row">
 		<!-- LEFT SIDE: Catalog & Browser -->
-		<div class="bg-bg-app m-4 flex flex-1 flex-col overflow-hidden pr-0 lg:m-6 lg:pr-4">
+		<div class="flex flex-1 flex-col overflow-hidden px-4 pt-4 md:px-6 md:pt-6">
 			<!-- Generic Header -->
 			<div class="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
 				<div class="flex w-full items-center gap-3">
 					<div
-						class="bg-primary/10 text-primary flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl">
+						class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl">
 						<ShoppingBag class="h-6 w-6" />
 					</div>
 					<div class="flex-1">
@@ -219,62 +228,72 @@
 			</div>
 
 			<!-- TPV Search & Tabs -->
-			<div
-				class="bg-bg-card border-border-default mb-4 flex flex-col rounded-3xl border p-2 shadow-sm sm:flex-row">
-				<div class="tabs tabs-boxed flex flex-1 flex-wrap gap-1 bg-transparent p-0">
+			<div class="mb-5 flex w-full flex-col gap-3 lg:flex-row lg:items-center">
+				<div
+					class="bg-bg-card border-border-default flex w-full flex-1 flex-nowrap items-center gap-1.5 overflow-x-auto rounded-4xl border p-1.5 shadow-sm"
+					style="scrollbar-width: none; -ms-overflow-style: none">
 					<a
-						class="tab transition-200 h-10 flex-1 rounded-xl px-4 text-xs font-bold tracking-wider uppercase transition-colors"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'services'
-								? 'bg-text-primary text-bg-card'
-								: 'text-text-muted hover:bg-bg-muted'
+								? 'bg-text-primary text-bg-card scale-100 shadow-md'
+								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'services'">
-						<Scissors class="mr-2 hidden h-4 w-4 sm:block" />
+						<Scissors class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
 						Servicios
 					</a>
 					<a
-						class="tab transition-200 h-10 flex-1 rounded-xl px-4 text-xs font-bold tracking-wider uppercase transition-colors"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'products'
-								? 'bg-text-primary text-bg-card'
-								: 'text-text-muted hover:bg-bg-muted'
+								? 'bg-text-primary text-bg-card scale-100 shadow-md'
+								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'products'">
-						<PackageIcon class="mr-2 hidden h-4 w-4 sm:block" />
+						<PackageIcon class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
 						Productos
 					</a>
 					<a
-						class="tab transition-200 h-10 flex-1 rounded-xl px-4 text-xs font-bold tracking-wider uppercase transition-colors"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'packs'
-								? 'bg-text-primary text-bg-card'
-								: 'text-text-muted hover:bg-bg-muted'
+								? 'bg-text-primary text-bg-card scale-100 shadow-md'
+								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'packs'">
-						<PackageSearch class="mr-2 hidden h-4 w-4 sm:block" />
+						<PackageSearch class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
 						Packs
 					</a>
+					<a
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						:class="
+							activeTab === 'bonuses'
+								? 'bg-text-primary text-bg-card scale-100 shadow-md'
+								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
+						"
+						@click="activeTab = 'bonuses'">
+						<Ticket class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
+						Bonos
+					</a>
 				</div>
-				<div class="divider divider-horizontal opactiy-50 mx-1 my-1 hidden sm:flex"></div>
-				<div class="relative mt-2 w-full flex-shrink-0 sm:mt-0 sm:w-64">
-					<Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+				<div class="relative w-full shrink-0 lg:w-64 xl:w-80">
+					<Search class="text-text-muted absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2" />
 					<input
 						v-model="searchQuery"
 						type="text"
-						placeholder="Buscar ítem..."
-						class="input bg-bg-muted focus:bg-bg-card focus:ring-primary/20 h-10 w-full rounded-xl border-none pl-9 text-sm font-medium shadow-inner focus:ring-1" />
+						placeholder="Buscar en catálogo..."
+						class="input bg-bg-card focus:border-primary/50 focus:ring-primary/20 h-14 w-full rounded-4xl border-transparent pr-5 pl-14 text-sm font-medium shadow-sm transition-all focus:ring-4" />
 				</div>
 			</div>
 
 			<!-- Catalog Grid container (scrollable) -->
-			<div class="custom-scrollbar -mr-4 flex-1 overflow-y-auto pr-4">
-				<div
-					class="grid grid-cols-2 gap-4 pb-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
+			<div class="custom-scrollbar -mx-2 flex-1 overflow-y-auto px-2 pb-6">
+				<div class="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 					<button
 						v-for="item in filteredCatalog"
-						:key="item.product_id || item.service_id || item.pack_id"
-						@click="addToCart(item, activeTab.slice(0, -1))"
+						:key="item.product_id || item.service_id || item.pack_id || item.bonus_id"
+						@click="addToCart(item, activeTab === 'bonuses' ? 'bonus' : activeTab.slice(0, -1))"
 						class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-36 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-md active:scale-95">
 						<div class="z-10 flex flex-col">
 							<span
@@ -301,7 +320,8 @@
 							class="absolute -right-4 -bottom-4 opacity-5 transition-opacity group-hover:opacity-10">
 							<PackageIcon v-if="activeTab === 'products'" class="h-24 w-24" />
 							<Scissors v-else-if="activeTab === 'services'" class="h-24 w-24" />
-							<PackageSearch v-else class="h-24 w-24" />
+							<PackageSearch v-else-if="activeTab === 'packs'" class="h-24 w-24" />
+							<Ticket v-else class="h-24 w-24" />
 						</div>
 					</button>
 
@@ -319,7 +339,7 @@
 
 		<!-- RIGHT SIDE: Cart & Checkout (Fixed width usually on TPVs) -->
 		<div
-			class="bg-bg-card border-border-default z-20 flex h-full w-full flex-col border-l shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] lg:w-[420px] xl:w-[480px]">
+			class="bg-bg-card border-border-default z-20 flex h-[45dvh] w-full shrink-0 flex-col border-t shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] md:h-full md:w-[340px] md:border-t-0 md:border-l lg:w-[380px] xl:w-[440px]">
 			<!-- Client Selector Header -->
 			<div class="bg-bg-muted/30 border-border-default border-b p-5 pt-6 backdrop-blur-md">
 				<div class="relative">
@@ -529,7 +549,7 @@
 		</div>
 
 		<!-- Toast -->
-		<div v-if="showToast" class="toast toast-end toast-bottom z-[100]">
+		<div v-if="showToast" class="toast toast-end toast-bottom z-100">
 			<div
 				:class="[
 					'alert rounded-2xl border-none text-white shadow-lg',
