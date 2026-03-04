@@ -8,7 +8,7 @@
 
 	const queryClient = useQueryClient()
 	const searchQuery = ref('')
-	const filterStatus = ref('')
+	const filterStatus = ref('pending')
 	const toastMessage = ref('')
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
@@ -22,7 +22,7 @@
 		return params
 	})
 
-	const { data: debts, isPending } = useQuery({
+	const { data: debts, isPending } = useQuery<any[]>({
 		queryKey: ['debts', queryParams],
 		queryFn: () => $fetch('/api/sales/debts', { query: queryParams.value }),
 	})
@@ -151,8 +151,8 @@
 			<!-- List -->
 			<div
 				v-else-if="filteredDebts && filteredDebts.length > 0"
-				class="bg-bg-card border-border-default overflow-hidden rounded-3xl border shadow-sm">
-				<div class="overflow-x-auto">
+				class="bg-bg-card border-border-default rounded-3xl border shadow-sm">
+				<div class="w-full">
 					<table class="table w-full">
 						<thead>
 							<tr
@@ -173,9 +173,10 @@
 								class="border-border-default hover:bg-bg-muted/30 group transition-colors">
 								<td class="py-4 pl-6">
 									<div class="flex items-center gap-3">
-										<div class="avatar placeholder">
-											<div class="bg-neutral text-neutral-content w-10 rounded-full">
-												<span class="text-xs">
+										<div class="avatar placeholder flex shrink-0 items-center justify-center">
+											<div
+												class="bg-neutral text-neutral-content flex w-10 items-center justify-center rounded-full">
+												<span class="text-xs uppercase">
 													{{ debt.user?.name?.charAt(0) }}{{ debt.user?.surname?.charAt(0) }}
 												</span>
 											</div>
