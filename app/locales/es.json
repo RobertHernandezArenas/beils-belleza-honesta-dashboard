@@ -34,7 +34,8 @@
 		"routes": "Rutas",
 		"settings": "Configuración",
 		"menu": "Menú Principal",
-		"logout": "Cerrar Sesión"
+		"logout": "Cerrar Sesión",
+		"reports": "Reportes"
 	},
 	"users": {
 		"header": {
@@ -169,5 +170,35 @@
 			"edit": "Editar Perfil",
 			"delete": "Borrar Cliente"
 		}
-	}
+	},
+	"Productos": "Productos",
+	"Categorías": "Categorías",
+	"Subcategorías": "Subcategorías",
+	"Marcas": "Marcas",
+	"Etiquetas": "Etiquetas",
+	"Packs & Promociones": "Packs & Promociones",
+	"Bonos": "Bonos",
+	"Cupones": "Cupones",
+	"Tarjetas de Regalo": "Tarjetas de Regalo",
+	"Servicios": "Servicios",
+	"Ventas": "Ventas",
+	"Deudas y Cobros": "Deudas y Cobros",
+	"Agenda": "Agenda",
+	"Terminal Venta": "Terminal Venta",
+	"TPV / Punto de Venta": "TPV / Punto de Venta",
+	"Packs": "Packs",
+	"Buscar en catálogo...": "Buscar en catálogo...",
+	"No se encontraron resultados en esta categoría": "No se encontraron resultados en esta categoría",
+	"Buscar cliente por teléfono o nombre...": "Buscar cliente por teléfono o nombre...",
+	"Cliente Seleccionado": "Cliente Seleccionado",
+	"El carrito está vacío": "El carrito está vacío",
+	"Añade productos o servicios desde el catálogo de la izquierda.": "Añade productos o servicios desde el catálogo de la izquierda.",
+	"Subtotal": "Subtotal",
+	"Descuento / Cupón": "Descuento / Cupón",
+	"Total a Pagar": "Total a Pagar",
+	"Tarjeta": "Tarjeta",
+	"Efectivo": "Efectivo",
+	"Mixto": "Mixto",
+	"Deuda": "Deuda",
+	"Procesar Cobro": "Procesar Cobro"
 }

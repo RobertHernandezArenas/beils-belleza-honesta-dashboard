@@ -34,7 +34,8 @@
 		"routes": "Routes",
 		"settings": "Settings",
 		"menu": "Main Menu",
-		"logout": "Logout"
+		"logout": "Logout",
+		"reports": "Reports"
 	},
 	"users": {
 		"header": {
@@ -169,5 +170,35 @@
 			"edit": "Edit Profile",
 			"delete": "Delete Client"
 		}
-	}
+	},
+	"Productos": "Products",
+	"Categorías": "Categories",
+	"Subcategorías": "Subcategories",
+	"Marcas": "Brands",
+	"Etiquetas": "Tags",
+	"Packs & Promociones": "Packs & Promos",
+	"Bonos": "Bonuses",
+	"Cupones": "Coupons",
+	"Tarjetas de Regalo": "Gift Cards",
+	"Servicios": "Services",
+	"Ventas": "Sales",
+	"Deudas y Cobros": "Debts & Collections",
+	"Agenda": "Agenda",
+	"Terminal Venta": "POS Terminal",
+	"TPV / Punto de Venta": "POS / Point of Sale",
+	"Packs": "Packs",
+	"Buscar en catálogo...": "Search in catalog...",
+	"No se encontraron resultados en esta categoría": "No results found in this category",
+	"Buscar cliente por teléfono o nombre...": "Search client by phone or name...",
+	"Cliente Seleccionado": "Selected Client",
+	"El carrito está vacío": "The cart is empty",
+	"Añade productos o servicios desde el catálogo de la izquierda.": "Add products or services from the catalog on the left.",
+	"Subtotal": "Subtotal",
+	"Descuento / Cupón": "Discount / Coupon",
+	"Total a Pagar": "Total to Pay",
+	"Tarjeta": "Card",
+	"Efectivo": "Cash",
+	"Mixto": "Mixed",
+	"Deuda": "Debt",
+	"Procesar Cobro": "Process Payment"
 }

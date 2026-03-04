@@ -14,6 +14,7 @@
 		Scissors,
 		PackageSearch,
 		Ticket,
+		Plus,
 	} from 'lucide-vue-next'
 
 	definePageMeta({ layout: 'default' })
@@ -221,8 +222,8 @@
 						<ShoppingBag class="h-6 w-6" />
 					</div>
 					<div class="flex-1">
-						<h1 class="text-2xl font-bold tracking-tight">Terminal Venta</h1>
-						<p class="text-text-muted text-sm font-medium">TPV / Punto de Venta</p>
+						<h1 class="text-2xl font-bold tracking-tight">{{ $t('Terminal Venta') }}</h1>
+						<p class="text-text-muted text-sm font-medium">{{ $t('TPV / Punto de Venta') }}</p>
 					</div>
 				</div>
 			</div>
@@ -241,7 +242,7 @@
 						"
 						@click="activeTab = 'services'">
 						<Scissors class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						Servicios
+						{{ $t('Servicios') }}
 					</a>
 					<a
 						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -252,7 +253,7 @@
 						"
 						@click="activeTab = 'products'">
 						<PackageIcon class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						Productos
+						{{ $t('Productos') }}
 					</a>
 					<a
 						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -263,7 +264,7 @@
 						"
 						@click="activeTab = 'packs'">
 						<PackageSearch class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						Packs
+						{{ $t('Packs') }}
 					</a>
 					<a
 						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -274,7 +275,7 @@
 						"
 						@click="activeTab = 'bonuses'">
 						<Ticket class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						Bonos
+						{{ $t('Bonos') }}
 					</a>
 				</div>
 				<div class="relative w-full shrink-0 lg:w-64 xl:w-80">
@@ -282,7 +283,7 @@
 					<input
 						v-model="searchQuery"
 						type="text"
-						placeholder="Buscar en catálogo..."
+						:placeholder="$t('Buscar en catálogo...')"
 						class="input bg-bg-card focus:border-primary/50 focus:ring-primary/20 h-14 w-full rounded-4xl border-transparent pr-5 pl-14 text-sm font-medium shadow-sm transition-all focus:ring-4" />
 				</div>
 			</div>
@@ -330,7 +331,7 @@
 						class="col-span-full flex flex-col items-center py-20 text-center">
 						<Search class="text-border-strong mb-3 h-8 w-8 opacity-50" />
 						<p class="text-text-muted text-sm font-bold tracking-wider uppercase">
-							No se encontraron resultados en esta categoría
+							{{ $t('No se encontraron resultados en esta categoría') }}
 						</p>
 					</div>
 				</div>
@@ -348,7 +349,7 @@
 						<input
 							v-model="clientSearch"
 							type="text"
-							placeholder="Buscar cliente por teléfono o nombre..."
+							:placeholder="$t('Buscar cliente por teléfono o nombre...')"
 							class="input bg-bg-card border-border-default focus:border-primary focus:ring-primary/20 h-12 w-full rounded-2xl pl-12 text-sm shadow-sm transition-all focus:shadow-md" />
 
 						<!-- Client Autocomplete Dropdown -->
@@ -384,7 +385,7 @@
 									{{ selectedClient.name }} {{ selectedClient.surname }}
 								</span>
 								<span class="text-text-muted text-[10px] font-bold tracking-wider uppercase">
-									Cliente Seleccionado
+									{{ $t('Cliente Seleccionado') }}
 								</span>
 							</div>
 						</div>
@@ -403,9 +404,11 @@
 					v-if="cartItems.length === 0"
 					class="flex h-full flex-col items-center justify-center text-center opacity-50">
 					<ShoppingBag class="text-border-strong mb-4 h-16 w-16" />
-					<p class="text-text-muted text-sm font-bold tracking-wider uppercase">El carrito está vacío</p>
+					<p class="text-text-muted text-sm font-bold tracking-wider uppercase">
+						{{ $t('El carrito está vacío') }}
+					</p>
 					<p class="text-text-muted mt-2 max-w-[200px] text-xs">
-						Añade productos o servicios desde el catálogo de la izquierda.
+						{{ $t('Añade productos o servicios desde el catálogo de la izquierda.') }}
 					</p>
 				</div>
 
@@ -455,13 +458,13 @@
 				<!-- Totals -->
 				<div class="mb-6 flex flex-col gap-2">
 					<div class="text-text-muted flex items-center justify-between text-sm font-medium">
-						<span>Subtotal</span>
+						<span>{{ $t('Subtotal') }}</span>
 						<span class="tabular-nums">{{ formatCurrency(cartSubtotal) }}</span>
 					</div>
 					<div class="text-error flex items-center justify-between text-sm font-medium">
 						<span class="flex items-center gap-1.5">
 							<Tag class="h-3.5 w-3.5" />
-							Descuento / Cupón
+							{{ $t('Descuento / Cupón') }}
 						</span>
 						<div class="relative w-24">
 							<span class="absolute top-1/2 left-2 -translate-y-1/2 text-xs font-bold">-</span>
@@ -476,7 +479,7 @@
 					<div class="divider my-1 opacity-50"></div>
 					<div class="flex items-end justify-between">
 						<span class="text-text-muted text-xs font-black tracking-wider uppercase">
-							Total a Pagar
+							{{ $t('Total a Pagar') }}
 						</span>
 						<span class="text-primary text-4xl leading-none font-black tracking-tight tabular-nums">
 							{{ formatCurrency(cartTotal) }}
@@ -495,7 +498,7 @@
 						"
 						@click="paymentMethod = 'card'">
 						<CreditCard class="mb-0.5 h-5 w-5" />
-						<span class="text-[10px] font-bold tracking-wider uppercase">Tarjeta</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Tarjeta') }}</span>
 					</button>
 					<button
 						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3"
@@ -506,7 +509,7 @@
 						"
 						@click="paymentMethod = 'cash'">
 						<Banknote class="mb-0.5 h-5 w-5" />
-						<span class="text-[10px] font-bold tracking-wider uppercase">Efectivo</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Efectivo') }}</span>
 					</button>
 					<button
 						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3"
@@ -517,7 +520,7 @@
 						"
 						@click="paymentMethod = 'mixed'">
 						<Wallet class="mb-0.5 h-5 w-5" />
-						<span class="text-[10px] font-bold tracking-wider uppercase">Mixto</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Mixto') }}</span>
 					</button>
 					<button
 						class="btn border-error/20 flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3"
@@ -528,7 +531,7 @@
 						"
 						@click="paymentMethod = 'debt'">
 						<span class="mt-1 mb-0.5 text-lg leading-none font-black tabular-nums">0€</span>
-						<span class="text-[10px] font-bold tracking-wider uppercase">Deuda</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Deuda') }}</span>
 					</button>
 				</div>
 
@@ -543,7 +546,7 @@
 							: 'bg-bg-muted text-text-muted opacity-50'
 					">
 					<span v-if="isCheckingOut" class="loading loading-spinner"></span>
-					<span v-else>Procesar Cobro</span>
+					<span v-else>{{ $t('Procesar Cobro') }}</span>
 				</button>
 			</div>
 		</div>

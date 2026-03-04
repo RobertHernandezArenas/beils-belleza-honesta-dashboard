@@ -34,7 +34,8 @@
 		"routes": "Trasy",
 		"settings": "Ustawienia",
 		"menu": "Menu Główne",
-		"logout": "Wyloguj Się"
+		"logout": "Wyloguj Się",
+		"reports": "Raporty"
 	},
 	"users": {
 		"header": {
@@ -169,5 +170,35 @@
 			"edit": "Edytuj Profil",
 			"delete": "Usuń Klienta"
 		}
-	}
+	},
+	"Productos": "Produkty",
+	"Categorías": "Kategorie",
+	"Subcategorías": "Podkategorie",
+	"Marcas": "Marki",
+	"Etiquetas": "Tagi",
+	"Packs & Promociones": "Pakiety & Promocje",
+	"Bonos": "Bony",
+	"Cupones": "Kupony",
+	"Tarjetas de Regalo": "Karty Podarunkowe",
+	"Servicios": "Usługi",
+	"Ventas": "Sprzedaż",
+	"Deudas y Cobros": "Zadłużenia i Płatności",
+	"Agenda": "Terminarz",
+	"Terminal Venta": "Punkt Sprzedaży",
+	"TPV / Punto de Venta": "POS / Punkt Sprzedaży",
+	"Packs": "Pakiety",
+	"Buscar en catálogo...": "Szukaj w katalogu...",
+	"No se encontraron resultados en esta categoría": "Brak wyników w tej kategorii",
+	"Buscar cliente por teléfono o nombre...": "Szukaj klienta po telefonie lub imieniu...",
+	"Cliente Seleccionado": "Wybrany Klient",
+	"El carrito está vacío": "Koszyk jest pusty",
+	"Añade productos o servicios desde el catálogo de la izquierda.": "Dodaj produkty lub usługi z katalogu po lewej stronie.",
+	"Subtotal": "Suma częściowa",
+	"Descuento / Cupón": "Zniżka / Kupon",
+	"Total a Pagar": "Razem do zapłaty",
+	"Tarjeta": "Karta",
+	"Efectivo": "Gotówka",
+	"Mixto": "Mieszana",
+	"Deuda": "Dług",
+	"Procesar Cobro": "Przetwórz Płatność"
 }
