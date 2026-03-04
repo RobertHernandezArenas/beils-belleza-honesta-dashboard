@@ -242,7 +242,7 @@
 						"
 						@click="activeTab = 'services'">
 						<Scissors class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						{{ $t('Servicios') }}
+						<span>{{ $t('Servicios') }}</span>
 					</a>
 					<a
 						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -253,7 +253,7 @@
 						"
 						@click="activeTab = 'products'">
 						<PackageIcon class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						{{ $t('Productos') }}
+						<span v-text="$t('Productos')"></span>
 					</a>
 					<a
 						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -264,7 +264,7 @@
 						"
 						@click="activeTab = 'packs'">
 						<PackageSearch class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						{{ $t('Packs') }}
+						<span v-text="$t('Packs')"></span>
 					</a>
 					<a
 						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-all duration-300 sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -275,7 +275,7 @@
 						"
 						@click="activeTab = 'bonuses'">
 						<Ticket class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						{{ $t('Bonos') }}
+						<span v-text="$t('Bonos')"></span>
 					</a>
 				</div>
 				<div class="relative w-full shrink-0 lg:w-64 xl:w-80">
@@ -330,9 +330,9 @@
 						v-if="filteredCatalog.length === 0"
 						class="col-span-full flex flex-col items-center py-20 text-center">
 						<Search class="text-border-strong mb-3 h-8 w-8 opacity-50" />
-						<p class="text-text-muted text-sm font-bold tracking-wider uppercase">
-							{{ $t('No se encontraron resultados en esta categoría') }}
-						</p>
+						<p
+							class="text-text-muted text-sm font-bold tracking-wider uppercase"
+							v-text="$t('No se encontraron resultados en esta categoría')"></p>
 					</div>
 				</div>
 			</div>
@@ -384,9 +384,9 @@
 								<span class="mb-1 text-sm leading-none font-bold">
 									{{ selectedClient.name }} {{ selectedClient.surname }}
 								</span>
-								<span class="text-text-muted text-[10px] font-bold tracking-wider uppercase">
-									{{ $t('Cliente Seleccionado') }}
-								</span>
+								<span
+									class="text-text-muted text-[10px] font-bold tracking-wider uppercase"
+									v-text="$t('Cliente Seleccionado')"></span>
 							</div>
 						</div>
 						<button
@@ -404,12 +404,12 @@
 					v-if="cartItems.length === 0"
 					class="flex h-full flex-col items-center justify-center text-center opacity-50">
 					<ShoppingBag class="text-border-strong mb-4 h-16 w-16" />
-					<p class="text-text-muted text-sm font-bold tracking-wider uppercase">
-						{{ $t('El carrito está vacío') }}
-					</p>
-					<p class="text-text-muted mt-2 max-w-[200px] text-xs">
-						{{ $t('Añade productos o servicios desde el catálogo de la izquierda.') }}
-					</p>
+					<p
+						class="text-text-muted text-sm font-bold tracking-wider uppercase"
+						v-text="$t('El carrito está vacío')"></p>
+					<p
+						class="text-text-muted mt-2 max-w-[200px] text-xs"
+						v-text="$t('Añade productos o servicios desde el catálogo de la izquierda.')"></p>
 				</div>
 
 				<div v-else class="flex flex-col gap-3">
@@ -464,7 +464,7 @@
 					<div class="text-error flex items-center justify-between text-sm font-medium">
 						<span class="flex items-center gap-1.5">
 							<Tag class="h-3.5 w-3.5" />
-							{{ $t('Descuento / Cupón') }}
+							<span v-text="$t('Descuento / Cupón')"></span>
 						</span>
 						<div class="relative w-24">
 							<span class="absolute top-1/2 left-2 -translate-y-1/2 text-xs font-bold">-</span>
@@ -478,9 +478,9 @@
 					</div>
 					<div class="divider my-1 opacity-50"></div>
 					<div class="flex items-end justify-between">
-						<span class="text-text-muted text-xs font-black tracking-wider uppercase">
-							{{ $t('Total a Pagar') }}
-						</span>
+						<span
+							class="text-text-muted text-xs font-black tracking-wider uppercase"
+							v-text="$t('Total a Pagar')"></span>
 						<span class="text-primary text-4xl leading-none font-black tracking-tight tabular-nums">
 							{{ formatCurrency(cartTotal) }}
 						</span>
