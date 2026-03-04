@@ -105,7 +105,8 @@
 									route.path === item.to
 										? 'text-bg-card bg-text-secondary font-medium shadow-md'
 										: 'text-text-muted hover:bg-bg-muted hover:text-text-secondary'
-								">
+								"
+								@click="isDrawerOpen = false">
 								<component
 									:is="item.icon"
 									class="h-5 w-5 transition-transform group-hover:scale-110"

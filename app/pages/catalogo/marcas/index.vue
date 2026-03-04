@@ -125,7 +125,8 @@
 						<div
 							tabindex="0"
 							role="button"
-							class="btn btn-ghost btn-circle btn-sm text-text-muted hover:bg-bg-muted hover:text-text-primary transition-colors">
+							class="btn btn-ghost btn-circle btn-sm text-text-muted hover:bg-bg-muted hover:text-text-primary transition-colors"
+							@click.stop>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
@@ -161,8 +162,8 @@
 		</div>
 
 		<!-- Modales -->
-		<BrandModal v-model="showBrandModal" :brand-to-edit="selectedBrand" />
-		<GenericDeleteModal
+		<FormBrandModal v-model="showBrandModal" :brand-to-edit="selectedBrand" />
+		<SharedGenericDeleteModal
 			:is-open="showDeleteModal"
 			:item-name="selectedBrand?.name || ''"
 			:is-deleting="deleting"

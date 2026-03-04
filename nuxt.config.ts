@@ -17,10 +17,10 @@ export default defineNuxtConfig({
 	},
 
 	telemetry: false, // Disable telemetry for speed
-  vite: {
-    server: {
-      allowedHosts: ['disclamatory-boraginaceous-cedric.ngrok-free.dev', 'localhost']
-    },
+	vite: {
+		server: {
+			allowedHosts: ['disclamatory-boraginaceous-cedric.ngrok-free.dev', 'localhost'],
+		},
 		resolve: {
 			alias: {
 				'.prisma/client/index-browser': './node_modules/@prisma/client/index-browser.js',

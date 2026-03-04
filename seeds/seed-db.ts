@@ -63,16 +63,8 @@ const statuses = ['ON', 'OFF'] as const
 const documentTypes = ['DNI', 'PASSPORT', 'NIE'] as const
 const genders = ['Male', 'Female', 'Other']
 const brandNames = [
-	"L'Oréal",
-	'Kérastase',
-	'Wella',
-	'Olaplex',
-	'Moroccanoil',
-	'Redken',
-	'Schwarzkopf',
-	'Aveda',
-	'Matrix',
-	'Paul Mitchell',
+  "Masglo",
+  "Bioline Jato"
 ]
 const bookingStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show']
 
