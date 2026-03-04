@@ -102,7 +102,8 @@
 				<div
 					v-for="brand in brands"
 					:key="brand.brand_id"
-					class="bg-bg-card group flex items-start justify-between rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-md">
+					class="bg-bg-card group flex cursor-pointer items-start justify-between rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-md"
+					@click="openEditModal(brand)">
 					<div class="flex items-center gap-4">
 						<div
 							class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
@@ -120,7 +121,7 @@
 					</div>
 
 					<!-- Menú de Acciones -->
-					<div class="dropdown dropdown-end">
+					<div class="dropdown dropdown-end" @click.stop.prevent>
 						<div
 							tabindex="0"
 							role="button"
@@ -149,7 +150,7 @@
 							<li>
 								<button
 									class="text-error hover:bg-error/10 hover:text-error rounded-xl font-bold"
-									@click="openDeleteModal(brand)">
+									@click.stop="openDeleteModal(brand)">
 									Eliminar
 								</button>
 							</li>
@@ -161,9 +162,9 @@
 
 		<!-- Modales -->
 		<BrandModal v-model="showBrandModal" :brand-to-edit="selectedBrand" />
-		<UserDeleteModal
+		<GenericDeleteModal
 			:is-open="showDeleteModal"
-			:user-name="selectedBrand?.name || ''"
+			:item-name="selectedBrand?.name || ''"
 			:is-deleting="deleting"
 			custom-title="Eliminar Marca"
 			custom-message="¿Estás seguro de que deseas eliminar esta marca de producto? Esta acción no se puede deshacer."

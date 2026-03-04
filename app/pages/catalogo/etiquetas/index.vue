@@ -1,7 +1,10 @@
 <script lang="ts" setup>
-	import { useQuery } from '@tanstack/vue-query'
+	import { ref } from 'vue'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Plus, Hash } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import TagModal from '~/components/catalog/tags/TagModal.vue'
+	import GenericDeleteModal from '~/components/shared/GenericDeleteModal.vue'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Etiquetas | Catálogo' })
@@ -10,16 +13,52 @@
 		data: tags,
 		isPending,
 		error,
-	} = useQuery<{ tag_id: string; name: string; description: string | null }[]>({
+	} = useQuery<{ tag_id: string; name: string }[]>({
 		queryKey: ['tags-list'],
 		queryFn: () => $fetch('/api/catalog/tags'),
 	})
 
+	const queryClient = useQueryClient()
 	const { t } = useI18n()
 
+	// Modales
+	const showTagModal = ref(false)
+	const showDeleteModal = ref(false)
+	const selectedTag = ref<any>(null)
+
+	// Acciones
 	const openCreateModal = () => {
-		// TODO: Implement Tag Modal
-		alert('Funcionalidad de crear etiqueta próximamente')
+		selectedTag.value = null
+		showTagModal.value = true
+	}
+
+	const openEditModal = (tag: any) => {
+		selectedTag.value = { ...tag }
+		showTagModal.value = true
+	}
+
+	const openDeleteModal = (tag: any) => {
+		selectedTag.value = tag
+		showDeleteModal.value = true
+	}
+
+	const { mutate: deleteTag, isPending: deleting } = useMutation({
+		mutationFn: (id: string) => $fetch(`/api/catalog/tags/${id}`, { method: 'DELETE' }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['tags-list'] })
+			showDeleteModal.value = false
+		},
+		onError: (err: any) => {
+			const msg = err.response?._data?.statusMessage || err.message
+			alert(`Error: ${msg}`)
+			showDeleteModal.value = false
+		},
+	})
+
+	const confirmDelete = () => {
+		if (selectedTag.value?.tag_id) {
+			deleteTag(selectedTag.value.tag_id)
+		}
 	}
 </script>
 
@@ -56,31 +95,71 @@
 					<Hash class="text-text-muted/50 h-10 w-10" />
 				</div>
 				<p class="text-text-primary text-xl font-bold">Sin etiquetas</p>
-				<p class="text-text-muted mt-2 max-w-sm">Aún no has registrado ninguna etiqueta de producto.</p>
+				<p class="text-text-muted mt-2 max-w-sm">
+					Aún no has registrado ninguna etiqueta para organizar tus productos.
+				</p>
 			</div>
 
-			<div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+			<div v-else class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
 				<div
 					v-for="tag in tags"
 					:key="tag.tag_id"
-					class="bg-bg-card group flex items-start justify-between rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-md">
-					<div class="flex items-center gap-4">
+					class="bg-bg-card group flex cursor-pointer items-center justify-between rounded-full py-2 pr-2 pl-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:-translate-y-0.5 hover:shadow-md"
+					@click="openEditModal(tag)">
+					<div class="flex items-center gap-2 overflow-hidden">
+						<Hash class="text-primary h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
+						<span class="text-text-primary truncate font-bold tracking-tight">{{ tag.name }}</span>
+					</div>
+
+					<!-- Menú de Acciones -->
+					<div class="dropdown dropdown-end" @click.stop.prevent>
 						<div
-							class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-							<Hash class="h-6 w-6" />
+							tabindex="0"
+							role="button"
+							class="btn btn-ghost btn-circle btn-xs text-text-muted hover:bg-bg-muted hover:text-text-primary transition-colors">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								class="h-4 w-4 stroke-current stroke-[2.5]">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+							</svg>
 						</div>
-						<div class="flex flex-col">
-							<h3 class="text-text-primary text-lg font-bold">{{ tag.name }}</h3>
-							<p
-								v-if="tag.description"
-								class="text-text-muted max-w-[120px] truncate text-xs font-medium"
-								:title="tag.description">
-								{{ tag.description }}
-							</p>
-						</div>
+						<ul
+							tabindex="0"
+							class="dropdown-content menu bg-bg-card border-border-subtle z-50 mt-1 w-44 rounded-2xl border p-2 shadow-xl">
+							<li>
+								<button
+									class="text-text-secondary hover:bg-bg-muted rounded-xl text-sm font-bold"
+									@click.stop="openEditModal(tag)">
+									Editar
+								</button>
+							</li>
+							<li>
+								<button
+									class="text-error hover:bg-error/10 hover:text-error rounded-xl text-sm font-bold"
+									@click.stop="openDeleteModal(tag)">
+									Eliminar
+								</button>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<!-- Modales -->
+		<TagModal v-model="showTagModal" :tag-to-edit="selectedTag" />
+		<GenericDeleteModal
+			:is-open="showDeleteModal"
+			:item-name="selectedTag?.name || ''"
+			:is-deleting="deleting"
+			custom-title="Eliminar Etiqueta"
+			custom-message="¿Estás seguro de que deseas eliminar esta etiqueta? Los productos perderán esta asociación, pero no serán eliminados."
+			@close="showDeleteModal = false"
+			@confirm="confirmDelete" />
 	</div>
 </template>
