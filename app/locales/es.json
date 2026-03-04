@@ -21,7 +21,8 @@
 			"button": "Iniciar Sesión",
 			"error": "Error de Acceso",
 			"welcome": "Bienvenido",
-			"platform": "BEILS"
+			"platform": "BEILS",
+			"remember": "Recordar credenciales"
 		}
 	},
 	"nav": {

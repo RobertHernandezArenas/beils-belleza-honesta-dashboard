@@ -35,7 +35,8 @@
 							v-if="authStore.user"
 							class="group bg-bg-card hover:border-border-strong hover:bg-bg-muted relative flex items-center gap-2 rounded-full border border-transparent p-1 pr-3 transition-colors">
 							<div class="avatar">
-								<div class="w-8 rounded-full ring-1 ring-[#dbd2c6] group-hover:ring-[#bababa]">
+								<div
+									class="ring-border-default group-hover:ring-border-strong w-8 rounded-full ring-1">
 									<img
 										:src="
 											authStore.user.avatar ||
@@ -63,7 +64,7 @@
 			<label
 				for="my-drawer-4"
 				aria-label="close sidebar"
-				class="drawer-overlay bg-[#404040]/40 backdrop-blur-sm lg:hidden"></label>
+				class="drawer-overlay bg-text-secondary/40 backdrop-blur-sm lg:hidden"></label>
 			<aside
 				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-transform duration-300 lg:w-72">
 				<!-- Glow lateral en sidebar -->
@@ -102,7 +103,7 @@
 								class="group flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-[background-color,color,box-shadow] duration-300"
 								:class="
 									route.path === item.to
-										? 'text-bg-card bg-[#404040] font-medium shadow-md'
+										? 'text-bg-card bg-text-secondary font-medium shadow-md'
 										: 'text-text-muted hover:bg-bg-muted hover:text-text-secondary'
 								">
 								<component
@@ -202,6 +203,7 @@
 		CreditCard,
 		Store,
 		Landmark,
+		ListTree,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -225,6 +227,7 @@
 		{ to: '/clientes', label: 'nav.clients', icon: UsersRound },
 		{ to: '/catalogo/productos', label: 'Productos', icon: Package },
 		{ to: '/catalogo/categorias', label: 'Categorías', icon: Layers },
+		{ to: '/catalogo/subcategorias', label: 'Subcategorías', icon: ListTree },
 		{ to: '/catalogo/marcas', label: 'Marcas', icon: Tags },
 		{ to: '/catalogo/etiquetas', label: 'Etiquetas', icon: Hash },
 		{ to: '/servicios', label: 'Servicios', icon: Scissors },

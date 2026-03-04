@@ -41,9 +41,13 @@
 
 	onMounted(() => {
 		const savedEmail = localStorage.getItem('beils_remember_email')
+		const savedPassword = localStorage.getItem('beils_remember_password')
 		if (savedEmail) {
 			form.email = savedEmail
 			form.rememberMe = true
+			if (savedPassword) {
+				form.password = atob(savedPassword)
+			}
 		}
 	})
 
@@ -67,8 +71,10 @@
 		onSuccess: data => {
 			if (form.rememberMe) {
 				localStorage.setItem('beils_remember_email', form.email)
+				localStorage.setItem('beils_remember_password', btoa(form.password))
 			} else {
 				localStorage.removeItem('beils_remember_email')
+				localStorage.removeItem('beils_remember_password')
 			}
 			authStore.setAuth(data.user, data.token)
 			router.push('/overview') // Redirigir al dashboard
@@ -226,7 +232,9 @@
 									type="checkbox"
 									v-model="form.rememberMe"
 									class="checkbox checkbox-sm checkbox-primary border-border-default hover:border-primary rounded-lg transition-colors" />
-								<span class="label-text text-text-muted text-sm font-medium">Recordar usuario</span>
+								<span class="label-text text-text-muted text-sm font-medium">
+									{{ t('auth.login.remember') || 'Recordar credenciales' }}
+								</span>
 							</label>
 							<a
 								href="#"

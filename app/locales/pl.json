@@ -21,7 +21,8 @@
 			"button": "Zaloguj się",
 			"error": "Błąd dostępu",
 			"welcome": "Witaj",
-			"platform": "BEILS"
+			"platform": "BEILS",
+			"remember": "Zapamiętaj dane logowania"
 		}
 	},
 	"nav": {
