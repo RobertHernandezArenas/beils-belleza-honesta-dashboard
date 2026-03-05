@@ -96,8 +96,10 @@
 						<ShoppingBag class="h-6 w-6" />
 					</div>
 					<div>
-						<h1 class="text-2xl font-bold tracking-tight">{{ t('Ventas') }}</h1>
-						<p class="text-text-muted text-sm font-medium">Historial de tickets y facturación</p>
+						<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
+							{{ $t('sales.title') }}
+						</h1>
+						<p class="text-text-muted text-sm font-medium">{{ $t('sales.subtitle') }}</p>
 					</div>
 				</div>
 
@@ -115,7 +117,7 @@
 						<input
 							v-model="searchQuery"
 							type="text"
-							placeholder="Buscar ticket o cliente..."
+							:placeholder="$t('sales.search')"
 							class="input bg-bg-card border-border-default focus:border-primary focus:ring-primary/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
 					</div>
 				</div>
@@ -135,13 +137,13 @@
 						<thead>
 							<tr
 								class="border-border-default bg-bg-muted/50 text-text-muted text-xs tracking-wider uppercase">
-								<th class="py-4 pl-6">ID Ticket</th>
-								<th>Fecha y Hora</th>
-								<th>Cliente</th>
-								<th class="hidden text-center lg:table-cell">Artículos</th>
-								<th class="text-center">Método Pago</th>
-								<th class="text-right">Total</th>
-								<th class="pr-6 text-right">Acciones</th>
+								<th class="py-4 pl-6">{{ $t('sales.table.id') }}</th>
+								<th>{{ $t('sales.table.date') }}</th>
+								<th>{{ $t('sales.table.client') }}</th>
+								<th class="hidden text-center lg:table-cell">{{ $t('sales.table.items') }}</th>
+								<th class="text-center">{{ $t('sales.table.method') }}</th>
+								<th class="text-right">{{ $t('sales.table.total') }}</th>
+								<th class="pr-6 text-right">{{ $t('sales.table.actions') }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -159,10 +161,11 @@
 
 								<td>
 									<div class="flex items-center gap-3">
-										<div class="avatar placeholder flex shrink-0 items-center justify-center">
+										<div class="avatar placeholder">
 											<div
 												class="bg-neutral text-neutral-content flex h-8 w-8 items-center justify-center rounded-full">
-												<span class="text-[10px] font-bold uppercase">
+												<span
+													class="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase">
 													{{
 														sale.user
 															? `${sale.user.name?.charAt(0)}${sale.user.surname?.charAt(0)}`
@@ -175,7 +178,7 @@
 											{{
 												sale.user
 													? `${sale.user.name} ${sale.user.surname}`
-													: 'Cliente Sin Registrar'
+													: $t('sales.table.unregistered')
 											}}
 										</div>
 									</div>
@@ -204,7 +207,7 @@
 										@click="openDetails(sale)"
 										class="btn btn-sm btn-ghost text-text-muted hover:text-primary hover:bg-primary/10 rounded-lg">
 										<ExternalLink class="h-4 w-4" />
-										<span class="hidden md:inline">Ver Detalles</span>
+										<span class="hidden md:inline">{{ $t('sales.table.details') }}</span>
 									</button>
 								</td>
 							</tr>
@@ -220,10 +223,8 @@
 				<div class="bg-primary/10 mb-4 flex h-20 w-20 items-center justify-center rounded-full">
 					<ShoppingBag class="text-primary h-10 w-10" />
 				</div>
-				<h3 class="mb-1 text-xl font-bold">Sin Ventas Registradas</h3>
-				<p class="text-text-muted mb-6 max-w-sm text-sm">
-					No hay tickets o ventas completadas en el historial con los filtros actuales.
-				</p>
+				<h3 class="mb-1 text-xl font-bold">{{ $t('sales.emptyState.title') }}</h3>
+				<p class="text-text-muted mb-6 max-w-sm text-sm">{{ $t('sales.emptyState.desc') }}</p>
 			</div>
 		</div>
 
@@ -236,7 +237,7 @@
 				<div
 					class="bg-bg-muted/30 border-border-default sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md">
 					<div>
-						<h3 class="text-xl font-bold tracking-tight">Detalles del Ticket</h3>
+						<h3 class="text-xl font-bold tracking-tight">{{ $t('sales.modal.title') }}</h3>
 						<p class="text-text-muted text-xs font-medium tracking-wider uppercase">
 							#{{ selectedSale.cart_id.split('-')[0] }} • {{ formatDate(selectedSale.created_at) }}
 						</p>
@@ -256,8 +257,10 @@
 						class="bg-bg-muted/30 border-border-default mb-6 flex items-center justify-between rounded-2xl border p-4">
 						<div class="flex items-center gap-3">
 							<div class="avatar placeholder">
-								<div class="bg-primary/10 text-primary w-12 rounded-full">
-									<span class="text-sm font-bold uppercase">
+								<div
+									class="bg-primary/10 text-primary flex w-12 items-center justify-center rounded-full">
+									<span
+										class="flex h-full w-full items-center justify-center text-sm font-bold uppercase">
 										{{
 											selectedSale.user
 												? `${selectedSale.user.name?.charAt(0)}${selectedSale.user.surname?.charAt(0)}`
@@ -271,7 +274,7 @@
 									{{
 										selectedSale.user
 											? `${selectedSale.user.name} ${selectedSale.user.surname}`
-											: 'Cliente Sin Registrar (Walk-in)'
+											: $t('sales.modal.walkInClient')
 									}}
 								</div>
 								<div class="text-text-muted text-xs" v-if="selectedSale.user?.email">
@@ -280,7 +283,9 @@
 							</div>
 						</div>
 						<div class="text-right">
-							<div class="text-text-muted text-xs font-bold tracking-wider uppercase">Método</div>
+							<div class="text-text-muted text-xs font-bold tracking-wider uppercase">
+								{{ $t('sales.modal.method') }}
+							</div>
 							<div
 								class="badge badge-sm font-bold tracking-wider uppercase"
 								:class="getPaymentMethodBadge(selectedSale.payment_method).class">
@@ -291,17 +296,17 @@
 
 					<!-- Items List -->
 					<h4 class="text-text-primary mb-3 text-sm font-bold tracking-wider uppercase">
-						Artículos ({{ getTotalItems(selectedSale.items) }})
+						{{ $t('sales.modal.itemsTitle') }} ({{ getTotalItems(selectedSale.items) }})
 					</h4>
 					<div class="border-border-default bg-bg-app mb-6 rounded-2xl border">
 						<div class="max-h-[300px] overflow-y-auto">
 							<table class="table w-full">
 								<thead class="bg-bg-muted/50 sticky top-0 z-10 backdrop-blur-sm">
 									<tr class="text-text-muted border-none text-xs tracking-wider uppercase">
-										<th class="py-3 pl-4">Concepto</th>
-										<th class="text-center">Cant.</th>
-										<th class="text-right">Precio</th>
-										<th class="pr-4 text-right">Subtotal</th>
+										<th class="py-3 pl-4">{{ $t('sales.modal.table.concept') }}</th>
+										<th class="text-center">{{ $t('sales.modal.table.qty') }}</th>
+										<th class="text-right">{{ $t('sales.modal.table.price') }}</th>
+										<th class="pr-4 text-right">{{ $t('sales.modal.table.subtotal') }}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -327,18 +332,18 @@
 					<!-- Totals Summary -->
 					<div class="flex flex-col items-end gap-2 text-sm">
 						<div class="text-text-muted flex w-full max-w-[250px] justify-between font-medium">
-							<span>Subtotal:</span>
+							<span>{{ $t('sales.modal.totals.subtotal') }}:</span>
 							<span class="tabular-nums">{{ formatCurrency(selectedSale.subtotal) }}</span>
 						</div>
 						<div
 							class="text-error flex w-full max-w-[250px] justify-between font-medium"
 							v-if="selectedSale.discount > 0">
-							<span>Descuento:</span>
+							<span>{{ $t('sales.modal.totals.discount') }}:</span>
 							<span class="tabular-nums">-{{ formatCurrency(selectedSale.discount) }}</span>
 						</div>
 						<div
 							class="border-border-default text-text-primary mt-2 flex w-full max-w-[250px] justify-between border-t pt-2 text-lg font-black">
-							<span>Total Pagado:</span>
+							<span>{{ $t('sales.modal.totals.total') }}:</span>
 							<span class="tabular-nums">{{ formatCurrency(selectedSale.total) }}</span>
 						</div>
 					</div>
@@ -351,12 +356,12 @@
 						type="button"
 						class="btn btn-ghost text-text-muted hover:bg-bg-hover h-12 rounded-xl"
 						@click="closeDetails">
-						Cerrar
+						{{ $t('sales.modal.buttons.close') }}
 					</button>
 					<button
 						type="button"
 						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 rounded-xl border-none font-bold shadow-md">
-						Descargar Recibo
+						{{ $t('sales.modal.buttons.download') }}
 					</button>
 				</div>
 			</div>

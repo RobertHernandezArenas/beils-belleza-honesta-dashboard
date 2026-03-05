@@ -246,6 +246,69 @@
 				"errorGeneric": "Error processing payment",
 				"invalidAmount": "Invalid amount"
 			}
+		},
+		"reports": {
+			"title": "Analytical Reports",
+			"subtitle": "Metrics, revenue, and overall performance",
+			"exportPdf": "Export PDF",
+			"generating": "Generating...",
+			"errorTitle": "Error fetching metrics",
+			"errorDesc": "Please try again later or check your connection.",
+			"kpis": {
+				"revenue": "Total Revenue",
+				"tickets": "Total Tickets",
+				"clients": "Top Clients",
+				"products": "Products"
+			},
+			"charts": {
+				"revenueTitle": "Revenue Summary",
+				"revenueDesc": "Revenue trend over the last 6 months",
+				"methodsTitle": "Payment Distribution",
+				"methodsDesc": "Payment methods used by clients",
+				"topItemsTitle": "Top 5 Services / Products",
+				"topItemsDesc": "The most demanded items in your catalog historically"
+			}
+		}
+	},
+	"sales": {
+		"title": "Sales & Billing",
+		"subtitle": "Ticket and billing history",
+		"search": "Search ticket or client...",
+		"table": {
+			"id": "Ticket ID",
+			"date": "Date & Time",
+			"client": "Client",
+			"items": "Items",
+			"method": "Payment Method",
+			"total": "Total",
+			"actions": "Actions",
+			"unregistered": "Unregistered Client",
+			"details": "View Details"
+		},
+		"emptyState": {
+			"title": "No Sales Recorded",
+			"desc": "There are no completed tickets or sales in the history with the current filters."
+		},
+		"modal": {
+			"title": "Ticket Details",
+			"walkInClient": "Unregistered Client (Walk-in)",
+			"method": "Method",
+			"itemsTitle": "Items",
+			"table": {
+				"concept": "Concept",
+				"qty": "Qty",
+				"price": "Price",
+				"subtotal": "Subtotal"
+			},
+			"totals": {
+				"subtotal": "Subtotal",
+				"discount": "Discount",
+				"total": "Total Paid"
+			},
+			"buttons": {
+				"close": "Close",
+				"download": "Download Receipt"
+			}
 		}
 	}
 }

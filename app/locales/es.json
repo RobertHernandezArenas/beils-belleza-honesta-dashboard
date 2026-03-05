@@ -246,6 +246,69 @@
 				"errorGeneric": "Error al procesar el pago",
 				"invalidAmount": "El monto es inválido"
 			}
+		},
+		"reports": {
+			"title": "Reportes Analíticos",
+			"subtitle": "Métricas, ingresos y rendimiento general",
+			"exportPdf": "Exportar PDF",
+			"generating": "Generando...",
+			"errorTitle": "Error obteniendo métricas",
+			"errorDesc": "Por favor, inténtalo de nuevo más tarde o revisa tu conexión.",
+			"kpis": {
+				"revenue": "Ingresos Acum.",
+				"tickets": "Tickets",
+				"clients": "Clientes Top",
+				"products": "Productos"
+			},
+			"charts": {
+				"revenueTitle": "Resumen de Facturación",
+				"revenueDesc": "Tendencia de ingresos de los últimos 6 meses",
+				"methodsTitle": "Distribución de Cobros",
+				"methodsDesc": "Métodos de pago utilizados por los clientes",
+				"topItemsTitle": "Top 5 Servicios / Productos",
+				"topItemsDesc": "Los ítems más demandados de tu catálogo históricamente"
+			}
+		}
+	},
+	"sales": {
+		"title": "Ventas y Facturación",
+		"subtitle": "Historial de tickets y facturación",
+		"search": "Buscar ticket o cliente...",
+		"table": {
+			"id": "ID Ticket",
+			"date": "Fecha y Hora",
+			"client": "Cliente",
+			"items": "Artículos",
+			"method": "Método Pago",
+			"total": "Total",
+			"actions": "Acciones",
+			"unregistered": "Cliente Sin Registrar",
+			"details": "Ver Detalles"
+		},
+		"emptyState": {
+			"title": "Sin Ventas Registradas",
+			"desc": "No hay tickets o ventas completadas en el historial con los filtros actuales."
+		},
+		"modal": {
+			"title": "Detalles del Ticket",
+			"walkInClient": "Cliente Sin Registrar (Walk-in)",
+			"method": "Método",
+			"itemsTitle": "Artículos",
+			"table": {
+				"concept": "Concepto",
+				"qty": "Cant.",
+				"price": "Precio",
+				"subtotal": "Subtotal"
+			},
+			"totals": {
+				"subtotal": "Subtotal",
+				"discount": "Descuento",
+				"total": "Total Pagado"
+			},
+			"buttons": {
+				"close": "Cerrar",
+				"download": "Descargar Recibo"
+			}
 		}
 	}
 }

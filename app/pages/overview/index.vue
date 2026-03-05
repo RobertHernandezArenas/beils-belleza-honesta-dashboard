@@ -119,8 +119,8 @@
 	const totalPendingDebts = computed(() => {
 		if (!debts.value) return 0
 		return debts.value
-			.filter((d: any) => d.status === 'pending')
-			.reduce((sum: number, d: any) => sum + d.remaining_amount, 0)
+			.filter((d: any) => d.status === 'pending' || d.status === 'partial')
+			.reduce((sum: number, d: any) => sum + Number(d.remaining || 0), 0)
 	})
 
 	// Lists

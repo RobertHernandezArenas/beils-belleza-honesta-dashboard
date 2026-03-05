@@ -246,6 +246,69 @@
 				"errorGeneric": "Błąd podczas przetwarzania płatności",
 				"invalidAmount": "Nieprawidłowa kwota"
 			}
+		},
+		"reports": {
+			"title": "Raporty Analityczne",
+			"subtitle": "Metryki, przychody i ogólna wydajność",
+			"exportPdf": "Eksportuj PDF",
+			"generating": "Generowanie...",
+			"errorTitle": "Błąd pobierania metryk",
+			"errorDesc": "Spróbuj ponownie później lub sprawdź połączenie.",
+			"kpis": {
+				"revenue": "Całkowity Przychód",
+				"tickets": "Suma Biletów",
+				"clients": "Główni Klienci",
+				"products": "Produkty"
+			},
+			"charts": {
+				"revenueTitle": "Podsumowanie Przychodów",
+				"revenueDesc": "Trendy przychodów w ciągu ostatnich 6 miesięcy",
+				"methodsTitle": "Rozkład Płatności",
+				"methodsDesc": "Metody płatności stosowane przez klientów",
+				"topItemsTitle": "Top 5 Usług / Produktów",
+				"topItemsDesc": "Najczęściej zamawiane pozycje z Twojego katalogu historycznie"
+			}
+		},
+		"sales": {
+			"title": "Sprzedaż i Rozliczenia",
+			"subtitle": "Historia biletów i fakturowania",
+			"search": "Szukaj biletu lub klienta...",
+			"table": {
+				"id": "ID Biletu",
+				"date": "Data i Czas",
+				"client": "Klient",
+				"items": "Artykuły",
+				"method": "Metoda Płatności",
+				"total": "Suma",
+				"actions": "Akcje",
+				"unregistered": "Niezarejestrowany Klient",
+				"details": "Zobacz Szczegóły"
+			},
+			"emptyState": {
+				"title": "Brak Zarejestrowanej Sprzedaży",
+				"desc": "Brak ukończonych biletów lub sprzedaży w historii z użyciem obecnych filtrów."
+			},
+			"modal": {
+				"title": "Szczegóły Biletu",
+				"walkInClient": "Niezarejestrowany Klient (Z ulicy)",
+				"method": "Metoda",
+				"itemsTitle": "Artykuły",
+				"table": {
+					"concept": "Koncepcja",
+					"qty": "Ilość",
+					"price": "Cena",
+					"subtotal": "Suma Cześciowa"
+				},
+				"totals": {
+					"subtotal": "Suma częściowa",
+					"discount": "Zniżka",
+					"total": "Suma Zapłacona"
+				},
+				"buttons": {
+					"close": "Zamknij",
+					"download": "Pobierz Paragon"
+				}
+			}
 		}
 	}
 }

@@ -28,6 +28,8 @@
 		"aos": "2.3.4",
 		"bcryptjs": "^3.0.3",
 		"dotenv": "17.3.1",
+		"echarts": "^6.0.0",
+		"html2pdf.js": "^0.14.0",
 		"jsonwebtoken": "^9.0.3",
 		"lucide-vue-next": "0.564.0",
 		"mariadb": "^3.5.1",
@@ -35,6 +37,7 @@
 		"pinia": "3.0.4",
 		"prisma": "7.4.1",
 		"vue": "3.5.28",
+		"vue-echarts": "^8.0.1",
 		"vue-i18n": "11.2.8",
 		"vue-router": "4.6.4",
 		"zod": "4.3.6"
