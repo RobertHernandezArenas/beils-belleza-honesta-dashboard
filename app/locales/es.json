@@ -200,5 +200,52 @@
 	"Efectivo": "Efectivo",
 	"Mixto": "Mixto",
 	"Deuda": "Deuda",
-	"Procesar Cobro": "Procesar Cobro"
+	"Procesar Cobro": "Procesar Cobro",
+	"finances": {
+		"debts": {
+			"title": "Cuentas por Cobrar",
+			"subtitle": "Gestión de deudas de clientes e impagos",
+			"filters": {
+				"all": "Todas las deudas",
+				"pending": "Pendientes / Parciales",
+				"paid": "Saldadas (Cobrado)"
+			},
+			"searchPlaceholder": "Buscar cliente...",
+			"table": {
+				"client": "Cliente",
+				"dateOrig": "Fecha Ori.",
+				"dueDate": "Vencimiento",
+				"totalDebt": "Total Deuda",
+				"pendingBalance": "Saldo Pende.",
+				"status": "Estado",
+				"actions": "Acciones"
+			},
+			"status": {
+				"paid": "Saldada",
+				"partial": "Pendiente",
+				"pending": "Impago"
+			},
+			"actions": {
+				"pay": "Cobrar Abono",
+				"fullyPaid": "Deuda completamente saldada"
+			},
+			"emptyState": {
+				"title": "Sin Inconvenientes",
+				"description": "No hay clientes con cuentas por pagar o deudas registradas con los filtros actuales."
+			},
+			"paymentModal": {
+				"title": "Registrar Pago",
+				"remainingAmount": "Monto restante a liquidar",
+				"amountReceived": "Monto Recibido (€) *",
+				"disclaimer": "Al registrar el pago, el saldo pendiente de {name} se reducirá.",
+				"cancel": "Cancelar",
+				"confirm": "Confirmar Abono"
+			},
+			"messages": {
+				"success": "Pago registrado correctamente",
+				"errorGeneric": "Error al procesar el pago",
+				"invalidAmount": "El monto es inválido"
+			}
+		}
+	}
 }

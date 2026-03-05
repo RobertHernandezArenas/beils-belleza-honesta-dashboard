@@ -1,5 +1,3 @@
-
-
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
 
@@ -8,7 +6,13 @@ export default defineEventHandler(async event => {
 		const status = query.status as string | undefined
 
 		const whereClause: any = {}
-		if (status) whereClause.status = status
+		if (status) {
+			if (status === 'pending') {
+				whereClause.status = { in: ['pending', 'partial'] }
+			} else {
+				whereClause.status = status
+			}
+		}
 
 		const debts = await prisma.debt.findMany({
 			where: whereClause,

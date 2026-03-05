@@ -2,11 +2,11 @@
 	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Landmark, Search, MoreVertical, CheckCircle2, AlertCircle } from 'lucide-vue-next'
+	import { useI18n } from 'vue-i18n'
 
 	definePageMeta({ layout: 'default' })
-	useHead({ title: 'Gestión de Deudas | Finanzas' })
-
 	const queryClient = useQueryClient()
+	const { t } = useI18n()
 	const searchQuery = ref('')
 	const filterStatus = ref('pending')
 	const toastMessage = ref('')
@@ -46,11 +46,11 @@
 			}),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['debts'] })
-			displayToast('Pago registrado correctamente', 'success')
+			displayToast(t('finances.debts.messages.success'), 'success')
 			closePaymentModal()
 		},
 		onError: (error: any) => {
-			displayToast(error.data?.statusMessage || 'Error al procesar el pago', 'error')
+			displayToast(error.data?.statusMessage || t('finances.debts.messages.errorGeneric'), 'error')
 		},
 	})
 
@@ -73,7 +73,7 @@
 
 		let amount = Number(paymentAmount.value)
 		if (amount <= 0 || amount > selectedDebt.value.remaining) {
-			displayToast('El monto es inválido', 'error')
+			displayToast(t('finances.debts.messages.invalidAmount'), 'error')
 			return
 		}
 
@@ -118,8 +118,8 @@
 						<Landmark class="h-6 w-6" />
 					</div>
 					<div>
-						<h1 class="text-2xl font-bold tracking-tight">Cuentas por Cobrar</h1>
-						<p class="text-text-muted text-sm font-medium">Gestión de deudas de clientes e impagos</p>
+						<h1 class="text-2xl font-bold tracking-tight">{{ $t('finances.debts.title') }}</h1>
+						<p class="text-text-muted text-sm font-medium">{{ $t('finances.debts.subtitle') }}</p>
 					</div>
 				</div>
 
@@ -127,9 +127,9 @@
 					<select
 						v-model="filterStatus"
 						class="select bg-bg-card border-border-default h-12 rounded-2xl">
-						<option value="">Todas las deudas</option>
-						<option value="pending">Pendientes / Parciales</option>
-						<option value="paid">Saldadas (Cobrado)</option>
+						<option value="">{{ $t('finances.debts.filters.all') }}</option>
+						<option value="pending">{{ $t('finances.debts.filters.pending') }}</option>
+						<option value="paid">{{ $t('finances.debts.filters.paid') }}</option>
 					</select>
 
 					<div class="relative w-full sm:w-64">
@@ -137,7 +137,7 @@
 						<input
 							v-model="searchQuery"
 							type="text"
-							placeholder="Buscar cliente..."
+							:placeholder="$t('finances.debts.searchPlaceholder')"
 							class="input bg-bg-card border-border-default focus:border-error focus:ring-error/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
 					</div>
 				</div>
@@ -157,13 +157,13 @@
 						<thead>
 							<tr
 								class="border-border-default bg-bg-muted/50 text-text-muted text-xs tracking-wider uppercase">
-								<th class="py-4 pl-6">Cliente</th>
-								<th>Fecha Ori.</th>
-								<th>Vencimiento</th>
-								<th class="text-right">Total Deuda</th>
-								<th class="text-right">Saldo Pende.</th>
-								<th class="text-center">Estado</th>
-								<th class="pr-6 text-right">Acciones</th>
+								<th class="py-4 pl-6">{{ $t('finances.debts.table.client') }}</th>
+								<th class="hidden lg:table-cell">{{ $t('finances.debts.table.dateOrig') }}</th>
+								<th>{{ $t('finances.debts.table.dueDate') }}</th>
+								<th class="text-right">{{ $t('finances.debts.table.totalDebt') }}</th>
+								<th class="text-right">{{ $t('finances.debts.table.pendingBalance') }}</th>
+								<th class="text-center">{{ $t('finances.debts.table.status') }}</th>
+								<th class="pr-6 text-right">{{ $t('finances.debts.table.actions') }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -189,7 +189,9 @@
 										</div>
 									</div>
 								</td>
-								<td class="text-sm font-medium">{{ formatDate(debt.created_at) }}</td>
+								<td class="hidden text-sm font-medium lg:table-cell">
+									{{ formatDate(debt.created_at) }}
+								</td>
 								<td class="text-sm font-medium">
 									<span
 										:class="{
@@ -219,10 +221,10 @@
 										}">
 										{{
 											debt.status === 'paid'
-												? 'Saldada'
+												? $t('finances.debts.status.paid')
 												: debt.status === 'partial'
-													? 'Abono Parcial'
-													: 'Impago'
+													? $t('finances.debts.status.partial')
+													: $t('finances.debts.status.pending')
 										}}
 									</div>
 								</td>
@@ -231,12 +233,12 @@
 										v-if="debt.status !== 'paid'"
 										@click="openPaymentModal(debt)"
 										class="btn btn-sm bg-text-primary text-bg-card hover:bg-text-secondary rounded-lg border-none font-bold shadow-sm">
-										Cobrar Abono
+										{{ $t('finances.debts.actions.pay') }}
 									</button>
 									<div
 										v-else
 										class="text-success tooltip flex justify-end pr-4"
-										data-tip="Deuda completamente saldada">
+										:data-tip="$t('finances.debts.actions.fullyPaid')">
 										<CheckCircle2 class="h-6 w-6" />
 									</div>
 								</td>
@@ -253,9 +255,9 @@
 				<div class="bg-success/10 mb-4 flex h-20 w-20 items-center justify-center rounded-full">
 					<CheckCircle2 class="text-success h-10 w-10" />
 				</div>
-				<h3 class="mb-1 text-xl font-bold">Sin Inconvenientes</h3>
+				<h3 class="mb-1 text-xl font-bold">{{ $t('finances.debts.emptyState.title') }}</h3>
 				<p class="text-text-muted mb-6 max-w-sm text-sm">
-					No hay clientes con cuentas por pagar o deudas registradas con los filtros actuales.
+					{{ $t('finances.debts.emptyState.description') }}
 				</p>
 			</div>
 		</div>
@@ -266,7 +268,7 @@
 				class="modal-box bg-bg-card text-text-secondary relative w-11/12 max-w-sm overflow-hidden rounded-4xl p-0 shadow-xl">
 				<div
 					class="bg-bg-muted/30 border-border-default sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md">
-					<h3 class="text-xl font-bold tracking-tight">Registrar Pago</h3>
+					<h3 class="text-xl font-bold tracking-tight">{{ $t('finances.debts.paymentModal.title') }}</h3>
 					<button
 						type="button"
 						class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-text-primary"
@@ -280,7 +282,7 @@
 						class="bg-error/5 border-error/10 mb-2 flex flex-col items-center rounded-2xl border p-4 text-center">
 						<AlertCircle class="text-error mb-2 h-8 w-8 opacity-80" />
 						<span class="text-text-muted mb-1 text-xs font-bold tracking-widest uppercase">
-							Monto restante a liquidar
+							{{ $t('finances.debts.paymentModal.remainingAmount') }}
 						</span>
 						<span class="text-error text-3xl leading-none font-black tabular-nums">
 							{{ formatCurrency(selectedDebt.remaining) }}
@@ -290,7 +292,7 @@
 					<div class="form-control">
 						<label class="label pb-1" for="pay-amount">
 							<span class="label-text text-primary text-xs font-bold tracking-wider uppercase">
-								Monto Recibido (€) *
+								{{ $t('finances.debts.paymentModal.amountReceived') }}
 							</span>
 						</label>
 						<input
@@ -304,7 +306,7 @@
 					</div>
 
 					<div class="text-text-muted mt-2 px-4 text-center text-xs font-bold tracking-wider uppercase">
-						Al registrar el pago, el saldo pendiente de {{ selectedDebt.user?.name }} se reducirá.
+						{{ $t('finances.debts.paymentModal.disclaimer', { name: selectedDebt.user?.name }) }}
 					</div>
 				</div>
 
@@ -314,13 +316,13 @@
 						type="button"
 						class="btn btn-ghost text-text-muted hover:bg-bg-hover h-12 flex-1 rounded-xl"
 						@click="closePaymentModal">
-						Cancelar
+						{{ $t('finances.debts.paymentModal.cancel') }}
 					</button>
 					<button
 						type="button"
 						@click="processPayment"
 						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 flex-1 rounded-xl border-none font-bold shadow-md">
-						Confirmar Abono
+						{{ $t('finances.debts.paymentModal.confirm') }}
 					</button>
 				</div>
 			</div>

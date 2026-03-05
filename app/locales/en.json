@@ -200,5 +200,52 @@
 	"Efectivo": "Cash",
 	"Mixto": "Mixed",
 	"Deuda": "Debt",
-	"Procesar Cobro": "Process Payment"
+	"Procesar Cobro": "Process Payment",
+	"finances": {
+		"debts": {
+			"title": "Accounts Receivable",
+			"subtitle": "Management of client debts and defaults",
+			"filters": {
+				"all": "All debts",
+				"pending": "Pending / Partial",
+				"paid": "Settled (Paid)"
+			},
+			"searchPlaceholder": "Search client...",
+			"table": {
+				"client": "Client",
+				"dateOrig": "Orig. Date",
+				"dueDate": "Due Date",
+				"totalDebt": "Total Debt",
+				"pendingBalance": "Pending Bal.",
+				"status": "Status",
+				"actions": "Actions"
+			},
+			"status": {
+				"paid": "Settled",
+				"partial": "Pending",
+				"pending": "Unpaid"
+			},
+			"actions": {
+				"pay": "Receive Payment",
+				"fullyPaid": "Debt fully settled"
+			},
+			"emptyState": {
+				"title": "No Issues",
+				"description": "There are no clients with accounts payable or registered debts with the current filters."
+			},
+			"paymentModal": {
+				"title": "Register Payment",
+				"remainingAmount": "Remaining amount to settle",
+				"amountReceived": "Amount Received (€) *",
+				"disclaimer": "Upon registering the payment, the pending balance for {name} will be reduced.",
+				"cancel": "Cancel",
+				"confirm": "Confirm Payment"
+			},
+			"messages": {
+				"success": "Payment successfully registered",
+				"errorGeneric": "Error processing payment",
+				"invalidAmount": "Invalid amount"
+			}
+		}
+	}
 }

@@ -200,5 +200,52 @@
 	"Efectivo": "Gotówka",
 	"Mixto": "Mieszana",
 	"Deuda": "Dług",
-	"Procesar Cobro": "Przetwórz Płatność"
+	"Procesar Cobro": "Przetwórz Płatność",
+	"finances": {
+		"debts": {
+			"title": "Należności",
+			"subtitle": "Zarządzanie długami klientów i zaległościami",
+			"filters": {
+				"all": "Wszystkie długi",
+				"pending": "Oczekujące / Częściowe",
+				"paid": "Uregulowane (Zapłacono)"
+			},
+			"searchPlaceholder": "Szukaj klienta...",
+			"table": {
+				"client": "Klient",
+				"dateOrig": "Data Pierw.",
+				"dueDate": "Termin",
+				"totalDebt": "Całkowity Dług",
+				"pendingBalance": "Saldo Oczekujące",
+				"status": "Status",
+				"actions": "Akcje"
+			},
+			"status": {
+				"paid": "Uregulowana",
+				"partial": "Oczekująca",
+				"pending": "Niezapłacona"
+			},
+			"actions": {
+				"pay": "Pobierz Opłatę",
+				"fullyPaid": "Dług w pełni uregulowany"
+			},
+			"emptyState": {
+				"title": "Brak Problemów",
+				"description": "Brak klientów z kontami do zapłaty lub zarejestrowanymi długami przy obecnych filtrach."
+			},
+			"paymentModal": {
+				"title": "Zarejestruj Płatność",
+				"remainingAmount": "Pozostała kwota do uregulowania",
+				"amountReceived": "Otrzymana Kwota (€) *",
+				"disclaimer": "Po zarejestrowaniu płatności, oczekujące saldo dla {name} zostanie zmniejszone.",
+				"cancel": "Anuluj",
+				"confirm": "Potwierdź Płatność"
+			},
+			"messages": {
+				"success": "Płatność pomyślnie zarejestrowana",
+				"errorGeneric": "Błąd podczas przetwarzania płatności",
+				"invalidAmount": "Nieprawidłowa kwota"
+			}
+		}
+	}
 }
