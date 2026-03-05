@@ -1,41 +1,368 @@
-<script lang="ts" setup>
-	import { ShoppingBag, ArrowRight } from 'lucide-vue-next'
+<script setup lang="ts">
+	import { ref, computed } from 'vue'
+	import { useQuery } from '@tanstack/vue-query'
+	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 
 	definePageMeta({ layout: 'default' })
-	useHead({ title: 'Ventas | Dashboard' })
+	useHead({ title: 'Ventas | Finanzas' })
 
 	const { t } = useI18n()
+	const searchQuery = ref('')
+	const filterDate = ref('')
+
+	const selectedSale = ref<any | null>(null)
+	const detailsModalRef = ref<HTMLDialogElement | null>(null)
+
+	// We fetch carts with status completed
+	const { data: sales, isPending } = useQuery<any[]>({
+		queryKey: ['sales', 'completed'],
+		queryFn: () => $fetch('/api/sales/carts', { query: { status: 'completed' } }),
+	})
+
+	const filteredSales = computed(() => {
+		if (!sales.value) return []
+		let result = sales.value
+
+		if (searchQuery.value) {
+			const query = searchQuery.value.toLowerCase()
+			result = result.filter((s: any) => {
+				const clientName = s.user ? `${s.user.name} ${s.user.surname}`.toLowerCase() : ''
+				return clientName.includes(query) || s.cart_id.toLowerCase().includes(query)
+			})
+		}
+
+		if (filterDate.value) {
+			result = result.filter((s: any) => {
+				const saleDate = new Date(s.created_at).toISOString().split('T')[0]
+				return saleDate === filterDate.value
+			})
+		}
+
+		return result
+	})
+
+	const formatCurrency = (amount: number) => {
+		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
+	}
+
+	const formatDate = (dateString: string | null) => {
+		if (!dateString) return 'N/T'
+		const date = new Date(dateString)
+		return new Intl.DateTimeFormat('es-ES', {
+			day: '2-digit',
+			month: 'short',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+		}).format(date)
+	}
+
+	const getPaymentMethodBadge = (method: string) => {
+		const methods: Record<string, { label: string; class: string }> = {
+			cash: { label: t('Efectivo'), class: 'bg-emerald-100 text-emerald-800' },
+			card: { label: t('Tarjeta'), class: 'bg-blue-100 text-blue-800' },
+			mixed: { label: t('Mixto'), class: 'bg-purple-100 text-purple-800' },
+			transfer: { label: 'Transferencia', class: 'bg-orange-100 text-orange-800' },
+		}
+		return methods[method] || { label: method, class: 'bg-neutral text-neutral-content' }
+	}
+
+	const getTotalItems = (items: any[]) => {
+		if (!items) return 0
+		return items.reduce((acc: number, item: any) => acc + item.quantity, 0)
+	}
+
+	const openDetails = (sale: any) => {
+		selectedSale.value = sale
+		detailsModalRef.value?.showModal()
+	}
+
+	const closeDetails = () => {
+		detailsModalRef.value?.close()
+		setTimeout(() => {
+			selectedSale.value = null
+		}, 300)
+	}
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10">
-		<div class="mx-auto max-w-[1400px]">
+	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8">
+		<div class="mx-auto max-w-7xl">
 			<!-- Header -->
-			<header class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-				<div>
-					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">Ventas</h1>
-					<p class="text-text-muted text-sm font-medium">Historial y gestión de ventas realizadas</p>
+			<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+				<div class="flex items-center gap-3">
+					<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
+						<ShoppingBag class="h-6 w-6" />
+					</div>
+					<div>
+						<h1 class="text-2xl font-bold tracking-tight">{{ t('Ventas') }}</h1>
+						<p class="text-text-muted text-sm font-medium">Historial de tickets y facturación</p>
+					</div>
 				</div>
-				<button
-					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all">
-					<span class="font-bold">Ir a Terminal de Venta</span>
-					<ArrowRight class="h-5 w-5" />
-				</button>
-			</header>
 
-			<!-- Content Placeholder -->
-			<div
-				class="bg-bg-card flex flex-col items-center justify-center rounded-3xl py-24 text-center shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-				<div class="bg-bg-muted mb-6 flex h-24 w-24 items-center justify-center rounded-full">
-					<ShoppingBag class="text-text-muted/50 h-12 w-12" />
+				<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+					<div class="relative w-full sm:w-auto">
+						<Calendar class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+						<input
+							v-model="filterDate"
+							type="date"
+							class="input bg-bg-card border-border-default h-12 w-full rounded-2xl pl-10 text-sm shadow-sm" />
+					</div>
+
+					<div class="relative w-full sm:w-64">
+						<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+						<input
+							v-model="searchQuery"
+							type="text"
+							placeholder="Buscar ticket o cliente..."
+							class="input bg-bg-card border-border-default focus:border-primary focus:ring-primary/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
+					</div>
 				</div>
-				<h2 class="text-text-primary mb-2 text-2xl font-bold">Módulo de Ventas en Construcción</h2>
-				<p class="text-text-muted max-w-md text-sm">
-					Aquí podrás visualizar el historial completo de ventas, tickets emitidos, devoluciones y
-					métricas diarias. Próximamente disponible.
+			</div>
+
+			<!-- Loading State -->
+			<div
+				v-if="isPending"
+				class="bg-bg-card border-border-default h-96 w-full animate-pulse rounded-3xl border mix-blend-multiply shadow-sm"></div>
+
+			<!-- List -->
+			<div
+				v-else-if="filteredSales && filteredSales.length > 0"
+				class="bg-bg-card border-border-default rounded-3xl border shadow-sm">
+				<div class="w-full">
+					<table class="table w-full">
+						<thead>
+							<tr
+								class="border-border-default bg-bg-muted/50 text-text-muted text-xs tracking-wider uppercase">
+								<th class="py-4 pl-6">ID Ticket</th>
+								<th>Fecha y Hora</th>
+								<th>Cliente</th>
+								<th class="text-center">Artículos</th>
+								<th class="text-center">Método Pago</th>
+								<th class="text-right">Total</th>
+								<th class="pr-6 text-right">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								v-for="sale in filteredSales"
+								:key="sale.cart_id"
+								class="border-border-default hover:bg-bg-muted/30 group transition-colors">
+								<td class="text-text-muted py-4 pl-6 text-xs font-bold tracking-wider uppercase">
+									#{{ sale.cart_id.split('-')[0] }}
+								</td>
+
+								<td class="text-sm font-medium">
+									{{ formatDate(sale.created_at) }}
+								</td>
+
+								<td>
+									<div class="flex items-center gap-3">
+										<div class="avatar placeholder flex shrink-0 items-center justify-center">
+											<div
+												class="bg-neutral text-neutral-content flex h-8 w-8 items-center justify-center rounded-full">
+												<span class="text-[10px] font-bold uppercase">
+													{{
+														sale.user
+															? `${sale.user.name?.charAt(0)}${sale.user.surname?.charAt(0)}`
+															: 'W'
+													}}
+												</span>
+											</div>
+										</div>
+										<div class="text-sm font-bold">
+											{{
+												sale.user
+													? `${sale.user.name} ${sale.user.surname}`
+													: 'Cliente Sin Registrar'
+											}}
+										</div>
+									</div>
+								</td>
+
+								<td class="text-center">
+									<div class="badge badge-ghost font-bold">
+										{{ getTotalItems(sale.items) }} items
+									</div>
+								</td>
+
+								<td class="text-center">
+									<span
+										class="badge badge-sm border-none font-bold tracking-wider uppercase"
+										:class="getPaymentMethodBadge(sale.payment_method).class">
+										{{ getPaymentMethodBadge(sale.payment_method).label }}
+									</span>
+								</td>
+
+								<td class="text-text-primary text-right text-base font-black tabular-nums">
+									{{ formatCurrency(sale.total) }}
+								</td>
+
+								<td class="sticky right-0 pr-6 text-right">
+									<button
+										@click="openDetails(sale)"
+										class="btn btn-sm btn-ghost text-text-muted hover:text-primary hover:bg-primary/10 rounded-lg">
+										<ExternalLink class="h-4 w-4" />
+										<span class="hidden md:inline">Ver Detalles</span>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Empty State -->
+			<div
+				v-else
+				class="bg-bg-card border-border-default flex flex-col items-center justify-center rounded-3xl border border-dashed px-4 py-20 text-center">
+				<div class="bg-primary/10 mb-4 flex h-20 w-20 items-center justify-center rounded-full">
+					<ShoppingBag class="text-primary h-10 w-10" />
+				</div>
+				<h3 class="mb-1 text-xl font-bold">Sin Ventas Registradas</h3>
+				<p class="text-text-muted mb-6 max-w-sm text-sm">
+					No hay tickets o ventas completadas en el historial con los filtros actuales.
 				</p>
 			</div>
 		</div>
+
+		<!-- Details Modal -->
+		<dialog ref="detailsModalRef" class="modal">
+			<div
+				class="modal-box bg-bg-card text-text-secondary w-11/12 max-w-2xl overflow-hidden rounded-4xl p-0 shadow-xl"
+				v-if="selectedSale">
+				<!-- Modal Header -->
+				<div
+					class="bg-bg-muted/30 border-border-default sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md">
+					<div>
+						<h3 class="text-xl font-bold tracking-tight">Detalles del Ticket</h3>
+						<p class="text-text-muted text-xs font-medium tracking-wider uppercase">
+							#{{ selectedSale.cart_id.split('-')[0] }} • {{ formatDate(selectedSale.created_at) }}
+						</p>
+					</div>
+					<button
+						type="button"
+						class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-text-primary"
+						@click="closeDetails">
+						✕
+					</button>
+				</div>
+
+				<!-- Modal Body -->
+				<div class="p-6">
+					<!-- Client Info Summary -->
+					<div
+						class="bg-bg-muted/30 border-border-default mb-6 flex items-center justify-between rounded-2xl border p-4">
+						<div class="flex items-center gap-3">
+							<div class="avatar placeholder">
+								<div class="bg-primary/10 text-primary w-12 rounded-full">
+									<span class="text-sm font-bold uppercase">
+										{{
+											selectedSale.user
+												? `${selectedSale.user.name?.charAt(0)}${selectedSale.user.surname?.charAt(0)}`
+												: 'W'
+										}}
+									</span>
+								</div>
+							</div>
+							<div>
+								<div class="text-text-primary font-bold">
+									{{
+										selectedSale.user
+											? `${selectedSale.user.name} ${selectedSale.user.surname}`
+											: 'Cliente Sin Registrar (Walk-in)'
+									}}
+								</div>
+								<div class="text-text-muted text-xs" v-if="selectedSale.user?.email">
+									{{ selectedSale.user.email }}
+								</div>
+							</div>
+						</div>
+						<div class="text-right">
+							<div class="text-text-muted text-xs font-bold tracking-wider uppercase">Método</div>
+							<div
+								class="badge badge-sm font-bold tracking-wider uppercase"
+								:class="getPaymentMethodBadge(selectedSale.payment_method).class">
+								{{ getPaymentMethodBadge(selectedSale.payment_method).label }}
+							</div>
+						</div>
+					</div>
+
+					<!-- Items List -->
+					<h4 class="text-text-primary mb-3 text-sm font-bold tracking-wider uppercase">
+						Artículos ({{ getTotalItems(selectedSale.items) }})
+					</h4>
+					<div class="border-border-default bg-bg-app mb-6 rounded-2xl border">
+						<div class="max-h-[300px] overflow-y-auto">
+							<table class="table w-full">
+								<thead class="bg-bg-muted/50 sticky top-0 z-10 backdrop-blur-sm">
+									<tr class="text-text-muted border-none text-xs tracking-wider uppercase">
+										<th class="py-3 pl-4">Concepto</th>
+										<th class="text-center">Cant.</th>
+										<th class="text-right">Precio</th>
+										<th class="pr-4 text-right">Subtotal</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										v-for="item in selectedSale.items"
+										:key="item.cart_item_id"
+										class="border-border-default hover:bg-bg-muted/30 border-t">
+										<td class="py-3 pl-4">
+											<div class="text-text-primary font-bold">{{ item.name }}</div>
+											<div class="text-text-muted text-[10px] uppercase">{{ item.item_type }}</div>
+										</td>
+										<td class="text-center font-medium">{{ item.quantity }}</td>
+										<td class="text-right tabular-nums">{{ formatCurrency(item.unit_price) }}</td>
+										<td class="text-text-primary pr-4 text-right font-bold tabular-nums">
+											{{ formatCurrency(item.total) }}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- Totals Summary -->
+					<div class="flex flex-col items-end gap-2 text-sm">
+						<div class="text-text-muted flex w-full max-w-[250px] justify-between font-medium">
+							<span>Subtotal:</span>
+							<span class="tabular-nums">{{ formatCurrency(selectedSale.subtotal) }}</span>
+						</div>
+						<div
+							class="text-error flex w-full max-w-[250px] justify-between font-medium"
+							v-if="selectedSale.discount > 0">
+							<span>Descuento:</span>
+							<span class="tabular-nums">-{{ formatCurrency(selectedSale.discount) }}</span>
+						</div>
+						<div
+							class="border-border-default text-text-primary mt-2 flex w-full max-w-[250px] justify-between border-t pt-2 text-lg font-black">
+							<span>Total Pagado:</span>
+							<span class="tabular-nums">{{ formatCurrency(selectedSale.total) }}</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Footer Action -->
+				<div
+					class="bg-bg-muted/30 border-border-default sticky bottom-0 z-20 flex w-full justify-end gap-3 p-4 backdrop-blur-md">
+					<button
+						type="button"
+						class="btn btn-ghost text-text-muted hover:bg-bg-hover h-12 rounded-xl"
+						@click="closeDetails">
+						Cerrar
+					</button>
+					<button
+						type="button"
+						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 rounded-xl border-none font-bold shadow-md">
+						Descargar Recibo
+					</button>
+				</div>
+			</div>
+			<form method="dialog" class="modal-backdrop bg-text-secondary/40 backdrop-blur-sm">
+				<button @click="closeDetails">close</button>
+			</form>
+		</dialog>
 	</div>
 </template>

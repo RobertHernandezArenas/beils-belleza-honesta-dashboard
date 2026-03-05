@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="relative min-h-screen w-full overflow-hidden bg-bg-app p-6 font-sans text-text-secondary lg:p-10">
+		class="bg-bg-app text-text-secondary relative min-h-screen w-full overflow-hidden p-6 font-sans lg:p-10">
 		<!-- Minimalist background without blobs -->
 
 		<!-- Contenedor Principal -->
@@ -57,7 +57,7 @@
 	const { t } = useI18n()
 
 	useHead({
-		title: t('nav.users') + ' | Transpallet Plus',
+		title: t('nav.users') + ' | beilsbellezhonesta Plus',
 		meta: [{ name: 'description', content: 'Lista y gestión de usuarios del sistema' }],
 	})
 
