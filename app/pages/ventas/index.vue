@@ -138,7 +138,7 @@
 								<th class="py-4 pl-6">ID Ticket</th>
 								<th>Fecha y Hora</th>
 								<th>Cliente</th>
-								<th class="text-center">Artículos</th>
+								<th class="hidden text-center lg:table-cell">Artículos</th>
 								<th class="text-center">Método Pago</th>
 								<th class="text-right">Total</th>
 								<th class="pr-6 text-right">Acciones</th>
@@ -181,7 +181,7 @@
 									</div>
 								</td>
 
-								<td class="text-center">
+								<td class="hidden text-center lg:table-cell">
 									<div class="badge badge-ghost font-bold">
 										{{ getTotalItems(sale.items) }} items
 									</div>
