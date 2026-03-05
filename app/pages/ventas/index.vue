@@ -3,6 +3,7 @@
 	import { useQuery } from '@tanstack/vue-query'
 	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import QrcodeVue from 'qrcode.vue'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Ventas | Finanzas' })
@@ -13,6 +14,10 @@
 
 	const selectedSale = ref<any | null>(null)
 	const detailsModalRef = ref<HTMLDialogElement | null>(null)
+
+	const printTicket = () => {
+		window.print()
+	}
 
 	// We fetch carts with status completed
 	const { data: sales, isPending } = useQuery<any[]>({
@@ -152,7 +157,10 @@
 								:key="sale.cart_id"
 								class="border-border-default hover:bg-bg-muted/30 group transition-colors">
 								<td class="text-text-muted py-4 pl-6 text-xs font-bold tracking-wider uppercase">
-									#{{ sale.cart_id.split('-')[0] }}
+									<span v-if="sale.invoice_number" class="text-text-primary px-1">
+										{{ sale.invoice_number }}
+									</span>
+									<span v-else>#{{ sale.cart_id.split('-')[0] }}</span>
 								</td>
 
 								<td class="text-sm font-medium">
@@ -237,14 +245,30 @@
 				<div
 					class="bg-bg-muted/30 border-border-default sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md">
 					<div>
-						<h3 class="text-xl font-bold tracking-tight">{{ $t('sales.modal.title') }}</h3>
+						<h3 class="text-xl font-bold tracking-tight">
+							{{
+								selectedSale.invoice_type === 'F1'
+									? 'Factura'
+									: selectedSale.invoice_type === 'F2'
+										? 'Factura Simplificada'
+										: $t('sales.modal.title')
+							}}
+						</h3>
 						<p class="text-text-muted text-xs font-medium tracking-wider uppercase">
-							#{{ selectedSale.cart_id.split('-')[0] }} • {{ formatDate(selectedSale.created_at) }}
+							<span
+								v-if="selectedSale.invoice_number"
+								class="text-text-primary border-border-default mr-1 border-r pr-2">
+								{{ selectedSale.invoice_number }}
+							</span>
+							<span v-else class="border-border-default mr-1 border-r pr-2">
+								#{{ selectedSale.cart_id.split('-')[0] }}
+							</span>
+							<span class="ml-1">{{ formatDate(selectedSale.created_at) }}</span>
 						</p>
 					</div>
 					<button
 						type="button"
-						class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-text-primary"
+						class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-text-primary print:hidden"
 						@click="closeDetails">
 						✕
 					</button>
@@ -276,6 +300,9 @@
 											? `${selectedSale.user.name} ${selectedSale.user.surname}`
 											: $t('sales.modal.walkInClient')
 									}}
+								</div>
+								<div class="text-text-muted text-xs" v-if="selectedSale.user?.document_number">
+									NIF/CIF: {{ selectedSale.user.document_number }}
 								</div>
 								<div class="text-text-muted text-xs" v-if="selectedSale.user?.email">
 									{{ selectedSale.user.email }}
@@ -347,11 +374,34 @@
 							<span class="tabular-nums">{{ formatCurrency(selectedSale.total) }}</span>
 						</div>
 					</div>
+
+					<!-- VERI*FACTU & QR Block -->
+					<div
+						v-if="selectedSale.qr_content"
+						class="border-border-default bg-bg-muted/10 mt-6 flex flex-col items-center justify-between gap-6 rounded-2xl border-t px-2 pt-6 pb-2 md:flex-row">
+						<div class="flex max-w-sm flex-col gap-2">
+							<div class="flex items-center gap-2">
+								<span
+									class="badge badge-success badge-sm border-none px-2 py-3 text-[10px] font-bold tracking-widest uppercase opacity-90">
+									AEAT Verificada
+								</span>
+								<h5 class="text-text-primary font-bold tracking-widest">VERI*FACTU</h5>
+							</div>
+							<p class="text-text-muted text-[11px] leading-relaxed">
+								Esta factura ha sido enviada al registro oficial de la Agencia Estatal de
+								Administración Tributaria. Puede verificar su vigencia escaneando este código QR con
+								un dispositivo habilitado.
+							</p>
+						</div>
+						<div class="border-border-default shrink-0 rounded-xl border bg-white p-2 shadow-sm">
+							<qrcode-vue :value="selectedSale.qr_content" :size="90" level="M" />
+						</div>
+					</div>
 				</div>
 
 				<!-- Footer Action -->
 				<div
-					class="bg-bg-muted/30 border-border-default sticky bottom-0 z-20 flex w-full justify-end gap-3 p-4 backdrop-blur-md">
+					class="bg-bg-muted/30 border-border-default sticky bottom-0 z-20 flex w-full justify-end gap-3 p-4 backdrop-blur-md print:hidden">
 					<button
 						type="button"
 						class="btn btn-ghost text-text-muted hover:bg-bg-hover h-12 rounded-xl"
@@ -360,6 +410,7 @@
 					</button>
 					<button
 						type="button"
+						@click="printTicket"
 						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 rounded-xl border-none font-bold shadow-md">
 						{{ $t('sales.modal.buttons.download') }}
 					</button>
@@ -371,3 +422,30 @@
 		</dialog>
 	</div>
 </template>
+
+<style>
+	@media print {
+		body * {
+			visibility: hidden;
+		}
+		.modal-box,
+		.modal-box * {
+			visibility: visible;
+		}
+		.modal-box {
+			position: absolute !important;
+			left: 0 !important;
+			top: 0 !important;
+			width: 100% !important;
+			max-width: 100% !important;
+			margin: 0 !important;
+			border-radius: 0 !important;
+			box-shadow: none !important;
+			height: auto !important;
+			max-height: none !important;
+		}
+		.print\:hidden {
+			display: none !important;
+		}
+	}
+</style>

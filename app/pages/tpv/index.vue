@@ -342,7 +342,7 @@
 		<div
 			class="bg-bg-card border-border-default z-20 flex h-[45dvh] w-full shrink-0 flex-col border-t shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] md:h-full md:w-[340px] md:border-t-0 md:border-l lg:w-[380px] xl:w-[440px]">
 			<!-- Client Selector Header -->
-			<div class="bg-bg-muted/30 border-border-default border-b p-5 pt-6 backdrop-blur-md">
+			<div class="bg-bg-muted/30 border-border-default relative z-50 border-b p-5 pt-6 backdrop-blur-md">
 				<div class="relative">
 					<div v-if="!selectedClient" class="relative">
 						<UserIcon class="text-text-muted absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />

@@ -62,10 +62,7 @@ const roles = ['ADMIN', 'USER'] as const
 const statuses = ['ON', 'OFF'] as const
 const documentTypes = ['DNI', 'PASSPORT', 'NIE'] as const
 const genders = ['Male', 'Female', 'Other']
-const brandNames = [
-  "Masglo",
-  "Bioline Jato"
-]
+const brandNames = ['Masglo', 'Bioline Jato']
 const bookingStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show']
 
 function getRandomItem<T>(arr: readonly T[] | T[]): T {
@@ -84,6 +81,11 @@ async function seedDB() {
 		await prisma.booking.deleteMany()
 		await prisma.questionnaire.deleteMany()
 		await prisma.consent.deleteMany()
+		await prisma.revoke.deleteMany()
+		await prisma.debt.deleteMany()
+		await prisma.cartItem.deleteMany()
+		await prisma.cart.deleteMany()
+		await prisma.sequence.deleteMany()
 		await prisma.revoke.deleteMany()
 		await prisma.brand.deleteMany()
 		await prisma.user.deleteMany()

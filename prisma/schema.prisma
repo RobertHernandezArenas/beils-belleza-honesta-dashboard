@@ -354,6 +354,22 @@ model Giftcard {
 }
 
 // ==========================================
+// VERI*FACTU & SEQUENCES
+// ==========================================
+
+model Sequence {
+  id         String   @id @default(uuid())
+  type       String   @unique // Ej: "invoice_2025"
+  prefix     String   // Ej: "BBH"
+  year       Int      // Ej: 2025
+  last_value Int      @default(0)
+  
+  updated_at DateTime @updatedAt
+  
+  @@map("sequences")
+}
+
+// ==========================================
 // PHASE 5: SALES / PAYMENTS / TPV (Point of Sale)
 // ==========================================
 
@@ -374,6 +390,14 @@ model Cart {
   // Applied coupons/giftcards during checkout (stored as codes for history)
   applied_coupon   String?  @db.VarChar(50)
   applied_giftcard String?  @db.VarChar(50)
+
+  // Veri*Factu (AEAT) Fields
+  invoice_number   String?  @unique @db.VarChar(50) // e.g. BBH-2025-001
+  invoice_type     String?  @db.VarChar(4) // F1 (Factura Completa), F2 (Ticket)
+  qr_content       String?  @db.Text
+  aeat_status      String   @default("pending_submission") @db.VarChar(50) // pending_submission, submitted, error
+  hash             String?  @db.VarChar(100)
+  previous_hash    String?  @db.VarChar(100)
 
   items        CartItem[]
   debts        Debt[]

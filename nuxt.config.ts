@@ -16,6 +16,10 @@ export default defineNuxtConfig({
 		display: 'swap',
 	},
 
+	build: {
+		transpile: ['echarts', 'vue-echarts', 'zrender'],
+	},
+
 	telemetry: false, // Disable telemetry for speed
 	vite: {
 		server: {
@@ -31,7 +35,15 @@ export default defineNuxtConfig({
 			tailwindcss(),
 		],
 		optimizeDeps: {
-			include: ['aos', 'lucide-vue-next', '@tanstack/vue-query', 'vue-i18n', 'zod'],
+			include: [
+				'aos',
+				'lucide-vue-next',
+				'@tanstack/vue-query',
+				'vue-i18n',
+				'zod',
+				'echarts',
+				'vue-echarts',
+			],
 		},
 	},
 })

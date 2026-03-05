@@ -1,4 +1,9 @@
-
+import {
+	generateInvoiceNumber,
+	generateInvoiceHash,
+	generateQRData,
+	submitToAEAT,
+} from '../../../utils/verifactu'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -71,10 +76,54 @@ export default defineEventHandler(async event => {
 			total = total - discount
 			if (total < 0) total = 0
 
-			// Update cart with valid totals
+			let verifactuData: any = {}
+
+			if (cartData.status === 'completed') {
+				// Fetch user for NIF/CIF if user_id exists
+				const currentUser = user_id
+					? await tx.user.findUnique({
+							where: { user_id },
+							select: { document_number: true },
+						})
+					: null
+
+				const nif = currentUser?.document_number || '00000000T' // F2 fallback
+				const invoiceType = currentUser?.document_number ? 'F1' : 'F2'
+
+				const lastInvoice = await tx.cart.findFirst({
+					where: { status: 'completed', hash: { not: null } },
+					orderBy: { created_at: 'desc' },
+				})
+				const previousHash = lastInvoice?.hash || null
+
+				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'F2')
+				const hash = generateInvoiceHash(nif, invoiceNumber, new Date(), invoiceType, total, previousHash)
+				const qrData = generateQRData(nif, invoiceNumber, total, hash)
+
+				verifactuData = {
+					invoice_number: invoiceNumber,
+					invoice_type: invoiceType,
+					qr_content: qrData,
+					hash: hash,
+					previous_hash: previousHash,
+					aeat_status: 'pending_submission',
+				}
+
+				// Async AEAT sumbission wrapper (non-blocking)
+				submitToAEAT(verifactuData)
+					.then(async (result: { status: string; message: string }) => {
+						await prisma.cart.update({
+							where: { cart_id: createdCart.cart_id },
+							data: { aeat_status: result.status },
+						})
+					})
+					.catch(console.error)
+			}
+
+			// Update cart with valid totals and verifactu payload
 			return await tx.cart.update({
 				where: { cart_id: createdCart.cart_id },
-				data: { subtotal, total },
+				data: { subtotal, total, ...verifactuData },
 				include: { items: true, user: { select: { name: true, surname: true } } },
 			})
 		})
