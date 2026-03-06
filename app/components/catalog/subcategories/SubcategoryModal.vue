@@ -174,7 +174,7 @@
 					</label>
 					<select
 						v-model="form.category_id"
-						class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-all focus:ring-4"
+						class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
 						:class="{ 'border-error focus:border-error focus:ring-error/20': errors.category_id }"
 						@change="clearError('category_id')"
 						:disabled="loadingCategories">
@@ -198,7 +198,7 @@
 						v-model="form.name"
 						type="text"
 						placeholder="Ej. Labiales, Cremas Anti-edad..."
-						class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-all focus:ring-4"
+						class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
 						:class="{ 'border-error focus:border-error focus:ring-error/20': errors.name }"
 						@input="clearError('name')" />
 					<span v-if="errors.name" class="text-error mt-1.5 ml-1 text-xs font-bold">
@@ -215,7 +215,7 @@
 					<textarea
 						v-model="form.description"
 						placeholder="Breve descripción de la subcategoría..."
-						class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-24 w-full resize-none rounded-xl border-transparent font-medium shadow-inner transition-all focus:ring-4"
+						class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-24 w-full resize-none rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
 						@input="clearError('description')"></textarea>
 				</div>
 
@@ -230,7 +230,7 @@
 					</button>
 					<button
 						type="submit"
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-all hover:shadow-lg"
+						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors transition-transform hover:shadow-lg"
 						:disabled="isPending">
 						<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
 						<template v-else>

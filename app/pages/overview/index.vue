@@ -249,7 +249,7 @@
 						</div>
 						<NuxtLink
 							to="/catalogo/productos"
-							class="btn btn-sm bg-warning text-warning-content rounded-full border-none font-bold transition-all hover:scale-105 hover:brightness-95">
+							class="btn btn-sm bg-warning text-warning-content rounded-full border-none font-bold transition-colors transition-transform hover:scale-105 hover:brightness-95">
 							Revisar Stock
 						</NuxtLink>
 					</div>

@@ -80,7 +80,7 @@
 					<p class="text-text-muted text-sm font-medium">Clasificación detallada de productos</p>
 				</div>
 				<button
-					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all"
+					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors transition-transform"
 					@click="openCreateModal">
 					<Plus class="h-5 w-5" />
 					<span class="font-bold">Nueva Subcategoría</span>

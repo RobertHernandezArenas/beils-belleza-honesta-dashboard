@@ -127,7 +127,7 @@
 								v-model="form.name"
 								type="text"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 
 						<div class="form-control">
@@ -141,7 +141,7 @@
 								v-model="form.code"
 								type="text"
 								placeholder="SVC-01"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 					</div>
 
@@ -155,7 +155,7 @@
 							id="svc-desc"
 							v-model="form.description"
 							rows="3"
-							class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-all focus:shadow-md focus:outline-none"></textarea>
+							class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none"></textarea>
 					</div>
 
 					<div class="divider my-0 opacity-50"></div>
@@ -177,7 +177,7 @@
 								step="0.01"
 								min="0"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 
 						<div class="form-control">
@@ -193,7 +193,7 @@
 								step="0.1"
 								min="0"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 
 						<div class="form-control">
@@ -208,7 +208,7 @@
 								type="number"
 								min="1"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover text-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover text-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 					</div>
 				</form>

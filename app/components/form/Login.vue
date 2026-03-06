@@ -172,7 +172,7 @@
 									autocomplete="username"
 									placeholder="usuario@ejemplo.com"
 									:aria-invalid="!!errors.email"
-									class="input bg-bg-app text-text-primary placeholder:text-border-strong hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/50 h-12 w-full rounded-2xl border-transparent pr-4 pl-11 text-sm font-medium shadow-inner transition-all duration-300 placeholder:font-normal focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pl-12 sm:text-base lg:h-16 lg:text-lg"
+									class="input bg-bg-app text-text-primary placeholder:text-border-strong hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/50 h-12 w-full rounded-2xl border-transparent pr-4 pl-11 text-sm font-medium shadow-inner transition-colors transition-transform duration-300 placeholder:font-normal focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pl-12 sm:text-base lg:h-16 lg:text-lg"
 									:class="{
 										'border-red-500 focus:border-red-500 focus:outline-none': errors.email,
 									}"
@@ -201,7 +201,7 @@
 									autocomplete="current-password"
 									placeholder="••••••••"
 									:aria-invalid="!!errors.password"
-									class="input bg-bg-app text-text-secondary placeholder:text-border-strong hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/50 h-12 w-full rounded-2xl border-transparent pr-11 pl-11 text-sm font-medium tracking-widest shadow-inner transition-all duration-300 placeholder:font-normal focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pr-12 sm:pl-12 sm:text-lg lg:h-16 lg:text-xl"
+									class="input bg-bg-app text-text-secondary placeholder:text-border-strong hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/50 h-12 w-full rounded-2xl border-transparent pr-11 pl-11 text-sm font-medium tracking-widest shadow-inner transition-colors transition-transform duration-300 placeholder:font-normal focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pr-12 sm:pl-12 sm:text-lg lg:h-16 lg:text-xl"
 									:class="{
 										'border-red-500 focus:border-red-500 focus:outline-none': errors.password,
 									}"

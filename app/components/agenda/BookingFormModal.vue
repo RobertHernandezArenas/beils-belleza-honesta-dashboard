@@ -161,7 +161,7 @@
 								id="book-client"
 								v-model="form.client_id"
 								required
-								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold shadow-sm transition-all focus:shadow-md focus:outline-none">
+								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none">
 								<option value="" disabled>Selecciona un cliente</option>
 								<option v-for="client in clients" :key="client.user_id" :value="client.user_id">
 									{{ client.name }} {{ client.surname }} ({{ client.phone }})
@@ -178,7 +178,7 @@
 							<select
 								id="book-staff"
 								v-model="form.staff_id"
-								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-all focus:shadow-md focus:outline-none">
+								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none">
 								<option value="">-- Sin asignar --</option>
 								<option v-for="user in staff" :key="user.user_id" :value="user.user_id">
 									{{ user.name }} {{ user.surname }}
@@ -202,7 +202,7 @@
 								v-model="form.booking_date"
 								type="date"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold uppercase shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold uppercase shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 
 						<div class="form-control">
@@ -216,7 +216,7 @@
 								v-model="form.start_time"
 								type="time"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 
 						<div class="form-control">
@@ -232,7 +232,7 @@
 								step="5"
 								min="5"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-all focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 						</div>
 					</div>
 
@@ -247,7 +247,7 @@
 						<div
 							class="tabs tabs-boxed bg-bg-muted/50 border-border-default mt-1 mb-2 flex w-fit rounded-xl border p-1">
 							<a
-								class="tab h-8 rounded-lg px-6 text-xs font-bold tracking-wider transition-all"
+								class="tab h-8 rounded-lg px-6 text-xs font-bold tracking-wider transition-colors transition-transform"
 								:class="
 									activeTab === 'service'
 										? 'bg-bg-card text-text-primary shadow-sm'
@@ -257,7 +257,7 @@
 								Servicio Individual
 							</a>
 							<a
-								class="tab h-8 rounded-lg px-6 text-xs font-bold tracking-wider transition-all"
+								class="tab h-8 rounded-lg px-6 text-xs font-bold tracking-wider transition-colors transition-transform"
 								:class="
 									activeTab === 'pack'
 										? 'bg-bg-card text-text-primary shadow-sm'
@@ -272,7 +272,7 @@
 							<select
 								v-model="form.item_id"
 								required
-								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold shadow-sm transition-all focus:shadow-md focus:outline-none">
+								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none">
 								<option value="" disabled>-- Selecciona un ítem --</option>
 								<template v-if="activeTab === 'service'">
 									<option v-for="s in services" :key="s.service_id" :value="s.service_id">
@@ -300,7 +300,7 @@
 							v-model="form.notes"
 							rows="2"
 							placeholder="Especificaciones del cliente, alertas, etc."
-							class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-all focus:shadow-md focus:outline-none"></textarea>
+							class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none"></textarea>
 					</div>
 				</form>
 			</div>

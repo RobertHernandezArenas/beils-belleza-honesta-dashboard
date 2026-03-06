@@ -155,7 +155,8 @@
 							<tr
 								v-for="sale in filteredSales"
 								:key="sale.cart_id"
-								class="border-border-default hover:bg-bg-muted/30 group transition-colors">
+								@click.stop.prevent="openDetails(sale)"
+								class="border-border-default hover:bg-bg-muted/30 group cursor-pointer transition-colors">
 								<td class="text-text-muted py-4 pl-6 text-xs font-bold tracking-wider uppercase">
 									<span v-if="sale.invoice_number" class="text-text-primary px-1">
 										{{ sale.invoice_number }}
@@ -183,11 +184,16 @@
 											</div>
 										</div>
 										<div class="text-sm font-bold">
-											{{
-												sale.user
-													? `${sale.user.name} ${sale.user.surname}`
-													: $t('sales.table.unregistered')
-											}}
+											<NuxtLink
+												v-if="sale.user"
+												:to="`/clientes/${sale.user_id}`"
+												@click.stop
+												class="hover:text-primary transition-colors hover:underline">
+												{{ sale.user.name }} {{ sale.user.surname }}
+											</NuxtLink>
+											<span v-else>
+												{{ $t('sales.table.unregistered') }}
+											</span>
 										</div>
 									</div>
 								</td>
@@ -212,7 +218,7 @@
 
 								<td class="sticky right-0 pr-6 text-right">
 									<button
-										@click="openDetails(sale)"
+										@click.stop.prevent="openDetails(sale)"
 										class="btn btn-sm btn-ghost text-text-muted hover:text-primary hover:bg-primary/10 rounded-lg">
 										<ExternalLink class="h-4 w-4" />
 										<span class="hidden md:inline">{{ $t('sales.table.details') }}</span>

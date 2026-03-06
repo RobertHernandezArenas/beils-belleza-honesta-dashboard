@@ -159,7 +159,7 @@
 				<button
 					@click="exportToPDF"
 					:disabled="isPending || isExporting"
-					class="btn bg-bg-card text-text-secondary hover:bg-bg-muted border-border-subtle flex h-12 items-center gap-2 rounded-full border px-6 shadow-sm transition-all disabled:opacity-50 print:hidden">
+					class="btn bg-bg-card text-text-secondary hover:bg-bg-muted border-border-subtle flex h-12 items-center gap-2 rounded-full border px-6 shadow-sm transition-colors transition-transform disabled:opacity-50 print:hidden">
 					<Loader2 v-if="isExporting" class="h-5 w-5 animate-spin" />
 					<Download v-else class="h-5 w-5" />
 					<span class="font-bold">

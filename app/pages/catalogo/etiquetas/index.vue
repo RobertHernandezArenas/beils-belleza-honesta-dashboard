@@ -72,7 +72,7 @@
 					<p class="text-text-muted text-sm font-medium">Gestiona las etiquetas de tus productos</p>
 				</div>
 				<button
-					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all"
+					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors transition-transform"
 					@click="openCreateModal">
 					<Plus class="h-5 w-5" />
 					<span class="font-bold">Nueva Etiqueta</span>
@@ -104,7 +104,7 @@
 				<div
 					v-for="tag in tags"
 					:key="tag.tag_id"
-					class="bg-bg-card group flex cursor-pointer items-center justify-between rounded-full py-2 pr-2 pl-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:-translate-y-0.5 hover:shadow-md"
+					class="bg-bg-card group flex cursor-pointer items-center justify-between rounded-full py-2 pr-2 pl-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors transition-transform hover:-translate-y-0.5 hover:shadow-md"
 					@click="openEditModal(tag)">
 					<div class="flex items-center gap-2 overflow-hidden">
 						<Hash class="text-primary h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />

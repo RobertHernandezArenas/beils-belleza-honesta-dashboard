@@ -34,9 +34,26 @@
 html {
 	margin: 0;
 	padding: 0;
+	-webkit-tap-highlight-color: transparent;
+	overscroll-behavior-y: none; /* Previene "pull-to-refresh" no deseado o rebotes en Safari/Chrome en PWA */
 }
 
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Touch Strategy */
 button,
-a {
-	touch-action: manipulation;
+a,
+input,
+select,
+textarea {
+	touch-action: manipulation; /* Mata el delay de 300ms en iOS/Android */
+}
+
+/* Base Accessibility Focus Rule */
+*:focus-visible {
+	outline: 2px solid var(--color-primary, #1a1a1a) !important;
+	outline-offset: 2px !important;
 }

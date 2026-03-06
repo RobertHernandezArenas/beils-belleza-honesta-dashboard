@@ -118,7 +118,7 @@
 				<div
 					v-for="service in services"
 					:key="service.service_id"
-					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between rounded-3xl border p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between rounded-3xl border p-6 shadow-sm transition-colors transition-transform duration-300 hover:shadow-md">
 					<div class="mb-4">
 						<div class="mb-2 flex items-start justify-between">
 							<div class="flex items-center gap-2">
