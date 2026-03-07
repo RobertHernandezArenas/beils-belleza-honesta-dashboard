@@ -47,21 +47,9 @@
 		return result
 	})
 
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
-	}
+	
 
-	const formatDate = (dateString: string | null) => {
-		if (!dateString) return 'N/T'
-		const date = new Date(dateString)
-		return new Intl.DateTimeFormat('es-ES', {
-			day: '2-digit',
-			month: 'short',
-			year: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit',
-		}).format(date)
-	}
+	
 
 	const getPaymentMethodBadge = (method: string) => {
 		const methods: Record<string, { label: string; class: string }> = {

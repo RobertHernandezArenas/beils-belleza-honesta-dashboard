@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation } from '@tanstack/vue-query'
 	import {
 		ShoppingBag,
@@ -203,10 +202,6 @@
 		toastType.value = type
 		showToast.value = true
 		setTimeout(() => (showToast.value = false), 3000)
-	}
-
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
 	}
 </script>
 
@@ -534,7 +529,9 @@
 								: 'bg-error/5 text-error hover:bg-error/10'
 						"
 						@click="paymentMethod = 'debt'">
-						<span class="mt-1 mb-0.5 text-lg leading-none font-black tabular-nums">0€</span>
+						<span class="mt-1 mb-0.5 text-lg leading-none font-black tabular-nums">
+							{{ formatCurrency(0) }}
+						</span>
 						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Deuda') }}</span>
 					</button>
 				</div>

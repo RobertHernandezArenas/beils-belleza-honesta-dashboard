@@ -62,9 +62,7 @@
 	}
 	const formattedDate = new Intl.DateTimeFormat('es-ES', dateOptions).format(today)
 
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
-	}
+	
 
 	const formatTime = (dateString: string) => {
 		return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(

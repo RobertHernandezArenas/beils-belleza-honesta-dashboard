@@ -276,12 +276,12 @@
 								<option value="" disabled>-- Selecciona un ítem --</option>
 								<template v-if="activeTab === 'service'">
 									<option v-for="s in services" :key="s.service_id" :value="s.service_id">
-										{{ s.name }} ({{ s.price }}€)
+										{{ s.name }} ({{ formatCurrency(s.price) }})
 									</option>
 								</template>
 								<template v-else>
 									<option v-for="p in packs" :key="p.pack_id" :value="p.pack_id">
-										{{ p.name }} ({{ p.price }}€)
+										{{ p.name }} ({{ formatCurrency(p.price) }})
 									</option>
 								</template>
 							</select>

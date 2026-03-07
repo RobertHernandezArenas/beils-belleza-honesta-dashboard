@@ -303,7 +303,7 @@
 								</span>
 								<p
 									class="text-text-primary mb-3 text-xl leading-none font-bold tabular-nums line-through opacity-70">
-									{{ calculatedBasePrice.toFixed(2) }} €
+									{{ formatCurrency(calculatedBasePrice) }}
 								</p>
 
 								<div class="form-control">
@@ -355,7 +355,9 @@
 											@click="addServiceToPack(s)"
 											class="hover:bg-bg-muted flex w-full items-center justify-between rounded-lg px-3 py-2 text-left">
 											<span class="text-sm font-medium">{{ s.name }}</span>
-											<span class="text-text-muted text-xs font-bold">{{ s.price }} €</span>
+											<span class="text-text-muted text-xs font-bold">
+												{{ formatCurrency(s.price) }}
+											</span>
 										</button>
 									</li>
 								</ul>
@@ -374,7 +376,7 @@
 									class="border-border-default flex items-center justify-between border-b p-3 last:border-b-0">
 									<div class="flex flex-col">
 										<span class="text-sm font-bold">{{ s.name }}</span>
-										<span class="text-text-muted text-xs">{{ s.price }} € c/u</span>
+										<span class="text-text-muted text-xs">{{ formatCurrency(s.price) }} c/u</span>
 									</div>
 									<div class="flex items-center gap-3">
 										<input
@@ -418,7 +420,9 @@
 											@click="addProductToPack(p)"
 											class="hover:bg-bg-muted flex w-full items-center justify-between rounded-lg px-3 py-2 text-left">
 											<span class="text-sm font-medium">{{ p.name }}</span>
-											<span class="text-text-muted text-xs font-bold">{{ p.price }} €</span>
+											<span class="text-text-muted text-xs font-bold">
+												{{ formatCurrency(p.price) }}
+											</span>
 										</button>
 									</li>
 								</ul>
@@ -437,7 +441,7 @@
 									class="border-border-default flex items-center justify-between border-b p-3 last:border-b-0">
 									<div class="flex flex-col">
 										<span class="text-sm font-bold">{{ p.name }}</span>
-										<span class="text-text-muted text-xs">{{ p.price }} € c/u</span>
+										<span class="text-text-muted text-xs">{{ formatCurrency(p.price) }} c/u</span>
 									</div>
 									<div class="flex items-center gap-3">
 										<input

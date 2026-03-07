@@ -28,9 +28,7 @@
 		queryFn: () => $fetch('/api/reports'),
 	})
 
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
-	}
+	
 
 	// Line Chart Options (Revenue Trend)
 	const revenueTrendOptions = computed(() => {

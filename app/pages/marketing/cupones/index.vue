@@ -62,18 +62,9 @@
 		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)
 	}
 
-	const formatDate = (dateString: string | null) => {
-		if (!dateString) return 'Sin límite'
-		return new Date(dateString).toLocaleDateString('es-ES', {
-			day: '2-digit',
-			month: 'short',
-			year: 'numeric',
-		})
-	}
+	
 
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
-	}
+	
 </script>
 
 <template>

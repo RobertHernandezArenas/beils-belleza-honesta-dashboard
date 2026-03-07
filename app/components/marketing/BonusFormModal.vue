@@ -169,7 +169,7 @@
 								v-for="service in services"
 								:key="service.service_id"
 								:value="service.service_id">
-								{{ service.name }} ({{ service.price }}€)
+								{{ service.name }} ({{ formatCurrency(service.price) }})
 							</option>
 						</select>
 						<span class="text-text-muted mt-1 ml-1 text-[10px] font-bold tracking-wider uppercase">
@@ -212,7 +212,7 @@
 								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
 							<span class="text-text-muted mt-2 ml-1 text-xs font-bold">
 								Equivale a:
-								<span class="text-primary">{{ pricePerSession }} €</span>
+								<span class="text-primary">{{ formatCurrency(pricePerSession) }}</span>
 								por sesión
 							</span>
 						</div>

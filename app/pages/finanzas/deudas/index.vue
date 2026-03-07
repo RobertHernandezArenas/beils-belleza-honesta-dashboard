@@ -94,18 +94,9 @@
 		setTimeout(() => (showToast.value = false), 3000)
 	}
 
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
-	}
+	
 
-	const formatDate = (dateString: string | null) => {
-		if (!dateString) return 'N/T'
-		return new Date(dateString).toLocaleDateString('es-ES', {
-			day: '2-digit',
-			month: 'short',
-			year: 'numeric',
-		})
-	}
+	
 </script>
 
 <template>
