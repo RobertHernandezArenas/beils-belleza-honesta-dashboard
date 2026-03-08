@@ -61,8 +61,6 @@
 		setTimeout(() => (showToast.value = false), 3000)
 	}
 
-	
-
 	const countItems = (pack: any) => {
 		const services = pack.services?.length || 0
 		const products = pack.products?.length || 0
@@ -118,7 +116,7 @@
 				<div
 					v-for="pack in packs"
 					:key="pack.pack_id"
-					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between gap-4 rounded-3xl border p-5 shadow-sm transition-colors transition-transform duration-300 hover:shadow-md sm:flex-row sm:items-center">
+					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between gap-4 rounded-3xl border p-5 shadow-sm transition-colors duration-300 hover:shadow-md sm:flex-row sm:items-center">
 					<div class="flex flex-1 items-start gap-4">
 						<div
 							class="bg-bg-muted border-border-default h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl border">

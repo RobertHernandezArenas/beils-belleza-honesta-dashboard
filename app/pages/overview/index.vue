@@ -62,8 +62,6 @@
 	}
 	const formattedDate = new Intl.DateTimeFormat('es-ES', dateOptions).format(today)
 
-	
-
 	const formatTime = (dateString: string) => {
 		return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(
 			new Date(dateString),
@@ -174,7 +172,7 @@
 						<div class="mb-4 flex items-center justify-between">
 							<h3 class="text-text-muted text-sm font-medium">Ingresos del Día</h3>
 							<div
-								class="bg-success/10 text-success flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								class="bg-success/10 text-success flex h-10 w-10 items-center justify-center rounded-2xl duration-300 group-hover:scale-105">
 								<CircleDollarSign class="h-5 w-5" />
 							</div>
 						</div>
@@ -189,7 +187,7 @@
 						<div class="mb-4 flex items-center justify-between">
 							<h3 class="text-text-muted text-sm font-medium">Citas de Hoy</h3>
 							<div
-								class="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								class="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-2xl duration-300 group-hover:scale-105">
 								<CalendarCheck class="h-5 w-5" />
 							</div>
 						</div>
@@ -204,7 +202,7 @@
 						<div class="mb-4 flex items-center justify-between">
 							<h3 class="text-text-muted text-sm font-medium">Nuevos Clientes (7d)</h3>
 							<div
-								class="bg-info/10 text-info flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								class="bg-info/10 text-info flex h-10 w-10 items-center justify-center rounded-2xl duration-300 group-hover:scale-105">
 								<Users class="h-5 w-5" />
 							</div>
 						</div>
@@ -219,7 +217,7 @@
 						<div class="mb-4 flex items-center justify-between">
 							<h3 class="text-text-muted text-sm font-medium">Deudas Pendientes</h3>
 							<div
-								class="bg-error/10 text-error flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105">
+								class="bg-error/10 text-error flex h-10 w-10 items-center justify-center rounded-2xl duration-300 group-hover:scale-105">
 								<AlertCircle class="h-5 w-5" />
 							</div>
 						</div>
@@ -247,7 +245,7 @@
 						</div>
 						<NuxtLink
 							to="/catalogo/productos"
-							class="btn btn-sm bg-warning text-warning-content rounded-full border-none font-bold transition-colors transition-transform hover:scale-105 hover:brightness-95">
+							class="btn btn-sm bg-warning text-warning-content rounded-full border-none font-bold transition-colors hover:scale-105 hover:brightness-95">
 							Revisar Stock
 						</NuxtLink>
 					</div>

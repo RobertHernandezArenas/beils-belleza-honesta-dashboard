@@ -66,7 +66,7 @@
 				aria-label="close sidebar"
 				class="drawer-overlay bg-text-secondary/40 backdrop-blur-sm lg:hidden"></label>
 			<aside
-				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-transform duration-300 lg:w-72">
+				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl duration-300 lg:w-72">
 				<!-- Glow lateral en sidebar -->
 				<div
 					class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-r to-transparent"></div>
@@ -109,7 +109,7 @@
 								@click="isDrawerOpen = false">
 								<component
 									:is="item.icon"
-									class="h-5 w-5 transition-transform group-hover:scale-110"
+									class="h-5 w-5 group-hover:scale-110"
 									:class="route.path === item.to ? 'text-bg-card' : ''" />
 								<span
 									class="text-[13px] tracking-wider uppercase"
@@ -121,9 +121,7 @@
 							<button
 								v-else
 								class="group text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-colors duration-300">
-								<component
-									:is="item.icon"
-									class="h-5 w-5 transition-transform group-hover:scale-110" />
+								<component :is="item.icon" class="h-5 w-5 group-hover:scale-110" />
 								<span class="text-[13px] font-bold tracking-wider uppercase">
 									{{ t(item.label) }}
 								</span>
@@ -165,7 +163,7 @@
 						<button
 							@click="handleLogout"
 							class="group hover:text-bg-card flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff0000]/30 bg-[#ff0000]/10 px-4 py-2.5 font-bold text-[#ff0000] transition-[background-color,border-color,color,transform,box-shadow] hover:border-[#ff0000] hover:bg-[#ff0000] hover:shadow-md">
-							<LogOut class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+							<LogOut class="h-4 w-4 group-hover:-translate-x-0.5" />
 							<span class="text-xs tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}
 							</span>

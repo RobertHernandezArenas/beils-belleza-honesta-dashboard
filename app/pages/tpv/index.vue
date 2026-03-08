@@ -229,7 +229,7 @@
 					class="bg-bg-card border-border-default flex w-full flex-1 flex-nowrap items-center gap-1.5 overflow-x-auto rounded-4xl border p-1.5 shadow-sm"
 					style="scrollbar-width: none; -ms-overflow-style: none">
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors transition-transform duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'services'
 								? 'bg-text-primary text-bg-card scale-100 shadow-md'
@@ -240,7 +240,7 @@
 						<span>{{ $t('Servicios') }}</span>
 					</a>
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors transition-transform duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'products'
 								? 'bg-text-primary text-bg-card scale-100 shadow-md'
@@ -251,7 +251,7 @@
 						<span v-text="$t('Productos')"></span>
 					</a>
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors transition-transform duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'packs'
 								? 'bg-text-primary text-bg-card scale-100 shadow-md'
@@ -262,7 +262,7 @@
 						<span v-text="$t('Packs')"></span>
 					</a>
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors transition-transform duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
 						:class="
 							activeTab === 'bonuses'
 								? 'bg-text-primary text-bg-card scale-100 shadow-md'
@@ -279,7 +279,7 @@
 						v-model="searchQuery"
 						type="text"
 						:placeholder="$t('Buscar en catálogo...')"
-						class="input bg-bg-card focus:border-primary/50 focus:ring-primary/20 h-14 w-full rounded-4xl border-transparent pr-5 pl-14 text-sm font-medium shadow-sm transition-colors transition-transform focus:ring-4" />
+						class="input bg-bg-card focus:border-primary/50 focus:ring-primary/20 h-14 w-full rounded-4xl border-transparent pr-5 pl-14 text-sm font-medium shadow-sm transition-colors focus:ring-4" />
 				</div>
 			</div>
 
@@ -290,7 +290,7 @@
 						v-for="item in filteredCatalog"
 						:key="item.product_id || item.service_id || item.pack_id || item.bonus_id"
 						@click="addToCart(item, activeTab === 'bonuses' ? 'bonus' : activeTab.slice(0, -1))"
-						class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-36 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border p-4 text-left shadow-sm transition-colors transition-transform hover:-translate-y-1 hover:shadow-md active:scale-95">
+						class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-36 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border p-4 text-left shadow-sm transition-colors hover:-translate-y-1 hover:shadow-md active:scale-95">
 						<div class="z-10 flex flex-col">
 							<span
 								class="group-hover:text-primary line-clamp-2 text-sm leading-tight font-bold transition-colors">
@@ -345,7 +345,7 @@
 							v-model="clientSearch"
 							type="text"
 							:placeholder="$t('Buscar cliente por teléfono o nombre...')"
-							class="input bg-bg-card border-border-default focus:border-primary focus:ring-primary/20 h-12 w-full rounded-2xl pl-12 text-sm shadow-sm transition-colors transition-transform focus:shadow-md" />
+							class="input bg-bg-card border-border-default focus:border-primary focus:ring-primary/20 h-12 w-full rounded-2xl pl-12 text-sm shadow-sm transition-colors focus:shadow-md" />
 
 						<!-- Client Autocomplete Dropdown -->
 						<ul
@@ -489,7 +489,7 @@
 				<!-- Payment Methods -->
 				<div class="mb-6 grid grid-cols-2 gap-2 lg:grid-cols-4">
 					<button
-						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 transition-transform active:scale-95 active:opacity-80"
+						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
 						:class="
 							paymentMethod === 'card'
 								? 'bg-text-primary text-bg-card border-text-primary shadow-md'
@@ -500,7 +500,7 @@
 						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Tarjeta') }}</span>
 					</button>
 					<button
-						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 transition-transform active:scale-95 active:opacity-80"
+						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
 						:class="
 							paymentMethod === 'cash'
 								? 'bg-text-primary text-bg-card border-text-primary shadow-md'
@@ -511,7 +511,7 @@
 						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Efectivo') }}</span>
 					</button>
 					<button
-						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 transition-transform active:scale-95 active:opacity-80"
+						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
 						:class="
 							paymentMethod === 'mixed'
 								? 'bg-text-primary text-bg-card border-text-primary shadow-md'
@@ -522,7 +522,7 @@
 						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Mixto') }}</span>
 					</button>
 					<button
-						class="btn border-error/20 flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 transition-transform active:scale-95 active:opacity-80"
+						class="btn border-error/20 flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
 						:class="
 							paymentMethod === 'debt'
 								? 'bg-error border-error text-white shadow-md'
@@ -540,7 +540,7 @@
 				<button
 					@click="handleCheckout"
 					:disabled="cartItems.length === 0 || isCheckingOut"
-					class="btn h-16 w-full rounded-2xl border-none text-lg font-black tracking-wider uppercase shadow-xl transition-transform active:scale-95"
+					class="btn h-16 w-full rounded-2xl border-none text-lg font-black tracking-wider uppercase shadow-xl active:scale-95"
 					:class="
 						cartItems.length > 0
 							? 'bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-white'

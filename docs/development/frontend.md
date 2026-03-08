@@ -103,7 +103,7 @@ Un panel de administración empresarial moderno debe ser accesible:
 - **Animaciones Sutiles:**
    - Usa los modificadores `-transition` de Tailwind.
    - **PROHIBIDO:** Usar `transition: all`. Esto acarrea graves problemas de rendimiento en listas largas.
-     Declara las propiedades que cambias: `transition-opacity`, `transition-transform duration-200 ease-out`.
+     Declara las propiedades que cambias: `transition-opacity`, ` duration-200 ease-out`.
    - Aplica `touch-action: manipulation` a botones móviles para eliminar el micro-retraso táctil (Double-tap
      delay).
 - **Tabular Nums:** En columnas donde haya precios (ej. "25,00 €") o fechas alineadas (ej. "14:30:00"), aplica

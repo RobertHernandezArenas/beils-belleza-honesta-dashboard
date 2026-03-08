@@ -93,10 +93,6 @@
 		showToast.value = true
 		setTimeout(() => (showToast.value = false), 3000)
 	}
-
-	
-
-	
 </script>
 
 <template>
@@ -293,7 +289,7 @@
 							step="0.01"
 							min="0.01"
 							:max="selectedDebt.remaining"
-							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
+							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" />
 					</div>
 
 					<div class="text-text-muted mt-2 px-4 text-center text-xs font-bold tracking-wider uppercase">

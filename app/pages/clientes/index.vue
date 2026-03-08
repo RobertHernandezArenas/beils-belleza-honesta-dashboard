@@ -95,10 +95,10 @@
 							v-model="searchQuery"
 							type="text"
 							placeholder="Buscar nombre o correo..."
-							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors transition-transform focus:ring-4 md:w-64" />
+							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4 md:w-64" />
 					</div>
 					<button
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors transition-transform"
+						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors"
 						@click="openCreateModal">
 						<Plus class="h-5 w-5" />
 						<span class="font-bold">{{ t('catalog.clients.newClient') }}</span>

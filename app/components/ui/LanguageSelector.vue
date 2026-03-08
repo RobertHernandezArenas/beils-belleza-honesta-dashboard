@@ -68,7 +68,7 @@
 				</span>
 			</div>
 			<ChevronDown
-				class="text-text-light group-hover:text-text-secondary h-3 w-3 transition-transform duration-200"
+				class="text-text-light group-hover:text-text-secondary h-3 w-3 duration-200"
 				:class="{ 'rotate-180': isOpen }" />
 		</button>
 

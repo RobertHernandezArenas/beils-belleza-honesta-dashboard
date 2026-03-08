@@ -1,14 +1,13 @@
 <template>
-	<div class="relative overflow-hidden rounded-[2rem] bg-bg-card p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+	<div class="bg-bg-card relative overflow-hidden rounded-4xl p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 		<!-- Glow interno del contenedor -->
-		<div
-			class="pointer-events-none absolute inset-0 z-0 bg-linear-to-b from-bg-app to-transparent"></div>
+		<div class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-b to-transparent"></div>
 
 		<div class="relative z-10 w-full overflow-hidden overflow-x-auto rounded-[1.75rem]">
 			<table class="table w-full border-collapse">
 				<thead class="bg-bg-muted">
 					<tr
-						class="border-b border-transparent text-xs font-medium tracking-wider text-text-muted uppercase">
+						class="text-text-muted border-b border-transparent text-xs font-medium tracking-wider uppercase">
 						<th class="px-6 py-5">{{ $t('users.table.user') }}</th>
 						<th class="px-6 py-5">{{ $t('users.table.role') }}</th>
 						<th class="px-6 py-5">{{ $t('users.table.status') }}</th>
@@ -18,16 +17,16 @@
 				<tbody v-if="pending" class="min-h-[400px]">
 					<tr v-for="i in 5" :key="i" class="border-b border-transparent/60">
 						<td class="px-6 py-4">
-							<div class="skeleton h-12 w-48 rounded bg-bg-hover"></div>
+							<div class="skeleton bg-bg-hover h-12 w-48 rounded"></div>
 						</td>
 						<td class="px-6 py-4">
-							<div class="skeleton h-6 w-24 rounded bg-bg-hover"></div>
+							<div class="skeleton bg-bg-hover h-6 w-24 rounded"></div>
 						</td>
 						<td class="px-6 py-4">
-							<div class="skeleton h-6 w-20 rounded bg-bg-hover"></div>
+							<div class="skeleton bg-bg-hover h-6 w-20 rounded"></div>
 						</td>
 						<td class="px-6 py-4 text-right">
-							<div class="skeleton ml-auto h-8 w-32 rounded bg-bg-hover"></div>
+							<div class="skeleton bg-bg-hover ml-auto h-8 w-32 rounded"></div>
 						</td>
 					</tr>
 				</tbody>
@@ -35,13 +34,13 @@
 					<tr
 						v-for="user in users"
 						:key="user.user_id"
-						class="cursor-pointer transition-colors hover:bg-bg-app"
+						class="hover:bg-bg-app cursor-pointer transition-colors"
 						@click="$emit('edit', user)">
 						<td class="px-6 py-4">
 							<div class="flex items-center gap-4">
 								<div class="avatar">
 									<div
-										class="ring-offset-base-100 w-12 rounded-full ring ring-[#dbd2c6] ring-offset-2">
+										class="ring-offset-base-100 ring-border-default w-12 rounded-full ring ring-offset-2">
 										<img
 											:src="user.avatar || ''"
 											alt="Avatar"
@@ -51,10 +50,10 @@
 									</div>
 								</div>
 								<div>
-									<div class="text-base font-bold text-text-secondary">
+									<div class="text-text-secondary text-base font-bold">
 										{{ user.name }} {{ user.surname }}
 									</div>
-									<div class="text-xs font-semibold tracking-wider text-text-light">
+									<div class="text-text-light text-xs font-semibold tracking-wider">
 										{{ user.email }}
 									</div>
 								</div>
@@ -62,9 +61,9 @@
 						</td>
 						<td class="px-6 py-4">
 							<div class="flex items-center gap-2">
-								<ShieldCheck v-if="user.role === 'ADMIN'" class="h-4 w-4 text-text-secondary" />
-								<User v-else class="h-4 w-4 text-text-light" />
-								<span class="text-sm font-bold text-text-muted">
+								<ShieldCheck v-if="user.role === 'ADMIN'" class="text-text-secondary h-4 w-4" />
+								<User v-else class="text-text-light h-4 w-4" />
+								<span class="text-text-muted text-sm font-bold">
 									{{ $t('users.constants.roles.' + user.role) }}
 								</span>
 							</div>
@@ -75,12 +74,12 @@
 								:class="
 									user.status === 'ON'
 										? 'border-green-300 bg-green-100 text-green-700'
-										: 'border-transparent bg-bg-app text-text-light'
+										: 'bg-bg-app text-text-light border-transparent'
 								">
 								<div
 									class="h-1.5 w-1.5 rounded-full"
 									:class="
-										user.status === 'ON' ? 'animate-pulse bg-green-500' : 'bg-[#bababa]'
+										user.status === 'ON' ? 'animate-pulse bg-green-500' : 'bg-border-strong'
 									"></div>
 								{{ $t('users.constants.status.' + user.status) }}
 							</div>
@@ -104,7 +103,7 @@
 										"
 										@click.stop="$emit('toggle-status', user)">
 										<ToggleRight v-if="user.status === 'ON'" class="h-5 w-5 text-green-600" />
-										<ToggleLeft v-else class="h-5 w-5 text-text-light" />
+										<ToggleLeft v-else class="text-text-light h-5 w-5" />
 									</button>
 								</div>
 
@@ -114,7 +113,7 @@
 										class="btn btn-circle btn-sm btn-ghost hover:bg-bg-hover"
 										:aria-label="$t('users.form.editTitle')"
 										@click.stop="$emit('edit', user)">
-										<Pencil class="h-4 w-4 text-text-muted" />
+										<Pencil class="text-text-muted h-4 w-4" />
 									</button>
 								</div>
 
@@ -149,10 +148,10 @@
 			<div
 				v-if="!pending && users.length === 0"
 				class="flex min-h-[400px] flex-col items-center justify-center py-16 text-center">
-				<div class="mb-4 rounded-full bg-bg-app p-6 ring-1 ring-[#dbd2c6]">
-					<Users class="h-12 w-12 text-border-strong" />
+				<div class="bg-bg-app ring-border-default mb-4 rounded-full p-6 ring-1">
+					<Users class="text-border-strong h-12 w-12" />
 				</div>
-				<h3 class="text-xl font-bold text-text-secondary">{{ $t('users.table.empty') }}</h3>
+				<h3 class="text-text-secondary text-xl font-bold">{{ $t('users.table.empty') }}</h3>
 			</div>
 		</div>
 

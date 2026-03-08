@@ -71,7 +71,7 @@
 	// Validación Zod
 	const brandSchema = z.object({
 		name: z.string().min(1, 'El nombre de la marca es obligatorio'),
-		description: z.string().optional(),
+		description: z.string().default(''),
 	})
 
 	const { mutate: saveBrand, isPending } = useMutation({
@@ -156,7 +156,7 @@
 						v-model="form.name"
 						type="text"
 						placeholder="Ej. L'Oréal Paris, Kerastase..."
-						class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+						class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 						:class="{ 'border-error focus:border-error focus:ring-error/20': errors.name }"
 						@input="clearError('name')" />
 					<span v-if="errors.name" class="text-error mt-1.5 ml-1 text-xs font-bold">
@@ -173,7 +173,7 @@
 					<textarea
 						v-model="form.description"
 						placeholder="Breve descripción de la marca..."
-						class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-24 w-full resize-none rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+						class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-24 w-full resize-none rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 						@input="clearError('description')"></textarea>
 				</div>
 
@@ -188,7 +188,7 @@
 					</button>
 					<button
 						type="submit"
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors transition-transform hover:shadow-lg"
+						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
 						:disabled="isPending">
 						<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
 						<template v-else>

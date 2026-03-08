@@ -138,7 +138,7 @@
 								v-model="form.code"
 								type="text"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-12 w-full rounded-xl pr-12 text-center font-mono text-xl font-black tracking-[0.2em] shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-12 w-full rounded-xl pr-12 text-center font-mono text-xl font-black tracking-[0.2em] shadow-sm transition-colors focus:shadow-md focus:outline-none" />
 							<button
 								type="button"
 								v-if="!editingCard"
@@ -166,7 +166,7 @@
 								min="0"
 								required
 								:disabled="editingCard !== null"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none disabled:opacity-50" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none disabled:opacity-50" />
 						</div>
 
 						<div class="form-control" v-if="editingCard">
@@ -182,7 +182,7 @@
 								step="0.01"
 								min="0"
 								required
-								class="input bg-primary/10 border-primary text-primary focus:bg-bg-card focus:ring-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
+								class="input bg-primary/10 border-primary text-primary focus:bg-bg-card focus:ring-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" />
 						</div>
 					</div>
 
@@ -198,7 +198,7 @@
 								v-model="form.issue_date"
 								type="datetime-local"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" />
 						</div>
 
 						<div class="form-control">
@@ -211,7 +211,7 @@
 								id="card-end"
 								v-model="form.expiration_date"
 								type="datetime-local"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-[background-color,border-color,box-shadow] duration-200 focus:shadow-md focus:outline-none" />
 						</div>
 					</div>
 				</form>

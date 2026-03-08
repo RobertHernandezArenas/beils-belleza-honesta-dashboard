@@ -176,7 +176,7 @@
 							v-model="form.name"
 							type="text"
 							placeholder="Iñigo"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.name }"
 							@input="clearError('name')" />
 						<span v-if="errors.name" class="text-error mt-1.5 ml-1 text-xs font-bold">
@@ -194,7 +194,7 @@
 							v-model="form.surname"
 							type="text"
 							placeholder="López..."
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.surname }"
 							@input="clearError('surname')" />
 						<span v-if="errors.surname" class="text-error mt-1.5 ml-1 text-xs font-bold">
@@ -212,7 +212,7 @@
 							v-model="form.email"
 							type="email"
 							placeholder="cliente@correo.com"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.email }"
 							@input="clearError('email')" />
 						<span v-if="errors.email" class="text-error mt-1.5 ml-1 text-xs font-bold">
@@ -230,7 +230,7 @@
 							v-model="form.phone"
 							type="tel"
 							placeholder="+34 600..."
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.phone }"
 							@input="clearError('phone')" />
 						<span v-if="errors.phone" class="text-error mt-1.5 ml-1 text-xs font-bold">
@@ -246,7 +246,7 @@
 						</label>
 						<select
 							v-model="form.document_type"
-							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4">
+							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
 							<option value="DNI">DNI</option>
 							<option value="NIE">NIE</option>
 							<option value="PASSPORT">Pasaporte</option>
@@ -263,7 +263,7 @@
 							v-model="form.document_number"
 							type="text"
 							placeholder="12345678Z"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors transition-transform focus:ring-4"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 							:class="{
 								'border-error focus:border-error focus:ring-error/20': errors.document_number,
 							}"
@@ -285,7 +285,7 @@
 					</button>
 					<button
 						type="submit"
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors transition-transform hover:shadow-lg"
+						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
 						:disabled="isPending">
 						<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
 						<template v-else>

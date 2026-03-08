@@ -10,16 +10,19 @@
 	const emit = defineEmits(['refresh', 'toast'])
 
 	// Dependencies
-	const { data: brands } = useQuery({ queryKey: ['brands'], queryFn: () => $fetch('/api/catalog/brands') })
+	const { data: brands } = useQuery({
+		queryKey: ['brands'],
+		queryFn: () => $fetch<any[]>('/api/catalog/brands'),
+	})
 	const { data: categories } = useQuery({
 		queryKey: ['categories'],
-		queryFn: () => $fetch('/api/catalog/categories'),
+		queryFn: () => $fetch<any[]>('/api/catalog/categories'),
 	})
 	const { data: subcategories } = useQuery({
 		queryKey: ['subcategories'],
-		queryFn: () => $fetch('/api/catalog/subcategories'),
+		queryFn: () => $fetch<any[]>('/api/catalog/subcategories'),
 	})
-	const { data: tags } = useQuery({ queryKey: ['tags'], queryFn: () => $fetch('/api/catalog/tags') })
+	const { data: tags } = useQuery({ queryKey: ['tags'], queryFn: () => $fetch<any[]>('/api/catalog/tags') })
 
 	const form = reactive({
 		name: '',
@@ -203,7 +206,7 @@
 								v-model="form.name"
 								type="text"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
 						</div>
 
 						<div class="grid grid-cols-2 gap-4">
@@ -219,7 +222,7 @@
 									v-model="form.sku"
 									type="text"
 									placeholder="Ej. PRD-001"
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
+									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
 							</div>
 							<div class="form-control">
 								<label class="label pb-1" for="prod-barcode">
@@ -233,7 +236,7 @@
 									v-model="form.barcode"
 									type="text"
 									placeholder="Código de barras"
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
+									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
 							</div>
 						</div>
 
@@ -247,7 +250,7 @@
 								id="prod-desc"
 								v-model="form.description"
 								rows="4"
-								class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none"></textarea>
+								class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none"></textarea>
 						</div>
 
 						<div class="form-control">
@@ -261,7 +264,7 @@
 								v-model="form.image_url"
 								type="url"
 								placeholder="https://"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
 						</div>
 					</div>
 
@@ -282,7 +285,7 @@
 								</label>
 								<select
 									v-model="form.brand_id"
-									class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors transition-transform">
+									class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors">
 									<option value="">Ninguna</option>
 									<option v-for="b in brands" :key="b.brand_id" :value="b.brand_id">
 										{{ b.name }}
@@ -299,7 +302,7 @@
 								<select
 									v-model="form.category_id"
 									@change="form.subcategory_id = ''"
-									class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors transition-transform">
+									class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors">
 									<option value="">Ninguna</option>
 									<option v-for="c in categories" :key="c.category_id" :value="c.category_id">
 										{{ c.name }}
@@ -316,7 +319,7 @@
 							</label>
 							<select
 								v-model="form.subcategory_id"
-								class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors transition-transform">
+								class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors">
 								<option value="">Ninguna</option>
 								<option
 									v-for="sc in filteredSubcategories"
@@ -377,7 +380,7 @@
 										step="0.01"
 										min="0"
 										required
-										class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl pl-9 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md" />
+										class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl pl-9 text-sm font-medium shadow-sm transition-colors focus:shadow-md" />
 								</div>
 							</div>
 							<div class="form-control relative">
@@ -393,7 +396,7 @@
 									step="0.1"
 									min="0"
 									required
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md" />
+									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md" />
 							</div>
 						</div>
 
@@ -410,7 +413,7 @@
 									type="number"
 									min="0"
 									required
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors transition-transform focus:shadow-md" />
+									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md" />
 							</div>
 							<div class="form-control">
 								<label class="label pb-1">
@@ -423,7 +426,7 @@
 									v-model="form.min_stock"
 									type="number"
 									min="0"
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform focus:shadow-md" />
+									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md" />
 							</div>
 						</div>
 					</div>

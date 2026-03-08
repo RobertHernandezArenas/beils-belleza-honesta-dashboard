@@ -61,10 +61,6 @@
 		if (type === 'percentage') return `${value}%`
 		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)
 	}
-
-	
-
-	
 </script>
 
 <template>
@@ -115,7 +111,7 @@
 				<div
 					v-for="coupon in coupons"
 					:key="coupon.coupon_id"
-					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between rounded-3xl border p-6 shadow-sm transition-colors transition-transform duration-300 hover:shadow-md">
+					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between rounded-3xl border p-6 shadow-sm transition-colors duration-300 hover:shadow-md">
 					<div class="mb-4">
 						<div class="mb-2 flex items-start justify-between">
 							<div class="flex flex-col">

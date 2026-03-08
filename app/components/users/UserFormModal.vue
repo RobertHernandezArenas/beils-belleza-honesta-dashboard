@@ -1,9 +1,9 @@
 <template>
 	<dialog ref="userModal" class="modal">
 		<div
-			class="modal-box bg-bg-card text-text-secondary relative w-11/12 max-w-4xl rounded-[2rem] p-8 shadow-lg backdrop-blur-md">
+			class="modal-box bg-bg-card text-text-secondary relative w-11/12 max-w-4xl rounded-4xl p-8 shadow-lg backdrop-blur-md">
 			<div
-				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-[2rem] bg-linear-to-b to-transparent"></div>
+				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-4xl bg-linear-to-b to-transparent"></div>
 
 			<button
 				type="button"
@@ -30,7 +30,7 @@
 								id="user-name"
 								v-model="form.name"
 								type="text"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-surname">
@@ -42,7 +42,7 @@
 								id="user-surname"
 								v-model="form.surname"
 								type="text"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-email">
@@ -55,7 +55,7 @@
 								v-model="form.email"
 								type="email"
 								:disabled="!isAdmin"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 disabled:bg-bg-muted border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 disabled:bg-bg-muted border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-password">
@@ -73,7 +73,7 @@
 										? $t('users.form.passwordPlaceholderEdit')
 										: $t('users.form.passwordPlaceholderNew')
 								"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 
 						<div class="form-control dropdown w-full">
@@ -85,12 +85,12 @@
 							<div
 								tabindex="0"
 								role="button"
-								class="input bg-bg-muted text-text-primary hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default flex h-11 w-full items-center justify-between rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base"
+								class="input bg-bg-muted text-text-primary hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default flex h-11 w-full items-center justify-between rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base"
 								aria-labelledby="label-doctype">
 								<span class="font-medium">
 									{{ form.document_type === 'PASSPORT' ? 'Pasaporte' : form.document_type }}
 								</span>
-								<ChevronDown class="h-4 w-4 opacity-50 transition-transform" />
+								<ChevronDown class="h-4 w-4 opacity-50" />
 							</div>
 							<ul
 								tabindex="0"
@@ -106,7 +106,7 @@
 										class="hover:bg-bg-hover hover:text-text-secondary rounded-lg px-4 py-2.5 font-medium transition-colors"
 										:class="
 											form.document_type === type.value
-												? 'text-bg-card bg-[#404040]'
+												? 'text-bg-card bg-text-secondary'
 												: 'text-text-muted'
 										"
 										@click.prevent="selectOption('document_type', type.value)">
@@ -125,7 +125,7 @@
 								id="user-docnum"
 								v-model="form.document_number"
 								type="text"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 
 						<div class="form-control">
@@ -138,7 +138,7 @@
 								id="user-phone"
 								v-model="form.phone"
 								type="tel"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control dropdown w-full">
 							<label class="label pb-1" id="label-role">
@@ -149,7 +149,7 @@
 							<div
 								:tabindex="!isAdmin ? -1 : 0"
 								role="button"
-								class="input border-border-default text-text-primary focus:bg-bg-card focus:ring-border-subtle/40 flex h-11 w-full items-center justify-between rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 sm:h-12 sm:text-base"
+								class="input border-border-default text-text-primary focus:bg-bg-card focus:ring-border-subtle/40 flex h-11 w-full items-center justify-between rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 sm:h-12 sm:text-base"
 								:class="
 									!isAdmin
 										? 'bg-bg-muted cursor-not-allowed opacity-50 shadow-none'
@@ -160,7 +160,7 @@
 								<span class="font-medium">
 									{{ $t('users.constants.roles.' + form.role) }}
 								</span>
-								<ChevronDown class="h-4 w-4 opacity-50 transition-transform" />
+								<ChevronDown class="h-4 w-4 opacity-50" />
 							</div>
 							<ul
 								tabindex="0"
@@ -175,7 +175,9 @@
 										class="hover:bg-bg-hover hover:text-text-secondary rounded-lg py-2.5 font-bold transition-colors"
 										v-show="isAdmin"
 										:class="
-											form.role === role.value ? 'text-bg-card bg-[#404040]' : 'text-text-muted'
+											form.role === role.value
+												? 'text-bg-card bg-text-secondary'
+												: 'text-text-muted'
 										"
 										@click.prevent="selectOption('role', role.value)">
 										{{ role.label }}
@@ -194,7 +196,7 @@
 								id="user-address"
 								v-model="form.address"
 								type="text"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 
 						<div class="form-control">
@@ -207,7 +209,7 @@
 								id="user-city"
 								v-model="form.city"
 								type="text"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 						<div class="form-control">
 							<label class="label pb-1" for="user-country">
@@ -219,7 +221,7 @@
 								id="user-country"
 								v-model="form.country"
 								type="text"
-								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors transition-transform duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
+								class="input bg-bg-muted text-text-primary placeholder:text-text-light hover:bg-bg-hover focus:bg-bg-card focus:ring-border-subtle/40 border-border-default h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 placeholder:font-normal hover:shadow-sm focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-12 sm:text-base" />
 						</div>
 					</div>
 
@@ -232,7 +234,7 @@
 						</button>
 						<button
 							type="submit"
-							class="btn text-bg-card h-12 rounded-xl border-none bg-[#404040] px-8 font-bold shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:bg-[#404040]/80 hover:shadow-lg"
+							class="btn text-bg-card bg-text-secondary hover:bg-text-secondary/80 h-12 rounded-xl border-none px-8 font-bold shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-lg"
 							:disabled="isSaving">
 							<span v-if="isSaving" class="loading loading-spinner"></span>
 							{{ editingUser ? 'Guardar Cambios' : 'Crear Usuario' }}
@@ -241,7 +243,7 @@
 				</form>
 			</div>
 		</div>
-		<form method="dialog" class="modal-backdrop bg-[#404040]/40 backdrop-blur-sm">
+		<form method="dialog" class="modal-backdrop bg-text-secondary/40 backdrop-blur-sm">
 			<button aria-label="Cerrar modal de dialogo">close</button>
 		</form>
 	</dialog>

@@ -71,7 +71,7 @@
 			<div class="mb-8 flex items-center gap-4">
 				<NuxtLink
 					to="/clientes"
-					class="btn btn-circle btn-ghost bg-bg-card hover:bg-bg-muted border-border-subtle hover:border-text-secondary border shadow-sm transition-colors transition-transform">
+					class="btn btn-circle btn-ghost bg-bg-card hover:bg-bg-muted border-border-subtle hover:border-text-secondary border shadow-sm transition-colors">
 					<ArrowLeft class="text-text-primary h-5 w-5" />
 				</NuxtLink>
 				<div>
@@ -136,7 +136,7 @@
 				<div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
 					<div class="border-border-subtle bg-bg-muted/30 flex overflow-x-auto border-b">
 						<button
-							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors transition-transform"
+							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors"
 							:class="
 								currentTab === 'info'
 									? 'border-primary text-primary bg-bg-card'
@@ -147,7 +147,7 @@
 							Información Personal
 						</button>
 						<button
-							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors transition-transform"
+							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors"
 							:class="
 								currentTab === 'consents'
 									? 'border-primary text-primary bg-bg-card'
@@ -158,7 +158,7 @@
 							Consentimientos ({{ client.consents?.length || 0 }})
 						</button>
 						<button
-							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors transition-transform"
+							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors"
 							:class="
 								currentTab === 'questionnaires'
 									? 'border-primary text-primary bg-bg-card'
@@ -169,7 +169,7 @@
 							Cuestionarios ({{ client.questionnaires?.length || 0 }})
 						</button>
 						<button
-							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors transition-transform"
+							class="flex items-center gap-2 border-b-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors"
 							:class="
 								currentTab === 'bookings'
 									? 'border-primary text-primary bg-bg-card'

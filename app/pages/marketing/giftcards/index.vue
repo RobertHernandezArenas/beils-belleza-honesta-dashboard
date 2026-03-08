@@ -56,10 +56,6 @@
 		showToast.value = true
 		setTimeout(() => (showToast.value = false), 3000)
 	}
-
-	
-
-	
 </script>
 
 <template>
@@ -112,7 +108,7 @@
 				<div
 					v-for="card in giftcards"
 					:key="card.giftcard_id"
-					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between overflow-hidden rounded-3xl border p-6 shadow-sm transition-colors transition-transform duration-300 hover:shadow-md">
+					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between overflow-hidden rounded-3xl border p-6 shadow-sm transition-colors duration-300 hover:shadow-md">
 					<!-- Background Pattern -->
 					<div class="text-primary/5 pointer-events-none absolute -top-8 -right-8 rotate-12">
 						<CreditCard class="h-40 w-40" />

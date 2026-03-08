@@ -234,7 +234,7 @@
 			<!-- Views -->
 			<div class="tabs tabs-boxed bg-bg-muted/50 border-border-default flex rounded-xl border p-1">
 				<a
-					class="tab h-8 flex-1 rounded-lg px-6 text-xs font-bold tracking-wider uppercase transition-colors transition-transform"
+					class="tab h-8 flex-1 rounded-lg px-6 text-xs font-bold tracking-wider uppercase transition-colors"
 					:class="
 						viewMode === 'day'
 							? 'bg-bg-card text-text-primary shadow-sm'
@@ -244,7 +244,7 @@
 					Día
 				</a>
 				<a
-					class="tab h-8 flex-1 rounded-lg px-6 text-xs font-bold tracking-wider uppercase transition-colors transition-transform"
+					class="tab h-8 flex-1 rounded-lg px-6 text-xs font-bold tracking-wider uppercase transition-colors"
 					:class="
 						viewMode === 'week'
 							? 'bg-bg-card text-text-primary shadow-sm'
@@ -287,7 +287,7 @@
 
 						<!-- Card -->
 						<div
-							class="relative flex-1 rounded-2xl border p-4 shadow-sm transition-colors transition-transform hover:shadow-md"
+							class="relative flex-1 rounded-2xl border p-4 shadow-sm transition-colors hover:shadow-md"
 							:class="getStatusColor(booking.status)">
 							<div class="relative z-50 mb-2 flex items-start justify-between">
 								<div class="flex items-center gap-2">
