@@ -71,7 +71,7 @@ model Consent {
   
   document_url    String   @db.VarChar(255)
   signed_date     DateTime @default(now())
-  status          String   @default("active") @db.VarChar(20)
+  status          String   @default("UNSIGNED") @db.VarChar(20) // UNSIGNED, SIGNED
   notes           String?  @db.Text
   
   created_at      DateTime @default(now())
