@@ -51,7 +51,7 @@
 
 	const { data: bookings, isPending } = useQuery({
 		queryKey: ['bookings', queryParams, viewMode],
-		queryFn: () => $fetch('/api/agenda/bookings', { query: queryParams.value }),
+		queryFn: () => $fetch<Array<any>>('/api/agenda/bookings', { query: queryParams.value }),
 	})
 
 	const { mutate: updateStatus } = useMutation({
@@ -101,8 +101,8 @@
 
 	// Filtered Bookings for the View
 	const displayBookings = computed(() => {
-		if (!bookings.value) return []
-		let filtered = bookings.value
+		if (!bookings.value || !Array.isArray(bookings.value)) return []
+		let filtered = bookings.value as Array<any>
 
 		if (searchQuery.value) {
 			const q = searchQuery.value.toLowerCase()
@@ -174,7 +174,7 @@
 	<div
 		class="bg-bg-app text-text-secondary flex h-screen min-h-screen w-full flex-col overflow-hidden p-4 lg:p-8">
 		<!-- Header -->
-		<div class="mb-6 flex flex-shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+		<div class="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 			<div class="flex items-center gap-3">
 				<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
 					<CalendarDays class="h-6 w-6" />
@@ -208,7 +208,7 @@
 
 		<!-- Toolbar -->
 		<div
-			class="bg-bg-card border-border-default mb-4 flex flex-shrink-0 flex-col items-center justify-between rounded-3xl border p-2 shadow-sm sm:flex-row">
+			class="bg-bg-card border-border-default mb-4 flex shrink-0 flex-col items-center justify-between rounded-3xl border p-2 shadow-sm sm:flex-row">
 			<!-- Date Nav -->
 			<div class="mb-2 flex items-center gap-1 sm:mb-0">
 				<button
@@ -273,7 +273,7 @@
 						class="group flex flex-col gap-4 sm:flex-row">
 						<!-- Time Column -->
 						<div
-							class="border-border-default group-hover:border-primary/30 flex w-24 flex-shrink-0 flex-col items-end border-r-2 pt-2 pr-4 transition-colors">
+							class="border-border-default group-hover:border-primary/30 flex w-24 shrink-0 flex-col items-end border-r-2 pt-2 pr-4 transition-colors">
 							<span class="text-xl leading-none font-black tracking-tighter tabular-nums">
 								{{ booking.start_time }}
 							</span>
@@ -392,7 +392,7 @@
 		</div>
 
 		<!-- Toast Provider -->
-		<div v-if="showToast" class="toast toast-end toast-bottom z-[200]">
+		<div v-if="showToast" class="toast toast-end toast-bottom z-200">
 			<div
 				:class="[
 					'alert rounded-2xl border-none text-white shadow-lg',

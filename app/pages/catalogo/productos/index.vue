@@ -38,17 +38,17 @@
 		return params
 	})
 
-	const { data: products, isPending } = useQuery({
+	const { data: products, isPending } = useQuery<any[]>({
 		queryKey: ['products', queryParams],
 		queryFn: () => $fetch('/api/catalog/products', { query: queryParams.value }),
 	})
 
-	const { data: categories } = useQuery({
+	const { data: categories } = useQuery<{ category_id: string; name: string }[]>({
 		queryKey: ['categories'],
 		queryFn: () => $fetch('/api/catalog/categories'),
 	})
 
-	const { data: brands } = useQuery({
+	const { data: brands } = useQuery<{ brand_id: string; name: string }[]>({
 		queryKey: ['brands'],
 		queryFn: () => $fetch('/api/catalog/brands'),
 	})
@@ -89,8 +89,6 @@
 		showToast.value = true
 		setTimeout(() => (showToast.value = false), 3000)
 	}
-
-	
 </script>
 
 <template>
@@ -271,7 +269,7 @@
 										</button>
 										<ul
 											tabindex="0"
-											class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[1] mt-1 w-40 rounded-xl border p-2 shadow-lg">
+											class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 											<li>
 												<a @click="openEditModal(product)" class="hover:bg-bg-muted font-medium">
 													<Edit2 class="h-4 w-4" />
