@@ -95,25 +95,31 @@
 						{{ $t('nav.menu') || 'Menú Principal' }}
 					</p>
 
-					<ul ref="sidebarNav" class="flex w-full flex-col gap-1.5">
-						<li v-for="item in navItems" :key="item.to || item.label">
+					<ul ref="sidebarNav" class="relative flex w-full flex-col gap-1.5">
+						<!-- GSAP Active Pill Background -->
+						<div
+							ref="activePill"
+							class="bg-text-secondary absolute left-0 w-full rounded-[1.25rem] opacity-0 shadow-md pointer-events-none"
+							style="z-index: 0; min-height: 48px;"></div>
+
+						<li v-for="item in navItems" :key="item.to || item.label" class="relative z-10" :ref="setNavRef(item.to)">
 							<NuxtLink
 								v-if="item.to"
 								:to="item.to"
-								class="group flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-[background-color,color,box-shadow] duration-300"
+								class="group flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-colors duration-300"
 								:class="
-									route.path === item.to
-										? 'text-bg-card bg-text-secondary font-medium shadow-md'
-										: 'text-text-muted hover:bg-bg-muted hover:text-text-secondary'
+									currentActivePath === item.to
+										? 'text-bg-card font-medium'
+										: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-secondary'
 								"
 								@click="isDrawerOpen = false">
 								<component
 									:is="item.icon"
 									class="h-5 w-5 group-hover:scale-110"
-									:class="route.path === item.to ? 'text-bg-card' : ''" />
+									:class="currentActivePath === item.to ? 'text-bg-card' : ''" />
 								<span
 									class="text-[13px] tracking-wider uppercase"
-									:class="route.path === item.to ? 'font-medium' : 'font-bold'">
+									:class="currentActivePath === item.to ? 'font-medium' : 'font-bold'">
 									{{ t(item.label) }}
 								</span>
 							</NuxtLink>
@@ -225,6 +231,62 @@
 	})
 	const isDrawerOpen = ref(false)
 	const sidebarNav = ref<HTMLElement | null>(null)
+	const activePill = ref<HTMLElement | null>(null)
+	const navRefs = ref<Record<string, HTMLElement | null>>({})
+
+	const currentActivePath = computed(() => {
+		// Normalizamos el path eliminando trailing slash temporalmente si existe
+		const path = route.path === '/' ? '/' : route.path.replace(/\/$/, '')
+		
+		if (navRefs.value[path]) {
+			return path
+		}
+		
+		// Fallback para rutas hijas que no están en el menú principal
+		const partialMatch = Object.keys(navRefs.value)
+			.filter(k => k !== '/')
+			.sort((a, b) => b.length - a.length)
+			.find(k => path.startsWith(k))
+			
+		return partialMatch || '/'
+	})
+
+	const setNavRef = (path: string | undefined) => (el: any) => {
+		if (path && el) {
+			navRefs.value[path] = el.$el || el
+		}
+	}
+
+	const updateActivePill = (immediate = false) => {
+		if (!activePill.value) return
+		
+		const activeEl = navRefs.value[currentActivePath.value]
+		if (activeEl) {
+			const top = activeEl.offsetTop
+			const height = activeEl.offsetHeight
+			
+			if (immediate) {
+				gsap.set(activePill.value, { y: top, height, opacity: 1 })
+			} else {
+				gsap.to(activePill.value, { 
+					y: top, 
+					height, 
+					opacity: 1, 
+					duration: 0.45, 
+					ease: 'power3.inOut' 
+				})
+			}
+		} else {
+			gsap.to(activePill.value, { opacity: 0, duration: 0.2 })
+		}
+	}
+
+	watch(
+		() => route.path,
+		() => {
+			nextTick(() => updateActivePill(false))
+		}
+	)
 
 	// GSAP sidebar nav stagger entrance
 	onMounted(() => {
@@ -242,6 +304,9 @@
 				})
 			}
 		}
+
+		// Initial pill setup
+		setTimeout(() => updateActivePill(true), 150)
 	})
 
 	const navItems = [
