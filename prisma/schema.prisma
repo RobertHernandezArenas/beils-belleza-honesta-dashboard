@@ -399,6 +399,11 @@ model Cart {
   hash             String?  @db.VarChar(100)
   previous_hash    String?  @db.VarChar(100)
 
+  // Stripe — Pago Fraccionado / Cuotas
+  stripe_payment_intent_id  String?  @db.VarChar(255)
+  stripe_installments       Int?     // 1, 3, 4, 6
+  stripe_status             String?  @db.VarChar(50) // requires_payment_method, succeeded, failed
+
   items        CartItem[]
   debts        Debt[]
   

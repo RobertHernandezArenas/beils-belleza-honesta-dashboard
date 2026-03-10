@@ -72,12 +72,10 @@
 
 	const statusBadge = (status: string) => {
 		switch (status) {
-			case 'active':
+			case 'SIGNED':
 				return 'bg-success/10 text-success border-success/20'
-			case 'expired':
+			case 'UNSIGNED':
 				return 'bg-warning/10 text-warning border-warning/20'
-			case 'revoked':
-				return 'bg-error/10 text-error border-error/20'
 			default:
 				return 'bg-bg-muted text-text-muted border-border-default'
 		}
@@ -85,12 +83,10 @@
 
 	const statusLabel = (status: string) => {
 		switch (status) {
-			case 'active':
-				return 'Activo'
-			case 'expired':
-				return 'Expirado'
-			case 'revoked':
-				return 'Revocado'
+			case 'SIGNED':
+				return 'Firmado'
+			case 'UNSIGNED':
+				return 'Sin Firmar'
 			default:
 				return status
 		}

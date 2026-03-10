@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { ref, computed } from 'vue'
 	import { useQuery } from '@tanstack/vue-query'
-	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt } from 'lucide-vue-next'
+	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt, CreditCard } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import QrcodeVue from 'qrcode.vue'
 
@@ -57,8 +57,22 @@
 			card: { label: t('Tarjeta'), class: 'bg-blue-100 text-blue-800' },
 			mixed: { label: t('Mixto'), class: 'bg-purple-100 text-purple-800' },
 			transfer: { label: 'Transferencia', class: 'bg-orange-100 text-orange-800' },
+			stripe: { label: 'Stripe', class: 'bg-indigo-100 text-indigo-800' },
 		}
 		return methods[method] || { label: method, class: 'bg-neutral text-neutral-content' }
+	}
+
+	const getStripeStatusBadge = (status: string | null) => {
+		const statuses: Record<string, { label: string; class: string }> = {
+			succeeded: { label: 'Completado', class: 'badge-success' },
+			requires_payment_method: { label: 'Pendiente', class: 'badge-warning' },
+			requires_confirmation: { label: 'Confirmación', class: 'badge-warning' },
+			processing: { label: 'Procesando', class: 'badge-info' },
+			canceled: { label: 'Cancelado', class: 'badge-error' },
+			requires_action: { label: 'Acción requerida', class: 'badge-warning' },
+		}
+		if (!status) return { label: 'Desconocido', class: 'badge-ghost' }
+		return statuses[status] || { label: status, class: 'badge-ghost' }
 	}
 
 	const getTotalItems = (items: any[]) => {
@@ -193,11 +207,18 @@
 								</td>
 
 								<td class="text-center">
-									<span
-										class="badge badge-sm border-none font-bold tracking-wider uppercase"
-										:class="getPaymentMethodBadge(sale.payment_method).class">
-										{{ getPaymentMethodBadge(sale.payment_method).label }}
-									</span>
+									<div class="flex flex-col items-center gap-1">
+										<span
+											class="badge badge-sm border-none font-bold tracking-wider uppercase"
+											:class="getPaymentMethodBadge(sale.payment_method).class">
+											{{ getPaymentMethodBadge(sale.payment_method).label }}
+										</span>
+										<span
+											v-if="sale.payment_method === 'stripe' && sale.stripe_installments && sale.stripe_installments > 1"
+											class="badge badge-xs bg-indigo-50 text-indigo-600 border-none font-semibold">
+											{{ sale.stripe_installments }} cuotas
+										</span>
+									</div>
 								</td>
 
 								<td class="text-text-primary text-right text-base font-black tabular-nums">
@@ -366,6 +387,42 @@
 							class="border-border-default text-text-primary mt-2 flex w-full max-w-[250px] justify-between border-t pt-2 text-lg font-black">
 							<span>{{ $t('sales.modal.totals.total') }}:</span>
 							<span class="tabular-nums">{{ formatCurrency(selectedSale.total) }}</span>
+						</div>
+					</div>
+
+					<!-- Stripe Payment Details -->
+					<div
+						v-if="selectedSale.payment_method === 'stripe'"
+						class="border-border-default bg-indigo-50/30 mt-6 rounded-2xl border p-5">
+						<div class="mb-3 flex items-center gap-2">
+							<CreditCard class="h-5 w-5 text-indigo-600" />
+							<h5 class="text-sm font-bold tracking-wider text-indigo-800 uppercase">Pago Stripe</h5>
+						</div>
+						<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+							<!-- Status -->
+							<div>
+								<p class="text-text-muted mb-1 text-[10px] font-bold tracking-wider uppercase">Estado</p>
+								<span
+									class="badge badge-sm font-bold"
+									:class="getStripeStatusBadge(selectedSale.stripe_status).class">
+									{{ getStripeStatusBadge(selectedSale.stripe_status).label }}
+								</span>
+							</div>
+							<!-- Installments -->
+							<div>
+								<p class="text-text-muted mb-1 text-[10px] font-bold tracking-wider uppercase">Cuotas</p>
+								<span class="text-text-primary text-sm font-bold tabular-nums">
+									{{ selectedSale.stripe_installments || 1 }}
+									{{ (selectedSale.stripe_installments || 1) > 1 ? 'pagos mensuales' : 'pago único' }}
+								</span>
+							</div>
+							<!-- Payment Intent ID -->
+							<div v-if="selectedSale.stripe_payment_intent_id">
+								<p class="text-text-muted mb-1 text-[10px] font-bold tracking-wider uppercase">ID Pago</p>
+								<span class="text-text-muted font-mono text-xs">
+									{{ selectedSale.stripe_payment_intent_id.slice(0, 20) }}…
+								</span>
+							</div>
 						</div>
 					</div>
 

@@ -6,7 +6,7 @@ const consentSchema = z.object({
 	user_id: z.string().min(1, 'El cliente es obligatorio'),
 	document_url: z.string().url('La URL del documento debe ser válida'),
 	signed_date: z.string().optional(),
-	status: z.enum(['active', 'expired', 'revoked']).default('active'),
+	status: z.enum(['UNSIGNED', 'SIGNED']).default('UNSIGNED'),
 	notes: z.string().optional(),
 })
 

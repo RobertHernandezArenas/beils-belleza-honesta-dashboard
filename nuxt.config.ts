@@ -8,6 +8,18 @@ export default defineNuxtConfig({
 	devtools: { enabled: false },
 	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
 
+	// ==========================================
+	// STRIPE API KEYS — Pago Fraccionado / Cuotas
+	// ==========================================
+	// ⚠️  stripeSecretKey: SOLO disponible en el servidor (server/)
+	// 🌐 stripePublicKey: Disponible en el navegador (app/)
+	runtimeConfig: {
+		stripeSecretKey: process.env.STRIPE_SECRET_KEY || '', // ← SECRET KEY aquí
+		public: {
+			stripePublicKey: process.env.STRIPE_PUBLIC_KEY || '', // ← PUBLIC KEY aquí
+		},
+	},
+
 	googleFonts: {
 		families: {
 			Roboto: [300, 400, 500, 700],

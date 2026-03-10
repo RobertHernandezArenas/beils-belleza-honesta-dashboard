@@ -40,7 +40,7 @@
 		user_id: '',
 		document_url: '',
 		signed_date: new Date().toISOString().split('T')[0],
-		status: 'active',
+		status: 'UNSIGNED',
 		notes: '',
 	})
 
@@ -62,13 +62,13 @@
 			form.signed_date = props.itemToEdit.signed_date
 				? new Date(props.itemToEdit.signed_date).toISOString().split('T')[0]
 				: new Date().toISOString().split('T')[0]
-			form.status = props.itemToEdit.status || 'active'
+			form.status = props.itemToEdit.status || 'UNSIGNED'
 			form.notes = props.itemToEdit.notes || ''
 		} else {
 			form.user_id = ''
 			form.document_url = ''
 			form.signed_date = new Date().toISOString().split('T')[0]
-			form.status = 'active'
+			form.status = 'UNSIGNED'
 			form.notes = ''
 		}
 	}
@@ -82,7 +82,7 @@
 		user_id: z.string().min(1, 'Selecciona un cliente'),
 		document_url: z.string().url('La URL debe ser válida'),
 		signed_date: z.string().optional(),
-		status: z.enum(['active', 'expired', 'revoked']),
+		status: z.enum(['UNSIGNED', 'SIGNED']),
 		notes: z.string().optional(),
 	})
 
@@ -216,9 +216,8 @@
 						<select
 							v-model="form.status"
 							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
-							<option value="active">Activo</option>
-							<option value="expired">Expirado</option>
-							<option value="revoked">Revocado</option>
+							<option value="UNSIGNED">Sin Firmar</option>
+							<option value="SIGNED">Firmado</option>
 						</select>
 					</div>
 

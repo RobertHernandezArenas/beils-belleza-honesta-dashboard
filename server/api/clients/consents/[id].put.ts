@@ -5,7 +5,7 @@ import { z } from 'zod'
 const consentUpdateSchema = z.object({
 	document_url: z.string().url('La URL del documento debe ser válida').optional(),
 	signed_date: z.string().optional(),
-	status: z.enum(['active', 'expired', 'revoked']).optional(),
+	status: z.enum(['UNSIGNED', 'SIGNED']).optional(),
 	notes: z.string().optional().nullable(),
 })
 

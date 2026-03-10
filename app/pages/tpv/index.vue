@@ -14,7 +14,9 @@
 		PackageSearch,
 		Ticket,
 		Plus,
+		Split,
 	} from 'lucide-vue-next'
+	import StripeInstallmentModal from '~/components/payments/StripeInstallmentModal.vue'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Terminal de Venta (TPV)' })
@@ -28,7 +30,8 @@
 	const cartItems = ref<any[]>([])
 	const selectedClient = ref<any | null>(null)
 	const discountAmount = ref<number>(0)
-	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt'>('card')
+	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt' | 'stripe'>('card')
+	const showStripeModal = ref(false)
 
 	// Toast State
 	const toastMessage = ref('')
@@ -188,6 +191,12 @@
 			return
 		}
 
+		// Si es Stripe, abrir modal de cuotas
+		if (paymentMethod.value === 'stripe') {
+			showStripeModal.value = true
+			return
+		}
+
 		processSale({
 			user_id: selectedClient.value?.user_id,
 			status: paymentMethod.value === 'debt' ? 'pending' : 'completed',
@@ -195,6 +204,15 @@
 			discount: discountAmount.value,
 			items: cartItems.value,
 		})
+	}
+
+	const handleStripeSuccess = (data: any) => {
+		displayToast(`Pago Stripe procesado — ${data.installments} cuota(s)`, 'success')
+		clearCart()
+	}
+
+	const handleStripeError = (error: string) => {
+		displayToast(error, 'error')
 	}
 
 	const displayToast = (message: string, type: 'success' | 'error') => {
@@ -534,6 +552,19 @@
 						</span>
 						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Deuda') }}</span>
 					</button>
+					<button
+						class="btn border-border-default col-span-2 flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80 lg:col-span-4"
+						:class="
+							paymentMethod === 'stripe'
+								? 'border-[#635BFF] bg-[#635BFF] text-white shadow-md'
+								: 'border-[#635BFF]/20 bg-[#635BFF]/5 text-[#635BFF] hover:bg-[#635BFF]/10'
+						"
+						@click="paymentMethod = 'stripe'">
+						<Split class="mb-0.5 h-5 w-5" />
+						<span class="text-[10px] font-bold tracking-wider uppercase">
+							{{ $t('Stripe — Cuotas (1-3-4-6)') }}
+						</span>
+					</button>
 				</div>
 
 				<!-- Action -->
@@ -551,6 +582,13 @@
 				</button>
 			</div>
 		</div>
+
+		<!-- Stripe Installment Modal -->
+		<StripeInstallmentModal
+			v-model="showStripeModal"
+			:total-amount="cartTotal"
+			@payment-success="handleStripeSuccess"
+			@payment-error="handleStripeError" />
 
 		<!-- Toast -->
 		<div v-if="showToast" class="toast toast-end toast-bottom z-100">
