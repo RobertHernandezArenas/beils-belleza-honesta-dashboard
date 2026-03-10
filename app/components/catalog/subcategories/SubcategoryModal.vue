@@ -4,6 +4,7 @@
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Save, AlertCircle, Edit, ListTree } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -20,6 +21,8 @@
 	const queryClient = useQueryClient()
 
 	const localVisible = ref(props.modelValue)
+	const subcategoryDialog = ref<HTMLDialogElement | null>(null)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const { data: categories, isPending: loadingCategories } = useQuery<
 		{ category_id: string; name: string }[]
@@ -34,6 +37,11 @@
 			localVisible.value = newVal
 			if (newVal) {
 				initForm()
+				nextTick(() => {
+					animateOpen(subcategoryDialog.value, { staggerChildren: true })
+				})
+			} else if (subcategoryDialog.value?.open) {
+				animateClose(subcategoryDialog.value)
 			}
 		},
 	)
@@ -132,7 +140,7 @@
 </script>
 
 <template>
-	<dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
+	<dialog ref="subcategoryDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
 			class="modal-box bg-bg-app border-border-default m-4 max-w-lg overflow-visible border p-0 shadow-xl sm:rounded-3xl">
 			<!-- Header -->

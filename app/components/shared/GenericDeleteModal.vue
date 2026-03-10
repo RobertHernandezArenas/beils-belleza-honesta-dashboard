@@ -1,6 +1,6 @@
 <script setup lang="ts">
-	import { ref, watch } from 'vue'
 	import { AlertTriangle } from 'lucide-vue-next'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		isOpen: boolean
@@ -12,20 +12,23 @@
 
 	const emit = defineEmits(['close', 'confirm'])
 	const deleteModal = ref<HTMLDialogElement | null>(null)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	watch(
 		() => props.isOpen,
 		newVal => {
 			if (newVal) {
-				deleteModal.value?.showModal()
+				animateOpen(deleteModal.value)
 			} else {
-				deleteModal.value?.close()
+				if (deleteModal.value?.open) {
+					animateClose(deleteModal.value)
+				}
 			}
 		},
 	)
 
 	const closeModal = () => {
-		emit('close')
+		animateClose(deleteModal.value, () => emit('close'))
 	}
 
 	const confirmDelete = () => {

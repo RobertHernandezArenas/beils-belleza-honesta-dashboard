@@ -1,4 +1,7 @@
 <script setup lang="ts">
+	import { useModalAnimation } from '~/composables/useModalAnimation'
+
+	const { animateOpen, animateClose } = useModalAnimation()
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingService = ref<any | null>(null)
 	const isSaving = ref(false)
@@ -35,11 +38,11 @@
 			form.duration = 60
 			form.status = 'activo'
 		}
-		modalRef.value?.showModal()
+		animateOpen(modalRef.value, { staggerChildren: true })
 	}
 
 	const closeModal = () => {
-		modalRef.value?.close()
+		animateClose(modalRef.value)
 	}
 
 	const saveService = async () => {

@@ -250,9 +250,9 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, reactive, computed } from 'vue'
 	import { ChevronDown } from 'lucide-vue-next'
 	import { useAuthStore } from '~/stores/auth'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const authStore = useAuthStore()
 	const isAdmin = computed(() => authStore.user?.role === 'ADMIN')
@@ -260,6 +260,7 @@
 	const userModal = ref<HTMLDialogElement | null>(null)
 	const editingUser = ref<any | null>(null)
 	const isSaving = ref(false)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -311,11 +312,11 @@
 			form.country = ''
 			form.role = 'USER'
 		}
-		userModal.value?.showModal()
+		animateOpen(userModal.value, { staggerChildren: true })
 	}
 
 	const closeModal = () => {
-		userModal.value?.close()
+		animateClose(userModal.value)
 	}
 
 	const saveUser = async () => {

@@ -39,25 +39,26 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
 	import { AlertTriangle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const { t } = useI18n()
 
 	const deleteModal = ref<HTMLDialogElement | null>(null)
 	const userToDelete = ref<any | null>(null)
 	const isDeleting = ref(false)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
 
 	const showModal = (user: any) => {
 		userToDelete.value = user
-		deleteModal.value?.showModal()
+		animateOpen(deleteModal.value)
 	}
 
 	const closeModal = () => {
-		deleteModal.value?.close()
+		animateClose(deleteModal.value)
 	}
 
 	const executeDelete = async () => {

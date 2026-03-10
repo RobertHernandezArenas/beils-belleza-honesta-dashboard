@@ -3,6 +3,7 @@
 	import { z } from 'zod'
 	import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 	import { FileCheck, Save, AlertCircle, Edit } from 'lucide-vue-next'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -13,12 +14,21 @@
 	const queryClient = useQueryClient()
 
 	const localVisible = ref(props.modelValue)
+	const consentDialog = ref<HTMLDialogElement | null>(null)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	watch(
 		() => props.modelValue,
 		newVal => {
 			localVisible.value = newVal
-			if (newVal) initForm()
+			if (newVal) {
+				initForm()
+				nextTick(() => {
+					animateOpen(consentDialog.value, { staggerChildren: true })
+				})
+			} else if (consentDialog.value?.open) {
+				animateClose(consentDialog.value)
+			}
 		},
 	)
 
@@ -120,7 +130,7 @@
 </script>
 
 <template>
-	<dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
+	<dialog ref="consentDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
 			class="modal-box bg-bg-app border-border-default m-4 max-w-2xl border p-0 shadow-xl sm:rounded-3xl">
 			<!-- Header -->

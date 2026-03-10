@@ -34,8 +34,9 @@
 html {
 	margin: 0;
 	padding: 0;
+	scroll-behavior: smooth;
 	-webkit-tap-highlight-color: transparent;
-	overscroll-behavior-y: none; /* Previene "pull-to-refresh" no deseado o rebotes en Safari/Chrome en PWA */
+	overscroll-behavior-y: none;
 }
 
 body {
@@ -49,11 +50,195 @@ a,
 input,
 select,
 textarea {
-	touch-action: manipulation; /* Mata el delay de 300ms en iOS/Android */
+	touch-action: manipulation;
 }
 
 /* Base Accessibility Focus Rule */
 *:focus-visible {
 	outline: 2px solid var(--color-primary, #1a1a1a) !important;
 	outline-offset: 2px !important;
+}
+
+/* ============================================
+   PAGE TRANSITIONS (Nuxt pageTransition)
+   ============================================ */
+.page-enter-active,
+.page-leave-active {
+	transition-property: opacity, transform;
+	transition-duration: 0.3s;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-enter-from {
+	opacity: 0;
+	transform: translateY(12px);
+}
+
+.page-leave-to {
+	opacity: 0;
+	transform: translateY(-8px);
+}
+
+/* ============================================
+   LAYOUT TRANSITIONS (Nuxt layoutTransition)
+   ============================================ */
+.layout-enter-active,
+.layout-leave-active {
+	transition-property: opacity;
+	transition-duration: 0.25s;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layout-enter-from,
+.layout-leave-to {
+	opacity: 0;
+}
+
+/* ============================================
+   INPUT FOCUS GLOW — Micro-animation pulse
+   ============================================ */
+@keyframes focus-glow {
+	0% {
+		box-shadow: 0 0 0 0 rgba(26, 26, 26, 0.08);
+	}
+	50% {
+		box-shadow: 0 0 0 6px rgba(26, 26, 26, 0.04);
+	}
+	100% {
+		box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.06);
+	}
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	animation: focus-glow 0.6s ease-out forwards;
+}
+
+/* ============================================
+   SELECT / DROPDOWN animation
+   ============================================ */
+.dropdown-content,
+.menu.dropdown-content {
+	transform-origin: top center;
+	animation: dropdown-slide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropdown-slide {
+	from {
+		opacity: 0;
+		transform: translateY(-6px) scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+/* ============================================
+   CHECKBOX / TOGGLE micro-animation
+   ============================================ */
+input[type='checkbox'] {
+	transition-property: background-color, border-color, box-shadow;
+	transition-duration: 0.2s;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type='checkbox']:checked {
+	animation: check-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes check-pop {
+	0% {
+		transform: scale(0.85);
+	}
+	50% {
+		transform: scale(1.15);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+/* ============================================
+   SCROLLBAR GLOBAL Styles
+   ============================================ */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+	transition-property: background-color;
+	transition-duration: 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   TOOLTIP animation
+   ============================================ */
+.tooltip::before {
+	transition-property: opacity, transform;
+	transition-duration: 0.2s;
+	transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================
+   TABLE ROW hover animation
+   ============================================ */
+tbody tr {
+	transition-property: background-color;
+	transition-duration: 0.15s;
+	transition-timing-function: ease;
+}
+
+/* ============================================
+   BUTTON press micro-animation
+   ============================================ */
+button:active:not(:disabled),
+.btn:active:not(:disabled) {
+	transform: scale(0.97);
+	transition-property: transform;
+	transition-duration: 0.1s;
+	transition-timing-function: ease-out;
+}
+
+/* ============================================
+   BADGE / STATUS pill pulse for active items
+   ============================================ */
+@keyframes status-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
+}
+
+/* ============================================
+   LOADING skeleton shimmer
+   ============================================ */
+@keyframes skeleton-shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+.animate-pulse {
+	background: linear-gradient(90deg, var(--color-bg-muted) 25%, var(--color-bg-hover) 50%, var(--color-bg-muted) 75%);
+	background-size: 200% 100%;
+	animation: skeleton-shimmer 1.8s ease-in-out infinite;
 }

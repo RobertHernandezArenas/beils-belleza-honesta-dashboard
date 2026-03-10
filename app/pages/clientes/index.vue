@@ -80,7 +80,7 @@
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10">
 		<div class="mx-auto max-w-[1400px]">
 			<!-- Header -->
-			<header class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+			<header data-aos="fade-down" class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 				<div>
 					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
 						{{ t('catalog.clients.title') }}
@@ -131,6 +131,8 @@
 
 			<div
 				v-else
+				data-aos="fade-up"
+				data-aos-delay="100"
 				class="bg-bg-card border-border-subtle w-full overflow-hidden rounded-3xl border shadow-sm">
 				<div class="w-full overflow-x-auto">
 					<table class="w-full min-w-[950px] text-left text-sm">

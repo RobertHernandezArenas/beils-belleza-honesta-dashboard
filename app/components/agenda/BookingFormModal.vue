@@ -1,5 +1,6 @@
 <script setup lang="ts">
 	import { useQuery } from '@tanstack/vue-query'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	interface ClientItem {
 		user_id: string
@@ -34,6 +35,7 @@
 	const editingBooking = ref<any | null>(null)
 	const isSaving = ref(false)
 	const activeTab = ref<'service' | 'pack'>('service')
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -97,11 +99,11 @@
 			form.duration = 60
 			form.notes = ''
 		}
-		modalRef.value?.showModal()
+		animateOpen(modalRef.value, { staggerChildren: true })
 	}
 
 	const closeModal = () => {
-		modalRef.value?.close()
+		animateClose(modalRef.value)
 	}
 
 	const setItemsType = (type: 'service' | 'pack') => {

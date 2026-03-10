@@ -6,6 +6,7 @@
 	import { useI18n } from 'vue-i18n'
 	import { useAuthStore } from '~/stores/auth' // Auto-imported usually, but explicit is safer
 	import { AlertCircle, LockKeyhole, Mail, Lock, Eye, EyeOff } from 'lucide-vue-next'
+	import gsap from 'gsap'
 
 	// definePageMeta removed - only allowed in pages
 
@@ -15,6 +16,7 @@
 
 	// State
 	const showPassword = ref(false)
+	const loginCard = ref<HTMLElement | null>(null)
 	const form = reactive({
 		email: '',
 		password: '',
@@ -47,6 +49,34 @@
 			form.rememberMe = true
 			if (savedPassword) {
 				form.password = atob(savedPassword)
+			}
+		}
+
+		// GSAP entrance animation timeline
+		if (loginCard.value) {
+			const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+			const card = loginCard.value
+
+			// Initial state — hidden
+			gsap.set(card, { opacity: 0, y: 40, scale: 0.96 })
+
+			// Card entrance
+			tl.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.6 })
+
+			// Stagger inner elements
+			const formElements = card.querySelectorAll('.form-control, .form-control-group, h2, p, .btn-login')
+			if (formElements.length) {
+				gsap.set(formElements, { opacity: 0, y: 18 })
+				tl.to(
+					formElements,
+					{
+						opacity: 1,
+						y: 0,
+						duration: 0.4,
+						stagger: 0.06,
+					},
+					0.2,
+				)
 			}
 		}
 	})
@@ -113,6 +143,7 @@
 <template>
 	<div class="mx-auto w-full max-w-md">
 		<div
+			ref="loginCard"
 			class="bg-bg-card relative space-y-8 rounded-4xl border border-transparent p-8 sm:p-12 lg:shadow-xl lg:backdrop-blur-md">
 			<!-- Glow sutil dentro de la tarjeta -->
 			<div

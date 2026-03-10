@@ -1,11 +1,12 @@
 <script setup lang="ts">
-	import { ref, reactive, computed } from 'vue'
 	import { useQuery } from '@tanstack/vue-query'
 	import { ChevronDown, Euro, Check } from 'lucide-vue-next'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingProduct = ref<any | null>(null)
 	const isSaving = ref(false)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -109,11 +110,11 @@
 			form.subcategory_id = ''
 			form.tags = []
 		}
-		modalRef.value?.showModal()
+		animateOpen(modalRef.value, { staggerChildren: true })
 	}
 
 	const closeModal = () => {
-		modalRef.value?.close()
+		animateClose(modalRef.value)
 	}
 
 	const saveProduct = async () => {

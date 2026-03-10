@@ -3,6 +3,7 @@
 	import { z } from 'zod'
 	import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 	import { ShieldOff, Save, AlertCircle, Edit } from 'lucide-vue-next'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -13,12 +14,21 @@
 	const queryClient = useQueryClient()
 
 	const localVisible = ref(props.modelValue)
+	const revokeDialog = ref<HTMLDialogElement | null>(null)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	watch(
 		() => props.modelValue,
 		newVal => {
 			localVisible.value = newVal
-			if (newVal) initForm()
+			if (newVal) {
+				initForm()
+				nextTick(() => {
+					animateOpen(revokeDialog.value, { staggerChildren: true })
+				})
+			} else if (revokeDialog.value?.open) {
+				animateClose(revokeDialog.value)
+			}
 		},
 	)
 
@@ -109,7 +119,7 @@
 </script>
 
 <template>
-	<dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
+	<dialog ref="revokeDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
 			class="modal-box bg-bg-app border-border-default m-4 max-w-2xl border p-0 shadow-xl sm:rounded-3xl">
 			<div class="bg-bg-card border-border-subtle flex items-center gap-4 border-b p-6 sm:rounded-t-3xl">

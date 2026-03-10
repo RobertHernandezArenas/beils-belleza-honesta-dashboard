@@ -1,9 +1,9 @@
 <script setup lang="ts">
-	import { ref, reactive, watch, computed } from 'vue'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { UserPlus, Save, AlertCircle, Edit, User } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -13,14 +13,23 @@
 	const emit = defineEmits(['update:modelValue', 'close'])
 	const { t } = useI18n()
 	const queryClient = useQueryClient()
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const localVisible = ref(props.modelValue)
+	const clientDialog = ref<HTMLDialogElement | null>(null)
 
 	watch(
 		() => props.modelValue,
 		newVal => {
 			localVisible.value = newVal
-			if (newVal) initForm()
+			if (newVal) {
+				initForm()
+				nextTick(() => {
+					animateOpen(clientDialog.value, { staggerChildren: true })
+				})
+			} else if (clientDialog.value?.open) {
+				animateClose(clientDialog.value)
+			}
 		},
 	)
 
@@ -131,7 +140,7 @@
 </script>
 
 <template>
-	<dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
+	<dialog ref="clientDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
 			class="modal-box bg-bg-app border-border-default m-4 max-w-2xl border p-0 shadow-xl sm:rounded-3xl">
 			<!-- Header -->

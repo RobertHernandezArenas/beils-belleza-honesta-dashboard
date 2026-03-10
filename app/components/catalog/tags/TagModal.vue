@@ -4,6 +4,7 @@
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Save, AlertCircle, Edit, Hash } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -15,6 +16,8 @@
 	const queryClient = useQueryClient()
 
 	const localVisible = ref(props.modelValue)
+	const tagDialog = ref<HTMLDialogElement | null>(null)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	watch(
 		() => props.modelValue,
@@ -22,6 +25,11 @@
 			localVisible.value = newVal
 			if (newVal) {
 				initForm()
+				nextTick(() => {
+					animateOpen(tagDialog.value, { staggerChildren: true })
+				})
+			} else if (tagDialog.value?.open) {
+				animateClose(tagDialog.value)
 			}
 		},
 	)
@@ -101,7 +109,7 @@
 </script>
 
 <template>
-	<dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
+	<dialog ref="tagDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div class="modal-box bg-bg-app border-border-default m-4 max-w-lg border p-0 shadow-xl sm:rounded-3xl">
 			<!-- Header -->
 			<div class="bg-bg-card border-border-subtle flex items-center gap-4 rounded-t-3xl border-b p-6">

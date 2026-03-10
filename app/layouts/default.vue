@@ -95,7 +95,7 @@
 						{{ $t('nav.menu') || 'Menú Principal' }}
 					</p>
 
-					<ul class="flex w-full flex-col gap-1.5">
+					<ul ref="sidebarNav" class="flex w-full flex-col gap-1.5">
 						<li v-for="item in navItems" :key="item.to || item.label">
 							<NuxtLink
 								v-if="item.to"
@@ -177,6 +177,7 @@
 
 <script lang="ts" setup>
 	import { useI18n } from 'vue-i18n'
+	import gsap from 'gsap'
 	import {
 		UsersRound,
 		LayoutDashboard,
@@ -223,6 +224,25 @@
 		localeCookie.value = newLocale
 	})
 	const isDrawerOpen = ref(false)
+	const sidebarNav = ref<HTMLElement | null>(null)
+
+	// GSAP sidebar nav stagger entrance
+	onMounted(() => {
+		if (sidebarNav.value) {
+			const navLinks = sidebarNav.value.querySelectorAll('li')
+			if (navLinks.length) {
+				gsap.set(navLinks, { opacity: 0, x: -16 })
+				gsap.to(navLinks, {
+					opacity: 1,
+					x: 0,
+					duration: 0.35,
+					stagger: 0.03,
+					ease: 'power2.out',
+					delay: 0.15,
+				})
+			}
+		}
+	})
 
 	const navItems = [
 		{ to: '/', label: 'nav.dashboard', icon: LayoutDashboard },

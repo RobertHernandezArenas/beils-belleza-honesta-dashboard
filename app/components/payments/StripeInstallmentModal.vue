@@ -2,6 +2,7 @@
 	import { ref, computed, watch } from 'vue'
 	import { useMutation } from '@tanstack/vue-query'
 	import { CreditCard, X, Check, AlertCircle, Loader2 } from 'lucide-vue-next'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -16,6 +17,9 @@
 	}>()
 
 	const localVisible = ref(props.modelValue)
+	const stripeDialog = ref<HTMLDialogElement | null>(null)
+	const { animateOpen, animateClose } = useModalAnimation()
+
 	const selectedInstallments = ref(1)
 	const apiError = ref('')
 
@@ -33,6 +37,11 @@
 			if (newVal) {
 				selectedInstallments.value = 1
 				apiError.value = ''
+				nextTick(() => {
+					animateOpen(stripeDialog.value, { staggerChildren: true })
+				})
+			} else if (stripeDialog.value?.open) {
+				animateClose(stripeDialog.value)
 			}
 		},
 	)
@@ -84,7 +93,7 @@
 </script>
 
 <template>
-	<dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
+	<dialog ref="stripeDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div class="modal-box bg-bg-app border-border-default m-4 max-w-lg border p-0 shadow-xl sm:rounded-3xl">
 			<!-- Header -->
 			<div

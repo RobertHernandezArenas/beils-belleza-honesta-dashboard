@@ -9,6 +9,17 @@ export default defineNuxtConfig({
 	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
 
 	// ==========================================
+	// View Transitions API + Page/Layout Transitions
+	// ==========================================
+	experimental: {
+		viewTransition: true,
+	},
+	app: {
+		pageTransition: { name: 'page', mode: 'out-in' },
+		layoutTransition: { name: 'layout', mode: 'out-in' },
+	},
+
+	// ==========================================
 	// STRIPE API KEYS — Pago Fraccionado / Cuotas
 	// ==========================================
 	// ⚠️  stripeSecretKey: SOLO disponible en el servidor (server/)
@@ -49,6 +60,7 @@ export default defineNuxtConfig({
 		optimizeDeps: {
 			include: [
 				'aos',
+				'gsap',
 				'lucide-vue-next',
 				'@tanstack/vue-query',
 				'vue-i18n',

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-	import { ref, reactive } from 'vue'
 	import { RefreshCcw } from 'lucide-vue-next'
+	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingCard = ref<any | null>(null)
 	const isSaving = ref(false)
+	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -48,11 +49,11 @@
 			form.expiration_date = ''
 			form.status = 'active'
 		}
-		modalRef.value?.showModal()
+		animateOpen(modalRef.value, { staggerChildren: true })
 	}
 
 	const closeModal = () => {
-		modalRef.value?.close()
+		animateClose(modalRef.value)
 	}
 
 	const saveGiftcard = async () => {
