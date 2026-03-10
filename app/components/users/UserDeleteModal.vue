@@ -1,7 +1,7 @@
 <template>
 	<dialog ref="deleteModal" class="modal modal-bottom sm:modal-middle">
 		<div
-			class="modal-box relative rounded-[2.5rem] border border-red-200 bg-bg-card p-8 text-center text-text-primary shadow-lg backdrop-blur-md">
+			class="modal-box relative w-full max-w-md rounded-[2.5rem] border border-red-200 bg-bg-card p-8 text-center text-text-primary shadow-lg backdrop-blur-md">
 			<!-- Glow rojo intenso -->
 			<div
 				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"></div>
@@ -10,10 +10,10 @@
 				<div class="mb-5 rounded-full bg-red-100 p-5 text-red-600 shadow-sm ring-1 ring-red-200">
 					<AlertTriangle class="h-10 w-10" />
 				</div>
-				<h3 class="mb-2 text-2xl font-black text-red-600">{{ $t('users.delete.title') }}</h3>
+				<h3 class="mb-2 text-2xl font-black text-red-600">{{ customTitle || $t('users.delete.title') }}</h3>
 				<p class="max-w-xs text-sm font-medium text-text-muted">
-					{{ $t('users.delete.message') }}
-					<span class="my-2 block font-bold text-text-primary">{{ userToDelete?.name }}</span>
+					{{ customMessage || $t('users.delete.message') }}
+					<span v-if="userName" class="my-2 block font-bold text-text-primary">{{ userName }}</span>
 					{{ $t('users.delete.warning') }}
 				</p>
 
@@ -39,56 +39,43 @@
 </template>
 
 <script setup lang="ts">
+	import { ref, watch, nextTick } from 'vue'
 	import { AlertTriangle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
-	const { t } = useI18n()
+	const props = defineProps<{
+		isOpen: boolean
+		userName?: string
+		isDeleting?: boolean
+		customTitle?: string
+		customMessage?: string
+	}>()
 
+	const emit = defineEmits(['close', 'confirm'])
+
+	const { t } = useI18n()
 	const deleteModal = ref<HTMLDialogElement | null>(null)
-	const userToDelete = ref<any | null>(null)
-	const isDeleting = ref(false)
 	const { animateOpen, animateClose } = useModalAnimation()
 
-	const emit = defineEmits(['refresh', 'toast'])
-
-	const showModal = (user: any) => {
-		userToDelete.value = user
-		animateOpen(deleteModal.value)
-	}
+	watch(
+		() => props.isOpen,
+		newVal => {
+			if (newVal) {
+				nextTick(() => {
+					animateOpen(deleteModal.value)
+				})
+			} else if (deleteModal.value?.open) {
+				animateClose(deleteModal.value)
+			}
+		},
+	)
 
 	const closeModal = () => {
-		animateClose(deleteModal.value)
+		emit('close')
 	}
 
-	const executeDelete = async () => {
-		if (!userToDelete.value) return
-		isDeleting.value = true
-
-		try {
-			await $fetch(`/api/users/${userToDelete.value.user_id}`, {
-				method: 'DELETE',
-			})
-			userToDelete.value = null
-			emit('refresh')
-			emit('toast', {
-				message: t('users.messages.deleted', 'Usuario eliminado exitosamente'),
-				type: 'success',
-			})
-		} catch (error: any) {
-			console.error('Error deleting user:', error)
-			emit('toast', {
-				message:
-					error.data?.statusMessage || t('users.messages.errorDelete', 'Error al eliminar el usuario'),
-				type: 'error',
-			})
-		} finally {
-			isDeleting.value = false
-			closeModal()
-		}
+	const executeDelete = () => {
+		emit('confirm')
 	}
-
-	defineExpose({
-		showModal,
-	})
 </script>

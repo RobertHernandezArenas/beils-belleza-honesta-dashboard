@@ -39,7 +39,7 @@
 <template>
 	<dialog ref="deleteModal" class="modal modal-bottom sm:modal-middle" @close="closeModal">
 		<div
-			class="modal-box bg-bg-card text-text-primary relative rounded-[2.5rem] border border-red-200 p-8 text-center shadow-lg backdrop-blur-md">
+			class="modal-box bg-bg-card text-text-primary relative w-full max-w-md rounded-[2.5rem] border border-red-200 p-8 text-center shadow-lg backdrop-blur-md">
 			<!-- Glow rojo intenso -->
 			<div
 				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"></div>

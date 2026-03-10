@@ -24,7 +24,7 @@ export function useModalAnimation() {
 		
 		// Backdrop entrance
 		if (backdrop) {
-			gsap.set(backdrop, { opacity: 0 })
+			gsap.set(backdrop, { opacity: 0, transition: 'none' })
 			tl.to(backdrop, { opacity: 1, duration: 0.3 }, 0)
 		}
 
@@ -34,6 +34,7 @@ export function useModalAnimation() {
 				opacity: 0,
 				scale: 0.92,
 				y: 30,
+				transition: 'none',
 			})
 			tl.to(
 				modalBox,
@@ -42,7 +43,7 @@ export function useModalAnimation() {
 					scale: 1,
 					y: 0,
 					duration: 0.45,
-					ease: 'back.out(1.4)',
+					ease: 'power3.out',
 				},
 				0.05,
 			)
@@ -85,19 +86,24 @@ export function useModalAnimation() {
 			onComplete: () => {
 				dialogRef.classList.remove('modal-open')
 				dialogRef.close()
+				
 				// Reset transforms for next open
+				gsap.set(dialogRef, { clearProps: 'all' })
 				if (modalBox) gsap.set(modalBox, { clearProps: 'all' })
 				if (backdrop) gsap.set(backdrop, { clearProps: 'all' })
 				onComplete?.()
 			},
 		})
 
+		gsap.set(dialogRef, { transition: 'none' })
+		if (modalBox) gsap.set(modalBox, { transition: 'none' })
+		if (backdrop) gsap.set(backdrop, { transition: 'none' })
+
+		// Move modal down slightly and fade out entire dialog to prevent any child glitches
 		if (modalBox) {
-			tl.to(modalBox, { opacity: 0, scale: 0.98, y: 10, duration: 0.2 }, 0)
+			tl.to(modalBox, { scale: 0.98, y: 10, duration: 0.2 }, 0)
 		}
-		if (backdrop) {
-			tl.to(backdrop, { opacity: 0, duration: 0.2 }, 0.05)
-		}
+		tl.to(dialogRef, { opacity: 0, duration: 0.2 }, 0)
 
 		return tl
 	}

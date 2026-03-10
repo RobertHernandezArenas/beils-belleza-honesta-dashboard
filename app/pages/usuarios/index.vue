@@ -21,13 +21,18 @@
 				:items-per-page="itemsPerPage"
 				v-model:current-page="currentPage"
 				@edit="userForm?.showModal($event)"
-				@delete="userDeleteModal?.showModal($event)"
+				@delete="openDeleteModal"
 				@toggle-status="toggleUserStatus" />
 		</div>
 
 		<!-- Modales -->
 		<UsersUserFormModal ref="userForm" @refresh="refresh" @toast="handleToast" />
-		<UsersUserDeleteModal ref="userDeleteModal" @refresh="refresh" @toast="handleToast" />
+		<UsersUserDeleteModal
+			:is-open="showDeleteModal"
+			:user-name="selectedUserToDelete?.name || ''"
+			:is-deleting="isDeletingUser"
+			@close="showDeleteModal = false"
+			@confirm="executeDelete" />
 
 		<!-- Toasts Notificaciones -->
 		<div class="toast toast-bottom toast-center sm:toast-end z-100">
@@ -157,7 +162,43 @@
 
 	// --- Referencias a los componentes hijos ---
 	const userForm = ref<any>(null)
-	const userDeleteModal = ref<any>(null)
+	
+	// --- Gestión de Eliminación ---
+	const showDeleteModal = ref(false)
+	const selectedUserToDelete = ref<any>(null)
+	const isDeletingUser = ref(false)
+
+	const openDeleteModal = (user: any) => {
+		selectedUserToDelete.value = user
+		showDeleteModal.value = true
+	}
+
+	const executeDelete = async () => {
+		if (!selectedUserToDelete.value) return
+		isDeletingUser.value = true
+
+		try {
+			await $fetch(`/api/users/${selectedUserToDelete.value.user_id}`, {
+				method: 'DELETE',
+			})
+			selectedUserToDelete.value = null
+			refresh()
+			handleToast({
+				message: t('users.messages.deleted', 'Usuario eliminado exitosamente'),
+				type: 'success',
+			})
+		} catch (error: any) {
+			console.error('Error deleting user:', error)
+			handleToast({
+				message:
+					error.data?.statusMessage || t('users.messages.errorDelete', 'Error al eliminar el usuario'),
+				type: 'error',
+			})
+		} finally {
+			isDeletingUser.value = false
+			showDeleteModal.value = false
+		}
+	}
 
 	const toggleUserStatus = async (user: UserData) => {
 		const originalStatus = user.status
