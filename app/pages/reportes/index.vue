@@ -30,7 +30,7 @@
 
 	// Line Chart Options (Revenue Trend)
 	const revenueTrendOptions = computed(() => {
-		if (!reports.value?.revenueTrend) return {}
+		if (!reports.value?.revenueTrend) return null
 		const data = reports.value.revenueTrend
 		return {
 			tooltip: { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 8 },
@@ -74,7 +74,7 @@
 
 	// Pie Chart Options (Payment Methods)
 	const paymentMethodsOptions = computed(() => {
-		if (!reports.value?.paymentMethods) return {}
+		if (!reports.value?.paymentMethods) return null
 		return {
 			tooltip: { trigger: 'item', borderRadius: 8 },
 			legend: { bottom: 0, icon: 'circle', textStyle: { color: '#666666' } },
@@ -99,7 +99,7 @@
 
 	// Bar Chart Options (Top Items)
 	const topItemsOptions = computed(() => {
-		if (!reports.value?.topItems) return {}
+		if (!reports.value?.topItems) return null
 		const data = [...reports.value.topItems].reverse() // Display highest at the top in horizontal
 		return {
 			tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, borderRadius: 8 },
@@ -271,7 +271,7 @@
 						</h3>
 						<p class="text-text-muted mb-6 text-sm">{{ $t('finances.reports.charts.revenueDesc') }}</p>
 						<div class="h-[300px] w-full">
-							<ClientChart :option="revenueTrendOptions" />
+							<ClientChart v-if="revenueTrendOptions" :option="revenueTrendOptions" />
 						</div>
 					</div>
 
@@ -282,7 +282,7 @@
 						</h3>
 						<p class="text-text-muted mb-6 text-sm">{{ $t('finances.reports.charts.methodsDesc') }}</p>
 						<div class="h-[300px] w-full">
-							<ClientChart :option="paymentMethodsOptions" />
+							<ClientChart v-if="paymentMethodsOptions" :option="paymentMethodsOptions" />
 						</div>
 					</div>
 				</div>
@@ -296,7 +296,7 @@
 						</h3>
 						<p class="text-text-muted mb-6 text-sm">{{ $t('finances.reports.charts.topItemsDesc') }}</p>
 						<div class="h-[300px] w-full">
-							<ClientChart :option="topItemsOptions" />
+							<ClientChart v-if="topItemsOptions" :option="topItemsOptions" />
 						</div>
 					</div>
 				</div>
