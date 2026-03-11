@@ -82,7 +82,7 @@ export function useModalAnimation() {
 		const backdrop = dialogRef.querySelector('.modal-backdrop')
 
 		const tl = gsap.timeline({
-			defaults: { ease: 'power2.out' },
+			defaults: { ease: 'power3.inOut' },
 			onComplete: () => {
 				dialogRef.classList.remove('modal-open')
 				dialogRef.close()
@@ -99,11 +99,11 @@ export function useModalAnimation() {
 		if (modalBox) gsap.set(modalBox, { transition: 'none' })
 		if (backdrop) gsap.set(backdrop, { transition: 'none' })
 
-		// Move modal down slightly and fade out entire dialog to prevent any child glitches
+		// Cinematic fade-out: slight shrink, move down, slow fade
 		if (modalBox) {
-			tl.to(modalBox, { scale: 0.98, y: 10, duration: 0.2 }, 0)
+			tl.to(modalBox, { scale: 0.96, y: 15, duration: 0.35 }, 0)
 		}
-		tl.to(dialogRef, { opacity: 0, duration: 0.2 }, 0)
+		tl.to(dialogRef, { opacity: 0, duration: 0.35 }, 0.05)
 
 		return tl
 	}
