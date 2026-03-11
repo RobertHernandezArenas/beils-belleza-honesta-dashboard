@@ -100,19 +100,19 @@
 				</p>
 			</div>
 
-			<div v-else class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+			<div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
 				<div
 					v-for="tag in tags"
 					:key="tag.tag_id"
 					class="bg-bg-card group flex cursor-pointer items-center justify-between rounded-full py-2 pr-2 pl-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors hover:-translate-y-0.5 hover:shadow-md"
 					@click="openEditModal(tag)">
-					<div class="flex items-center gap-2 overflow-hidden">
+					<div class="flex min-w-0 items-center gap-2 overflow-hidden">
 						<Hash class="text-primary h-4 w-4 shrink-0 group-hover:scale-110" />
 						<span class="text-text-primary truncate font-bold tracking-tight">{{ tag.name }}</span>
 					</div>
 
 					<!-- Menú de Acciones -->
-					<div class="dropdown dropdown-end" @click.stop.prevent>
+					<div class="dropdown dropdown-end shrink-0" @click.stop.prevent>
 						<div
 							tabindex="0"
 							role="button"

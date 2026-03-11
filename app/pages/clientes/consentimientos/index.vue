@@ -100,10 +100,10 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10">
-		<div class="mx-auto max-w-[1400px]">
+	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
+		<div class="mx-auto flex h-full w-full max-w-[1400px] flex-col lg:overflow-hidden">
 			<!-- Header -->
-			<header class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+			<header class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
 				<div>
 					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">Consentimientos</h1>
 					<p class="text-text-muted text-sm font-medium">
@@ -111,17 +111,17 @@
 					</p>
 				</div>
 
-				<div class="flex items-center gap-4">
-					<div class="relative">
+				<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
+					<div class="relative w-full sm:w-3/4 lg:w-auto">
 						<Search class="text-text-muted absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
 							type="text"
 							placeholder="Buscar consentimiento..."
-							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4 md:w-64" />
+							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4 sm:w-full lg:w-64" />
 					</div>
 					<button
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 items-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors"
+						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
 						@click="openCreate">
 						<Plus class="h-5 w-5" />
 						<span class="font-bold">Nuevo Consentimiento</span>
@@ -159,10 +159,10 @@
 			<!-- Table -->
 			<div
 				v-else
-				class="bg-bg-card border-border-subtle w-full overflow-hidden rounded-3xl border shadow-sm">
-				<div class="w-full overflow-x-auto">
-					<table class="w-full min-w-[900px] text-left text-sm">
-						<thead class="bg-bg-muted/50 text-text-secondary border-border-subtle border-b">
+				class="bg-bg-card border-border-subtle flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
+				<div class="w-full flex-1 overflow-auto">
+					<table class="w-full min-w-[900px] relative text-left text-sm">
+						<thead class="bg-bg-muted/50 text-text-secondary border-border-subtle sticky top-0 z-10 border-b backdrop-blur-md">
 							<tr>
 								<th class="px-6 py-4 font-bold">Cliente</th>
 								<th class="px-6 py-4 font-bold">Documento</th>

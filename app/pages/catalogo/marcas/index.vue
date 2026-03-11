@@ -98,7 +98,7 @@
 				<p class="text-text-muted mt-2 max-w-sm">{{ t('catalog.brands.emptyStateSub') }}</p>
 			</div>
 
-			<div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+			<div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				<div
 					v-for="brand in brands"
 					:key="brand.brand_id"
@@ -109,11 +109,11 @@
 							class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
 							<Tag class="h-6 w-6" />
 						</div>
-						<div class="flex flex-col">
-							<h3 class="text-text-primary text-lg font-bold">{{ brand.name }}</h3>
+						<div class="flex flex-col overflow-hidden pr-2">
+							<h3 class="text-text-primary truncate text-lg font-bold">{{ brand.name }}</h3>
 							<p
 								v-if="brand.description"
-								class="text-text-muted max-w-[120px] truncate text-xs font-medium"
+								class="text-text-muted max-w-full truncate text-xs font-medium"
 								:title="brand.description">
 								{{ brand.description }}
 							</p>

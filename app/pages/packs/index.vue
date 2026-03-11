@@ -72,7 +72,7 @@
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8">
 		<div class="mx-auto max-w-7xl">
 			<!-- Header -->
-			<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+			<div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 				<div class="flex items-center gap-3">
 					<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
 						<PackageSearch class="h-6 w-6" />
@@ -85,8 +85,8 @@
 					</div>
 				</div>
 
-				<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-					<div class="relative w-full sm:w-64">
+				<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
+					<div class="relative w-full sm:w-3/4 lg:w-64">
 						<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
@@ -95,7 +95,7 @@
 							class="input bg-bg-card border-border-default focus:border-border-strong focus:ring-border-subtle h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
 					</div>
 					<button
-						class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-12 rounded-2xl border-none px-6 font-bold shadow-sm"
+						class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-12 flex w-full shrink-0 items-center justify-center rounded-2xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
 						@click="openCreateModal">
 						<Plus class="h-5 w-5" />
 						Nuevo Pack

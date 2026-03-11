@@ -174,7 +174,7 @@
 	<div
 		class="bg-bg-app text-text-secondary flex h-screen min-h-screen w-full flex-col overflow-hidden p-4 lg:p-8">
 		<!-- Header -->
-		<div class="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+		<div class="mb-6 flex shrink-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 			<div class="flex items-center gap-3">
 				<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
 					<CalendarDays class="h-6 w-6" />
@@ -185,9 +185,9 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+			<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
 				<!-- Search -->
-				<div class="relative w-full sm:w-64">
+				<div class="relative w-full sm:w-3/4 lg:w-64">
 					<Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 					<input
 						v-model="searchQuery"
@@ -198,7 +198,7 @@
 
 				<!-- Add -->
 				<button
-					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 rounded-xl border-none px-6 font-bold shadow-sm"
+					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 flex w-full shrink-0 items-center justify-center rounded-xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
 					@click="openCreateModal">
 					<Plus class="h-4 w-4" />
 					Nueva Cita

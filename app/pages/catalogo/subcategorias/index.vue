@@ -109,7 +109,7 @@
 				</p>
 			</div>
 
-			<div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+			<div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				<div
 					v-for="subcategory in subcategories"
 					:key="subcategory.subcategory_id"
@@ -120,17 +120,17 @@
 							class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
 							<ListTree class="h-6 w-6" />
 						</div>
-						<div class="flex flex-col">
+						<div class="flex flex-col overflow-hidden pr-2">
 							<span
-								class="text-primary mb-1 text-[10px] font-bold tracking-widest uppercase drop-shadow-sm">
+								class="text-primary truncate mb-1 text-[10px] font-bold tracking-widest uppercase drop-shadow-sm">
 								{{ subcategory.category.name }}
 							</span>
-							<h3 class="text-text-primary mb-1 text-lg leading-tight font-bold">
+							<h3 class="text-text-primary truncate mb-1 text-lg leading-tight font-bold">
 								{{ subcategory.name }}
 							</h3>
 							<p
 								v-if="subcategory.description"
-								class="text-text-muted max-w-[140px] truncate text-xs font-medium"
+								class="text-text-muted max-w-full truncate text-xs font-medium"
 								:title="subcategory.description">
 								{{ subcategory.description }}
 							</p>

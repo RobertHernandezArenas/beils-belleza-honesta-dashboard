@@ -92,8 +92,8 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8">
-		<div class="mx-auto max-w-7xl">
+	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
+		<div class="mx-auto flex h-full w-full max-w-7xl flex-col lg:overflow-hidden">
 			<!-- Header -->
 			<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div class="flex items-center gap-3">
@@ -172,12 +172,12 @@
 			<!-- Table List -->
 			<div
 				v-else-if="products && products.length > 0"
-				class="bg-bg-card border-border-default overflow-hidden rounded-3xl border shadow-sm">
-				<div class="overflow-x-auto">
-					<table class="table w-full">
-						<thead>
+				class="bg-bg-card border-border-default flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
+				<div class="w-full flex-1 overflow-auto">
+					<table class="table w-full relative">
+						<thead class="sticky top-0 z-10 bg-bg-muted/50 backdrop-blur-md">
 							<tr
-								class="border-border-default text-text-muted bg-bg-muted/50 border-b pb-4 text-xs tracking-wider uppercase">
+								class="border-border-default text-text-muted border-b pb-4 text-xs tracking-wider uppercase">
 								<th class="font-bold">Producto</th>
 								<th class="font-bold">Categoría / Marca</th>
 								<th class="text-right font-bold tabular-nums">Stock / Precio</th>

@@ -106,7 +106,7 @@
 				<p class="text-text-muted mt-2 max-w-sm">Aún no has registrado ninguna categoría de producto.</p>
 			</div>
 
-			<div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+			<div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				<div
 					v-for="category in categories"
 					:key="category.category_id"
@@ -117,11 +117,11 @@
 							class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
 							<Layers class="h-6 w-6" />
 						</div>
-						<div class="flex flex-col">
-							<h3 class="text-text-primary text-lg font-bold">{{ category.name }}</h3>
+						<div class="flex flex-col overflow-hidden pr-2">
+							<h3 class="text-text-primary truncate text-lg font-bold">{{ category.name }}</h3>
 							<p
 								v-if="category.description"
-								class="text-text-muted mt-0.5 line-clamp-2 max-w-[200px] text-xs font-medium"
+								class="text-text-muted mt-0.5 truncate max-w-full text-xs font-medium"
 								:title="category.description">
 								{{ category.description }}
 							</p>

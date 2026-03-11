@@ -96,10 +96,10 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8">
-		<div class="mx-auto max-w-7xl">
+	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
+		<div class="mx-auto flex h-full w-full max-w-7xl flex-col lg:overflow-hidden">
 			<!-- Header -->
-			<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+			<div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 				<div class="flex items-center gap-3">
 					<div class="bg-error/10 text-error flex h-12 w-12 items-center justify-center rounded-2xl">
 						<Landmark class="h-6 w-6" />
@@ -110,16 +110,8 @@
 					</div>
 				</div>
 
-				<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-					<select
-						v-model="filterStatus"
-						class="select bg-bg-card border-border-default h-12 rounded-2xl">
-						<option value="">{{ $t('finances.debts.filters.all') }}</option>
-						<option value="pending">{{ $t('finances.debts.filters.pending') }}</option>
-						<option value="paid">{{ $t('finances.debts.filters.paid') }}</option>
-					</select>
-
-					<div class="relative w-full sm:w-64">
+				<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
+					<div class="relative w-full sm:w-3/4 lg:w-64">
 						<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
@@ -127,6 +119,13 @@
 							:placeholder="$t('finances.debts.searchPlaceholder')"
 							class="input bg-bg-card border-border-default focus:border-error focus:ring-error/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
 					</div>
+					<select
+						v-model="filterStatus"
+						class="select bg-bg-card border-border-default h-12 w-full shrink-0 rounded-2xl sm:w-1/4 lg:w-auto">
+						<option value="">{{ $t('finances.debts.filters.all') }}</option>
+						<option value="pending">{{ $t('finances.debts.filters.pending') }}</option>
+						<option value="paid">{{ $t('finances.debts.filters.paid') }}</option>
+					</select>
 				</div>
 			</div>
 
@@ -138,12 +137,12 @@
 			<!-- List -->
 			<div
 				v-else-if="filteredDebts && filteredDebts.length > 0"
-				class="bg-bg-card border-border-default rounded-3xl border shadow-sm">
-				<div class="w-full">
-					<table class="table w-full">
-						<thead>
+				class="bg-bg-card border-border-default flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
+				<div class="w-full flex-1 overflow-auto">
+					<table class="table w-full relative">
+						<thead class="sticky top-0 z-10 bg-bg-muted/50 backdrop-blur-md">
 							<tr
-								class="border-border-default bg-bg-muted/50 text-text-muted text-xs tracking-wider uppercase">
+								class="border-border-default text-text-muted border-none text-xs tracking-wider uppercase">
 								<th class="py-4 pl-6">{{ $t('finances.debts.table.client') }}</th>
 								<th class="hidden lg:table-cell">{{ $t('finances.debts.table.dateOrig') }}</th>
 								<th>{{ $t('finances.debts.table.dueDate') }}</th>
@@ -215,7 +214,7 @@
 										}}
 									</div>
 								</td>
-								<td class="sticky right-0 pr-6 text-right">
+								<td class="pr-6 text-right">
 									<button
 										v-if="debt.status !== 'paid'"
 										@click="openPaymentModal(debt)"
