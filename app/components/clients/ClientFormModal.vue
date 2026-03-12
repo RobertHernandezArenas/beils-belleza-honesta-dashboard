@@ -48,6 +48,12 @@
 		phone: '',
 		document_type: 'DNI',
 		document_number: '',
+		address: '',
+		city: '',
+		country: 'España',
+		postal_code: '',
+		gender: '',
+		birth_date: new Date().toISOString().split('T')[0],
 		status: 'ON',
 	})
 
@@ -57,6 +63,11 @@
 		email: '',
 		phone: '',
 		document_number: '',
+		address: '',
+		city: '',
+		country: '',
+		postal_code: '',
+		birth_date: '',
 	})
 
 	const apiError = ref('')
@@ -74,6 +85,12 @@
 			form.phone = props.clientToEdit.phone || ''
 			form.document_type = props.clientToEdit.document_type || 'DNI'
 			form.document_number = props.clientToEdit.document_number || ''
+			form.address = props.clientToEdit.address || ''
+			form.city = props.clientToEdit.city || ''
+			form.country = props.clientToEdit.country || 'España'
+			form.postal_code = props.clientToEdit.postal_code || ''
+			form.gender = props.clientToEdit.gender || ''
+			form.birth_date = props.clientToEdit.birth_date ? new Date(props.clientToEdit.birth_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
 			form.status = props.clientToEdit.status || 'ON'
 		} else {
 			form.name = ''
@@ -82,6 +99,12 @@
 			form.phone = ''
 			form.document_type = 'DNI'
 			form.document_number = ''
+			form.address = ''
+			form.city = ''
+			form.country = 'España'
+			form.postal_code = ''
+			form.gender = ''
+			form.birth_date = new Date().toISOString().split('T')[0]
 			form.status = 'ON'
 		}
 	}
@@ -98,6 +121,12 @@
 		phone: z.string().min(6, 'El teléfono es obligatorio'),
 		document_type: z.enum(['DNI', 'PASSPORT', 'NIE']),
 		document_number: z.string().min(3, 'Documento inválido'),
+		address: z.string().optional().default(''),
+		city: z.string().optional().default(''),
+		country: z.string().optional().default('España'),
+		postal_code: z.string().optional().default(''),
+		gender: z.string().optional().default(''),
+		birth_date: z.string().optional().default(new Date().toISOString()),
 		status: z.enum(['ON', 'OFF']),
 	})
 
@@ -132,6 +161,11 @@
 			errors.email = formatted.email?._errors[0] || ''
 			errors.phone = formatted.phone?._errors[0] || ''
 			errors.document_number = formatted.document_number?._errors[0] || ''
+			errors.address = formatted.address?._errors[0] || ''
+			errors.city = formatted.city?._errors[0] || ''
+			errors.country = formatted.country?._errors[0] || ''
+			errors.postal_code = formatted.postal_code?._errors[0] || ''
+			errors.birth_date = formatted.birth_date?._errors[0] || ''
 			return
 		}
 
@@ -178,7 +212,7 @@
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Nombre *
+								{{ t('catalog.clients.form.name') }}
 							</span>
 						</label>
 						<input
@@ -196,7 +230,7 @@
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Apellidos *
+								{{ t('catalog.clients.form.surname') }}
 							</span>
 						</label>
 						<input
@@ -214,7 +248,7 @@
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Correo Electrónico *
+								{{ t('catalog.clients.form.email') }}
 							</span>
 						</label>
 						<input
@@ -232,7 +266,7 @@
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Teléfono *
+								{{ t('catalog.clients.form.phone') }}
 							</span>
 						</label>
 						<input
@@ -250,7 +284,7 @@
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Tipo Documento
+								{{ t('catalog.clients.form.documentType') }}
 							</span>
 						</label>
 						<select
@@ -258,14 +292,14 @@
 							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
 							<option value="DNI">DNI</option>
 							<option value="NIE">NIE</option>
-							<option value="PASSPORT">Pasaporte</option>
+							<option value="PASSPORT">{{ t('catalog.clients.form.passport') }}</option>
 						</select>
 					</div>
 
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Nº Documento *
+								{{ t('catalog.clients.form.documentNumber') }}
 							</span>
 						</label>
 						<input
@@ -280,6 +314,106 @@
 						<span v-if="errors.document_number" class="text-error mt-1.5 ml-1 text-xs font-bold">
 							{{ errors.document_number }}
 						</span>
+					</div>
+
+					<!-- New Fields -->
+					<div class="form-control">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.birthDate') }}
+							</span>
+						</label>
+						<input
+							v-model="form.birth_date"
+							type="date"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
+							@input="clearError('birth_date')" />
+					</div>
+
+					<div class="form-control">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.gender') }}
+							</span>
+						</label>
+						<select
+							v-model="form.gender"
+							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
+							<option value="">{{ t('catalog.clients.form.selectGender') }}</option>
+							<option value="male">{{ t('catalog.clients.form.male') }}</option>
+							<option value="female">{{ t('catalog.clients.form.female') }}</option>
+							<option value="other">{{ t('catalog.clients.form.other') }}</option>
+						</select>
+					</div>
+
+					<div class="form-control md:col-span-2">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.address') }}
+							</span>
+						</label>
+						<input
+							v-model="form.address"
+							type="text"
+							placeholder="Calle, número, piso..."
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
+							@input="clearError('address')" />
+					</div>
+
+					<div class="form-control">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.city') }}
+							</span>
+						</label>
+						<input
+							v-model="form.city"
+							type="text"
+							placeholder="Pontevedra"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
+							@input="clearError('city')" />
+					</div>
+
+					<div class="form-control">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.postalCode') }}
+							</span>
+						</label>
+						<input
+							v-model="form.postal_code"
+							type="text"
+							placeholder="36001"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
+							@input="clearError('postal_code')" />
+					</div>
+
+					<div class="form-control">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.country') }}
+							</span>
+						</label>
+						<input
+							v-model="form.country"
+							type="text"
+							placeholder="España"
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
+							@input="clearError('country')" />
+					</div>
+
+					<div class="form-control">
+						<label class="label">
+							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
+								{{ t('catalog.clients.form.status') }}
+							</span>
+						</label>
+						<select
+							v-model="form.status"
+							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
+							<option value="ON">Activo</option>
+							<option value="OFF">Inactivo</option>
+						</select>
 					</div>
 				</div>
 

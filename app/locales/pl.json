@@ -158,7 +158,27 @@
 			"emptyStateSub": "Nie zarejestrowałeś jeszcze żadnych klientów w CRM.",
 			"errorLoad": "Błąd podczas ładowania listy klientów.",
 			"edit": "Edytuj Profil",
-			"delete": "Usuń Klienta"
+			"delete": "Usuń Klienta",
+			"form": {
+				"name": "Imię *",
+				"surname": "Nazwisko *",
+				"email": "Adres e-mail *",
+				"phone": "Numer telefonu *",
+				"documentType": "Typ dokumentu",
+				"documentNumber": "Nr dokumentu *",
+				"passport": "Paszport",
+				"birthDate": "Data urodzenia",
+				"gender": "Płeć",
+				"selectGender": "Wybierz...",
+				"male": "Mężczyzna",
+				"female": "Kobieta",
+				"other": "Inne",
+				"address": "Adres",
+				"city": "Miasto",
+				"postalCode": "Kod pocztowy",
+				"country": "Kraj",
+				"status": "Status"
+			}
 		}
 	},
 	"Productos": "Produkty",

@@ -26,12 +26,14 @@
 		es: { name: 'Español', icon: 'https://flagcdn.com/es.svg' },
 		en: { name: 'English', icon: 'https://flagcdn.com/gb.svg' },
 		pl: { name: 'Polski', icon: 'https://flagcdn.com/pl.svg' },
+		gl: { name: 'Galego', icon: '/flags/gl.svg' },
 	}
 
 	const locales = [
 		{ code: 'es', name: 'Español' },
 		{ code: 'en', name: 'English' },
 		{ code: 'pl', name: 'Polski' },
+		{ code: 'gl', name: 'Galego' },
 	]
 
 	const currentLanguage = computed(() => {

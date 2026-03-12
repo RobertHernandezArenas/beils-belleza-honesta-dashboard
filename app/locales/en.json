@@ -158,7 +158,27 @@
 			"emptyStateSub": "You haven't registered any clients in the CRM yet.",
 			"errorLoad": "Error loading the client list.",
 			"edit": "Edit Profile",
-			"delete": "Delete Client"
+			"delete": "Delete Client",
+			"form": {
+				"name": "First Name *",
+				"surname": "Last Name *",
+				"email": "Email Address *",
+				"phone": "Phone Number *",
+				"documentType": "Document Type",
+				"documentNumber": "Document No. *",
+				"passport": "Passport",
+				"birthDate": "Birth Date",
+				"gender": "Gender",
+				"selectGender": "Select...",
+				"male": "Male",
+				"female": "Female",
+				"other": "Other",
+				"address": "Address",
+				"city": "City",
+				"postalCode": "Postal Code",
+				"country": "Country",
+				"status": "Status"
+			}
 		}
 	},
 	"Productos": "Products",

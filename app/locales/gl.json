@@ -1,0 +1,327 @@
+{
+	"common": {
+		"loading": "Cargando...",
+		"error": "Erro",
+		"submit": "Enviar",
+		"cancel": "Cancelar",
+		"save": "Gardar",
+		"delete": "Eliminar",
+		"prev": "Anterior",
+		"next": "Seguinte",
+		"showing": "Amosando",
+		"to": "a",
+		"of": "de",
+		"results": "resultados"
+	},
+	"auth": {
+		"login": {
+			"title": "Iniciar Sesión",
+			"email": "Correo Electrónico",
+			"password": "Contrasinal",
+			"button": "Iniciar Sesión",
+			"error": "Erro de Acceso",
+			"welcome": "Benvido",
+			"platform": "BEILS",
+			"remember": "Lembrar credenciais"
+		}
+	},
+	"nav": {
+		"dashboard": "Vista Xeral",
+		"users": "Usuarios",
+		"clients": "Clientes",
+		"drivers": "Condutores",
+		"fleet": "Frota",
+		"routes": "Rutas",
+		"settings": "Configuración",
+		"menu": "Menú Principal",
+		"logout": "Pechar Sesión",
+		"reports": "Informes"
+	},
+	"users": {
+		"header": {
+			"search": "Buscar usuarios...",
+			"filters": "Filtros",
+			"create": "+ Novo Usuario",
+			"manage": "Administra accesos e roles"
+		},
+		"filters": {
+			"role": "Rol de Usuario",
+			"status": "Estado",
+			"document": "Documento",
+			"all": "Todos"
+		},
+		"table": {
+			"user": "Usuario",
+			"role": "Rol",
+			"contact": "Contacto",
+			"status": "Estado",
+			"actions": "Accións",
+			"empty": "Non hai usuarios rexistrados.",
+			"itemsPerPage": "ítems por páxina"
+		},
+		"form": {
+			"createTitle": "Crear Novo Usuario",
+			"editTitle": "Editar Usuario",
+			"name": "Nome",
+			"surname": "Apelidos",
+			"email": "Correo Electrónico",
+			"password": "Contrasinal",
+			"passwordPlaceholderEdit": "(Opcional) Deixar en branco",
+			"passwordPlaceholderNew": "Requirida",
+			"documentType": "Tipo Documento",
+			"documentNumber": "Núm Documento",
+			"phone": "Teléfono",
+			"role": "Rol",
+			"address": "Enderezo",
+			"city": "Cidade",
+			"country": "País",
+			"saveChanges": "Gardar Cambios",
+			"createUser": "Crear Usuario"
+		},
+		"delete": {
+			"title": "Eliminar Usuario",
+			"message": "¿Estás seguro de que desexas eliminar este usuario?",
+			"warning": "Esta acción non se pode deshacer.",
+			"confirm": "Si, Eliminar"
+		},
+		"constants": {
+			"roles": {
+				"ADMIN": "Administrador",
+				"CLIENT": "Cliente"
+			},
+			"status": {
+				"ON": "Activo",
+				"OFF": "Inactivo"
+			}
+		},
+		"messages": {
+			"created": "Usuario creado correctamente",
+			"updated": "Usuario actualizado correctamente",
+			"error": "Erro ao gardar o usuario",
+			"statusOn": "Usuario activado",
+			"statusOff": "Usuario desactivado",
+			"toggleError": "Erro ao cambiar o estado"
+		}
+	},
+	"overview": {
+		"hero": {
+			"title": "Ola de novo",
+			"guest": "Usuario",
+			"subtitle": "Resumo de operacións do día"
+		},
+		"period": {
+			"yesterday": "Onte",
+			"today": "Hoxe",
+			"month": "Mes"
+		},
+		"kpis": {
+			"revenue": {
+				"title": "Ingresos Mensuais"
+			},
+			"fleet": {
+				"title": "Frota Activa",
+				"trend": "Operativos"
+			},
+			"routes": {
+				"title": "Rutas Completadas (Hoxe)",
+				"trend": "Rutas vs Onte"
+			},
+			"drivers": {
+				"title": "Condutores en Ruta",
+				"trend": "en Descanso"
+			}
+		},
+		"charts": {
+			"weekly": "Desempeño Semanal",
+			"details": "Detalles",
+			"days": {
+				"mon": "L",
+				"tue": "M",
+				"wed": "M",
+				"thu": "X",
+				"fri": "V",
+				"sat": "S",
+				"sun": "D"
+			}
+		},
+		"activity": {
+			"title": "Actividade Recente",
+			"viewAll": "Ver todo o historial"
+		}
+	},
+	"catalog": {
+		"clients": {
+			"title": "Directorio de Clientes",
+			"subtitle": "Xestiona datos, consentimentos e cuestionarios dos teus clientes.",
+			"newClient": "Novo Cliente",
+			"emptyState": "Sen clientes",
+			"emptyStateSub": "Aínda non rexistraches a ningún cliente no CRM.",
+			"errorLoad": "Erro ao cargar a lista de clientes.",
+			"edit": "Editar Perfil",
+			"delete": "Borrar Cliente",
+			"form": {
+				"name": "Nome *",
+				"surname": "Apelidos *",
+				"email": "Correo Electrónico *",
+				"phone": "Teléfono *",
+				"documentType": "Tipo Documento",
+				"documentNumber": "Nº Documento *",
+				"passport": "Pasaporte",
+				"birthDate": "Data de Nacemento",
+				"gender": "Xénero",
+				"selectGender": "Seleccionar...",
+				"male": "Home",
+				"female": "Muller",
+				"other": "Outro",
+				"address": "Enderezo",
+				"city": "Cidade",
+				"postalCode": "Código Postal",
+				"country": "País",
+				"status": "Estado"
+			}
+		}
+	},
+	"Productos": "Produtos",
+	"Categorías": "Categorías",
+	"Subcategorías": "Subcategorías",
+	"Etiquetas": "Etiquetas",
+	"Packs & Promociones": "Packs e Promocións",
+	"Bonos": "Bonos",
+	"Cupones": "Cupóns",
+	"Tarjetas de Regalo": "Tarxetas de Agasallo",
+	"Servicios": "Servizos",
+	"Ventas": "Vendas",
+	"Deudas y Cobros": "Débedas e Cobros",
+	"Agenda": "Axenda",
+	"Consentimientos": "Consentimentos",
+	"Cuestionarios": "Cuestionarios",
+	"Revocaciones": "Revogacións",
+	"Terminal Venta": "Terminal de Venda",
+	"Stripe — Cuotas (1-3-4-6)": "Stripe — Cuotas (1-3-4-6)",
+	"TPV / Punto de Venta": "TPV / Punto de Venda",
+	"Packs": "Packs",
+	"Buscar en catálogo...": "Buscar no catálogo...",
+	"No se encontraron resultados en esta categoría": "Non se atoparon resultados nesta categoría",
+	"Buscar cliente por teléfono o nombre...": "Buscar cliente por teléfono ou nome...",
+	"Cliente Seleccionado": "Cliente Seleccionado",
+	"El carrito está vacío": "O carriño está baleiro",
+	"Añade productos o servicios desde el catálogo de la izquierda.": "Engade produtos ou servizos dende o catálogo da esquerda.",
+	"Subtotal": "Subtotal",
+	"Descuento / Cupón": "Desconto / Cupón",
+	"Total a Pagar": "Total a Pagar",
+	"Tarjeta": "Tarxeta",
+	"Efectivo": "Efectivo",
+	"Mixto": "Mixto",
+	"Deuda": "Débeda",
+	"Procesar Cobro": "Procesar Cobro",
+	"finances": {
+		"debts": {
+			"title": "Contas por Cobrar",
+			"subtitle": "Xestión de débedas de clientes e impagos",
+			"filters": {
+				"all": "Todas as débedas",
+				"pending": "Pendentes / Parciais",
+				"paid": "Saldadas (Cobrado)"
+			},
+			"searchPlaceholder": "Buscar cliente...",
+			"table": {
+				"client": "Cliente",
+				"dateOrig": "Data Ori.",
+				"dueDate": "Vencemento",
+				"totalDebt": "Total Débeda",
+				"pendingBalance": "Saldo Pende.",
+				"status": "Estado",
+				"actions": "Accións"
+			},
+			"status": {
+				"paid": "Saldada",
+				"partial": "Pendente",
+				"pending": "Impago"
+			},
+			"actions": {
+				"pay": "Cobrar Abono",
+				"fullyPaid": "Débeda completamente saldada"
+			},
+			"emptyState": {
+				"title": "Sen Inconvenientes",
+				"description": "Non hai clientes con contas por pagar ou débedas rexistradas cos filtros actuais."
+			},
+			"paymentModal": {
+				"title": "Rexistrar Pago",
+				"remainingAmount": "Monto restante por liquidar",
+				"amountReceived": "Monto Recibido (€) *",
+				"disclaimer": "Ao rexistrar o pago, o saldo pendente de {name} reducirase.",
+				"cancel": "Cancelar",
+				"confirm": "Confirmar Abono"
+			},
+			"messages": {
+				"success": "Pago rexistrado correctamente",
+				"errorGeneric": "Erro ao procesar o pago",
+				"invalidAmount": "O monto é inválido"
+			}
+		},
+		"reports": {
+			"title": "Informes Analíticos",
+			"subtitle": "Métricas, ingresos e rendemento xeral",
+			"exportPdf": "Exportar PDF",
+			"generating": "Xerando...",
+			"errorTitle": "Erro obtendo métricas",
+			"errorDesc": "Por favor, inténtao de novo máis tarde ou revisa a túa conexión.",
+			"kpis": {
+				"revenue": "Ingresos Acum.",
+				"tickets": "Tickets",
+				"clients": "Clientes Top",
+				"products": "Produtos"
+			},
+			"charts": {
+				"revenueTitle": "Resumo de Facturación",
+				"revenueDesc": "Tendencia de ingresos dos últimos 6 meses",
+				"methodsTitle": "Distribución de Cobros",
+				"methodsDesc": "Métodos de pago utilizados polos clientes",
+				"topItemsTitle": "Top 5 Servizos / Produtos",
+				"topItemsDesc": "Os ítems máis demandados do teu catálogo historicamente"
+			}
+		}
+	},
+	"sales": {
+		"title": "Vendas e Facturación",
+		"subtitle": "Historial de tickets e facturación",
+		"search": "Buscar ticket ou cliente...",
+		"table": {
+			"id": "ID Ticket",
+			"date": "Data e Hora",
+			"client": "Cliente",
+			"items": "Artigos",
+			"method": "Método Pago",
+			"total": "Total",
+			"actions": "Accións",
+			"unregistered": "Cliente Sen Rexistrar",
+			"details": "Ver Detalles"
+		},
+		"emptyState": {
+			"title": "Sen Vendas Rexistradas",
+			"desc": "Non hai tickets ou vendas completadas no historial cos filtros actuais."
+		},
+		"modal": {
+			"title": "Detalles do Ticket",
+			"walkInClient": "Cliente Sen Rexistrar (Walk-in)",
+			"method": "Método",
+			"itemsTitle": "Artigos",
+			"table": {
+				"concept": "Concepto",
+				"qty": "Cant.",
+				"price": "Prezo",
+				"subtotal": "Subtotal"
+			},
+			"totals": {
+				"subtotal": "Subtotal",
+				"discount": "Desconto",
+				"total": "Total Pagado"
+			},
+			"buttons": {
+				"close": "Pechar",
+				"download": "Descargar Recibo"
+			}
+		}
+	}
+}
