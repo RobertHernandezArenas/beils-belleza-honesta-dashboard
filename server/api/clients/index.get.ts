@@ -9,6 +9,9 @@ export default defineEventHandler(async event => {
 
 		const query = getQuery(event)
 		const search = query.search as string
+		const page = parseInt(query.page as string) || 1
+		const limit = parseInt(query.limit as string) || 10
+		const skip = (page - 1) * limit
 
 		let whereClause: any = { role: 'CLIENT' }
 		if (search) {
@@ -23,21 +26,35 @@ export default defineEventHandler(async event => {
 			}
 		}
 
-		const clients = await prisma.user.findMany({
-			where: whereClause,
-			orderBy: { created_at: 'desc' },
-			include: {
-				_count: {
-					select: { client_bookings: true, consents: true, debts: true },
+		// Use transaction to get total and data in one go
+		const [total, clients] = await Promise.all([
+			prisma.user.count({ where: whereClause }),
+			prisma.user.findMany({
+				where: whereClause,
+				orderBy: { created_at: 'desc' },
+				skip,
+				take: limit,
+				include: {
+					_count: {
+						select: { client_bookings: true, consents: true, debts: true },
+					},
 				},
-			},
-		})
+			}),
+		])
 
 		// Remove passwords from response
-		return clients.map(client => {
-			const { password, ...rest } = client
-			return rest
-		})
+		return {
+			data: clients.map(client => {
+				const { password, ...rest } = client
+				return rest
+			}),
+			pagination: {
+				total,
+				page,
+				limit,
+				totalPages: Math.ceil(total / limit),
+			},
+		}
 	} catch (error: any) {
 		if (error.statusCode) throw error
 		throw createError({

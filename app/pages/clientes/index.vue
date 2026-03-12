@@ -22,14 +22,31 @@
 	const queryClient = useQueryClient()
 	const { t } = useI18n()
 	const searchQuery = ref('')
+	const page = ref(1)
+	const limit = ref(7)
 
 	const {
-		data: clients,
+		data: clientsResponse,
 		isPending,
 		error,
-	} = useQuery<any[]>({
-		queryKey: ['clients-list', searchQuery],
-		queryFn: () => $fetch('/api/clients', { query: { search: searchQuery.value } }),
+	} = useQuery<any>({
+		queryKey: ['clients-list', searchQuery, page, limit],
+		queryFn: () =>
+			$fetch('/api/clients', {
+				query: {
+					search: searchQuery.value,
+					page: page.value,
+					limit: limit.value,
+				},
+			}),
+	})
+
+	const clients = computed(() => clientsResponse.value?.data || [])
+	const pagination = computed(() => clientsResponse.value?.pagination || { total: 0, totalPages: 0 })
+
+	// Reset page when search changes
+	watch(searchQuery, () => {
+		page.value = 1
 	})
 
 	// Modales
@@ -234,6 +251,44 @@
 							</tr>
 						</tbody>
 					</table>
+				</div>
+
+				<!-- Pagination Footer -->
+				<div class="bg-bg-muted/30 border-border-subtle flex flex-col items-center justify-between gap-4 border-t px-6 py-4 backdrop-blur-md sm:flex-row">
+					<div class="text-text-muted flex items-center gap-4 text-xs font-medium">
+						<span class="hidden sm:inline">Mostrando {{ clients.length }} de {{ pagination.total }} clientes</span>
+						<div class="flex items-center gap-2">
+							<span class="shrink-0">Filas:</span>
+							<select
+								v-model="limit"
+								class="select select-ghost select-xs focus:bg-bg-card h-8 min-h-0 rounded-lg border-none bg-transparent font-bold"
+								@change="page = 1">
+								<option :value="10">10</option>
+								<option :value="25">25</option>
+								<option :value="50">50</option>
+								<option :value="100">100</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="join">
+						<button
+							class="join-item btn btn-sm bg-bg-card border-border-subtle hover:bg-bg-muted h-9 min-h-0 px-3 transition-colors disabled:opacity-50"
+							:disabled="page === 1"
+							@click="page--">
+							«
+						</button>
+						<button
+							class="join-item btn btn-sm bg-bg-card border-border-subtle hover:bg-bg-muted h-9 min-h-0 min-w-[40px] px-3 transition-colors">
+							Pág. {{ page }} de {{ pagination.totalPages || 1 }}
+						</button>
+						<button
+							class="join-item btn btn-sm bg-bg-card border-border-subtle hover:bg-bg-muted h-9 min-h-0 px-3 transition-colors disabled:opacity-50"
+							:disabled="page >= pagination.totalPages"
+							@click="page++">
+							»
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
