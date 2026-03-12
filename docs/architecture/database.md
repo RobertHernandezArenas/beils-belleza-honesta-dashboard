@@ -30,7 +30,7 @@ Modelos relacionados con el perfil médico y legal del cliente (ligados por `use
 Estructura de categorización de los productos físicos a la venta o uso interno:
 
 - **`Product`**: Datos del producto físico (precio, stock actual, stock mínimo, SKU, código de barras).
-- **`Brand`**: Marca que engloba productos.
+
 - **`Category` & `Subcategory`**: Taxonomía jerárquica para la clasificación.
 - **`Tag`**: Sistema de etiquetado (relación N:M a través de `ProductTag`).
 

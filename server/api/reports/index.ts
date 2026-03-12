@@ -1,10 +1,9 @@
 export default defineEventHandler(async event => {
 	// 1. KPIs
-	// Assuming clients are users with role 'USER' or similar. We'll count all for now if role isn't strict, but let's assume 'USER'.
-	// To be safe, let's just count all users who are not ADMIN. If role doesn't exist, this might fail, let's just fetch all users for now minus admn.
+	// Assuming clients are users with role 'CLIENT'.
 	let totalClients = 0
 	try {
-		totalClients = await prisma.user.count({ where: { role: 'USER' } })
+		totalClients = await prisma.user.count({ where: { role: 'CLIENT' } })
 	} catch (e) {
 		// Fallback if role doesn't exist
 		totalClients = await prisma.user.count()

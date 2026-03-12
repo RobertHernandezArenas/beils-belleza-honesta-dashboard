@@ -8,7 +8,7 @@ const poolConfig = {
 	host: process.env.DATABASE_HOST || 'localhost',
 	user: process.env.DATABASE_USER || 'root',
 	password: process.env.DATABASE_PASSWORD || '24Enero2011.',
-	database: process.env.DATABASE_NAME || 'transpallet_plus_db',
+	database: process.env.DATABASE_NAME || 'beils_belleza_honesta_db',
 	port: parseInt(process.env.DATABASE_PORT || '3306', 10),
 	connectionLimit: 10,
 }

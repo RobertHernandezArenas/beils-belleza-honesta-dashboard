@@ -38,7 +38,7 @@ export default defineEventHandler(async event => {
 				surname: body.surname || '',
 				email,
 				password: hashedPassword,
-				role: role || 'USER',
+				role: role || 'CLIENT',
 				status: body.status || 'ON',
 				avatar:
 					body.avatar ||

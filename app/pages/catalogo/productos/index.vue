@@ -21,12 +21,10 @@
 
 	const searchQuery = ref('')
 	const selectedCategory = ref('')
-	const selectedBrand = ref('')
 
 	const resetFilters = () => {
 		searchQuery.value = ''
 		selectedCategory.value = ''
-		selectedBrand.value = ''
 	}
 
 	// Configuración de filtro dependiente (query params)
@@ -34,7 +32,6 @@
 		const params: Record<string, string> = {}
 		if (searchQuery.value) params.search = searchQuery.value
 		if (selectedCategory.value) params.category_id = selectedCategory.value
-		if (selectedBrand.value) params.brand_id = selectedBrand.value
 		return params
 	})
 
@@ -46,11 +43,6 @@
 	const { data: categories } = useQuery<{ category_id: string; name: string }[]>({
 		queryKey: ['categories'],
 		queryFn: () => $fetch('/api/catalog/categories'),
-	})
-
-	const { data: brands } = useQuery<{ brand_id: string; name: string }[]>({
-		queryKey: ['brands'],
-		queryFn: () => $fetch('/api/catalog/brands'),
 	})
 
 	const modalRef = ref<InstanceType<typeof ProductFormModal> | null>(null)
@@ -139,21 +131,12 @@
 					</select>
 				</div>
 
-				<div class="w-full sm:w-1/4">
-					<select
-						v-model="selectedBrand"
-						class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium">
-						<option value="">Todas las Marcas</option>
-						<option v-for="brand in brands" :key="brand.brand_id" :value="brand.brand_id">
-							{{ brand.name }}
-						</option>
-					</select>
-				</div>
+
 
 				<!-- Reset Filters -->
 				<div class="w-full sm:w-auto">
 					<button
-						v-if="searchQuery || selectedCategory || selectedBrand"
+						v-if="searchQuery || selectedCategory"
 						@click="resetFilters"
 						class="btn btn-ghost text-text-muted hover:bg-bg-hover w-full rounded-xl sm:w-auto">
 						Limpiar
@@ -179,7 +162,7 @@
 							<tr
 								class="border-border-default text-text-muted border-b pb-4 text-xs tracking-wider uppercase">
 								<th class="font-bold">Producto</th>
-								<th class="font-bold">Categoría / Marca</th>
+								<th class="font-bold">Categoría</th>
 								<th class="text-right font-bold tabular-nums">Stock / Precio</th>
 								<th class="text-center font-bold">Estado</th>
 								<th class="w-16"></th>
@@ -225,10 +208,6 @@
 											</span>
 										</span>
 										<span v-else class="text-text-light text-xs italic">Sin categoría</span>
-
-										<span v-if="product.brand" class="text-text-muted text-xs font-medium">
-											{{ product.brand.name }}
-										</span>
 									</div>
 								</td>
 

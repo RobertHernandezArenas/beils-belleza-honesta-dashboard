@@ -2,68 +2,24 @@ import 'dotenv/config'
 import { prisma } from '../server/utils/prisma'
 import bcrypt from 'bcryptjs'
 
-const names = [
-	'Juan',
-	'Maria',
-	'Carlos',
-	'Ana',
-	'Luis',
-	'Elena',
-	'Pedro',
-	'Sofia',
-	'Diego',
-	'Laura',
-	'Alejandro',
-	'Carmen',
-	'Javier',
-	'Lucia',
-	'Miguel',
-	'Paula',
-	'David',
-	'Marta',
-	'Jose',
-	'Sara',
+const namesMale = [
+	'Juan', 'Carlos', 'Luis', 'Pedro', 'Diego', 'Alejandro', 'Javier', 'Miguel', 'David', 'Jose',
+	'Antonio', 'Francisco', 'Manuel', 'Ricardo', 'Fernando', 'Roberto', 'Jorge', 'Raúl', 'Álvaro', 'Enrique'
+]
+const namesFemale = [
+	'Maria', 'Ana', 'Elena', 'Sofia', 'Laura', 'Carmen', 'Lucia', 'Paula', 'Marta', 'Sara',
+	'Isabel', 'Cristina', 'Beatriz', 'Raquel', 'Verónica', 'Patricia', 'Adriana', 'Daniela', 'Irene', 'Julia'
 ]
 const surnames = [
-	'Garcia',
-	'Martinez',
-	'Lopez',
-	'Sanchez',
-	'Perez',
-	'Gomez',
-	'Martin',
-	'Jimenez',
-	'Ruiz',
-	'Hernandez',
-	'Diaz',
-	'Moreno',
-	'Alvarez',
-	'Munoz',
-	'Romero',
-	'Alonso',
-	'Gutierrez',
-	'Navarro',
-	'Torres',
-	'Dominguez',
+	'Garcia', 'Martinez', 'Lopez', 'Sanchez', 'Perez', 'Gomez', 'Martin', 'Jimenez', 'Ruiz', 'Hernandez',
+	'Diaz', 'Moreno', 'Alvarez', 'Munoz', 'Romero', 'Alonso', 'Gutierrez', 'Navarro', 'Torres', 'Dominguez'
 ]
 const cities = [
-	'Madrid',
-	'Barcelona',
-	'Valencia',
-	'Sevilla',
-	'Zaragoza',
-	'Malaga',
-	'Murcia',
-	'Palma',
-	'Las Palmas',
-	'Bilbao',
+	'Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Zaragoza', 'Malaga', 'Murcia',
+	'A Coruña', 'Oviedo', 'Santiago de Compostela', 'Pontevedra', 'Vigo', 'León', 'Lugo', 'Ourense', 'Bilbao'
 ]
-const roles = ['ADMIN', 'USER'] as const
-const statuses = ['ON', 'OFF'] as const
 const documentTypes = ['DNI', 'PASSPORT', 'NIE'] as const
-const genders = ['Male', 'Female', 'Other']
-const brandNames = ['Masglo', 'Bioline Jato']
-const bookingStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show']
+const statuses = ['ON', 'OFF'] as const
 
 function getRandomItem<T>(arr: readonly T[] | T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)]
@@ -86,34 +42,30 @@ async function seedDB() {
 		await prisma.cartItem.deleteMany()
 		await prisma.cart.deleteMany()
 		await prisma.sequence.deleteMany()
-		await prisma.revoke.deleteMany()
-		await prisma.brand.deleteMany()
 		await prisma.user.deleteMany()
 
-		console.log('🌱 Seeding Brands...')
-		const brandsData = brandNames.map(name => ({
-			name,
-			description: `Marca profesional premium: ${name}. Especialistas en cosmética y cuidado.`,
-		}))
-		await prisma.brand.createMany({ data: brandsData })
-
-		console.log('👤 Seeding Users (Clients and Staff)...')
+		console.log('👤 Seeding Users (1 Admin + 100 Clients)...')
 		const defaultPassword = 'password123'
 		const hashedPassword = await bcrypt.hash(defaultPassword, 10)
 
-		const usersData = Array.from({ length: 25 }).map((_, i) => {
-			const name = getRandomItem(names)
-			const surname = getRandomItem(surnames)
-			// Force first user to be ADMIN, next 2 staff, rest USER
-			const role: 'ADMIN' | 'USER' = i === 0 ? 'ADMIN' : i < 3 ? 'ADMIN' : 'USER'
-			const status = getRandomItem(statuses)
+		// Create 101 users: 1 Admin + 100 Clients
+		const usersData = Array.from({ length: 101 }).map((_, i) => {
+			const isFirst = i === 0
+			const role: 'ADMIN' | 'CLIENT' = isFirst ? 'ADMIN' : 'CLIENT'
+			
+			// Gender distribution for clients: 20-25% Male, 75-80% Female
+			// For index 1-22 (22 users) -> Male (~22%)
+			// For index 23-100 (78 users) -> Female (~78%)
+			const gender = isFirst ? 'Male' : (i <= 22 ? 'Male' : 'Female')
+			const name = isFirst ? 'Admin' : (gender === 'Male' ? getRandomItem(namesMale) : getRandomItem(namesFemale))
+			const surname = isFirst ? 'Beils' : getRandomItem(surnames)
+			const status = isFirst ? 'ON' : getRandomItem(statuses)
 			const docType = getRandomItem(documentTypes)
-			const gender = getRandomItem(genders)
 			const city = getRandomItem(cities)
-			const birthYear = 1970 + Math.floor(Math.random() * 35)
+			const birthYear = 1975 + Math.floor(Math.random() * 30)
 
 			return {
-				email: i === 0 ? 'admin@beils.com' : `user${i}@example.com`,
+				email: isFirst ? 'admin@beilsbellezahonesta.com' : `cliente${i}@example.com`,
 				password: hashedPassword,
 				name,
 				surname,
@@ -123,13 +75,9 @@ async function seedDB() {
 				country: 'Spain',
 				postal_code: getRandomNumber(10000, 52000),
 				gender,
-				birth_date: new Date(
-					birthYear,
-					Math.floor(Math.random() * 12),
-					Math.floor(Math.random() * 28) + 1,
-				),
+				birth_date: new Date(birthYear, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
 				role,
-				status: i === 0 ? 'ON' : status, // Admin always ON
+				status,
 				avatar: `https://ui-avatars.com/api/?name=${name}+${surname}&background=random`,
 				document_type: docType,
 				document_number: `${getRandomNumber(10000000, 99999999)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
@@ -139,10 +87,10 @@ async function seedDB() {
 		await prisma.user.createMany({ data: usersData })
 
 		const allUsers = await prisma.user.findMany()
-		const clients = allUsers.filter(u => u.role === 'USER')
-		const staffArray = allUsers.filter(u => u.role === 'ADMIN') // Using admin as staff for now
+		const clients = allUsers.filter(u => u.role === 'CLIENT')
+		const admin = allUsers.find(u => u.role === 'ADMIN')
 
-		console.log('📝 Seeding Consents, Questionnaires & Bookings for Clients...')
+		console.log('📝 Seeding child records (Consents, Questionnaires & Bookings)...')
 
 		const consentsToCreate = []
 		const questionnairesToCreate = []
@@ -150,74 +98,65 @@ async function seedDB() {
 
 		for (const client of clients) {
 			// GENERATE CONSENTS
-			const numConsents = Math.floor(Math.random() * 4) // 0 to 3
+			const numConsents = Math.floor(Math.random() * 3) // 0 to 2
 			for (let i = 0; i < numConsents; i++) {
 				consentsToCreate.push({
 					user_id: client.user_id,
 					document_url: `https://storage.example.com/consents/${client.user_id}_doc_${i}.pdf`,
-					status: 'active',
+					status: getRandomItem(['SIGNED', 'UNSIGNED']),
 					notes: 'Consentimiento para tratamientos estéticos firmado digitalmente.',
-					signed_date: new Date(Date.now() - Math.random() * 10000000000), // Random past date
+					signed_date: new Date(Date.now() - Math.random() * 10000000000),
 				})
 			}
 
 			// GENERATE QUESTIONNAIRES
-			const numQuestionnaires = Math.floor(Math.random() * 3) // 0 to 2
+			const numQuestionnaires = Math.floor(Math.random() * 2) // 0 to 1
 			for (let i = 0; i < numQuestionnaires; i++) {
 				questionnairesToCreate.push({
 					user_id: client.user_id,
 					title: `Ficha de Diagnóstico ${i + 1}`,
 					data: {
-						allergies: Math.random() > 0.5 ? ['Ninguna'] : ['Látex', 'Níquel'],
+						allergies: Math.random() > 0.8 ? ['Látex'] : ['Ninguna'],
 						skin_type: getRandomItem(['Seca', 'Grasa', 'Mixta', 'Sensible']),
-						concerns: 'Hidratación y luminosidad',
-						last_visit: 'Hace 3 meses',
+						concerns: 'Tratamiento facial',
 					},
 					created_at: new Date(Date.now() - Math.random() * 5000000000),
 				})
 			}
 
 			// GENERATE BOOKINGS
-			const numBookings = Math.floor(Math.random() * 6) // 0 to 5
+			const numBookings = Math.floor(Math.random() * 4) // 0 to 3
 			for (let i = 0; i < numBookings; i++) {
-				const isPast = Math.random() > 0.4
+				const isPast = Math.random() > 0.5
 				const daysOffset = Math.floor(Math.random() * 30) * (isPast ? -1 : 1)
 				const bookingDate = new Date()
 				bookingDate.setDate(bookingDate.getDate() + daysOffset)
 
-				const startHour = Math.floor(Math.random() * 9) + 9 // 9 to 17
-				const isHalfHour = Math.random() > 0.5
-
-				const randStaff = Math.random() > 0.3 ? getRandomItem(staffArray) : null
+				const startHour = Math.floor(Math.random() * 8) + 9 
 
 				bookingsToCreate.push({
 					client_id: client.user_id,
-					staff_id: randStaff ? randStaff.user_id : null,
-					item_type: Math.random() > 0.5 ? 'service' : 'pack',
-					item_id: `dummy-item-${Math.floor(Math.random() * 100)}`, // Dummy IDs until Services module is built
-					status: isPast
-						? getRandomItem(['completed', 'cancelled', 'no_show'])
-						: getRandomItem(['pending', 'confirmed']),
+					staff_id: admin?.user_id || null, // For now admin is staff
+					item_type: 'service',
+					item_id: `dummy-id-${Math.floor(Math.random() * 50)}`,
+					status: isPast ? 'completed' : 'pending',
 					booking_date: bookingDate,
-					start_time: `${startHour.toString().padStart(2, '0')}:${isHalfHour ? '30' : '00'}`,
-					end_time: `${(startHour + 1).toString().padStart(2, '0')}:${isHalfHour ? '30' : '00'}`,
+					start_time: `${startHour.toString().padStart(2, '0')}:00`,
+					end_time: `${(startHour + 1).toString().padStart(2, '0')}:00`,
 					duration: 60,
-					notes: isPast ? 'El cliente quedó muy satisfecho.' : 'Recordatorio enviado.',
+					notes: 'Cita generada automáticamente.',
 				})
 			}
 		}
 
-		await prisma.consent.createMany({ data: consentsToCreate })
-		await prisma.questionnaire.createMany({ data: questionnairesToCreate })
-		await prisma.booking.createMany({ data: bookingsToCreate })
+		if (consentsToCreate.length > 0) await prisma.consent.createMany({ data: consentsToCreate })
+		if (questionnairesToCreate.length > 0) await prisma.questionnaire.createMany({ data: questionnairesToCreate })
+		if (bookingsToCreate.length > 0) await prisma.booking.createMany({ data: bookingsToCreate })
 
 		console.log('✅ Database seeded successfully!')
-		console.log(`🔑 Admin account: admin@beils.com / ${defaultPassword}`)
-		console.log(`🔑 Total Users seeded: ${usersData.length}`)
-		console.log(`📈 Generated ${brandNames.length} Brands`)
-		console.log(`📈 Generated ${consentsToCreate.length} Consents`)
-		console.log(`📈 Generated ${questionnairesToCreate.length} Questionnaires`)
-		console.log(`📈 Generated ${bookingsToCreate.length} Bookings`)
+		console.log(`🔑 Admin account: admin@beilsbellezahonesta.com / ${defaultPassword}`)
+		console.log(`🔑 Total Users seeded: ${usersData.length} (1 Admin + 100 Clients)`)
+		console.log(`📈 Male/Female Distribution: ~22% Male / ~78% Female`)
 	} catch (error: any) {
 		console.error('❌ Error seeding database:', error.message || error)
 	} finally {

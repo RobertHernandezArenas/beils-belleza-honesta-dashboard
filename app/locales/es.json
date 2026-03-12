@@ -87,7 +87,7 @@
 		"constants": {
 			"roles": {
 				"ADMIN": "Administrador",
-				"USER": "Usuario"
+				"CLIENT": "Cliente"
 			},
 			"status": {
 				"ON": "Activo",
@@ -150,16 +150,6 @@
 		}
 	},
 	"catalog": {
-		"brands": {
-			"title": "Marcas Registradas",
-			"subtitle": "Gestiona las marcas asociadas a tus productos.",
-			"newBrand": "Nueva Marca",
-			"emptyState": "Sin marcas",
-			"emptyStateSub": "No has registrado ninguna marca para el catálogo aún.",
-			"errorLoad": "Error al cargar las marcas.",
-			"edit": "Editar Marca",
-			"delete": "Eliminar"
-		},
 		"clients": {
 			"title": "Directorio de Clientes",
 			"subtitle": "Gestiona datos, consentimientos y cuestionarios de tus clientes.",
@@ -174,7 +164,6 @@
 	"Productos": "Productos",
 	"Categorías": "Categorías",
 	"Subcategorías": "Subcategorías",
-	"Marcas": "Marcas",
 	"Etiquetas": "Etiquetas",
 	"Packs & Promociones": "Packs & Promociones",
 	"Bonos": "Bonos",

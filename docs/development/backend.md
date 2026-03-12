@@ -81,7 +81,7 @@ export default defineEventHandler(async event => {
 				email: validData.email,
 				name: validData.name,
 				phone: validData.phone,
-				role: 'USER', // Valor por defecto seguro
+				role: 'CLIENT', // Valor por defecto seguro
 			},
 		})
 

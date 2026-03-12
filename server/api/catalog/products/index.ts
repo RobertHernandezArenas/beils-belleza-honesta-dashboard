@@ -7,14 +7,12 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const category_id = query.category_id as string | undefined
 		const subcategory_id = query.subcategory_id as string | undefined
-		const brand_id = query.brand_id as string | undefined
 		const search = query.search as string | undefined
 
 		const whereClause: any = {}
 
 		if (category_id) whereClause.category_id = category_id
 		if (subcategory_id) whereClause.subcategory_id = subcategory_id
-		if (brand_id) whereClause.brand_id = brand_id
 
 		if (search) {
 			whereClause.OR = [
@@ -28,7 +26,6 @@ export default defineEventHandler(async event => {
 		const products = await prisma.product.findMany({
 			where: whereClause,
 			include: {
-				brand: { select: { name: true } },
 				category: { select: { name: true } },
 				subcategory: { select: { name: true } },
 				tags: {
@@ -51,7 +48,6 @@ export default defineEventHandler(async event => {
 		const { tags, ...productData } = body
 
 		// Remove auto-generated empty fields if they come empty from frontend
-		if (productData.brand_id === '') delete productData.brand_id
 		if (productData.category_id === '') delete productData.category_id
 		if (productData.subcategory_id === '') delete productData.subcategory_id
 
@@ -68,7 +64,6 @@ export default defineEventHandler(async event => {
 						: undefined,
 			},
 			include: {
-				brand: { select: { name: true } },
 				category: { select: { name: true } },
 				subcategory: { select: { name: true } },
 				tags: { include: { tag: true } },

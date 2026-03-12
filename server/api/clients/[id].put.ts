@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError, getRouterParam } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { z } from 'zod'
+import { requireAdmin } from '../../utils/auth'
 
 const clientSchema = z.object({
 	email: z.string().email('Email inválido').optional(),
@@ -20,6 +21,7 @@ const clientSchema = z.object({
 
 export default defineEventHandler(async event => {
 	try {
+		requireAdmin(event)
 		const id = getRouterParam(event, 'id')
 		if (!id) {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
@@ -47,7 +49,7 @@ export default defineEventHandler(async event => {
 		}
 
 		const user = await prisma.user.update({
-			where: { user_id: id, role: 'USER' },
+			where: { user_id: id, role: 'CLIENT' },
 			data: updateData,
 		})
 

@@ -1,8 +1,10 @@
 import { defineEventHandler, getRouterParam, createError } from 'h3'
 import { prisma } from '../../utils/prisma'
+import { requireAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async event => {
 	try {
+		requireAdmin(event)
 		const id = getRouterParam(event, 'id')
 		if (!id) {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
@@ -13,7 +15,7 @@ export default defineEventHandler(async event => {
 		// It's usually safer just to mark as OFF, but standard CRM CRUD allows deletion.
 
 		await prisma.user.delete({
-			where: { user_id: id, role: 'USER' },
+			where: { user_id: id, role: 'CLIENT' },
 		})
 
 		return { success: true }

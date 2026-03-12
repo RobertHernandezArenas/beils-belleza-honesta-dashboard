@@ -12,7 +12,6 @@ export default defineEventHandler(async event => {
 		const product = await prisma.product.findUnique({
 			where: { product_id: id },
 			include: {
-				brand: true,
 				category: true,
 				subcategory: true,
 				tags: { include: { tag: true } },
@@ -30,7 +29,6 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const { tags, ...productData } = body
 
-		if (productData.brand_id === '') productData.brand_id = null
 		if (productData.category_id === '') productData.category_id = null
 		if (productData.subcategory_id === '') productData.subcategory_id = null
 
@@ -53,7 +51,6 @@ export default defineEventHandler(async event => {
 					}),
 				},
 				include: {
-					brand: { select: { name: true } },
 					category: { select: { name: true } },
 					subcategory: { select: { name: true } },
 					tags: { include: { tag: true } },

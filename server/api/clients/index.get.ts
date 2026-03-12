@@ -1,12 +1,16 @@
 import { defineEventHandler, createError, getQuery } from 'h3'
 import { prisma } from '../../utils/prisma'
+import { requireAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async event => {
 	try {
+		// Only admins can list clients
+		requireAdmin(event)
+
 		const query = getQuery(event)
 		const search = query.search as string
 
-		let whereClause: any = { role: 'USER' }
+		let whereClause: any = { role: 'CLIENT' }
 		if (search) {
 			whereClause = {
 				...whereClause,
@@ -34,10 +38,12 @@ export default defineEventHandler(async event => {
 			const { password, ...rest } = client
 			return rest
 		})
-	} catch (error) {
+	} catch (error: any) {
+		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error al obtener clientes',
+			statusMessage: error.message || 'Error al obtener clientes',
 		})
 	}
 })
+

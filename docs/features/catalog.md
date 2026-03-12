@@ -6,15 +6,9 @@ vendibles o consumibles: los Productos.
 ## Estructura Jerárquica
 
 Para facilitar la navegación tanto para el personal como para reportes estadísticos, el inventario se organiza
-en una taxonomía de 3 a 4 niveles:
+en una taxonomía de 2 a 3 niveles:
 
-### 1. Marca (`Brand`)
-
-El fabricante del producto. Útil para filtrar y aplicar promociones en bloque.
-
-- _Ejemplo: L'Oréal, Kerastase, OPI._
-
-### 2. Categoría (`Category`) y Subcategoría (`Subcategory`)
+### 1. Categoría (`Category`) y Subcategoría (`Subcategory`)
 
 Clasificación temática del producto. La Subcategoría impone una relación estricta en base de datos
 (`subcategory.category_id` debe coincidir con `category.category_id`).
@@ -22,7 +16,7 @@ Clasificación temática del producto. La Subcategoría impone una relación est
 - _Ejemplo Categoría: Capilar, Facial, Uñas._
 - _Ejemplo Subcategoría: Champús (dentro de Capilar), Esmaltes (dentro de Uñas)._
 
-### 3. Etiquetas (`Tag`)
+### 2. Etiquetas (`Tag`)
 
 A diferencia de las categorías (donde un producto solo puede pertenecer a una), las etiquetas ofrecen
 categorización transversal M:N (muchos a muchos).

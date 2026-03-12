@@ -9,7 +9,7 @@ datasource db {
 
 enum Role {
   ADMIN
-  USER
+  CLIENT
 }
 
 enum UserStatus {
@@ -36,7 +36,7 @@ model User {
   postal_code              String               @db.VarChar(20)
   gender                   String               @db.VarChar(10)
   birth_date               DateTime             @db.Date
-  role                     Role                 @default(USER)
+  role                     Role                 @default(CLIENT)
   status                   UserStatus           @default(ON)
   avatar                   String               @db.VarChar(255)
   document_type            DocumentType         @default(DNI)
@@ -114,17 +114,6 @@ model Revoke {
 // PHASE 2: CATALOG (PRODUCTS)
 // ==========================================
 
-model Brand {
-  brand_id    String    @id @default(uuid()) @db.Char(100)
-  name        String    @unique @db.VarChar(100)
-  description String?   @db.Text
-  products    Product[]
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-
-  @@map("brands")
-}
-
 model Category {
   category_id   String        @id @default(uuid()) @db.Char(100)
   name          String        @unique @db.VarChar(100)
@@ -176,9 +165,6 @@ model Product {
   image_url      String?      @db.VarChar(255)
   status         String       @default("activo") @db.VarChar(20)
 
-  brand_id       String?      @db.Char(100)
-  brand          Brand?       @relation(fields: [brand_id], references: [brand_id])
-  
   category_id    String?      @db.Char(100)
   category       Category?    @relation(fields: [category_id], references: [category_id])
   

@@ -2,6 +2,7 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
+import { requireAdmin } from '../../utils/auth'
 
 const clientSchema = z.object({
 	email: z.string().email('Email inválido'),
@@ -21,6 +22,8 @@ const clientSchema = z.object({
 
 export default defineEventHandler(async event => {
 	try {
+		// Only admins can create clients
+		requireAdmin(event)
 		const body = await readBody(event)
 		const parsedData = clientSchema.parse(body)
 
@@ -45,7 +48,7 @@ export default defineEventHandler(async event => {
 				...parsedData,
 				birth_date: new Date(parsedData.birth_date),
 				password: hashedPassword,
-				role: 'USER',
+				role: 'CLIENT',
 				avatar: '',
 			},
 		})

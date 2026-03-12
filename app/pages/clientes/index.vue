@@ -12,6 +12,7 @@
 		ExternalLink,
 	} from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import AOS from 'aos'
 	import ClientFormModal from '~/components/clients/ClientFormModal.vue'
 	import UserDeleteModal from '~/components/users/UserDeleteModal.vue'
 
@@ -80,7 +81,7 @@
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
 		<div class="mx-auto flex h-full w-full max-w-[1400px] flex-col lg:overflow-hidden">
 			<!-- Header -->
-			<header data-aos="fade-down" class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
+			<header data-aos="fade-up" class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
 				<div>
 					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
 						{{ t('catalog.clients.title') }}

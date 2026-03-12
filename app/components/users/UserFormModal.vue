@@ -167,7 +167,7 @@
 								class="menu dropdown-content bg-bg-card text-text-secondary z-100 mt-1 w-full rounded-xl p-2 shadow-lg">
 								<li
 									v-for="role in [
-										{ label: $t('users.constants.roles.USER'), value: 'USER' },
+										{ label: $t('users.constants.roles.CLIENT'), value: 'CLIENT' },
 										{ label: $t('users.constants.roles.ADMIN'), value: 'ADMIN' },
 									]"
 									:key="role.value">
@@ -275,7 +275,7 @@
 		address: '',
 		city: '',
 		country: '',
-		role: 'USER',
+		role: 'CLIENT',
 	})
 
 	const selectOption = (field: 'document_type' | 'role', value: string) => {
@@ -298,7 +298,7 @@
 			form.address = user.address || ''
 			form.city = user.city || ''
 			form.country = user.country || ''
-			form.role = user.role || 'USER'
+			form.role = user.role || 'CLIENT'
 		} else {
 			form.name = ''
 			form.surname = ''
@@ -310,7 +310,7 @@
 			form.address = ''
 			form.city = ''
 			form.country = ''
-			form.role = 'USER'
+			form.role = 'CLIENT'
 		}
 		animateOpen(userModal.value, { staggerChildren: true })
 	}

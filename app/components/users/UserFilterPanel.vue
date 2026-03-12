@@ -11,7 +11,7 @@
 					</h3>
 					<div class="flex flex-wrap gap-2">
 						<button
-							v-for="r in ['all', 'ADMIN', 'USER']"
+							v-for="r in ['all', 'ADMIN', 'CLIENT']"
 							:key="r"
 							@click="filtersStore.filterRole = r"
 							class="rounded-xl px-4 py-2 text-xs font-bold transition-[background-color,color,border-color,box-shadow] focus-visible:outline-none"

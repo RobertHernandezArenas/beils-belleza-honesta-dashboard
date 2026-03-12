@@ -318,7 +318,7 @@
 		{ to: '/catalogo/productos', label: 'Productos', icon: Package },
 		{ to: '/catalogo/categorias', label: 'Categorías', icon: Layers },
 		{ to: '/catalogo/subcategorias', label: 'Subcategorías', icon: ListTree },
-		{ to: '/catalogo/marcas', label: 'Marcas', icon: Tags },
+
 		{ to: '/catalogo/etiquetas', label: 'Etiquetas', icon: Hash },
 		{ to: '/servicios', label: 'Servicios', icon: Scissors },
 		{ to: '/packs', label: 'Packs & Promociones', icon: PackageSearch },

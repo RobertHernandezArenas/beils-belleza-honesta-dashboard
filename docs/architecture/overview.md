@@ -36,7 +36,7 @@ El sistema se divide en varios módulos core, cada uno documentado en detalle en
 
 1. **[CRM (Clientes)](./features/crm.md):** Gestión de usuarios, perfiles de clientes, consentimientos
    médicos/legales y cuestionarios.
-2. **[Catálogo](./features/catalog.md):** Inventario de productos, categorías, marcas y control de stock.
+2. **[Catálogo](./features/catalog.md):** Inventario de productos, categorías y control de stock.
 3. **[Servicios y Packs](./features/services.md):** Definición de los servicios prestados en el salón y
    agrupaciones (packs) de productos y servicios.
 4. **[Agenda](./features/agenda.md):** Sistema de reservas unificado, gestión de citas por empleado y vista de
@@ -57,4 +57,4 @@ El desarrollo de Beils Dashboard se rige por los siguientes principios:
 - **Rendimiento:** Optimización de renderizado (virtualización para listas largas) y carga de datos eficiente
   mediante caché inteligente (Vue Query).
 - **"Honestidad" en el Código:** Código limpio, mantenible (KISS, DRY, SOLID) como reflejo de los valores de
-  la marca "Belleza Honesta".
+  la empresa "Belleza Honesta".

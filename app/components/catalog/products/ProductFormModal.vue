@@ -11,10 +11,7 @@
 	const emit = defineEmits(['refresh', 'toast'])
 
 	// Dependencies
-	const { data: brands } = useQuery({
-		queryKey: ['brands'],
-		queryFn: () => $fetch<any[]>('/api/catalog/brands'),
-	})
+
 	const { data: categories } = useQuery({
 		queryKey: ['categories'],
 		queryFn: () => $fetch<any[]>('/api/catalog/categories'),
@@ -36,7 +33,7 @@
 		min_stock: 0,
 		image_url: '',
 		status: 'activo',
-		brand_id: '',
+
 		category_id: '',
 		subcategory_id: '',
 		tags: [] as string[],
@@ -83,7 +80,7 @@
 			form.min_stock = product.min_stock || 0
 			form.image_url = product.image_url || ''
 			form.status = product.status || 'activo'
-			form.brand_id = product.brand_id || ''
+
 			form.category_id = product.category_id || ''
 			form.subcategory_id = product.subcategory_id || ''
 
@@ -105,7 +102,7 @@
 			form.min_stock = 0
 			form.image_url = ''
 			form.status = 'activo'
-			form.brand_id = ''
+
 			form.category_id = ''
 			form.subcategory_id = ''
 			form.tags = []
@@ -277,22 +274,7 @@
 						</h4>
 
 						<div class="grid grid-cols-2 gap-4">
-							<div class="form-control">
-								<label class="label pb-1">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										Marca
-									</span>
-								</label>
-								<select
-									v-model="form.brand_id"
-									class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors">
-									<option value="">Ninguna</option>
-									<option v-for="b in brands" :key="b.brand_id" :value="b.brand_id">
-										{{ b.name }}
-									</option>
-								</select>
-							</div>
+
 							<div class="form-control">
 								<label class="label pb-1">
 									<span

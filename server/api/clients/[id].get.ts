@@ -1,15 +1,17 @@
 import { defineEventHandler, createError, getRouterParam } from 'h3'
 import { prisma } from '../../utils/prisma'
+import { requireAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async event => {
 	try {
+		requireAdmin(event)
 		const id = getRouterParam(event, 'id')
 		if (!id) {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 		}
 
 		const client = await prisma.user.findUnique({
-			where: { user_id: id, role: 'USER' },
+			where: { user_id: id, role: 'CLIENT' },
 			include: {
 				consents: true,
 				questionnaires: true,
