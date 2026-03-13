@@ -17,6 +17,7 @@
 		Split,
 	} from 'lucide-vue-next'
 	import StripeInstallmentModal from '~/components/payments/StripeInstallmentModal.vue'
+	import gsap from 'gsap'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Terminal de Venta (TPV)' })
@@ -25,6 +26,42 @@
 	const activeTab = ref<'products' | 'services' | 'packs' | 'bonuses'>('services')
 	const searchQuery = ref('')
 	const clientSearch = ref('')
+
+	// GSAP Tab Animation
+	const tabRefs = ref<Record<string, HTMLElement | null>>({})
+	const activePill = ref<HTMLElement | null>(null)
+
+	const setTabRef = (key: string) => (el: any) => {
+		if (el) tabRefs.value[key] = el
+	}
+
+	const updateActivePill = (immediate = false) => {
+		const el = tabRefs.value[activeTab.value]
+		if (!el || !activePill.value) return
+
+		const { offsetLeft, offsetWidth, offsetHeight } = el
+
+		if (immediate) {
+			gsap.set(activePill.value, { x: offsetLeft, width: offsetWidth, height: offsetHeight, opacity: 1 })
+		} else {
+			gsap.to(activePill.value, {
+				x: offsetLeft,
+				width: offsetWidth,
+				height: offsetHeight,
+				opacity: 1,
+				duration: 0.45,
+				ease: 'power3.inOut',
+			})
+		}
+	}
+
+	watch(activeTab, () => {
+		nextTick(() => updateActivePill())
+	})
+
+	onMounted(() => {
+		setTimeout(() => updateActivePill(true), 250)
+	})
 
 	// Cart State
 	const cartItems = ref<any[]>([])
@@ -244,47 +281,57 @@
 			<!-- TPV Search & Tabs -->
 			<div class="mb-5 flex w-full flex-col gap-3 lg:flex-row lg:items-center">
 				<div
-					class="bg-bg-card border-border-default flex w-full flex-1 flex-nowrap items-center gap-1.5 overflow-x-auto rounded-4xl border p-1.5 shadow-sm"
+					class="bg-bg-card border-border-default relative flex w-full flex-1 flex-nowrap items-center gap-1.5 overflow-x-auto rounded-4xl border p-1.5 shadow-sm"
 					style="scrollbar-width: none; -ms-overflow-style: none">
+					<!-- GSAP Active Pill Background -->
+					<div
+						ref="activePill"
+						class="bg-text-primary absolute rounded-3xl opacity-0 shadow-md pointer-events-none"
+						style="z-index: 0"></div>
+
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						:ref="setTabRef('services')"
 						:class="
 							activeTab === 'services'
-								? 'bg-text-primary text-bg-card scale-100 shadow-md'
-								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
+								? 'text-bg-card scale-100'
+								: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'services'">
 						<Scissors class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
 						<span>{{ $t('Servicios') }}</span>
 					</a>
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						:ref="setTabRef('products')"
 						:class="
 							activeTab === 'products'
-								? 'bg-text-primary text-bg-card scale-100 shadow-md'
-								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
+								? 'text-bg-card scale-100'
+								: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'products'">
 						<PackageIcon class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
 						<span v-text="$t('Productos')"></span>
 					</a>
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						:ref="setTabRef('packs')"
 						:class="
 							activeTab === 'packs'
-								? 'bg-text-primary text-bg-card scale-100 shadow-md'
-								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
+								? 'text-bg-card scale-100'
+								: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'packs'">
 						<PackageSearch class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
 						<span v-text="$t('Packs')"></span>
 					</a>
 					<a
-						class="tab flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
+						:ref="setTabRef('bonuses')"
 						:class="
 							activeTab === 'bonuses'
-								? 'bg-text-primary text-bg-card scale-100 shadow-md'
-								: 'text-text-muted hover:bg-bg-muted hover:text-text-primary scale-95 hover:scale-100'
+								? 'text-bg-card scale-100'
+								: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-primary scale-95 hover:scale-100'
 						"
 						@click="activeTab = 'bonuses'">
 						<Ticket class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
@@ -302,13 +349,13 @@
 			</div>
 
 			<!-- Catalog Grid container (scrollable) -->
-			<div class="custom-scrollbar -mx-2 flex-1 overflow-y-auto px-2 pb-6">
-				<div class="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+			<div class="custom-scrollbar -mx-2 flex-1 overflow-y-auto px-2 pt-4 pb-6">
+				<div class="grid grid-cols-2 gap-4 border-transparent p-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 					<button
 						v-for="item in filteredCatalog"
 						:key="item.product_id || item.service_id || item.pack_id || item.bonus_id"
 						@click="addToCart(item, activeTab === 'bonuses' ? 'bonus' : activeTab.slice(0, -1))"
-						class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-36 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border p-4 text-left shadow-sm transition-colors hover:-translate-y-1 hover:shadow-md active:scale-95">
+						class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-36 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border p-4 text-left shadow-sm transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl active:scale-95">
 						<div class="z-10 flex flex-col">
 							<span
 								class="group-hover:text-primary line-clamp-2 text-sm leading-tight font-bold transition-colors">
