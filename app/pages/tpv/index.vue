@@ -76,10 +76,12 @@
 	const showToast = ref(false)
 
 	// Fetch Data
-	const { data: clients } = useQuery<any[]>({
+	const { data: clientsResponse } = useQuery<any>({
 		queryKey: ['clients-tpv'],
-		queryFn: () => $fetch('/api/clients'),
+		queryFn: () => $fetch('/api/clients', { query: { limit: 500 } }),
 	})
+
+	const clients = computed(() => clientsResponse.value?.data || [])
 
 	const { data: products } = useQuery<any[]>({
 		queryKey: ['products-tpv'],
@@ -158,7 +160,7 @@
 	})
 
 	const filteredClients = computed(() => {
-		if (!clients.value || !clientSearch.value) return []
+		if (!clients.value.length || !clientSearch.value) return []
 		const q = clientSearch.value.toLowerCase()
 		return clients.value
 			.filter(
