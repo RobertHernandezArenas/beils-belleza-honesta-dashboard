@@ -8,6 +8,7 @@
 		modelValue: boolean
 		totalAmount: number
 		cartId?: string
+		cartItems: any[]
 	}>()
 
 	const emit = defineEmits<{
@@ -22,6 +23,7 @@
 
 	const selectedInstallments = ref(1)
 	const apiError = ref('')
+	const checkoutLink = ref('')
 
 	const installmentOptions = [
 		{ value: 1, label: '1 pago', description: 'Pago único' },
@@ -37,6 +39,7 @@
 			if (newVal) {
 				selectedInstallments.value = 1
 				apiError.value = ''
+				checkoutLink.value = ''
 				nextTick(() => {
 					animateOpen(stripeDialog.value, { staggerChildren: true })
 				})
@@ -70,15 +73,25 @@
 					installments: selectedInstallments.value,
 					cart_id: props.cartId || undefined,
 					description: `Pago Beils — ${selectedInstallments.value} cuota(s)`,
+					items: props.cartItems,
 				},
 			})
 		},
 		onSuccess: (data: any) => {
-			emit('payment-success', {
-				...data,
-				installments: selectedInstallments.value,
-			})
-			localVisible.value = false
+			if (data.url) {
+				checkoutLink.value = data.url
+				// Still emit success to create the cart locally so the sale registers
+				emit('payment-success', {
+					...data,
+					installments: selectedInstallments.value,
+				})
+			} else {
+				emit('payment-success', {
+					...data,
+					installments: selectedInstallments.value,
+				})
+				localVisible.value = false
+			}
 		},
 		onError: (err: any) => {
 			apiError.value = err.response?._data?.statusMessage || err.message || 'Error al procesar el pago'
@@ -197,7 +210,19 @@
 					:disabled="isPending">
 					Cancelar
 				</button>
+				<div v-if="checkoutLink" class="w-full text-center">
+					<a
+						:href="checkoutLink"
+						target="_blank"
+						rel="noopener noreferrer"
+						@click="localVisible = false"
+						class="btn bg-primary hover:bg-primary/90 flex h-14 w-full items-center justify-center gap-2 rounded-xl border-transparent text-white shadow-md transition-colors hover:shadow-lg">
+						<CreditCard class="h-5 w-5" />
+						<span class="font-bold tracking-wide">Abrir página de pago de Stripe</span>
+					</a>
+				</div>
 				<button
+					v-else
 					class="btn bg-primary hover:bg-primary/90 flex h-14 flex-1 items-center justify-center gap-2 rounded-xl border-transparent text-white shadow-md transition-colors hover:shadow-lg"
 					:disabled="isPending || totalAmount <= 0"
 					@click="handleConfirm">
