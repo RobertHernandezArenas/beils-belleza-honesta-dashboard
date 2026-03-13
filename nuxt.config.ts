@@ -13,6 +13,7 @@ export default defineNuxtConfig({
 	// ==========================================
 	experimental: {
 		viewTransition: true,
+		payloadExtraction: true,
 	},
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },

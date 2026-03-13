@@ -19,6 +19,14 @@ export default defineEventHandler(async event => {
 
 		const services = await prisma.service.findMany({
 			where: whereClause,
+			select: {
+				service_id: true,
+				name: true,
+				code: true,
+				price: true,
+				duration: true,
+				status: true,
+			},
 			orderBy: { created_at: 'desc' },
 		})
 

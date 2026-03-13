@@ -24,7 +24,7 @@
 
 	const queryClient = useQueryClient()
 	const { t } = useI18n()
-	const searchQuery = ref('')
+	const searchQuery = useDebouncedRef('', 500)
 	const page = ref(1)
 	const limit = ref(7)
 

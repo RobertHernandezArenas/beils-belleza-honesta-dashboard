@@ -9,15 +9,23 @@ export default defineEventHandler(async event => {
 
 		const users = await prisma.user.findMany({
 			orderBy: { created_at: 'desc' },
+			select: {
+				user_id: true,
+				name: true,
+				surname: true,
+				email: true,
+				role: true,
+				status: true,
+				document_type: true,
+				document_number: true,
+				avatar: true,
+			},
 		})
-		// Remove passwords from response and mask documents
-		return users.map(u => {
-			const { password, ...rest } = u
-			return {
-				...rest,
-				document_number: maskDocument(u.document_number),
-			}
-		})
+		// Mask documents and return
+		return users.map(u => ({
+			...u,
+			document_number: maskDocument(u.document_number),
+		}))
 	} catch (error: any) {
 		if (error.statusCode) throw error
 		throw createError({

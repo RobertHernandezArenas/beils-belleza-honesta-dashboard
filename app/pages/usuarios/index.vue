@@ -116,6 +116,12 @@
 	const filtersStore = useUsersFilterStore()
 
 	// --- Búsqueda (Search) ---
+	const searchQuery = useDebouncedRef(filtersStore.searchQuery, 500)
+	
+	watch(searchQuery, (newVal) => {
+		filtersStore.searchQuery = newVal
+	})
+
 	const filteredUsers = computed(() => {
 		const query = filtersStore.searchQuery.toLowerCase()
 

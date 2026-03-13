@@ -19,7 +19,7 @@
 
 	const queryClient = useQueryClient()
 
-	const searchQuery = ref('')
+	const searchQuery = useDebouncedRef('', 500)
 	const selectedCategory = ref('')
 
 	const resetFilters = () => {

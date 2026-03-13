@@ -24,7 +24,16 @@ export default defineEventHandler(async event => {
 
 		const bookings = await prisma.booking.findMany({
 			where: whereClause,
-			include: {
+			select: {
+				booking_id: true,
+				booking_date: true,
+				start_time: true,
+				end_time: true,
+				status: true,
+				item_type: true,
+				item_id: true,
+				duration: true,
+				notes: true,
 				client: { select: { name: true, surname: true, phone: true } },
 				staff: { select: { name: true, surname: true } },
 			},

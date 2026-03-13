@@ -30,7 +30,7 @@
 	const currentDate = ref(new Date())
 	const selectedDate = ref(new Date())
 	const viewMode = ref<'day' | 'week'>('day')
-	const searchQuery = ref('')
+	const searchQuery = useDebouncedRef('', 500)
 
 	// Compute start and end of current view for API query
 	const queryParams = computed(() => {

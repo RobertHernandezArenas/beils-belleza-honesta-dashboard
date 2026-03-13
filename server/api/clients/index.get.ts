@@ -35,23 +35,27 @@ export default defineEventHandler(async event => {
 				orderBy: { created_at: 'desc' },
 				skip,
 				take: limit,
-				include: {
+				select: {
+					user_id: true,
+					name: true,
+					surname: true,
+					email: true,
+					phone: true,
+					document_type: true,
+					document_number: true,
+					status: true,
 					_count: {
-						select: { client_bookings: true, consents: true, debts: true },
+						select: { client_bookings: true, consents: true },
 					},
 				},
 			}),
 		])
 
-		// Remove passwords from response
 		return {
-			data: clients.map(client => {
-				const { password, ...rest } = client
-				return {
-					...rest,
-					document_number: maskDocument(client.document_number),
-				}
-			}),
+			data: clients.map(client => ({
+				...client,
+				document_number: maskDocument(client.document_number),
+			})),
 			pagination: {
 				total,
 				page,
