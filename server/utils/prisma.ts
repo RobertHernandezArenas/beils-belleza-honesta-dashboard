@@ -1,4 +1,5 @@
 import 'dotenv/config'
+// Triggering Nitro reload to pick up new Prisma Client
 import { PrismaClient } from '@prisma/client'
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 import * as mariadb from 'mariadb'

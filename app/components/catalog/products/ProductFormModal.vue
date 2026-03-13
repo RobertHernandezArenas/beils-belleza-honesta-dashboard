@@ -1,7 +1,10 @@
 <script setup lang="ts">
 	import { useQuery } from '@tanstack/vue-query'
-	import { ChevronDown, Euro, Check } from 'lucide-vue-next'
+	import { ChevronDown, Euro, Check, Plus } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
+	import { useQueryClient } from '@tanstack/vue-query'
+
+	const queryClient = useQueryClient()
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingProduct = ref<any | null>(null)
@@ -39,6 +42,20 @@
 		tags: [] as string[],
 	})
 
+	const newTagName = ref('')
+	const newTagColor = ref('#fb923c') // Default brand-like orange
+	const isCreatingTag = ref(false)
+
+	const tagColors = [
+		{ name: 'Naranja', value: '#fb923c' },
+		{ name: 'Rosa', value: '#ec4899' },
+		{ name: 'Púrpura', value: '#a855f7' },
+		{ name: 'Azul', value: '#3b82f6' },
+		{ name: 'Esmeralda', value: '#10b981' },
+		{ name: 'Rojo', value: '#ef4444' },
+		{ name: 'Gris', value: '#64748b' },
+	]
+
 	const filteredSubcategories = computed(() => {
 		if (!subcategories.value) return []
 		if (!form.category_id) return []
@@ -64,6 +81,31 @@
 			form.tags.push(tagId)
 		} else {
 			form.tags.splice(idx, 1)
+		}
+	}
+
+	const handleCreateTag = async () => {
+		if (!newTagName.value.trim()) return
+		isCreatingTag.value = true
+		try {
+			const tag: any = await $fetch('/api/catalog/tags', {
+				method: 'POST',
+				body: { 
+					name: newTagName.value.trim(),
+					color: newTagColor.value 
+				},
+			})
+			newTagName.value = ''
+			queryClient.invalidateQueries({ queryKey: ['tags'] })
+			// Auto-select the newly created tag
+			if (!form.tags.includes(tag.tag_id)) {
+				form.tags.push(tag.tag_id)
+			}
+			emit('toast', 'Etiqueta creada', 'success')
+		} catch (error: any) {
+			emit('toast', error.data?.statusMessage || 'Error al crear etiqueta', 'error')
+		} finally {
+			isCreatingTag.value = false
 		}
 	}
 
@@ -106,6 +148,8 @@
 			form.category_id = ''
 			form.subcategory_id = ''
 			form.tags = []
+			newTagName.value = ''
+			newTagColor.value = '#fb923c'
 		}
 		animateOpen(modalRef.value, { staggerChildren: true })
 	}
@@ -328,15 +372,57 @@
 									class="badge badge-lg h-9 gap-1 rounded-lg border px-3 text-xs font-bold tracking-wider uppercase transition-colors"
 									:class="
 										form.tags.includes(tag.tag_id)
-											? 'bg-primary text-secondary border-primary'
+											? 'border-transparent text-white shadow-md'
 											: 'bg-bg-card text-text-muted border-border-default hover:border-border-strong'
-									">
+									"
+									:style="form.tags.includes(tag.tag_id) ? { backgroundColor: tag.color || '#a855f7' } : {}">
 									<Check v-if="form.tags.includes(tag.tag_id)" class="h-3 w-3" />
 									{{ tag.name }}
 								</button>
 								<span v-if="!tags || tags.length === 0" class="text-text-light text-xs italic">
 									No hay etiquetas disponibles
 								</span>
+							</div>
+
+							<!-- Quick Create Tag -->
+							<div class="mt-4 flex flex-col gap-3 rounded-2xl bg-bg-muted/30 p-4 border border-border-default/50">
+								<div class="flex items-center justify-between gap-3">
+									<label class="text-[10px] font-bold text-text-muted uppercase tracking-widest pl-1">Nueva Etiqueta</label>
+									<div class="flex gap-1.5 pr-1">
+										<button 
+											v-for="color in tagColors" 
+											:key="color.value"
+											type="button"
+											@click="newTagColor = color.value"
+											class="h-4 w-4 rounded-full border border-white/20 transition-transform hover:scale-125"
+											:class="newTagColor === color.value ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg-card' : ''"
+											:style="{ backgroundColor: color.value }"
+											:title="color.name"
+										></button>
+									</div>
+								</div>
+
+								<div class="flex items-center gap-2">
+									<input
+										v-model="newTagName"
+										type="text"
+										placeholder="Nombre de la etiqueta..."
+										@keydown.enter.prevent="handleCreateTag"
+										class="input bg-bg-card border-border-default h-10 w-full min-w-0 flex-1 rounded-xl px-4 text-sm font-medium transition-all focus:ring-2 focus:ring-primary/20 focus-visible:outline-none" />
+									
+									<button
+										type="button"
+										@click="handleCreateTag"
+										:disabled="isCreatingTag || !newTagName.trim()"
+										class="group relative flex h-10 items-center gap-2 overflow-hidden rounded-xl bg-text-primary px-5 text-bg-card transition-all hover:scale-[1.02] hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:hover:scale-100">
+										<!-- Glass finish effect -->
+										<div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+										
+										<Plus v-if="!isCreatingTag" class="h-4 w-4" />
+										<span v-else class="loading loading-spinner loading-xs"></span>
+										<span class="text-xs font-black uppercase tracking-widest">Añadir</span>
+									</button>
+								</div>
 							</div>
 						</div>
 

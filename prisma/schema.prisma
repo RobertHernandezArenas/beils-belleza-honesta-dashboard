@@ -169,6 +169,7 @@ model Subcategory {
 model Tag {
   tag_id      String       @id @default(uuid()) @db.Char(100)
   name        String       @unique @db.VarChar(50)
+  color       String?      @db.VarChar(20) // Hex or Tailwind color class
   products    ProductTag[]
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt

@@ -3,7 +3,7 @@ import { prisma } from '../../../utils/prisma'
 
 export default defineEventHandler(async event => {
 	const body = await readBody(event)
-	const { name } = body
+	const { name, color } = body
 
 	if (!name) {
 		throw createError({
@@ -16,6 +16,7 @@ export default defineEventHandler(async event => {
 		const tag = await prisma.tag.create({
 			data: {
 				name,
+				color,
 			},
 		})
 		return tag
