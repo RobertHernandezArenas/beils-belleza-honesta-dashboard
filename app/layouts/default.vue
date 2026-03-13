@@ -66,7 +66,7 @@
 				aria-label="close sidebar"
 				class="drawer-overlay bg-text-secondary/40 backdrop-blur-sm lg:hidden"></label>
 			<aside
-				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl duration-300 lg:w-72">
+				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-transform duration-300 lg:w-72">
 				<!-- Glow lateral en sidebar -->
 				<div
 					class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-r to-transparent"></div>

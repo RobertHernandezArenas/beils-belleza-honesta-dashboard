@@ -111,7 +111,7 @@
 			<!-- Filters -->
 			<div
 				class="bg-bg-card border-border-default mb-8 flex flex-col gap-4 rounded-3xl border p-4 sm:flex-row sm:items-center">
-				<div class="relative w-full sm:w-1/3">
+				<div class="relative w-full sm:w-3/4">
 					<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
 					<input
 						v-model="searchQuery"
@@ -130,8 +130,6 @@
 						</option>
 					</select>
 				</div>
-
-
 
 				<!-- Reset Filters -->
 				<div class="w-full sm:w-auto">
@@ -170,9 +168,10 @@
 						</thead>
 						<tbody>
 							<tr
-								v-for="product in products"
+								v-for="(product, index) in products"
 								:key="product.product_id"
-								class="border-border-default hover:bg-bg-muted/50 transition-colors">
+								class="border-border-default hover:bg-bg-muted/50 cursor-pointer transition-colors"
+								@click="openEditModal(product)">
 								<td>
 									<div class="flex items-center gap-4 py-2">
 										<div
@@ -241,14 +240,17 @@
 									</span>
 								</td>
 
-								<th>
-									<div class="dropdown dropdown-end">
+								<th @click.stop>
+									<div 
+										class="dropdown dropdown-left dropdown-end"
+										:class="{ 'dropdown-top': index > (products?.length || 0) - 3 }"
+									>
 										<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted">
 											<MoreVertical class="h-4 w-4" />
 										</button>
 										<ul
 											tabindex="0"
-											class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
+											class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[100] mt-1 w-40 rounded-xl border p-2 shadow-xl">
 											<li>
 												<a @click="openEditModal(product)" class="hover:bg-bg-muted font-medium">
 													<Edit2 class="h-4 w-4" />

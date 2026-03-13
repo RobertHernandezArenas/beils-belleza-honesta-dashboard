@@ -12,19 +12,21 @@ export function useModalAnimation() {
 	 */
 	const animateOpen = (dialogRef: HTMLDialogElement | null, options?: { staggerChildren?: boolean }) => {
 		if (!dialogRef) return
-		dialogRef.showModal()
 
 		const modalBox = dialogRef.querySelector('.modal-box')
 		const backdrop = dialogRef.querySelector('.modal-backdrop')
 
+		// Force disable CSS transitions to avoid conflict with GSAP
+		gsap.set([dialogRef, modalBox, backdrop], { transition: 'none' })
+		
+		dialogRef.classList.add('modal-open')
+		dialogRef.showModal()
+
 		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
-		// Force display for animation (DaisyUI sometimes hides it)
-		dialogRef.classList.add('modal-open')
-		
 		// Backdrop entrance
 		if (backdrop) {
-			gsap.set(backdrop, { opacity: 0, transition: 'none' })
+			gsap.set(backdrop, { opacity: 0 })
 			tl.to(backdrop, { opacity: 1, duration: 0.3 }, 0)
 		}
 
@@ -34,7 +36,6 @@ export function useModalAnimation() {
 				opacity: 0,
 				scale: 0.92,
 				y: 30,
-				transition: 'none',
 			})
 			tl.to(
 				modalBox,
@@ -84,20 +85,16 @@ export function useModalAnimation() {
 		const tl = gsap.timeline({
 			defaults: { ease: 'power3.inOut' },
 			onComplete: () => {
-				dialogRef.classList.remove('modal-open')
 				dialogRef.close()
+				dialogRef.classList.remove('modal-open')
 				
-				// Reset transforms for next open
-				gsap.set(dialogRef, { clearProps: 'all' })
-				if (modalBox) gsap.set(modalBox, { clearProps: 'all' })
-				if (backdrop) gsap.set(backdrop, { clearProps: 'all' })
+				// Reset all for next open
+				gsap.set([dialogRef, modalBox, backdrop], { clearProps: 'all' })
 				onComplete?.()
 			},
 		})
 
-		gsap.set(dialogRef, { transition: 'none' })
-		if (modalBox) gsap.set(modalBox, { transition: 'none' })
-		if (backdrop) gsap.set(backdrop, { transition: 'none' })
+		gsap.set([dialogRef, modalBox, backdrop], { transition: 'none' })
 
 		// Cinematic fade-out: slight shrink, move down, slow fade
 		if (modalBox) {
