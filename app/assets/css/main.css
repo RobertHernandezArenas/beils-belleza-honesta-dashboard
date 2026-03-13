@@ -67,16 +67,19 @@ textarea {
 	transition-property: opacity, transform;
 	transition-duration: 0.3s;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	will-change: transform, opacity;
 }
 
 .page-enter-from {
 	opacity: 0;
-	transform: translateY(12px);
+	transform: translate3d(0, 12px, 0);
+	backface-visibility: hidden;
 }
 
 .page-leave-to {
 	opacity: 0;
-	transform: translateY(-8px);
+	transform: translate3d(0, -8px, 0);
+	backface-visibility: hidden;
 }
 
 /* ============================================

@@ -12,7 +12,6 @@ export default defineNuxtConfig({
 	// View Transitions API + Page/Layout Transitions
 	// ==========================================
 	experimental: {
-		viewTransition: true,
 		payloadExtraction: true,
 	},
 	app: {

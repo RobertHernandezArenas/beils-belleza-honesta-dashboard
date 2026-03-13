@@ -112,7 +112,7 @@
 										? 'text-bg-card font-medium'
 										: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-secondary'
 								"
-								@click="isDrawerOpen = false">
+								@click="closeDrawerMobile">
 								<component
 									:is="item.icon"
 									class="h-5 w-5 group-hover:scale-110"
@@ -230,6 +230,11 @@
 		localeCookie.value = newLocale
 	})
 	const isDrawerOpen = ref(false)
+	const closeDrawerMobile = () => {
+		setTimeout(() => {
+			isDrawerOpen.value = false
+		}, 150)
+	}
 	const sidebarNav = ref<HTMLElement | null>(null)
 	const activePill = ref<HTMLElement | null>(null)
 	const navRefs = ref<Record<string, HTMLElement | null>>({})
