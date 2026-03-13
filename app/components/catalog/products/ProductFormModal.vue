@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useQuery } from '@tanstack/vue-query'
-	import { ChevronDown, Euro, Check, Plus } from 'lucide-vue-next'
+	import { ChevronDown, Euro, Check, Plus, Package, ImageIcon, Filter } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import { useQueryClient } from '@tanstack/vue-query'
 
@@ -10,6 +10,24 @@
 	const editingProduct = ref<any | null>(null)
 	const isSaving = ref(false)
 	const { animateOpen, animateClose } = useModalAnimation()
+
+	// Scroll-reactive action bar (Mobile only)
+	const isActionBarVisible = ref(true)
+	let scrollTimeout: any = null
+
+	const handleScroll = () => {
+		// Include tablets and mobile logic
+		if (window.innerWidth >= 1024) return
+		
+		if (isActionBarVisible.value) {
+			isActionBarVisible.value = false
+		}
+		
+		if (scrollTimeout) clearTimeout(scrollTimeout)
+		scrollTimeout = setTimeout(() => {
+			isActionBarVisible.value = true
+		}, 600)
+	}
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -197,15 +215,26 @@
 </script>
 
 <template>
-	<dialog ref="modalRef" class="modal">
+	<dialog ref="modalRef" class="modal modal-bottom sm:modal-middle">
 		<div
-			class="modal-box bg-bg-card text-text-secondary relative w-11/12 max-w-4xl overflow-hidden rounded-4xl p-0 shadow-xl">
+			class="modal-box bg-bg-app border-border-default m-0 max-h-[96dvh] w-full max-w-4xl border p-0 shadow-2xl transition-all sm:m-4 sm:max-h-[90dvh] sm:rounded-4xl rounded-t-[2.5rem]">
+			
+			<!-- Bottom Sheet Handle (Mobile Only) -->
+			<div 
+				class="flex w-full items-center justify-center pt-3 pb-3 sm:hidden cursor-pointer active:scale-95 transition-transform"
+				@click="closeModal">
+				<div class="bg-border-default h-1.5 w-12 rounded-full opacity-40 hover:opacity-60 transition-opacity"></div>
+			</div>
+
 			<!-- Modal Header -->
 			<div
-				class="bg-bg-muted/30 border-border-default sticky top-0 z-20 flex items-center justify-between border-b px-8 py-5 backdrop-blur-md">
-				<h3 class="text-xl font-bold tracking-tight">
-					{{ editingProduct ? 'Editar Producto' : 'Nuevo Producto' }}
-				</h3>
+				class="bg-bg-app/80 border-border-subtle sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md sm:px-8 sm:py-5">
+				<div>
+					<h3 class="text-lg font-bold tracking-tight sm:text-xl">
+						{{ editingProduct ? 'Editar Producto' : 'Nuevo Producto' }}
+					</h3>
+					<p class="text-text-muted hidden text-xs font-medium sm:block">Completa los detalles del producto para el catálogo</p>
+				</div>
 				<button
 					type="button"
 					class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-bg-hover hover:text-text-secondary"
@@ -215,306 +244,278 @@
 			</div>
 
 			<!-- Form Scrollable content -->
-			<div class="custom-scrollbar max-h-[70vh] overflow-y-auto px-8 py-6">
+			<div 
+				class="custom-scrollbar max-h-[calc(96dvh-150px)] sm:max-h-[calc(90dvh-140px)] overflow-y-auto px-6 py-6 sm:px-8 scroll-smooth"
+				@scroll.passive="handleScroll">
 				<form
 					id="productForm"
 					@submit.prevent="saveProduct"
 					class="grid grid-cols-1 gap-8 md:grid-cols-2">
 					<!-- Left Column: Core Details -->
-					<div class="flex flex-col gap-5">
-						<!-- Status Toggle Header basically -->
-						<div class="col-span-2 flex items-center justify-between">
-							<h4 class="text-text-muted text-sm font-bold tracking-wider uppercase">
-								Información General
-							</h4>
-							<div class="form-control flex-row items-center gap-3">
-								<span class="label-text text-xs font-bold tracking-wider uppercase">Publicado</span>
-								<input
-									type="checkbox"
-									class="toggle toggle-success toggle-sm"
-									:checked="form.status === 'activo'"
-									@change="form.status = form.status === 'activo' ? 'inactivo' : 'activo'" />
+					<div class="flex flex-col gap-6">
+						<!-- Section: Basic Info -->
+						<div class="space-y-6 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+							<div class="flex items-center justify-between border-b border-border-subtle/20 pb-4">
+								<div class="flex items-center gap-2">
+									<div class="bg-primary/10 text-primary flex h-7 w-7 items-center justify-center rounded-lg">
+										<Package class="h-4 w-4" />
+									</div>
+									<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Información Básica</h4>
+								</div>
+								<div class="form-control flex-row items-center gap-2">
+									<span class="text-[10px] font-black uppercase tracking-widest opacity-60">Status</span>
+									<input
+										type="checkbox"
+										class="toggle toggle-success toggle-xs"
+										:checked="form.status === 'activo'"
+										@change="form.status = form.status === 'activo' ? 'inactivo' : 'activo'" />
+								</div>
+							</div>
+
+							<div class="space-y-4">
+								<div class="form-control">
+									<label class="label pb-1">
+										<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+											Nombre del Producto *
+										</span>
+									</label>
+									<input
+										v-model="form.name"
+										type="text"
+										required
+										class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+								</div>
+
+								<div class="grid grid-cols-2 gap-4">
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">SKU</span>
+										</label>
+										<input
+											v-model="form.sku"
+											type="text"
+											placeholder="P-001"
+											class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+									</div>
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">EAN</span>
+										</label>
+										<input
+											v-model="form.barcode"
+											type="text"
+											class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+									</div>
+								</div>
+
+								<div class="form-control">
+									<label class="label pb-1">
+										<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">Descripción</span>
+									</label>
+									<textarea
+										v-model="form.description"
+										rows="3"
+										class="textarea bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-bold shadow-xs transition-all"></textarea>
+								</div>
 							</div>
 						</div>
 
-						<div class="form-control">
-							<label class="label pb-1" for="prod-name">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									Nombre del Producto *
-								</span>
-							</label>
-							<input
-								id="prod-name"
-								v-model="form.name"
-								type="text"
-								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
-						</div>
-
-						<div class="grid grid-cols-2 gap-4">
+						<!-- Section: Media -->
+						<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+							<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
+								<div class="bg-indigo-500/10 text-indigo-600 flex h-7 w-7 items-center justify-center rounded-lg">
+									<ImageIcon class="h-4 w-4" />
+								</div>
+								<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Multimedia</h4>
+							</div>
 							<div class="form-control">
-								<label class="label pb-1" for="prod-sku">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										SKU
-									</span>
+								<label class="label pb-1">
+									<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">URL imagen</span>
 								</label>
 								<input
-									id="prod-sku"
-									v-model="form.sku"
-									type="text"
-									placeholder="Ej. PRD-001"
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
+									v-model="form.image_url"
+									type="url"
+									placeholder="https://..."
+									class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
 							</div>
-							<div class="form-control">
-								<label class="label pb-1" for="prod-barcode">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										EAN / Código
-									</span>
-								</label>
-								<input
-									id="prod-barcode"
-									v-model="form.barcode"
-									type="text"
-									placeholder="Código de barras"
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
-							</div>
-						</div>
-
-						<div class="form-control">
-							<label class="label pb-1" for="prod-desc">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									Descripción
-								</span>
-							</label>
-							<textarea
-								id="prod-desc"
-								v-model="form.description"
-								rows="4"
-								class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none"></textarea>
-						</div>
-
-						<div class="form-control">
-							<label class="label pb-1" for="prod-img">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									URL de Imagen
-								</span>
-							</label>
-							<input
-								id="prod-img"
-								v-model="form.image_url"
-								type="url"
-								placeholder="https://"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors duration-300 focus:shadow-md focus:ring-4 focus-visible:outline-none" />
 						</div>
 					</div>
 
 					<!-- Right Column: Settings & Pricing -->
-					<div class="flex flex-col gap-5">
-						<!-- Categorization -->
-						<h4 class="text-text-muted mt-2 text-sm font-bold tracking-wider uppercase md:mt-0">
-							Organización
-						</h4>
-
-						<div class="grid grid-cols-2 gap-4">
-
-							<div class="form-control">
-								<label class="label pb-1">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										Categoría
-									</span>
-								</label>
-								<select
-									v-model="form.category_id"
-									@change="form.subcategory_id = ''"
-									class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors">
-									<option value="">Ninguna</option>
-									<option v-for="c in categories" :key="c.category_id" :value="c.category_id">
-										{{ c.name }}
-									</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-control" v-if="filteredSubcategories && filteredSubcategories.length > 0">
-							<label class="label pb-1">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									Subcategoría
-								</span>
-							</label>
-							<select
-								v-model="form.subcategory_id"
-								class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium shadow-sm transition-colors">
-								<option value="">Ninguna</option>
-								<option
-									v-for="sc in filteredSubcategories"
-									:key="sc.subcategory_id"
-									:value="sc.subcategory_id">
-									{{ sc.name }}
-								</option>
-							</select>
-						</div>
-
-						<div class="form-control">
-							<label class="label pb-2">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									Etiquetas
-								</span>
-							</label>
-							<div class="custom-scrollbar flex max-h-32 flex-wrap gap-2 overflow-y-auto pr-2">
-								<button
-									v-for="tag in tags"
-									:key="tag.tag_id"
-									type="button"
-									@click="toggleTag(tag.tag_id)"
-									class="badge badge-lg h-9 gap-1 rounded-lg border px-3 text-xs font-bold tracking-wider uppercase transition-colors"
-									:class="
-										form.tags.includes(tag.tag_id)
-											? 'border-transparent text-white shadow-md'
-											: 'bg-bg-card text-text-muted border-border-default hover:border-border-strong'
-									"
-									:style="form.tags.includes(tag.tag_id) ? { backgroundColor: tag.color || '#a855f7' } : {}">
-									<Check v-if="form.tags.includes(tag.tag_id)" class="h-3 w-3" />
-									{{ tag.name }}
-								</button>
-								<span v-if="!tags || tags.length === 0" class="text-text-light text-xs italic">
-									No hay etiquetas disponibles
-								</span>
+					<div class="flex flex-col gap-6">
+						<!-- Section: Inventory & Pricing -->
+						<div class="space-y-6 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+							<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
+								<div class="bg-emerald-500/10 text-emerald-600 flex h-7 w-7 items-center justify-center rounded-lg">
+									<Euro class="h-4 w-4" />
+								</div>
+								<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Precios y Stock</h4>
 							</div>
 
-							<!-- Quick Create Tag -->
-							<div class="mt-4 flex flex-col gap-3 rounded-2xl bg-bg-muted/30 p-4 border border-border-default/50">
-								<div class="flex items-center justify-between gap-3">
-									<label class="text-[10px] font-bold text-text-muted uppercase tracking-widest pl-1">Nueva Etiqueta</label>
-									<div class="flex gap-1.5 pr-1">
-										<button 
-											v-for="color in tagColors" 
-											:key="color.value"
-											type="button"
-											@click="newTagColor = color.value"
-											class="h-4 w-4 rounded-full border border-white/20 transition-transform hover:scale-125"
-											:class="newTagColor === color.value ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg-card' : ''"
-											:style="{ backgroundColor: color.value }"
-											:title="color.name"
-										></button>
+							<div class="space-y-5">
+								<div class="grid grid-cols-2 gap-4">
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">PVP *</span>
+										</label>
+										<div class="relative">
+											<Euro class="text-text-muted absolute top-1/2 left-3.5 h-3.5 w-3.5 -translate-y-1/2" />
+											<input
+												v-model="form.price"
+												type="number"
+												step="0.01"
+												class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl pl-9 text-sm font-black tabular-nums shadow-xs transition-all" />
+										</div>
+									</div>
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">IVA %</span>
+										</label>
+										<input
+											v-model="form.tax_rate"
+											type="number"
+											class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
 									</div>
 								</div>
 
-								<div class="flex items-center gap-2">
-									<input
-										v-model="newTagName"
-										type="text"
-										placeholder="Nombre de la etiqueta..."
-										@keydown.enter.prevent="handleCreateTag"
-										class="input bg-bg-card border-border-default h-10 w-full min-w-0 flex-1 rounded-xl px-4 text-sm font-medium transition-all focus:ring-2 focus:ring-primary/20 focus-visible:outline-none" />
+								<div class="grid grid-cols-2 gap-4">
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">Stock</span>
+										</label>
+										<input
+											v-model="form.stock"
+											type="number"
+											class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+									</div>
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">S. Mínimo</span>
+										</label>
+										<input
+											v-model="form.min_stock"
+											type="number"
+											class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Section: Classification -->
+						<div class="space-y-6 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+							<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
+								<div class="bg-amber-500/10 text-amber-600 flex h-7 w-7 items-center justify-center rounded-lg">
+									<Filter class="h-4 w-4" />
+								</div>
+								<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Clasificación</h4>
+							</div>
+
+							<div class="space-y-4">
+								<div class="grid grid-cols-2 gap-4">
+									<div class="form-control">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">Categoría</span>
+										</label>
+										<select
+											v-model="form.category_id"
+											@change="form.subcategory_id = ''"
+											class="select bg-white/60 border-border-default focus:bg-white focus:ring-amber-500/10 hover:bg-white h-11 w-full rounded-xl text-sm font-bold shadow-xs transition-all">
+											<option value="">Ninguna</option>
+											<option v-for="c in categories" :key="c.category_id" :value="c.category_id">
+												{{ c.name }}
+											</option>
+										</select>
+									</div>
+									<div class="form-control" v-if="filteredSubcategories && filteredSubcategories.length > 0">
+										<label class="label pb-1">
+											<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">Subcat.</span>
+										</label>
+										<select
+											v-model="form.subcategory_id"
+											class="select bg-white/60 border-border-default focus:bg-white focus:ring-amber-500/10 hover:bg-white h-11 w-full rounded-xl text-sm font-bold shadow-xs transition-all">
+											<option value="">Ninguna</option>
+											<option
+												v-for="sc in filteredSubcategories"
+												:key="sc.subcategory_id"
+												:value="sc.subcategory_id">
+												{{ sc.name }}
+											</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-control">
+									<label class="label pb-2">
+										<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">Etiquetas</span>
+									</label>
+									<div class="custom-scrollbar flex max-h-32 flex-wrap gap-2 overflow-y-auto pr-2">
+										<button
+											v-for="tag in tags"
+											:key="tag.tag_id"
+											type="button"
+											@click="toggleTag(tag.tag_id)"
+											class="badge badge-lg h-8 gap-1.5 rounded-lg border-none px-3 text-[10px] font-black tracking-widest uppercase transition-all hover:scale-105 active:scale-95"
+											:class="form.tags.includes(tag.tag_id) ? 'text-white shadow-md' : 'bg-white/60 text-text-muted border border-border-default'"
+											:style="form.tags.includes(tag.tag_id) ? { backgroundColor: tag.color || '#a855f7' } : {}">
+											<Check v-if="form.tags.includes(tag.tag_id)" class="h-3 w-3" />
+											{{ tag.name }}
+										</button>
+									</div>
 									
-									<button
-										type="button"
-										@click="handleCreateTag"
-										:disabled="isCreatingTag || !newTagName.trim()"
-										class="group relative flex h-10 items-center gap-2 overflow-hidden rounded-xl bg-text-primary px-5 text-bg-card transition-all hover:scale-[1.02] hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:hover:scale-100">
-										<!-- Glass finish effect -->
-										<div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-										
-										<Plus v-if="!isCreatingTag" class="h-4 w-4" />
-										<span v-else class="loading loading-spinner loading-xs"></span>
-										<span class="text-xs font-black uppercase tracking-widest">Añadir</span>
-									</button>
+									<!-- Quick Create Minimalist -->
+									<div class="mt-4 flex flex-col gap-3 rounded-2xl bg-primary/5 p-4 border border-primary/10">
+										<div class="flex items-center justify-between">
+											<span class="text-[9px] font-black uppercase tracking-widest text-primary/70">Nueva Etiqueta</span>
+											<div class="flex gap-1">
+												<button 
+													v-for="color in tagColors" 
+													:key="color.value"
+													type="button"
+													@click="newTagColor = color.value"
+													class="h-3 w-3 rounded-full transition-transform hover:scale-125"
+													:class="newTagColor === color.value ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg-app' : ''"
+													:style="{ backgroundColor: color.value }"
+												></button>
+											</div>
+										</div>
+										<div class="flex gap-2">
+											<input
+												v-model="newTagName"
+												type="text"
+												placeholder="..."
+												class="input bg-white/80 border-none h-8 w-full min-w-0 flex-1 rounded-lg px-3 text-xs font-bold transition-all focus:ring-2 focus:ring-primary/20" />
+											<button
+												type="button"
+												@click="handleCreateTag"
+												:disabled="isCreatingTag || !newTagName.trim()"
+												class="btn btn-primary btn-xs h-8 rounded-lg border-none px-4 font-black uppercase tracking-widest">
+												<Plus v-if="!isCreatingTag" class="h-3 w-3" />
+												<span v-else class="loading loading-spinner loading-xs"></span>
+												<span>OK</span>
+											</button>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-
-						<div class="divider my-0"></div>
-
-						<!-- Pricing & Inventory -->
-						<h4 class="text-text-muted text-sm font-bold tracking-wider uppercase">
-							Precios e Inventario
-						</h4>
-
-						<div class="grid grid-cols-2 gap-4">
-							<div class="form-control relative">
-								<label class="label pb-1">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										PVP *
-									</span>
-								</label>
-								<div class="relative">
-									<Euro class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-									<input
-										v-model="form.price"
-										type="number"
-										step="0.01"
-										min="0"
-										required
-										class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl pl-9 text-sm font-medium shadow-sm transition-colors focus:shadow-md" />
-								</div>
-							</div>
-							<div class="form-control relative">
-								<label class="label pb-1">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										Impuesto (%) *
-									</span>
-								</label>
-								<input
-									v-model="form.tax_rate"
-									type="number"
-									step="0.1"
-									min="0"
-									required
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md" />
-							</div>
-						</div>
-
-						<div class="grid grid-cols-2 gap-4">
-							<div class="form-control">
-								<label class="label pb-1">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										Stock Actual *
-									</span>
-								</label>
-								<input
-									v-model="form.stock"
-									type="number"
-									min="0"
-									required
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md" />
-							</div>
-							<div class="form-control">
-								<label class="label pb-1">
-									<span
-										class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-										Stock Mínimo (Alerta)
-									</span>
-								</label>
-								<input
-									v-model="form.min_stock"
-									type="number"
-									min="0"
-									class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md" />
 							</div>
 						</div>
 					</div>
 				</form>
 			</div>
 
-			<!-- Footer -->
+			<!-- Footer / Action Bar -->
 			<div
-				class="bg-bg-muted/30 border-border-default sticky bottom-0 z-20 flex justify-end gap-3 border-t px-8 py-5 backdrop-blur-md">
+				class="bg-bg-app/90 border-border-subtle sticky bottom-0 z-20 flex justify-end gap-3 border-t px-6 py-4 backdrop-blur-xl sm:px-8 sm:py-5 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 ease-in-out"
+				:class="[isActionBarVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none']">
 				<button
 					type="button"
-					class="btn btn-ghost text-text-muted hover:bg-bg-hover hover:text-text-secondary h-12 rounded-xl px-8"
+					class="btn btn-ghost text-text-muted hover:bg-bg-hover hover:text-text-secondary h-11 rounded-xl px-6 sm:h-12 sm:px-8"
 					@click="closeModal">
 					{{ $t('common.cancel') }}
 				</button>
 				<button
 					type="submit"
 					form="productForm"
-					class="btn text-bg-card hover:bg-text-secondary/80 bg-text-secondary h-12 rounded-xl border-none px-10 font-bold shadow-md"
+					class="btn text-bg-card hover:bg-text-secondary/80 bg-text-secondary h-11 rounded-xl border-none px-8 font-bold shadow-md sm:h-12 sm:px-10"
 					:disabled="isSaving">
 					<span v-if="isSaving" class="loading loading-spinner"></span>
 					{{ editingProduct ? $t('common.save') : 'Crear Producto' }}

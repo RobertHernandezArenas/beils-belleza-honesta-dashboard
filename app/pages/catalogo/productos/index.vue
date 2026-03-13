@@ -153,116 +153,118 @@
 			<!-- Table List -->
 			<div
 				v-else-if="products && products.length > 0"
-				class="bg-bg-card border-border-default flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
-				<div class="w-full flex-1 overflow-auto">
+				class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl premium-shadow">
+				<div class="w-full flex-1 overflow-auto custom-scrollbar">
 					<table class="table w-full relative">
-						<thead class="sticky top-0 z-10 bg-bg-muted/50 backdrop-blur-md">
+						<thead class="glass-header sticky top-0 z-10">
 							<tr
-								class="border-border-default text-text-muted border-b pb-4 text-xs tracking-wider uppercase">
-								<th class="font-bold">Producto</th>
-								<th class="font-bold">Categoría</th>
-								<th class="text-right font-bold tabular-nums">Stock / Precio</th>
-								<th class="text-center font-bold">Estado</th>
-								<th class="w-16"></th>
+								class="border-border-default text-text-muted border-b pb-4 text-[10px] font-black tracking-widest uppercase">
+								<th class="py-5 pl-6">Producto</th>
+								<th class="py-5">Categoría</th>
+								<th class="text-right py-5 tabular-nums">Stock / Precio</th>
+								<th class="text-center py-5">Estado</th>
+								<th class="w-16 pr-6 py-5"></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody class="divide-y divide-border-subtle/50">
 							<tr
 								v-for="(product, index) in products"
 								:key="product.product_id"
-								class="border-border-default hover:bg-bg-muted/50 cursor-pointer transition-colors"
+								class="premium-lift group hover:bg-white/60 cursor-pointer transition-all duration-300"
 								@click="openEditModal(product)">
-								<td>
-									<div class="flex items-center gap-4 py-2">
+								<td class="pl-6 py-4">
+									<div class="flex items-center gap-4">
 										<div
-											class="bg-bg-muted flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+											class="bg-white border-border-default/50 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
 											<ImageIcon
 												v-if="!product.image_url"
-												class="text-text-muted h-5 w-5 opacity-50" />
+												class="text-text-muted/30 h-6 w-6" />
 											<img
 												v-else
 												:src="product.image_url"
 												alt=""
-												class="h-full w-full rounded-xl object-cover" />
+												class="h-full w-full object-cover" />
 										</div>
 										<div class="flex flex-col">
-											<span class="font-bold">{{ product.name }}</span>
-											<div class="text-text-muted flex items-center gap-2 text-xs">
+											<span class="text-text-primary text-sm font-bold tracking-tight">{{ product.name }}</span>
+											<div class="text-text-muted mt-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-wider opacity-60">
 												<span v-if="product.sku">SKU: {{ product.sku }}</span>
-												<span v-if="product.sku && product.barcode">•</span>
+												<span v-if="product.sku && product.barcode" class="text-primary">•</span>
 												<span v-if="product.barcode">EAN: {{ product.barcode }}</span>
 											</div>
 										</div>
 									</div>
 								</td>
 
-								<td>
-									<div class="flex flex-col gap-1">
+								<td class="py-4">
+									<div class="flex flex-col gap-1.5">
 										<span
 											v-if="product.category"
-											class="bg-primary/10 text-primary w-fit rounded-md px-2 py-0.5 text-xs leading-none font-bold">
+											class="bg-primary/10 text-primary border-primary/20 w-fit rounded-lg border px-2.5 py-1 text-[10px] font-black tracking-widest uppercase">
 											{{ product.category.name }}
-											<span v-if="product.subcategory" class="opacity-75">
+											<span v-if="product.subcategory" class="opacity-60">
 												/ {{ product.subcategory.name }}
 											</span>
 										</span>
-										<span v-else class="text-text-light text-xs italic">Sin categoría</span>
+										<span v-else class="text-text-muted/50 text-[10px] font-bold italic tracking-wide">Sin categoría</span>
 									</div>
 								</td>
 
-								<td class="text-right">
+								<td class="text-right py-4">
 									<div class="flex flex-col items-end gap-1">
-										<span class="font-bold tabular-nums">{{ formatCurrency(product.price) }}</span>
+										<span class="text-text-primary text-base font-black tabular-nums">{{ formatCurrency(product.price) }}</span>
 										<span
-											class="flex items-center gap-1 text-xs font-medium tabular-nums"
+											class="flex items-center gap-1.5 text-[11px] font-bold tabular-nums"
 											:class="
 												product.stock <= (product.min_stock || 0)
-													? 'text-error'
-													: 'text-text-muted'
+													? 'text-rose-500'
+													: 'text-text-muted/70'
 											">
 											<AlertCircle
 												v-if="product.stock <= (product.min_stock || 0)"
 												class="h-3 w-3" />
-											Stock: {{ product.stock }}
+											<span class="opacity-60 font-medium">Stock:</span> {{ product.stock }}
 										</span>
 									</div>
 								</td>
 
-								<td class="text-center">
+								<td class="text-center py-4">
 									<span
-										class="badge badge-sm font-bold tracking-wider uppercase"
+										class="inline-flex items-center rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase"
 										:class="
 											product.status === 'activo'
-												? 'badge-success text-white'
-												: 'badge-ghost text-text-muted'
+												? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+												: 'bg-stone-500/10 text-stone-700 border-stone-500/20'
 										">
+										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"></span>
 										{{ product.status }}
 									</span>
 								</td>
 
-								<th @click.stop>
+								<th class="pr-6 py-4" @click.stop>
 									<div 
 										class="dropdown dropdown-left dropdown-end"
 										:class="{ 'dropdown-top': index > (products?.length || 0) - 3 }"
 									>
-										<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted">
-											<MoreVertical class="h-4 w-4" />
+										<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted transition-all hover:bg-primary/10 hover:text-primary">
+											<MoreVertical class="h-4.5 w-4.5" />
 										</button>
 										<ul
 											tabindex="0"
-											class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[100] mt-1 w-40 rounded-xl border p-2 shadow-xl">
+											class="dropdown-content menu glass-card text-text-secondary z-100 mt-1 w-44 rounded-2xl border p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
 											<li>
-												<a @click="openEditModal(product)" class="hover:bg-bg-muted font-medium">
+												<a @click="openEditModal(product)" class="hover:bg-primary/5 hover:text-primary rounded-xl py-2.5 font-bold transition-colors">
 													<Edit2 class="h-4 w-4" />
-													{{ $t('common.edit') }}
+													<span>{{ $t('common.edit') }}</span>
 												</a>
 											</li>
+											<div class="divider my-1 opacity-50"></div>
 											<li>
 												<a
 													@click="confirmDelete(product.product_id)"
-													class="text-error hover:bg-error/10 font-medium">
+													class="text-rose-500 hover:bg-rose-500/10 rounded-xl py-2.5 font-bold transition-colors">
 													<Trash2 class="h-4 w-4" />
-													{{ $t('common.delete') }}
+													<span>{{ $t('common.delete') }}</span>
 												</a>
 											</li>
 										</ul>

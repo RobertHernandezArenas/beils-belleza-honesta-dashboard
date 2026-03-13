@@ -133,8 +133,8 @@
 			<!-- Content -->
 			<div
 				v-if="isPending"
-				class="bg-bg-card border-border-subtle w-full space-y-4 rounded-3xl border p-6 shadow-sm">
-				<div v-for="i in 5" :key="i" class="bg-bg-muted h-16 w-full animate-pulse rounded-2xl"></div>
+				class="glass-card w-full space-y-4 rounded-3xl p-6 premium-shadow">
+				<div v-for="i in 5" :key="i" class="bg-bg-muted/50 h-16 w-full animate-pulse rounded-2xl"></div>
 			</div>
 
 			<div
@@ -145,7 +145,7 @@
 
 			<div
 				v-else-if="clients?.length === 0"
-				class="bg-bg-card border-border-subtle flex flex-col items-center justify-center rounded-3xl border py-24 text-center shadow-sm">
+				class="glass-card flex flex-col items-center justify-center rounded-3xl py-24 text-center premium-shadow">
 				<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
 					<UserCircle class="text-text-muted/50 h-10 w-10" />
 				</div>
@@ -157,57 +157,57 @@
 				v-else
 				data-aos="fade-up"
 				data-aos-delay="100"
-				class="bg-bg-card border-border-subtle flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
-				<div class="w-full flex-1 overflow-auto">
+				class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl premium-shadow">
+				<div class="w-full flex-1 overflow-auto custom-scrollbar">
 					<table class="w-full min-w-[950px] relative text-left text-sm">
-						<thead class="bg-bg-muted/50 text-text-secondary border-border-subtle sticky top-0 z-10 border-b backdrop-blur-md">
+						<thead class="glass-header text-text-secondary sticky top-0 z-10 border-b">
 							<tr>
-								<th class="px-6 py-4 font-bold">Cliente</th>
-								<th class="px-6 py-4 font-bold">Contacto</th>
-								<th class="px-6 py-4 font-bold">Actividad</th>
-								<th class="px-6 py-4 text-center font-bold">Estado</th>
-								<th class="px-6 py-4 text-right font-bold">Acciones</th>
+								<th class="px-6 py-5 font-bold tracking-tight">Cliente</th>
+								<th class="px-6 py-5 font-bold tracking-tight">Contacto</th>
+								<th class="px-6 py-5 font-bold tracking-tight">Actividad</th>
+								<th class="px-6 py-5 text-center font-bold tracking-tight">Estado</th>
+								<th class="px-6 py-5 text-right font-bold tracking-tight">Acciones</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody class="divide-y divide-border-subtle/50">
 							<tr
 								v-for="client in clients"
 								:key="client.user_id"
-								class="border-border-default hover:bg-bg-muted/40 cursor-pointer border-b transition-colors last:border-0"
+								class="premium-lift group hover:bg-white/60 cursor-pointer transition-all duration-300"
 								@click="navigateTo(`/clientes/${client.user_id}`)">
-								<td class="px-6 py-4">
+								<td class="px-6 py-5">
 									<div class="flex items-center gap-4">
 										<div
-											class="bg-primary/10 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border">
-											<span class="text-lg font-bold tracking-tight">
+											class="bg-linear-to-br from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border shadow-xs transition-transform group-hover:scale-105">
+											<span class="text-base font-black tracking-tight">
 												{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
 											</span>
 										</div>
 										<div class="flex flex-col">
 											<NuxtLink
 												:to="`/clientes/${client.user_id}`"
-												class="text-text-primary hover:text-primary text-sm font-bold transition-colors"
+												class="text-text-primary group-hover:text-primary text-sm font-bold transition-colors"
 												@click.stop>
 												{{ client.name }} {{ client.surname }}
 											</NuxtLink>
-											<p class="text-text-muted mt-0.5 max-w-[200px] truncate text-xs font-medium">
+											<p class="text-text-muted mt-0.5 max-w-[200px] truncate text-xs font-semibold tracking-tight opacity-70">
 												{{ client.email }}
 											</p>
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-4" @click.stop>
+								<td class="px-6 py-5" @click.stop>
 									<div class="flex flex-col">
-										<span class="text-text-primary font-medium">{{ client.phone }}</span>
-										<div class="mt-0.5 flex items-center gap-2">
-											<span class="text-text-muted text-xs font-medium uppercase">
-												{{ client.document_type }}:
-												{{
-													revealedDocs[client.user_id] || client.document_number
-												}}
+										<span class="text-text-primary text-sm font-bold tabular-nums">{{ client.phone }}</span>
+										<div class="mt-1 flex items-center gap-1.5">
+											<span class="text-text-muted bg-bg-muted/50 rounded px-1.5 py-0.5 text-[10px] font-black tracking-widest uppercase">
+												{{ client.document_type }}
+											</span>
+											<span class="text-text-muted text-[11px] font-bold tracking-tight">
+												{{ revealedDocs[client.user_id] || client.document_number }}
 											</span>
 											<button
-												class="text-text-muted hover:text-primary disabled:opacity-50 transition-colors"
+												class="text-text-muted hover:text-primary disabled:opacity-50 ml-0.5 transition-colors"
 												role="button"
 												:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
 												:disabled="revealedLoading[client.user_id]"
@@ -221,56 +221,54 @@
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-4">
+								<td class="px-6 py-5">
 									<div class="flex items-center gap-2">
 										<div
-											class="text-text-secondary bg-bg-muted border-border-default/50 flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-bold"
+											class="text-text-secondary bg-white/50 border-border-default/30 flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold shadow-xs transition-colors group-hover:border-primary/20 group-hover:bg-primary/5"
 											title="Citas Reservadas">
-											<CalendarDays class="text-primary h-3.5 w-3.5" />
-											<span>{{ client._count?.client_bookings || 0 }}</span>
+											<CalendarDays class="text-primary/70 h-3.5 w-3.5" />
+											<span class="tabular-nums">{{ client._count?.client_bookings || 0 }}</span>
 										</div>
 										<div
-											class="text-text-secondary bg-bg-muted border-border-default/50 flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-bold"
+											class="text-text-secondary bg-white/50 border-border-default/30 flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold shadow-xs transition-colors group-hover:border-primary/20 group-hover:bg-primary/5"
 											title="Consentimientos Firmados">
-											<ExternalLink class="text-primary h-3.5 w-3.5" />
-											<span>{{ client._count?.consents || 0 }}</span>
+											<ExternalLink class="text-primary/70 h-3.5 w-3.5" />
+											<span class="tabular-nums">{{ client._count?.consents || 0 }}</span>
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-4 text-center">
+								<td class="px-6 py-5 text-center">
 									<span
-										class="inline-block rounded-full border px-3 py-1 text-xs font-bold"
+										class="inline-flex items-center rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase"
 										:class="
 											client.status === 'ON'
-												? 'bg-success/10 text-success border-success/20'
-												: 'bg-error/10 text-error border-error/20'
+												? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+												: 'bg-rose-500/10 text-rose-700 border-rose-500/20'
 										">
+										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"></span>
 										{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
 									</span>
 								</td>
-								<td class="px-6 py-4 text-right">
-									<div class="flex items-center justify-end gap-1">
+								<td class="px-6 py-5 text-right">
+									<div class="flex items-center justify-end gap-1.5">
 										<NuxtLink
 											:to="`/clientes/${client.user_id}`"
-											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-primary tooltip tooltip-left transition-colors"
-											data-tip="Ver Perfil"
-											aria-label="Ver Perfil"
+											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-primary/10 hover:text-primary transition-all duration-300"
+											title="Ver Perfil"
 											@click.stop>
-											<UserCircle class="h-4 w-4" />
+											<UserCircle class="h-4.5 w-4.5" />
 										</NuxtLink>
 										<button
-											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-text-primary tooltip tooltip-left transition-colors"
-											data-tip="Editar Cliente"
-											aria-label="Editar"
+											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-text-primary transition-all duration-300"
+											title="Editar Cliente"
 											@click.stop="openEditModal(client)">
-											<Edit class="h-4 w-4" />
+											<Edit class="h-4.5 w-4.5" />
 										</button>
 										<button
-											class="btn btn-sm btn-circle btn-ghost text-error/70 hover:bg-error/10 hover:text-error tooltip tooltip-left transition-colors"
-											data-tip="Eliminar Cliente"
-											aria-label="Eliminar"
+											class="btn btn-sm btn-circle btn-ghost text-rose-500/40 hover:bg-rose-500/10 hover:text-rose-600 transition-all duration-300"
+											title="Eliminar Cliente"
 											@click.stop="openDeleteModal(client)">
-											<Trash2 class="h-4 w-4" />
+											<Trash2 class="h-4.5 w-4.5" />
 										</button>
 									</div>
 								</td>
@@ -280,14 +278,14 @@
 				</div>
 
 				<!-- Pagination Footer -->
-				<div class="bg-bg-muted/30 border-border-subtle flex flex-col items-center justify-between gap-4 border-t px-6 py-4 backdrop-blur-md sm:flex-row">
-					<div class="text-text-muted flex items-center gap-4 text-xs font-medium">
-						<span class="hidden sm:inline">Mostrando {{ clients.length }} de {{ pagination.total }} clientes</span>
-						<div class="flex items-center gap-2">
-							<span class="shrink-0">Filas:</span>
+				<div class="glass-header flex flex-col items-center justify-between gap-4 border-t px-8 py-5 sm:flex-row">
+					<div class="text-text-muted flex items-center gap-6 text-xs font-bold tracking-tight">
+						<span class="hidden opacity-60 sm:inline">Mostrando {{ clients.length }} de {{ pagination.total }} clientes</span>
+						<div class="flex items-center gap-3">
+							<span class="opacity-60">Filas:</span>
 							<select
 								v-model="limit"
-								class="select select-ghost select-xs focus:bg-bg-card h-8 min-h-0 rounded-lg border-none bg-transparent font-bold"
+								class="select select-ghost select-xs focus:bg-white h-9 min-h-0 rounded-xl border-border-default/50 bg-white/50 px-3 font-black transition-all hover:bg-white"
 								@change="page = 1">
 								<option :value="10">10</option>
 								<option :value="25">25</option>
@@ -297,19 +295,19 @@
 						</div>
 					</div>
 
-					<div class="join">
+					<div class="join overflow-hidden rounded-2xl border border-border-default/50 shadow-sm">
 						<button
-							class="join-item btn btn-sm bg-bg-card border-border-subtle hover:bg-bg-muted h-9 min-h-0 px-3 transition-colors disabled:opacity-50"
+							class="join-item btn btn-sm bg-white/50 border-none hover:bg-white disabled:bg-transparent disabled:opacity-30"
 							:disabled="page === 1"
 							@click="page--">
 							«
 						</button>
 						<button
-							class="join-item btn btn-sm bg-bg-card border-border-subtle hover:bg-bg-muted h-9 min-h-0 min-w-[40px] px-3 transition-colors">
-							Pág. {{ page }} de {{ pagination.totalPages || 1 }}
+							class="join-item btn btn-sm bg-white/80 pointer-events-none border-none border-x border-border-default/20 px-6 font-bold tracking-tight">
+							Pág. {{ page }} <span class="text-text-muted mx-1 font-medium italic">de</span> {{ pagination.totalPages || 1 }}
 						</button>
 						<button
-							class="join-item btn btn-sm bg-bg-card border-border-subtle hover:bg-bg-muted h-9 min-h-0 px-3 transition-colors disabled:opacity-50"
+							class="join-item btn btn-sm bg-white/50 border-none hover:bg-white disabled:bg-transparent disabled:opacity-30"
 							:disabled="page >= pagination.totalPages"
 							@click="page++">
 							»

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { UserPlus, Save, AlertCircle, Edit, User } from 'lucide-vue-next'
+	import { UserPlus, Save, AlertCircle, Edit, User, CreditCard, Search } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
@@ -71,6 +71,24 @@
 	})
 
 	const apiError = ref('')
+	
+	// Scroll-reactive action bar (Mobile only)
+	const isActionBarVisible = ref(true)
+	let scrollTimeout: any = null
+
+	const handleScroll = () => {
+		// Only trigger for real scrolling on small screens
+		if (window.innerWidth >= 1024) return
+		
+		if (isActionBarVisible.value) {
+			isActionBarVisible.value = false
+		}
+		
+		if (scrollTimeout) clearTimeout(scrollTimeout)
+		scrollTimeout = setTimeout(() => {
+			isActionBarVisible.value = true
+		}, 600) // Slightly faster than 800ms
+	}
 
 	const isEditing = computed(() => !!props.clientToEdit?.user_id)
 
@@ -192,19 +210,27 @@
 <template>
 	<dialog ref="clientDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
-			class="modal-box bg-bg-app border-border-default m-4 max-w-2xl border p-0 shadow-xl sm:rounded-3xl">
+			class="modal-box bg-bg-app border-border-default m-0 max-h-[96dvh] w-full max-w-2xl border p-0 shadow-2xl transition-all sm:m-4 sm:max-h-[90dvh] sm:rounded-3xl rounded-t-[2.5rem]">
+			
+			<!-- Bottom Sheet Handle (Mobile Only) -->
+			<div 
+				class="flex w-full items-center justify-center pt-3 pb-3 sm:hidden cursor-pointer active:scale-95 transition-transform"
+				@click="localVisible = false">
+				<div class="bg-border-default h-1.5 w-12 rounded-full opacity-40 hover:opacity-60 transition-opacity"></div>
+			</div>
+
 			<!-- Header -->
-			<div class="bg-bg-card border-border-subtle flex items-center gap-4 border-b p-6 sm:rounded-t-3xl">
+			<div class="border-border-subtle sticky top-0 z-20 flex items-center gap-3 border-b p-4 sm:gap-4 sm:p-6 sm:rounded-t-3xl backdrop-blur-md bg-bg-app/80">
 				<div
-					class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-					<Edit v-if="isEditing" class="h-6 w-6" />
-					<UserPlus v-else class="h-6 w-6" />
+					class="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12">
+					<Edit v-if="isEditing" class="h-5 w-5 sm:h-6 sm:w-6" />
+					<UserPlus v-else class="h-5 w-5 sm:h-6 sm:w-6" />
 				</div>
-				<div>
-					<h3 class="text-text-primary text-lg font-bold">
+				<div class="flex-1 overflow-hidden">
+					<h3 class="text-text-primary truncate text-base font-bold sm:text-lg">
 						{{ isEditing ? t('catalog.clients.edit') : t('catalog.clients.newClient') }}
 					</h3>
-					<p class="text-text-muted text-sm font-medium">
+					<p class="text-text-muted truncate text-xs font-medium sm:text-sm">
 						{{
 							isEditing
 								? 'Actualiza los datos de este cliente'
@@ -212,250 +238,250 @@
 						}}
 					</p>
 				</div>
-			</div>
-
-			<!-- Error Alert -->
-			<div
-				v-if="apiError"
-				class="bg-error/10 border-error/20 mx-6 mt-6 flex items-start gap-3 rounded-xl border p-4">
-				<AlertCircle class="text-error mt-0.5 h-5 w-5 shrink-0" />
-				<p class="text-error text-sm font-medium">{{ apiError }}</p>
+				<button 
+					type="button" 
+					class="btn btn-ghost btn-sm btn-circle" 
+					@click="localVisible = false">
+					✕
+				</button>
 			</div>
 
 			<!-- Formulario -->
-			<form @submit.prevent="onSubmit" class="space-y-5 p-6">
-				<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.name') }}
-							</span>
-						</label>
-						<input
-							v-model="form.name"
-							type="text"
-							placeholder="Iñigo"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.name }"
-							@input="clearError('name')" />
-						<span v-if="errors.name" class="text-error mt-1.5 ml-1 text-xs font-bold">
-							{{ errors.name }}
-						</span>
+			<form 
+				id="clientForm"
+				@submit.prevent="onSubmit" 
+				@scroll.passive="handleScroll"
+				class="space-y-4 p-4 sm:space-y-5 sm:p-6 overflow-y-auto max-h-[calc(96dvh-160px)] sm:max-h-[calc(90dvh-160px)] scroll-smooth">
+				<!-- Sección: Información Personal -->
+				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
+						<div class="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+							<User class="h-4 w-4" />
+						</div>
+						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Información Personal</h4>
 					</div>
+					
+					<div class="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.name') }} *
+								</span>
+							</label>
+							<input
+								v-model="form.name"
+								type="text"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.name }"
+								@input="clearError('name')" />
+						</div>
 
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.surname') }}
-							</span>
-						</label>
-						<input
-							v-model="form.surname"
-							type="text"
-							placeholder="López..."
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.surname }"
-							@input="clearError('surname')" />
-						<span v-if="errors.surname" class="text-error mt-1.5 ml-1 text-xs font-bold">
-							{{ errors.surname }}
-						</span>
-					</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.surname') }} *
+								</span>
+							</label>
+							<input
+								v-model="form.surname"
+								type="text"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.surname }"
+								@input="clearError('surname')" />
+						</div>
 
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.email') }}
-							</span>
-						</label>
-						<input
-							v-model="form.email"
-							type="email"
-							placeholder="cliente@correo.com"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.email }"
-							@input="clearError('email')" />
-						<span v-if="errors.email" class="text-error mt-1.5 ml-1 text-xs font-bold">
-							{{ errors.email }}
-						</span>
-					</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.documentType') }}
+								</span>
+							</label>
+							<select
+								v-model="form.document_type"
+								class="select bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								<option value="DNI">DNI (España)</option>
+								<option value="NIE">NIE (España)</option>
+								<option value="PASSPORT">{{ t('catalog.clients.form.passport') }}</option>
+							</select>
+						</div>
 
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.phone') }}
-							</span>
-						</label>
-						<input
-							v-model="form.phone"
-							type="tel"
-							placeholder="+34 600..."
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.phone }"
-							@input="clearError('phone')" />
-						<span v-if="errors.phone" class="text-error mt-1.5 ml-1 text-xs font-bold">
-							{{ errors.phone }}
-						</span>
-					</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.documentNumber') }}
+								</span>
+							</label>
+							<input
+								v-model="form.document_number"
+								type="text"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.document_number }"
+								@input="clearError('document_number')" />
+						</div>
 
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.documentType') }}
-							</span>
-						</label>
-						<select
-							v-model="form.document_type"
-							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
-							<option value="DNI">DNI</option>
-							<option value="NIE">NIE</option>
-							<option value="PASSPORT">{{ t('catalog.clients.form.passport') }}</option>
-						</select>
-					</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.birthDate') }}
+								</span>
+							</label>
+							<input
+								v-model="form.birth_date"
+								type="date"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all"
+								@input="clearError('birth_date')" />
+						</div>
 
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.documentNumber') }}
-							</span>
-						</label>
-						<input
-							v-model="form.document_number"
-							type="text"
-							placeholder="12345678Z"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							:class="{
-								'border-error focus:border-error focus:ring-error/20': errors.document_number,
-							}"
-							@input="clearError('document_number')" />
-						<span v-if="errors.document_number" class="text-error mt-1.5 ml-1 text-xs font-bold">
-							{{ errors.document_number }}
-						</span>
-					</div>
-
-					<!-- New Fields -->
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.birthDate') }}
-							</span>
-						</label>
-						<input
-							v-model="form.birth_date"
-							type="date"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							@input="clearError('birth_date')" />
-					</div>
-
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.gender') }}
-							</span>
-						</label>
-						<select
-							v-model="form.gender"
-							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
-							<option value="">{{ t('catalog.clients.form.selectGender') }}</option>
-							<option value="male">{{ t('catalog.clients.form.male') }}</option>
-							<option value="female">{{ t('catalog.clients.form.female') }}</option>
-							<option value="other">{{ t('catalog.clients.form.other') }}</option>
-						</select>
-					</div>
-
-					<div class="form-control md:col-span-2">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.address') }}
-							</span>
-						</label>
-						<input
-							v-model="form.address"
-							type="text"
-							placeholder="Calle, número, piso..."
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							@input="clearError('address')" />
-					</div>
-
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.city') }}
-							</span>
-						</label>
-						<input
-							v-model="form.city"
-							type="text"
-							placeholder="Pontevedra"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							@input="clearError('city')" />
-					</div>
-
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.postalCode') }}
-							</span>
-						</label>
-						<input
-							v-model="form.postal_code"
-							type="text"
-							placeholder="36001"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							@input="clearError('postal_code')" />
-					</div>
-
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.country') }}
-							</span>
-						</label>
-						<input
-							v-model="form.country"
-							type="text"
-							placeholder="España"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							@input="clearError('country')" />
-					</div>
-
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								{{ t('catalog.clients.form.status') }}
-							</span>
-						</label>
-						<select
-							v-model="form.status"
-							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
-							<option value="ON">Activo</option>
-							<option value="OFF">Inactivo</option>
-						</select>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.gender') }}
+								</span>
+							</label>
+							<select
+								v-model="form.gender"
+								class="select bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								<option value="">{{ t('catalog.clients.form.selectGender') }}</option>
+								<option value="male">{{ t('catalog.clients.form.male') }}</option>
+								<option value="female">{{ t('catalog.clients.form.female') }}</option>
+								<option value="other">{{ t('catalog.clients.form.other') }}</option>
+							</select>
+						</div>
 					</div>
 				</div>
 
-				<!-- Acciones -->
-				<div class="modal-action border-border-subtle mt-8 flex gap-3 border-t pt-4">
-					<button
-						type="button"
-						class="btn btn-ghost hover:bg-bg-muted text-text-muted h-12 flex-1 rounded-xl border-transparent font-bold transition-colors"
-						@click="localVisible = false"
-						:disabled="isPending">
-						Cancelar
-					</button>
-					<button
-						type="submit"
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
-						:disabled="isPending">
-						<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
-						<template v-else>
-							<Save class="h-4 w-4" />
-							<span class="font-bold tracking-wide">
-								{{ isEditing ? t('common.save') : t('catalog.clients.newClient') }}
-							</span>
-						</template>
-					</button>
+				<!-- Sección: Contacto -->
+				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
+						<div class="bg-indigo-500/10 text-indigo-600 flex h-8 w-8 items-center justify-center rounded-lg">
+							<CreditCard class="h-4 w-4" />
+						</div>
+						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Contacto y Comunicación</h4>
+					</div>
+
+					<div class="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.phone') }} *
+								</span>
+							</label>
+							<input
+								v-model="form.phone"
+								type="tel"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
+								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.phone }"
+								@input="clearError('phone')" />
+						</div>
+
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.email') }} *
+								</span>
+							</label>
+							<input
+								v-model="form.email"
+								type="email"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.email }"
+								@input="clearError('email')" />
+						</div>
+
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.status') }}
+								</span>
+							</label>
+							<select
+								v-model="form.status"
+								class="select bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								<option value="ON">Activo</option>
+								<option value="OFF">Inactivo</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Sección: Localización -->
+				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
+						<div class="bg-amber-500/10 text-amber-600 flex h-8 w-8 items-center justify-center rounded-lg">
+							<Search class="h-4 w-4" />
+						</div>
+						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Dirección y Localización</h4>
+					</div>
+
+					<div class="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
+						<div class="form-control md:col-span-2">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.address') }}
+								</span>
+							</label>
+							<input
+								v-model="form.address"
+								type="text"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								@input="clearError('address')" />
+						</div>
+
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.city') }}
+								</span>
+							</label>
+							<input
+								v-model="form.city"
+								type="text"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								@input="clearError('city')" />
+						</div>
+
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
+									{{ t('catalog.clients.form.postalCode') }}
+								</span>
+							</label>
+							<input
+								v-model="form.postal_code"
+								type="text"
+								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
+								@input="clearError('postal_code')" />
+						</div>
+					</div>
 				</div>
 			</form>
+
+			<!-- Acciones / Bottom Action Bar (Truly Sticky outside scroll area) -->
+			<div 
+				v-show="localVisible"
+				class="modal-action border-border-subtle sticky bottom-0 z-30 mt-0 flex gap-3 border-t bg-bg-app/90 backdrop-blur-xl p-4 sm:p-6 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 ease-in-out"
+				:class="[isActionBarVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none']">
+				<button
+					type="button"
+					class="btn btn-ghost hover:bg-bg-muted text-text-muted h-11 sm:h-12 flex-1 rounded-2xl border-transparent font-bold transition-all hover:scale-[0.98]"
+					@click="localVisible = false"
+					:disabled="isPending">
+					Cancelar
+				</button>
+				<button
+					type="submit"
+					form="clientForm"
+					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-11 sm:h-12 flex-1 items-center gap-2 rounded-2xl border-transparent shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+					:disabled="isPending">
+					<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
+					<template v-else>
+						<Save class="h-4 w-4" />
+						<span class="font-black uppercase tracking-widest text-xs">
+							{{ isEditing ? t('common.save') : t('catalog.clients.newClient') }}
+						</span>
+					</template>
+				</button>
+			</div>
 		</div>
 		<form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
 			<button @click="localVisible = false">Cerrar</button>
