@@ -9,10 +9,20 @@ export default defineEventHandler(async event => {
 		const end = query.end as string | undefined
 		const staff_id = query.staff_id as string | undefined
 		const client_id = query.client_id as string | undefined
+		const search = query.search as string | undefined
 
 		const whereClause: any = {}
 
-		if (start && end) {
+		if (search) {
+			const s = search.toLowerCase()
+			whereClause.OR = [
+				{ client: { name: { contains: search } } },
+				{ client: { surname: { contains: search } } },
+				{ client: { phone: { contains: search } } },
+				{ staff: { name: { contains: search } } },
+				{ notes: { contains: search } }
+			]
+		} else if (start && end) {
 			whereClause.booking_date = {
 				gte: new Date(start),
 				lte: new Date(end),
@@ -34,6 +44,8 @@ export default defineEventHandler(async event => {
 				item_id: true,
 				duration: true,
 				notes: true,
+				client_id: true,
+				staff_id: true,
 				client: { select: { name: true, surname: true, phone: true } },
 				staff: { select: { name: true, surname: true } },
 			},

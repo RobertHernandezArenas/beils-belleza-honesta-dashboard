@@ -2,7 +2,15 @@
 	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import {
+		MoreVertical,
+		Trash2,
+		Calendar,
 		CalendarDays,
+		CalendarRange,
+		LayoutDashboard,
+		ListTodo,
+		ChevronDown,
+		History,
 		Search,
 		Plus,
 		ChevronLeft,
@@ -12,10 +20,10 @@
 		Scissors,
 		CheckCircle2,
 		XCircle,
-		MoreVertical,
-		Trash2,
+		Pencil,
 	} from 'lucide-vue-next'
 	import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
+	import { useDebouncedRef } from '~/composables/useDebouncedRef'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Agenda y Reservas' })
@@ -26,26 +34,55 @@
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
 
-	// Simple Calendar State
+	// Calendar State
 	const currentDate = ref(new Date())
 	const selectedDate = ref(new Date())
-	const viewMode = ref<'day' | 'week'>('day')
+	const viewMode = ref<'day' | 'week' | 'month' | 'year' | 'agenda' | '4days'>('day')
 	const searchQuery = useDebouncedRef('', 500)
 
 	// Compute start and end of current view for API query
 	const queryParams = computed(() => {
 		const start = new Date(selectedDate.value)
-		start.setHours(0, 0, 0, 0)
-
 		const end = new Date(selectedDate.value)
-		if (viewMode.value === 'week') {
+
+		if (viewMode.value === 'day') {
+			start.setHours(0, 0, 0, 0)
+			end.setHours(23, 59, 59, 999)
+		} else if (viewMode.value === '4days') {
+			start.setHours(0, 0, 0, 0)
+			end.setDate(end.getDate() + 3)
+			end.setHours(23, 59, 59, 999)
+		} else if (viewMode.value === 'week') {
+			// Start of week (Monday)
+			const day = start.getDay()
+			const diff = start.getDate() - day + (day === 0 ? -6 : 1)
+			start.setDate(diff)
+			start.setHours(0, 0, 0, 0)
+			
+			end.setTime(start.getTime())
 			end.setDate(end.getDate() + 6)
+			end.setHours(23, 59, 59, 999)
+		} else if (viewMode.value === 'month') {
+			start.setDate(1)
+			start.setHours(0, 0, 0, 0)
+			end.setMonth(end.getMonth() + 1)
+			end.setDate(0)
+			end.setHours(23, 59, 59, 999)
+		} else if (viewMode.value === 'year') {
+			start.setMonth(0, 1)
+			start.setHours(0, 0, 0, 0)
+			end.setMonth(11, 31)
+			end.setHours(23, 59, 59, 999)
+		} else if (viewMode.value === 'agenda') {
+			start.setHours(0, 0, 0, 0)
+			end.setDate(end.getDate() + 30) // Agenda shows 30 days by default
+			end.setHours(23, 59, 59, 999)
 		}
-		end.setHours(23, 59, 59, 999)
 
 		return {
 			start: start.toISOString(),
 			end: end.toISOString(),
+			search: searchQuery.value || undefined
 		}
 	})
 
@@ -84,14 +121,22 @@
 	const prevPeriod = () => {
 		const newDate = new Date(selectedDate.value)
 		if (viewMode.value === 'day') newDate.setDate(newDate.getDate() - 1)
-		else newDate.setDate(newDate.getDate() - 7)
+		else if (viewMode.value === '4days') newDate.setDate(newDate.getDate() - 4)
+		else if (viewMode.value === 'week') newDate.setDate(newDate.getDate() - 7)
+		else if (viewMode.value === 'month') newDate.setMonth(newDate.getMonth() - 1)
+		else if (viewMode.value === 'year') newDate.setFullYear(newDate.getFullYear() - 1)
+		else if (viewMode.value === 'agenda') newDate.setDate(newDate.getDate() - 30)
 		selectedDate.value = newDate
 	}
 
 	const nextPeriod = () => {
 		const newDate = new Date(selectedDate.value)
 		if (viewMode.value === 'day') newDate.setDate(newDate.getDate() + 1)
-		else newDate.setDate(newDate.getDate() + 7)
+		else if (viewMode.value === '4days') newDate.setDate(newDate.getDate() + 4)
+		else if (viewMode.value === 'week') newDate.setDate(newDate.getDate() + 7)
+		else if (viewMode.value === 'month') newDate.setMonth(newDate.getMonth() + 1)
+		else if (viewMode.value === 'year') newDate.setFullYear(newDate.getFullYear() + 1)
+		else if (viewMode.value === 'agenda') newDate.setDate(newDate.getDate() + 30)
 		selectedDate.value = newDate
 	}
 
@@ -110,7 +155,9 @@
 				(b: any) =>
 					b.client?.name?.toLowerCase().includes(q) ||
 					b.client?.surname?.toLowerCase().includes(q) ||
-					b.staff?.name?.toLowerCase().includes(q),
+					b.client?.phone?.includes(q) ||
+					b.staff?.name?.toLowerCase().includes(q) ||
+					b.notes?.toLowerCase().includes(q),
 			)
 		}
 
@@ -198,7 +245,7 @@
 
 				<!-- Add -->
 				<button
-					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 flex w-full shrink-0 items-center justify-center rounded-xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
+					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 flex w-full shrink-0 items-center justify-center gap-2 rounded-xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
 					@click="openCreateModal">
 					<Plus class="h-4 w-4" />
 					Nueva Cita
@@ -212,8 +259,9 @@
 			<!-- Date Nav -->
 			<div class="mb-2 flex items-center gap-1 sm:mb-0">
 				<button
-					class="btn btn-ghost btn-sm text-text-secondary hover:bg-bg-muted h-10 rounded-xl px-4 font-bold"
+					class="btn btn-ghost btn-sm text-text-secondary hover:bg-bg-muted flex h-10 items-center gap-2 rounded-xl px-4 font-bold"
 					@click="setToday">
+					<History class="h-4 w-4" />
 					Hoy
 				</button>
 				<button
@@ -231,28 +279,57 @@
 				</span>
 			</div>
 
-			<!-- Views -->
-			<div class="tabs tabs-boxed bg-bg-muted/50 border-border-default flex rounded-xl border p-1">
-				<a
-					class="tab h-8 flex-1 rounded-lg px-6 text-xs font-bold tracking-wider uppercase transition-colors"
-					:class="
-						viewMode === 'day'
-							? 'bg-bg-card text-text-primary shadow-sm'
-							: 'text-text-muted hover:text-text-secondary'
-					"
-					@click="viewMode = 'day'">
-					Día
-				</a>
-				<a
-					class="tab h-8 flex-1 rounded-lg px-6 text-xs font-bold tracking-wider uppercase transition-colors"
-					:class="
-						viewMode === 'week'
-							? 'bg-bg-card text-text-primary shadow-sm'
-							: 'text-text-muted hover:text-text-secondary'
-					"
-					@click="viewMode = 'week'">
-					Semana
-				</a>
+			<!-- Views Selector (DaisyUI Dropdown) -->
+			<div class="dropdown dropdown-end w-full sm:w-auto">
+				<div 
+					tabindex="0" 
+					role="button" 
+					class="btn bg-bg-muted hover:bg-bg-hover border-border-default h-10 flex min-w-[160px] items-center justify-between rounded-xl border px-4 font-bold shadow-sm transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none">
+					<div class="flex items-center gap-2">
+						<component :is="viewMode === 'day' ? Calendar : 
+										viewMode === 'week' ? CalendarRange : 
+										viewMode === 'month' ? LayoutDashboard : 
+										viewMode === 'year' ? CalendarDays : 
+										viewMode === 'agenda' ? ListTodo : 
+										CalendarDays" 
+									class="text-primary h-4 w-4" />
+						<span class="text-xs tracking-wide uppercase">
+							{{
+								viewMode === 'day' ? 'Día' :
+								viewMode === '4days' ? '4 Días' :
+								viewMode === 'week' ? 'Semana' :
+								viewMode === 'month' ? 'Mes' :
+								viewMode === 'year' ? 'Año' :
+								'Agenda'
+							}}
+						</span>
+					</div>
+					<ChevronDown class="text-text-muted h-4 w-4" />
+				</div>
+				<ul tabindex="0" class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-2 w-full min-w-[180px] rounded-2xl border p-2 shadow-xl backdrop-blur-md sm:w-48">
+					<li v-for="mode in ['day', '4days', 'week', 'month', 'year', 'agenda']" :key="mode">
+						<button 
+							@click="viewMode = mode as any"
+							class="flex items-center gap-3 rounded-xl px-4 py-3 text-[10px] font-black tracking-widest uppercase transition-colors"
+							:class="viewMode === mode ? 'bg-primary/10 text-primary' : 'hover:bg-bg-muted text-text-muted hover:text-text-secondary'">
+							<component :is="mode === 'day' ? Calendar : 
+											mode === 'week' ? CalendarRange : 
+											mode === 'month' ? LayoutDashboard : 
+											mode === 'year' ? CalendarDays : 
+											mode === 'agenda' ? ListTodo : 
+											CalendarDays" 
+										class="h-4 w-4" />
+							{{
+								mode === 'day' ? 'Día' :
+								mode === '4days' ? '4 Días' :
+								mode === 'week' ? 'Semana' :
+								mode === 'month' ? 'Mes' :
+								mode === 'year' ? 'Año' :
+								'Agenda'
+							}}
+						</button>
+					</li>
+				</ul>
 			</div>
 		</div>
 
@@ -336,7 +413,12 @@
 											</a>
 										</li>
 										<div class="divider my-1 opacity-50"></div>
-										<li><a @click="openEditModal(booking)" class="font-medium">Editar</a></li>
+										<li>
+											<a @click="openEditModal(booking)" class="font-medium">
+												<Pencil class="h-4 w-4" />
+												Editar
+											</a>
+										</li>
 										<li>
 											<a
 												@click="confirmDelete(booking.booking_id)"
@@ -384,8 +466,9 @@
 					No tienes citas registradas para este periodo en la agenda.
 				</p>
 				<button
-					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 rounded-xl border-none px-6 font-bold shadow-sm"
+					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 flex items-center gap-2 rounded-xl border-none px-6 font-bold shadow-sm"
 					@click="openCreateModal">
+					<Plus class="h-4 w-4" />
 					Agendar Primera Cita
 				</button>
 			</div>

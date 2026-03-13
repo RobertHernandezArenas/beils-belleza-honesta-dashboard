@@ -168,6 +168,7 @@
 								<li
 									v-for="role in [
 										{ label: $t('users.constants.roles.CLIENT'), value: 'CLIENT' },
+										{ label: $t('users.constants.roles.STAFF'), value: 'STAFF' },
 										{ label: $t('users.constants.roles.ADMIN'), value: 'ADMIN' },
 									]"
 									:key="role.value">

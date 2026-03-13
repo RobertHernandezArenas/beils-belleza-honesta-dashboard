@@ -12,6 +12,7 @@
 		ExternalLink,
 		Eye,
 		EyeOff,
+		ChevronDown,
 	} from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AOS from 'aos'
@@ -158,8 +159,8 @@
 				data-aos="fade-up"
 				data-aos-delay="100"
 				class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl premium-shadow">
-				<div class="w-full flex-1 overflow-auto custom-scrollbar">
-					<table class="w-full min-w-[950px] relative text-left text-sm">
+				<div class="w-full flex-1 overflow-auto lg:overflow-x-hidden custom-scrollbar pr-0 lg:pr-6">
+					<table class="w-full max-lg:min-w-[950px] relative text-left text-sm lg:text-[13px] table-fixed lg:table-auto">
 						<thead class="glass-header text-text-secondary sticky top-0 z-10 border-b">
 							<tr>
 								<th class="px-6 py-5 font-bold tracking-tight">Cliente</th>
@@ -175,7 +176,7 @@
 								:key="client.user_id"
 								class="premium-lift group hover:bg-white/60 cursor-pointer transition-all duration-300"
 								@click="navigateTo(`/clientes/${client.user_id}`)">
-								<td class="px-6 py-5">
+								<td class="px-3 py-5">
 									<div class="flex items-center gap-4">
 										<div
 											class="bg-linear-to-br from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border shadow-xs transition-transform group-hover:scale-105">
@@ -221,7 +222,7 @@
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-5">
+								<td class="px-3 py-5">
 									<div class="flex items-center gap-2">
 										<div
 											class="text-text-secondary bg-white/50 border-border-default/30 flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold shadow-xs transition-colors group-hover:border-primary/20 group-hover:bg-primary/5"
@@ -283,15 +284,23 @@
 						<span class="hidden opacity-60 sm:inline">Mostrando {{ clients.length }} de {{ pagination.total }} clientes</span>
 						<div class="flex items-center gap-3">
 							<span class="opacity-60">Filas:</span>
-							<select
-								v-model="limit"
-								class="select select-ghost select-xs focus:bg-white h-9 min-h-0 rounded-xl border-border-default/50 bg-white/50 px-3 font-black transition-all hover:bg-white"
-								@change="page = 1">
-								<option :value="10">10</option>
-								<option :value="25">25</option>
-								<option :value="50">50</option>
-								<option :value="100">100</option>
-							</select>
+							<div class="relative group">
+								<div class="bg-white border border-border-default/50 rounded-xl h-9 px-3 flex items-center justify-between gap-2 hover:bg-bg-hover transition-all shadow-sm">
+									<span class="text-xs font-bold text-text-primary tabular-nums shrink-0">{{ limit }}</span>
+									<span class="text-text-muted pointer-events-none opacity-50">
+										<ChevronDown class="h-3 w-3" />
+									</span>
+								</div>
+								<select
+									v-model="limit"
+									class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+									@change="page = 1">
+									<option :value="10">10</option>
+									<option :value="25">25</option>
+									<option :value="50">50</option>
+									<option :value="100">100</option>
+								</select>
+							</div>
 						</div>
 					</div>
 

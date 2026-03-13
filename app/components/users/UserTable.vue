@@ -62,6 +62,7 @@
 						<td class="px-6 py-4">
 							<div class="flex items-center gap-2">
 								<ShieldCheck v-if="user.role === 'ADMIN'" class="text-text-secondary h-4 w-4" />
+								<Contact v-else-if="user.role === 'STAFF'" class="text-primary h-4 w-4" />
 								<User v-else class="text-text-light h-4 w-4" />
 								<span class="text-text-muted text-sm font-bold">
 									{{ $t('users.constants.roles.' + user.role) }}
@@ -166,7 +167,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ShieldCheck, User, ToggleLeft, ToggleRight, Pencil, Trash2, Users } from 'lucide-vue-next'
+	import { ShieldCheck, User, Contact, ToggleLeft, ToggleRight, Pencil, Trash2, Users } from 'lucide-vue-next'
 
 	defineProps<{
 		users: any[]
