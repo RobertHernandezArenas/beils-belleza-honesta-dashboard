@@ -396,7 +396,7 @@ model Cart {
   discount     Float        @default(0) @db.Double
   total        Float        @default(0) @db.Double
   
-  payment_method String?    @db.VarChar(50) // cash, card, transfer, mixed
+  payment_method String?    @db.VarChar(50) // cash, card, transfer, mixed, stripe
   notes        String?      @db.Text
   
   // Applied coupons/giftcards during checkout (stored as codes for history)

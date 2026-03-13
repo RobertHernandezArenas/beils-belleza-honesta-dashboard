@@ -123,6 +123,7 @@
 					},
 				})
 			}
+
 			return res
 		},
 		onSuccess: () => {
@@ -225,8 +226,8 @@
 	const handleCheckout = () => {
 		if (cartItems.value.length === 0) return
 
-		if (paymentMethod.value === 'debt' && !selectedClient.value) {
-			displayToast('Para dejar a deber, debes seleccionar un cliente.', 'error')
+		if ((paymentMethod.value === 'debt' || paymentMethod.value === 'stripe') && !selectedClient.value) {
+			displayToast('Selecciona un cliente para pagar con Stripe o dejar a deber.', 'error')
 			return
 		}
 
@@ -246,8 +247,16 @@
 	}
 
 	const handleStripeSuccess = (data: any) => {
-		displayToast(`Pago Stripe procesado — ${data.installments} cuota(s)`, 'success')
-		clearCart()
+		processSale({
+			user_id: selectedClient.value?.user_id,
+			status: data.installments > 1 ? 'pending_installments' : 'completed',
+			payment_method: 'stripe',
+			discount: discountAmount.value,
+			items: cartItems.value,
+			stripe_installments: data.installments,
+			stripe_payment_intent_id: data.paymentIntentId,
+			stripe_status: 'succeeded',
+		})
 	}
 
 	const handleStripeError = (error: string) => {

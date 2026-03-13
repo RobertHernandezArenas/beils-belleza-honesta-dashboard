@@ -121,11 +121,38 @@ export default defineEventHandler(async event => {
 			}
 
 			// Update cart with valid totals and verifactu payload
-			return await tx.cart.update({
+			const updatedCart = await tx.cart.update({
 				where: { cart_id: createdCart.cart_id },
-				data: { subtotal, total, ...verifactuData },
+				data: { 
+					subtotal, 
+					total, 
+					...verifactuData,
+					stripe_installments: cartData.stripe_installments ? Number(cartData.stripe_installments) : null,
+					stripe_payment_intent_id: cartData.stripe_payment_intent_id || null,
+					stripe_status: cartData.stripe_status || null,
+				},
 				include: { items: true, user: { select: { name: true, surname: true } } },
 			})
+
+			// Create the associated Debt if it is a Stripe Installment Plan inside the transaction
+			if (updatedCart.payment_method === 'stripe' && updatedCart.stripe_installments && updatedCart.stripe_installments > 1 && updatedCart.user_id) {
+				const installmentsCount = updatedCart.stripe_installments;
+				const firstPayment = updatedCart.total / installmentsCount;
+				const remainingAmount = updatedCart.total - firstPayment;
+
+				await tx.debt.create({
+					data: {
+						user_id: updatedCart.user_id,
+						cart_id: updatedCart.cart_id,
+						amount: updatedCart.total,
+						remaining: remainingAmount,
+						status: 'partial',
+						notes: `Pago Fraccionado Stripe (${installmentsCount} cuotas)`,
+					}
+				});
+			}
+
+			return updatedCart;
 		})
 
 		return cart

@@ -89,10 +89,13 @@ export default defineEventHandler(async event => {
 				.catch(console.error)
 		}
 
+		const isInstallment = currentCart.stripe_installments && currentCart.stripe_installments > 1;
+		const finalStatus = isInstallment ? 'pending_installments' : 'completed';
+
 		const updatedCart = await prisma.cart.update({
 			where: { cart_id },
 			data: {
-				status: 'completed',
+				status: finalStatus,
 				stripe_status: 'succeeded',
 				payment_method: 'stripe',
 				...verifactuData,
@@ -102,6 +105,25 @@ export default defineEventHandler(async event => {
 				user: { select: { name: true, surname: true } },
 			},
 		})
+
+		// Si es pago fraccionado, crear la deuda
+		if (isInstallment) {
+			const installmentsCount = currentCart.stripe_installments!
+			// Asumimos que la primera cuota se ha cobrado en este PaymentIntent
+			const firstPayment = currentCart.total / installmentsCount
+			const remainingAmount = currentCart.total - firstPayment
+
+			await prisma.debt.create({
+				data: {
+					user_id: currentCart.user_id!,
+					cart_id: currentCart.cart_id,
+					amount: currentCart.total,
+					remaining: remainingAmount,
+					status: 'partial',
+					notes: `Pago Fraccionado Stripe (${installmentsCount} cuotas)`,
+				}
+			})
+		}
 
 		return {
 			success: true,
