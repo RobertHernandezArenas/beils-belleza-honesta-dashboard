@@ -25,6 +25,13 @@
 	import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
 	import { useDebouncedRef } from '~/composables/useDebouncedRef'
 
+	// Import Agenda Views
+	import AgendaDayView from '~/components/agenda/views/AgendaDayView.vue'
+	import AgendaGridView from '~/components/agenda/views/AgendaGridView.vue'
+	import AgendaMonthView from '~/components/agenda/views/AgendaMonthView.vue'
+	import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
+	import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
+
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Agenda y Reservas' })
 
@@ -333,145 +340,33 @@
 			</div>
 		</div>
 
-		<!-- Agenda View (Linear Day Flow for simplicity initially, adaptable to grid) -->
+		<!-- Agenda Viewport -->
 		<div
 			class="bg-bg-card border-border-default relative flex flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
 			<div
 				v-if="isPending"
-				class="bg-bg-card/50 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
+				class="bg-bg-card/50 absolute inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
 				<span class="loading loading-spinner loading-lg text-primary"></span>
 			</div>
 
-			<div class="custom-scrollbar flex-1 overflow-y-auto p-4 lg:p-6" v-if="displayBookings.length > 0">
-				<div class="flex flex-col gap-4">
-					<div
-						v-for="booking in displayBookings"
-						:key="booking.booking_id"
-						class="group flex flex-col gap-4 sm:flex-row">
-						<!-- Time Column -->
-						<div
-							class="border-border-default group-hover:border-primary/30 flex w-24 shrink-0 flex-col items-end border-r-2 pt-2 pr-4 transition-colors">
-							<span class="text-xl leading-none font-black tracking-tighter tabular-nums">
-								{{ booking.start_time }}
-							</span>
-							<span class="text-text-muted mt-1 text-xs font-bold tabular-nums">
-								{{ booking.end_time }}
-							</span>
-							<span class="text-text-muted mt-2 text-[10px] capitalize">
-								{{ new Date(booking.booking_date).toLocaleDateString('es-ES', { weekday: 'short' }) }}
-							</span>
-						</div>
-
-						<!-- Card -->
-						<div
-							class="relative flex-1 rounded-2xl border p-4 shadow-sm transition-colors hover:shadow-md"
-							:class="getStatusColor(booking.status)">
-							<div class="relative z-50 mb-2 flex items-start justify-between">
-								<div class="flex items-center gap-2">
-									<div
-										class="bg-bg-card/50 rounded-md px-2 py-0.5 text-[10px] font-black tracking-wider uppercase backdrop-blur-sm">
-										{{ getStatusLabel(booking.status) }}
-									</div>
-									<span
-										v-if="booking.staff"
-										class="flex items-center gap-1 text-xs font-bold opacity-80">
-										<UserIcon class="h-3 w-3" />
-										{{ booking.staff.name }}
-									</span>
-								</div>
-
-								<!-- Dropdown -->
-								<div class="dropdown dropdown-end relative z-200">
-									<button
-										tabindex="0"
-										class="btn btn-ghost btn-sm btn-circle bg-bg-card/30 hover:bg-bg-card -mr-2 opacity-50 hover:opacity-100">
-										<MoreVertical class="h-4 w-4" />
-									</button>
-									<ul
-										tabindex="0"
-										class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-48 rounded-xl border p-2 shadow-xl">
-										<li
-											class="menu-title text-text-muted px-2 py-1 text-[10px] font-bold tracking-wider uppercase">
-											Estado
-										</li>
-										<li>
-											<a @click="setBookingStatus(booking.booking_id, 'confirmed')">
-												<CheckCircle2 class="text-info h-4 w-4" />
-												Confirmar
-											</a>
-										</li>
-										<li>
-											<a @click="setBookingStatus(booking.booking_id, 'completed')">
-												<CheckCircle2 class="text-success h-4 w-4" />
-												Finalizar
-											</a>
-										</li>
-										<li>
-											<a @click="setBookingStatus(booking.booking_id, 'cancelled')">
-												<XCircle class="text-error h-4 w-4" />
-												Cancelar
-											</a>
-										</li>
-										<div class="divider my-1 opacity-50"></div>
-										<li>
-											<a @click="openEditModal(booking)" class="font-medium">
-												<Pencil class="h-4 w-4" />
-												Editar
-											</a>
-										</li>
-										<li>
-											<a
-												@click="confirmDelete(booking.booking_id)"
-												class="text-error hover:bg-error/10 font-medium">
-												<Trash2 class="h-4 w-4" />
-												Eliminar
-											</a>
-										</li>
-									</ul>
-								</div>
-							</div>
-
-							<div class="relative z-10 mb-3">
-								<h3 class="flex items-center gap-2 text-lg leading-tight font-bold">
-									{{ booking.client?.name }} {{ booking.client?.surname }}
-								</h3>
-								<div class="mt-0.5 flex items-center gap-1 text-sm font-medium opacity-80">
-									<Scissors class="h-3.5 w-3.5" v-if="booking.item_type === 'service'" />
-									<span class="text-[11px] font-bold tracking-wider uppercase">
-										{{ booking.item_type === 'service' ? 'Servicio/Paquete' : 'Otro' }} ID:
-									</span>
-									<span class="max-w-[150px] truncate">{{ booking.item_id.split('-')[0] }}...</span>
-								</div>
-							</div>
-
-							<div
-								class="relative z-10 flex items-center justify-between border-t border-black/10 pt-2 text-xs font-medium opacity-90">
-								<span class="flex items-center gap-1">
-									<Clock class="h-3.5 w-3.5" />
-									{{ booking.duration }} min
-								</span>
-								<span v-if="booking.notes" class="max-w-[200px] truncate italic">
-									"{{ booking.notes }}"
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div v-else class="flex flex-1 flex-col items-center justify-center p-6 text-center opacity-60">
-				<CalendarDays class="text-border-strong mb-4 h-16 w-16" />
-				<h3 class="mb-1 text-lg font-bold">Sin Citas Programadas</h3>
-				<p class="mb-6 max-w-sm text-sm font-medium">
-					No tienes citas registradas para este periodo en la agenda.
-				</p>
-				<button
-					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 flex items-center gap-2 rounded-xl border-none px-6 font-bold shadow-sm"
-					@click="openCreateModal">
-					<Plus class="h-4 w-4" />
-					Agendar Primera Cita
-				</button>
-			</div>
+			<!-- Dynamic View Component -->
+			<component 
+				:is="viewMode === 'day' ? AgendaDayView :
+					viewMode === 'week' ? AgendaGridView :
+					viewMode === '4days' ? AgendaGridView :
+					viewMode === 'month' ? AgendaMonthView :
+					viewMode === 'year' ? AgendaYearView :
+					AgendaListView"
+				:bookings="displayBookings"
+				:selectedDate="selectedDate"
+				:isPending="isPending"
+				:daysCount="viewMode === '4days' ? 4 : 7"
+				@edit="openEditModal"
+				@delete="confirmDelete"
+				@status="setBookingStatus"
+				@create="openCreateModal"
+				@selectDate="(d: Date) => { selectedDate = d; viewMode = 'day' }"
+			/>
 		</div>
 
 		<!-- Toast Provider -->
