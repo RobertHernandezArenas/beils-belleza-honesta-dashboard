@@ -10,11 +10,14 @@
 		CreditCard,
 		CalendarDays,
 		ExternalLink,
+		Eye,
+		EyeOff,
 	} from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AOS from 'aos'
 	import ClientFormModal from '~/components/clients/ClientFormModal.vue'
 	import UserDeleteModal from '~/components/users/UserDeleteModal.vue'
+	import { useDataPrivacy } from '~/composables/useDataPrivacy'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Clientes | CRM' })
@@ -92,6 +95,9 @@
 	const formatContact = (cl: any) => {
 		return `${cl.phone} • ${cl.email}`
 	}
+
+	// Privacidad de documentos (Centralizada)
+	const { revealedDocs, revealedLoading, toggleDocumentVisibility } = useDataPrivacy()
 </script>
 
 <template>
@@ -167,7 +173,8 @@
 							<tr
 								v-for="client in clients"
 								:key="client.user_id"
-								class="border-border-default hover:bg-bg-muted/40 border-b transition-colors last:border-0">
+								class="border-border-default hover:bg-bg-muted/40 cursor-pointer border-b transition-colors last:border-0"
+								@click="navigateTo(`/clientes/${client.user_id}`)">
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-4">
 										<div
@@ -179,7 +186,8 @@
 										<div class="flex flex-col">
 											<NuxtLink
 												:to="`/clientes/${client.user_id}`"
-												class="text-text-primary hover:text-primary text-sm font-bold transition-colors">
+												class="text-text-primary hover:text-primary text-sm font-bold transition-colors"
+												@click.stop>
 												{{ client.name }} {{ client.surname }}
 											</NuxtLink>
 											<p class="text-text-muted mt-0.5 max-w-[200px] truncate text-xs font-medium">
@@ -188,12 +196,29 @@
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-4">
+								<td class="px-6 py-4" @click.stop>
 									<div class="flex flex-col">
 										<span class="text-text-primary font-medium">{{ client.phone }}</span>
-										<span class="text-text-muted mt-0.5 text-xs font-medium">
-											{{ client.document_type }}: {{ client.document_number }}
-										</span>
+										<div class="mt-0.5 flex items-center gap-2">
+											<span class="text-text-muted text-xs font-medium uppercase">
+												{{ client.document_type }}:
+												{{
+													revealedDocs[client.user_id] || client.document_number
+												}}
+											</span>
+											<button
+												class="text-text-muted hover:text-primary disabled:opacity-50 transition-colors"
+												role="button"
+												:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
+												:disabled="revealedLoading[client.user_id]"
+												@click="toggleDocumentVisibility(client.user_id, client.document_number)">
+												<span v-if="revealedLoading[client.user_id]" class="loading loading-spinner loading-xs h-3 w-3"></span>
+												<component
+													v-else
+													:is="revealedDocs[client.user_id] ? EyeOff : Eye"
+													class="h-3.5 w-3.5" />
+											</button>
+										</div>
 									</div>
 								</td>
 								<td class="px-6 py-4">
@@ -229,21 +254,22 @@
 											:to="`/clientes/${client.user_id}`"
 											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-primary tooltip tooltip-left transition-colors"
 											data-tip="Ver Perfil"
-											aria-label="Ver Perfil">
+											aria-label="Ver Perfil"
+											@click.stop>
 											<UserCircle class="h-4 w-4" />
 										</NuxtLink>
 										<button
 											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-text-primary tooltip tooltip-left transition-colors"
 											data-tip="Editar Cliente"
 											aria-label="Editar"
-											@click="openEditModal(client)">
+											@click.stop="openEditModal(client)">
 											<Edit class="h-4 w-4" />
 										</button>
 										<button
 											class="btn btn-sm btn-circle btn-ghost text-error/70 hover:bg-error/10 hover:text-error tooltip tooltip-left transition-colors"
 											data-tip="Eliminar Cliente"
 											aria-label="Eliminar"
-											@click="openDeleteModal(client)">
+											@click.stop="openDeleteModal(client)">
 											<Trash2 class="h-4 w-4" />
 										</button>
 									</div>

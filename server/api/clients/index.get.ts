@@ -1,6 +1,7 @@
 import { defineEventHandler, createError, getQuery } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
+import { maskDocument } from '../../utils/privacy'
 
 export default defineEventHandler(async event => {
 	try {
@@ -46,7 +47,10 @@ export default defineEventHandler(async event => {
 		return {
 			data: clients.map(client => {
 				const { password, ...rest } = client
-				return rest
+				return {
+					...rest,
+					document_number: maskDocument(client.document_number),
+				}
 			}),
 			pagination: {
 				total,

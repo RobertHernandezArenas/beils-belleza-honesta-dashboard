@@ -15,8 +15,11 @@
 		CalendarDays,
 		ExternalLink,
 		XCircle,
+		Eye,
+		EyeOff,
 	} from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import { useDataPrivacy } from '~/composables/useDataPrivacy'
 
 	definePageMeta({ layout: 'default' })
 	const { t, locale } = useI18n()
@@ -29,7 +32,7 @@
 		data: client,
 		isPending,
 		error,
-	} = useQuery<any>({
+	} = useQuery<any, any>({
 		queryKey: ['client', clientId],
 		queryFn: () => $fetch(`/api/clients/${clientId}`),
 	})
@@ -63,6 +66,9 @@
 	const getStatusBadge = (status: string) => {
 		return status === 'ON' ? 'bg-success/10 text-success' : 'bg-error/10 text-error'
 	}
+
+	// Privacidad de documentos
+	const { revealedDocs, revealedLoading, toggleDocumentVisibility } = useDataPrivacy()
 </script>
 
 <template>
@@ -124,10 +130,22 @@
 								<Phone class="h-4 w-4" />
 								{{ client.phone || 'Sin teléfono' }}
 							</span>
-							<span class="flex items-center gap-1.5">
+							<div class="flex items-center gap-1.5">
 								<FileText class="h-4 w-4" />
-								{{ client.document_type }}: {{ client.document_number || 'N/A' }}
-							</span>
+								<span>{{ client.document_type }}: {{ revealedDocs[client.user_id] || client.document_number || 'N/A' }}</span>
+								<button
+									class="text-text-muted hover:text-primary disabled:opacity-50 ml-1 transition-colors"
+									role="button"
+									:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
+									:disabled="revealedLoading[client.user_id]"
+									@click="toggleDocumentVisibility(client.user_id, client.document_number)">
+									<span v-if="revealedLoading[client.user_id]" class="loading loading-spinner loading-xs h-3 w-3"></span>
+									<component
+										v-else
+										:is="revealedDocs[client.user_id] ? EyeOff : Eye"
+										class="h-3.5 w-3.5" />
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>

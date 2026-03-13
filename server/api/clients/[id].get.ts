@@ -1,10 +1,14 @@
 import { defineEventHandler, createError, getRouterParam } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
+import { maskDocument } from '../../utils/privacy'
 
 export default defineEventHandler(async event => {
 	try {
 		requireAdmin(event)
+		const query = getQuery(event)
+		const reveal = query.reveal === 'true'
+
 		const id = getRouterParam(event, 'id')
 		if (!id) {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
@@ -30,9 +34,12 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado' })
 		}
 
-		// Remove password from response
+		// Remove password from response and mask document number if not revealed
 		const { password, ...rest } = client
-		return rest
+		return {
+			...rest,
+			document_number: reveal ? client.document_number : maskDocument(client.document_number),
+		}
 	} catch (error: any) {
 		if (error.statusCode) throw error
 		throw createError({

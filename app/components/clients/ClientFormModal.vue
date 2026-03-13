@@ -74,17 +74,33 @@
 
 	const isEditing = computed(() => !!props.clientToEdit?.user_id)
 
-	const initForm = () => {
+	const initForm = async () => {
 		apiError.value = ''
 		Object.keys(errors).forEach(key => (errors[key as keyof typeof errors] = ''))
 
 		if (props.clientToEdit) {
+			let fullDocNumber = props.clientToEdit.document_number || ''
+
+			// If the document number is masked (starts with ****), fetch the real one
+			if (fullDocNumber.startsWith('****')) {
+				try {
+					const res: any = await $fetch(`/api/clients/${props.clientToEdit.user_id}`, {
+						query: { reveal: 'true' },
+					})
+					if (res && res.document_number) {
+						fullDocNumber = res.document_number
+					}
+				} catch (err) {
+					console.error('Error fetching full document for edit:', err)
+				}
+			}
+
 			form.name = props.clientToEdit.name || ''
 			form.surname = props.clientToEdit.surname || ''
 			form.email = props.clientToEdit.email || ''
 			form.phone = props.clientToEdit.phone || ''
 			form.document_type = props.clientToEdit.document_type || 'DNI'
-			form.document_number = props.clientToEdit.document_number || ''
+			form.document_number = fullDocNumber
 			form.address = props.clientToEdit.address || ''
 			form.city = props.clientToEdit.city || ''
 			form.country = props.clientToEdit.country || 'España'

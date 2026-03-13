@@ -1,9 +1,10 @@
 <script setup lang="ts">
 	import { ref, computed } from 'vue'
 	import { useQuery } from '@tanstack/vue-query'
-	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt, CreditCard } from 'lucide-vue-next'
+	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt, CreditCard, Eye, EyeOff } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import QrcodeVue from 'qrcode.vue'
+	import { useDataPrivacy } from '~/composables/useDataPrivacy'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Ventas | Finanzas' })
@@ -91,6 +92,9 @@
 			selectedSale.value = null
 		}, 300)
 	}
+
+	// Privacidad de documentos
+	const { revealedDocs, revealedLoading, toggleDocumentVisibility } = useDataPrivacy()
 </script>
 
 <template>
@@ -315,8 +319,20 @@
 											: $t('sales.modal.walkInClient')
 									}}
 								</div>
-								<div class="text-text-muted text-xs" v-if="selectedSale.user?.document_number">
-									NIF/CIF: {{ selectedSale.user.document_number }}
+								<div class="text-text-muted flex items-center gap-2 text-xs" v-if="selectedSale.user?.document_number">
+									<span>NIF/CIF: {{ revealedDocs[selectedSale.user_id] || selectedSale.user.document_number }}</span>
+									<button
+										class="text-text-muted hover:text-primary disabled:opacity-50 transition-colors"
+										role="button"
+										:aria-label="revealedDocs[selectedSale.user_id] ? 'Ocultar' : 'Mostrar'"
+										:disabled="revealedLoading[selectedSale.user_id]"
+										@click="toggleDocumentVisibility(selectedSale.user_id, selectedSale.user.document_number)">
+										<span v-if="revealedLoading[selectedSale.user_id]" class="loading loading-spinner loading-xs h-3 w-3"></span>
+										<component
+											v-else
+											:is="revealedDocs[selectedSale.user_id] ? EyeOff : Eye"
+											class="h-3.5 w-3.5" />
+									</button>
 								</div>
 								<div class="text-text-muted text-xs" v-if="selectedSale.user?.email">
 									{{ selectedSale.user.email }}
