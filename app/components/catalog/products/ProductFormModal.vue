@@ -1,14 +1,13 @@
 <script setup lang="ts">
-	import { useQuery } from '@tanstack/vue-query'
+	import { ref, reactive, watch, nextTick, computed } from 'vue'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { ChevronDown, Euro, Check, Plus, Package, ImageIcon, Filter } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
-	import { useQueryClient } from '@tanstack/vue-query'
-
-	const queryClient = useQueryClient()
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingProduct = ref<any | null>(null)
 	const isSaving = ref(false)
+	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	// Scroll-reactive action bar (Mobile only)
@@ -176,39 +175,46 @@
 		animateClose(modalRef.value)
 	}
 
-	const saveProduct = async () => {
-		isSaving.value = true
-		try {
-			// Basic formatting
-			const payload = {
-				...form,
-				price: Number(form.price),
-				tax_rate: Number(form.tax_rate),
-				stock: Number(form.stock),
-				min_stock: Number(form.min_stock),
-			}
-
+	const { mutate: performSave } = useMutation({
+		mutationFn: async (payload: any) => {
 			if (editingProduct.value) {
-				await $fetch(`/api/catalog/products/${editingProduct.value.product_id}`, {
+				return await $fetch(`/api/catalog/products/${editingProduct.value.product_id}`, {
 					method: 'PUT',
 					body: payload,
 				})
-				emit('toast', 'Producto actualizado exitosamente', 'success')
 			} else {
-				await $fetch(`/api/catalog/products`, {
+				return await $fetch(`/api/catalog/products`, {
 					method: 'POST',
 					body: payload,
 				})
-				emit('toast', 'Producto creado exitosamente', 'success')
 			}
+		},
+		onSuccess: () => {
+			emit('toast', editingProduct.value ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['products'] })
+			queryClient.invalidateQueries({ queryKey: ['products-tpv'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving product:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el producto', 'error')
-		} finally {
+		},
+		onSettled: () => {
 			isSaving.value = false
+		},
+	})
+
+	const saveProduct = async () => {
+		isSaving.value = true
+		const payload = {
+			...form,
+			price: Number(form.price),
+			tax_rate: Number(form.tax_rate),
+			stock: Number(form.stock),
+			min_stock: Number(form.min_stock),
 		}
+		performSave(payload)
 	}
 
 	defineExpose({ showModal })

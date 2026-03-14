@@ -1,10 +1,13 @@
 <script setup lang="ts">
+	import { ref, reactive, computed } from 'vue'
+	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { RefreshCcw } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingCard = ref<any | null>(null)
 	const isSaving = ref(false)
+	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
@@ -56,38 +59,46 @@
 		animateClose(modalRef.value)
 	}
 
-	const saveGiftcard = async () => {
-		isSaving.value = true
-		try {
-			const payload = {
-				...form,
-				initial_balance: Number(form.initial_balance),
-				current_balance: editingCard.value ? Number(form.current_balance) : Number(form.initial_balance), // If new, current = initial
-				issue_date: form.issue_date ? new Date(form.issue_date).toISOString() : null,
-				expiration_date: form.expiration_date ? new Date(form.expiration_date).toISOString() : null,
-			}
-
+	const { mutate: performSave } = useMutation({
+		mutationFn: async (payload: any) => {
 			if (editingCard.value) {
-				await $fetch(`/api/marketing/giftcards/${editingCard.value.giftcard_id}`, {
+				return await $fetch(`/api/marketing/giftcards/${editingCard.value.giftcard_id}`, {
 					method: 'PUT',
 					body: payload,
 				})
-				emit('toast', 'Tarjeta actualizada', 'success')
 			} else {
-				await $fetch(`/api/marketing/giftcards`, {
+				return await $fetch(`/api/marketing/giftcards`, {
 					method: 'POST',
 					body: payload,
 				})
-				emit('toast', 'Tarjeta emitida exitosamente', 'success')
 			}
+		},
+		onSuccess: () => {
+			emit('toast', editingCard.value ? 'Tarjeta actualizada' : 'Tarjeta emitida exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['giftcards'] })
+			queryClient.invalidateQueries({ queryKey: ['giftcards-tpv'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving giftcard:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar la tarjeta', 'error')
-		} finally {
+		},
+		onSettled: () => {
 			isSaving.value = false
+		},
+	})
+
+	const saveGiftcard = async () => {
+		isSaving.value = true
+		const payload = {
+			...form,
+			initial_balance: Number(form.initial_balance),
+			current_balance: editingCard.value ? Number(form.current_balance) : Number(form.initial_balance),
+			issue_date: form.issue_date ? new Date(form.issue_date).toISOString() : null,
+			expiration_date: form.expiration_date ? new Date(form.expiration_date).toISOString() : null,
 		}
+		performSave(payload)
 	}
 
 	defineExpose({ showModal })

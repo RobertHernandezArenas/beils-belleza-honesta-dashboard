@@ -54,6 +54,7 @@
 		mutationFn: (id: string) => $fetch(`/api/catalog/products/${id}`, { method: 'DELETE' }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['products'] })
+			queryClient.invalidateQueries({ queryKey: ['products-tpv'] })
 			displayToast('Producto eliminado exitosamente', 'success')
 		},
 		onError: (error: any) => {

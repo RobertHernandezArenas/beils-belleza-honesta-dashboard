@@ -56,7 +56,7 @@
 <script lang="ts" setup>
 	import { ref, computed, watch } from 'vue'
 	import { useI18n } from 'vue-i18n'
-	import { useQuery } from '@tanstack/vue-query'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useUsersFilterStore } from '~/stores/useUsersFilterStore'
 
 	const { t } = useI18n()
@@ -172,66 +172,64 @@
 	// --- Gestión de Eliminación ---
 	const showDeleteModal = ref(false)
 	const selectedUserToDelete = ref<any>(null)
-	const isDeletingUser = ref(false)
+	const queryClient = useQueryClient()
+
+	const { mutate: deleteUser, isPending: isDeletingUser } = useMutation({
+		mutationFn: (id: string) => $fetch(`/api/users/${id}`, { method: 'DELETE' }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['users'] })
+			handleToast({
+				message: t('users.messages.deleted', 'Usuario eliminado exitosamente'),
+				type: 'success',
+			})
+			showDeleteModal.value = false
+			selectedUserToDelete.value = null
+		},
+		onError: (error: any) => {
+			console.error('Error deleting user:', error)
+			handleToast({
+				message: error.data?.statusMessage || t('users.messages.errorDelete', 'Error al eliminar el usuario'),
+				type: 'error',
+			})
+			showDeleteModal.value = false
+		},
+	})
 
 	const openDeleteModal = (user: any) => {
 		selectedUserToDelete.value = user
 		showDeleteModal.value = true
 	}
 
-	const executeDelete = async () => {
+	const executeDelete = () => {
 		if (!selectedUserToDelete.value) return
-		isDeletingUser.value = true
-
-		try {
-			await $fetch(`/api/users/${selectedUserToDelete.value.user_id}`, {
-				method: 'DELETE',
-			})
-			selectedUserToDelete.value = null
-			refresh()
-			handleToast({
-				message: t('users.messages.deleted', 'Usuario eliminado exitosamente'),
-				type: 'success',
-			})
-		} catch (error: any) {
-			console.error('Error deleting user:', error)
-			handleToast({
-				message:
-					error.data?.statusMessage || t('users.messages.errorDelete', 'Error al eliminar el usuario'),
-				type: 'error',
-			})
-		} finally {
-			isDeletingUser.value = false
-			showDeleteModal.value = false
-		}
+		deleteUser(selectedUserToDelete.value.user_id)
 	}
 
-	const toggleUserStatus = async (user: UserData) => {
-		const originalStatus = user.status
-		const newStatus = originalStatus === 'ON' ? 'OFF' : 'ON'
-
-		// Optimistic update
-		user.status = newStatus
-
-		try {
-			await $fetch(`/api/users/${user.user_id}`, {
+	const { mutate: updateStatus } = useMutation({
+		mutationFn: (payload: { id: string; status: string }) =>
+			$fetch(`/api/users/${payload.id}`, {
 				method: 'PUT',
-				body: { status: newStatus },
-			})
-			if (newStatus === 'ON') {
+				body: { status: payload.status },
+			}),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({ queryKey: ['users'] })
+			if (variables.status === 'ON') {
 				handleToast({ message: t('users.messages.statusOn', 'Usuario activado'), type: 'success' })
 			} else {
 				handleToast({ message: t('users.messages.statusOff', 'Usuario desactivado'), type: 'success' })
 			}
-			refresh()
-		} catch (error: any) {
-			// Revert the local optimistic update if the API call failed
-			user.status = originalStatus
+		},
+		onError: (error: any) => {
 			handleToast({
 				message: error.data?.message || t('users.messages.toggleError', 'Error al cambiar estado'),
 				type: 'error',
 			})
-		}
+		},
+	})
+
+	const toggleUserStatus = (user: UserData) => {
+		const newStatus = user.status === 'ON' ? 'OFF' : 'ON'
+		updateStatus({ id: user.user_id, status: newStatus })
 	}
 </script>
 

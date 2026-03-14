@@ -253,14 +253,15 @@
 <script setup lang="ts">
 	import { ChevronDown } from 'lucide-vue-next'
 	import { useAuthStore } from '~/stores/auth'
+	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const authStore = useAuthStore()
+	const queryClient = useQueryClient()
 	const isAdmin = computed(() => authStore.user?.role === 'ADMIN')
 
 	const userModal = ref<HTMLDialogElement | null>(null)
 	const editingUser = ref<any | null>(null)
-	const isSaving = ref(false)
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
@@ -320,30 +321,41 @@
 		animateClose(userModal.value)
 	}
 
-	const saveUser = async () => {
-		isSaving.value = true
-		try {
+	const { mutate: performSave, isPending: isSaving } = useMutation({
+		mutationFn: async (userData: typeof form) => {
 			if (editingUser.value) {
-				await $fetch(`/api/users/${editingUser.value.user_id}`, {
+				return await $fetch(`/api/users/${editingUser.value.user_id}`, {
 					method: 'PUT',
-					body: form,
+					body: userData,
 				})
-				emit('toast', { message: 'Usuario actualizado exitosamente', type: 'success' })
 			} else {
-				await $fetch(`/api/users`, {
+				return await $fetch(`/api/users`, {
 					method: 'POST',
-					body: form,
+					body: userData,
 				})
-				emit('toast', { message: 'Usuario creado exitosamente', type: 'success' })
 			}
+		},
+		onSuccess: () => {
+			const msg = editingUser.value
+				? 'Usuario actualizado exitosamente'
+				: 'Usuario creado exitosamente'
+			emit('toast', { message: msg, type: 'success' })
+			queryClient.invalidateQueries({ queryKey: ['users'] })
+			queryClient.invalidateQueries({ queryKey: ['staff-agenda'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving user:', error)
-			emit('toast', { message: error.data?.statusMessage || 'Error al guardar el usuario', type: 'error' })
-		} finally {
-			isSaving.value = false
-		}
+			emit('toast', {
+				message: error.data?.statusMessage || 'Error al guardar el usuario',
+				type: 'error',
+			})
+		},
+	})
+
+	const saveUser = () => {
+		performSave(form)
 	}
 
 	defineExpose({

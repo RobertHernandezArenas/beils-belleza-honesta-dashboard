@@ -86,6 +86,7 @@
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['tags-list'] })
+			queryClient.invalidateQueries({ queryKey: ['tags'] })
 			localVisible.value = false
 		},
 		onError: (err: any) => {

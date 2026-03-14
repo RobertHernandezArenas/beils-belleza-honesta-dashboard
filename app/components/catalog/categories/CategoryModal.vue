@@ -139,6 +139,7 @@
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['categories-list'] })
+			queryClient.invalidateQueries({ queryKey: ['categories'] })
 			localVisible.value = false
 		},
 		onError: (err: any) => {

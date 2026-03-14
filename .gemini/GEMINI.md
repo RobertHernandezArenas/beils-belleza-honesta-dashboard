@@ -138,5 +138,6 @@ Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
 - **SSR ECharts Crash:** Está absolutamente PROHIBIDO usar `vue-echarts` o `echarts` sin asegurar que
   `['echarts', 'vue-echarts', 'zrender']` estén dentro del array `build.transpile` en `nuxt.config.ts`. Omitir
   esto provoca el infame error Server-Side `Cannot access 'renderer$1' before initialization`.
+- **Be Careful:** Element is missing end tag
 
 "La limpieza en el código es el primer paso hacia un servicio honesto." 🌿

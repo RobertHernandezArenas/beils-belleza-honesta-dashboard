@@ -1,10 +1,13 @@
 <script setup lang="ts">
+	import { ref, reactive, computed } from 'vue'
+	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const { animateOpen, animateClose } = useModalAnimation()
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingService = ref<any | null>(null)
 	const isSaving = ref(false)
+	const queryClient = useQueryClient()
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -45,37 +48,45 @@
 		animateClose(modalRef.value)
 	}
 
-	const saveService = async () => {
-		isSaving.value = true
-		try {
-			const payload = {
-				...form,
-				price: Number(form.price),
-				tax_rate: Number(form.tax_rate),
-				duration: Number(form.duration),
-			}
-
+	const { mutate: performSave } = useMutation({
+		mutationFn: async (payload: any) => {
 			if (editingService.value) {
-				await $fetch(`/api/services/${editingService.value.service_id}`, {
+				return await $fetch(`/api/services/${editingService.value.service_id}`, {
 					method: 'PUT',
 					body: payload,
 				})
-				emit('toast', 'Servicio actualizado', 'success')
 			} else {
-				await $fetch(`/api/services`, {
+				return await $fetch(`/api/services`, {
 					method: 'POST',
 					body: payload,
 				})
-				emit('toast', 'Servicio creado exitosamente', 'success')
 			}
+		},
+		onSuccess: () => {
+			emit('toast', editingService.value ? 'Servicio actualizado' : 'Servicio creado exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['services'] })
+			queryClient.invalidateQueries({ queryKey: ['services-tpv'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving service:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el servicio', 'error')
-		} finally {
+		},
+		onSettled: () => {
 			isSaving.value = false
+		},
+	})
+
+	const saveService = async () => {
+		isSaving.value = true
+		const payload = {
+			...form,
+			price: Number(form.price),
+			tax_rate: Number(form.tax_rate),
+			duration: Number(form.duration),
 		}
+		performSave(payload)
 	}
 
 	defineExpose({ showModal })

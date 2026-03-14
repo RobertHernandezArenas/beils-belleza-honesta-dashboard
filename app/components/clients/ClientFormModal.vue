@@ -176,6 +176,7 @@
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['clients-list'] })
+			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
 			localVisible.value = false
 		},
 		onError: (err: any) => {

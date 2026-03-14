@@ -1,11 +1,12 @@
 <script setup lang="ts">
-	import { useQuery } from '@tanstack/vue-query'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Search, Plus, Trash2, PackageSearch, Scissors, Package } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingPack = ref<any | null>(null)
 	const isSaving = ref(false)
+	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
@@ -133,6 +134,36 @@
 		animateClose(modalRef.value)
 	}
 
+	const { mutate: performSave } = useMutation({
+		mutationFn: async (payload: any) => {
+			if (editingPack.value) {
+				return await $fetch(`/api/catalog/packs/${editingPack.value.pack_id}`, {
+					method: 'PUT',
+					body: payload,
+				})
+			} else {
+				return await $fetch(`/api/catalog/packs`, {
+					method: 'POST',
+					body: payload,
+				})
+			}
+		},
+		onSuccess: () => {
+			emit('toast', editingPack.value ? 'Pack actualizado' : 'Pack creado exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['packs'] })
+			queryClient.invalidateQueries({ queryKey: ['packs-tpv'] })
+			emit('refresh')
+			closeModal()
+		},
+		onError: (error: any) => {
+			console.error('Error saving pack:', error)
+			emit('toast', error.data?.statusMessage || 'Error al guardar el pack', 'error')
+		},
+		onSettled: () => {
+			isSaving.value = false
+		},
+	})
+
 	const savePack = async () => {
 		if (form.products.length === 0 && form.services.length === 0) {
 			emit('toast', 'El pack debe contener al menos un producto o servicio', 'error')
@@ -140,34 +171,12 @@
 		}
 
 		isSaving.value = true
-		try {
-			const payload = {
-				...form,
-				price: Number(form.price),
-				tax_rate: Number(form.tax_rate),
-			}
-
-			if (editingPack.value) {
-				await $fetch(`/api/catalog/packs/${editingPack.value.pack_id}`, {
-					method: 'PUT',
-					body: payload,
-				})
-				emit('toast', 'Pack actualizado', 'success')
-			} else {
-				await $fetch(`/api/catalog/packs`, {
-					method: 'POST',
-					body: payload,
-				})
-				emit('toast', 'Pack creado exitosamente', 'success')
-			}
-			emit('refresh')
-			closeModal()
-		} catch (error: any) {
-			console.error('Error saving pack:', error)
-			emit('toast', error.data?.statusMessage || 'Error al guardar el pack', 'error')
-		} finally {
-			isSaving.value = false
+		const payload = {
+			...form,
+			price: Number(form.price),
+			tax_rate: Number(form.tax_rate),
 		}
+		performSave(payload)
 	}
 
 	defineExpose({ showModal })

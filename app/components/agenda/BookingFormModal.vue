@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { useQuery } from '@tanstack/vue-query'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import { Search, User, ShieldCheck, Calendar, Clock, Scissors, Package, CheckCircle2, History, Pencil } from 'lucide-vue-next'
 
@@ -58,9 +58,9 @@
 		queryFn: () => $fetch<PackItem[]>('/api/catalog/packs'),
 	})
 
+	const queryClient = useQueryClient()
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingBooking = ref<any | null>(null)
-	const isSaving = ref(false)
 	const activeTab = ref<'service' | 'pack'>('service')
 	const { animateOpen, animateClose } = useModalAnimation()
 
@@ -182,35 +182,41 @@
 		form.item_id = '' // Reset selection on change
 	}
 
-	const saveBooking = async () => {
-		isSaving.value = true
-		try {
-			const payload = {
-				...form,
-				duration: Number(form.duration),
-			}
-
+	const { mutate: performSave, isPending: isSaving } = useMutation({
+		mutationFn: async (payload: any) => {
 			if (editingBooking.value) {
-				await $fetch(`/api/agenda/bookings/${editingBooking.value.booking_id}`, {
+				return await $fetch(`/api/agenda/bookings/${editingBooking.value.booking_id}`, {
 					method: 'PUT',
 					body: payload,
 				})
-				emit('toast', 'Cita actualizada correctamente', 'success')
 			} else {
-				await $fetch(`/api/agenda/bookings`, {
+				return await $fetch(`/api/agenda/bookings`, {
 					method: 'POST',
 					body: payload,
 				})
-				emit('toast', 'Cita programada con éxito', 'success')
 			}
+		},
+		onSuccess: () => {
+			const msg = editingBooking.value
+				? 'Cita actualizada correctamente'
+				: 'Cita programada con éxito'
+			emit('toast', msg, 'success')
+			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving booking:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar la cita', 'error')
-		} finally {
-			isSaving.value = false
+		},
+	})
+
+	const saveBooking = () => {
+		const payload = {
+			...form,
+			duration: Number(form.duration),
 		}
+		performSave(payload)
 	}
 
 	// Robust watch for both clients data and form.client_id

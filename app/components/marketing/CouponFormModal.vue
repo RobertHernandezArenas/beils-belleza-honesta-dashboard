@@ -1,9 +1,12 @@
 <script setup lang="ts">
+	import { ref, reactive, computed } from 'vue'
+	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingCoupon = ref<any | null>(null)
 	const isSaving = ref(false)
+	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
@@ -51,39 +54,47 @@
 		animateClose(modalRef.value)
 	}
 
-	const saveCoupon = async () => {
-		isSaving.value = true
-		try {
-			const payload = {
-				...form,
-				discount_value: Number(form.discount_value),
-				min_purchase: form.min_purchase ? Number(form.min_purchase) : null,
-				max_uses: form.max_uses ? Number(form.max_uses) : null,
-				valid_from: form.valid_from ? new Date(form.valid_from).toISOString() : null,
-				valid_until: form.valid_until ? new Date(form.valid_until).toISOString() : null,
-			}
-
+	const { mutate: performSave } = useMutation({
+		mutationFn: async (payload: any) => {
 			if (editingCoupon.value) {
-				await $fetch(`/api/marketing/coupons/${editingCoupon.value.coupon_id}`, {
+				return await $fetch(`/api/marketing/coupons/${editingCoupon.value.coupon_id}`, {
 					method: 'PUT',
 					body: payload,
 				})
-				emit('toast', 'Cupón actualizado', 'success')
 			} else {
-				await $fetch(`/api/marketing/coupons`, {
+				return await $fetch(`/api/marketing/coupons`, {
 					method: 'POST',
 					body: payload,
 				})
-				emit('toast', 'Cupón creado exitosamente', 'success')
 			}
+		},
+		onSuccess: () => {
+			emit('toast', editingCoupon.value ? 'Cupón actualizado' : 'Cupón creado exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['coupons'] })
+			queryClient.invalidateQueries({ queryKey: ['coupons-tpv'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving coupon:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el cupón', 'error')
-		} finally {
+		},
+		onSettled: () => {
 			isSaving.value = false
+		},
+	})
+
+	const saveCoupon = async () => {
+		isSaving.value = true
+		const payload = {
+			...form,
+			discount_value: Number(form.discount_value),
+			min_purchase: form.min_purchase ? Number(form.min_purchase) : null,
+			max_uses: form.max_uses ? Number(form.max_uses) : null,
+			valid_from: form.valid_from ? new Date(form.valid_from).toISOString() : null,
+			valid_until: form.valid_until ? new Date(form.valid_until).toISOString() : null,
 		}
+		performSave(payload)
 	}
 
 	defineExpose({ showModal })

@@ -20,7 +20,7 @@
 		return params
 	})
 
-	const { data: services, isPending } = useQuery({
+	const { data: services, isPending } = useQuery<any[]>({
 		queryKey: ['services', queryParams],
 		queryFn: () => $fetch('/api/services', { query: queryParams.value }),
 	})
@@ -29,6 +29,7 @@
 		mutationFn: (id: string) => $fetch(`/api/services/${id}`, { method: 'DELETE' }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['services'] })
+			queryClient.invalidateQueries({ queryKey: ['services-tpv'] })
 			displayToast('Servicio eliminado exitosamente', 'success')
 		},
 		onError: (error: any) => {

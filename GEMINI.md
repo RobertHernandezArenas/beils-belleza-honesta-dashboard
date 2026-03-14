@@ -86,6 +86,7 @@ Vue files should be declarative and follow this order:
 - **Navigation:** Use `NuxtLink` or `button`, never `div @click` for navigation.
 - **Hardcoding:** Never hardcode dates or currencies; use `Intl.*` formatters.
 - **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`) as they are auto-imported.
+- **Be Careful:** Element is missing end tag
 
 
 ## Documentation

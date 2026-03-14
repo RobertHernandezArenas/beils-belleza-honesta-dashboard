@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { useQuery, useMutation } from '@tanstack/vue-query'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+	import { ref, computed, watch, nextTick, onMounted } from 'vue'
 	import {
 		ShoppingBag,
 		Search,
@@ -21,6 +22,8 @@
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Terminal de Venta (TPV)' })
+
+	const queryClient = useQueryClient()
 
 	// Tab control
 	const activeTab = ref<'products' | 'services' | 'packs' | 'bonuses'>('services')
@@ -128,6 +131,10 @@
 		},
 		onSuccess: () => {
 			displayToast('Venta registrada con éxito', 'success')
+			// Invalidate relevant queries
+			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
+			queryClient.invalidateQueries({ queryKey: ['debts'] })
+			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
 			clearCart()
 		},
 		onError: (error: any) => {

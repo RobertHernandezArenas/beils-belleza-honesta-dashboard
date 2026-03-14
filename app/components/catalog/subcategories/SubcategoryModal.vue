@@ -112,6 +112,7 @@
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['subcategories-list'] })
+			queryClient.invalidateQueries({ queryKey: ['subcategories'] })
 			localVisible.value = false
 		},
 		onError: (err: any) => {

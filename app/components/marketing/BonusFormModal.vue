@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { useQuery } from '@tanstack/vue-query'
+	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	interface ServiceOption {
@@ -11,6 +11,7 @@
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingBonus = ref<any | null>(null)
 	const isSaving = ref(false)
+	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
@@ -54,37 +55,45 @@
 		animateClose(modalRef.value)
 	}
 
-	const saveBonus = async () => {
-		isSaving.value = true
-		try {
-			const payload = {
-				...form,
-				total_sessions: Number(form.total_sessions),
-				price: Number(form.price),
-				service_id: form.service_id || null, // send null if empty string to avoid clearing constraint errors assuming its optional
-			}
-
+	const { mutate: performSave } = useMutation({
+		mutationFn: async (payload: any) => {
 			if (editingBonus.value) {
-				await $fetch(`/api/marketing/bonuses/${editingBonus.value.bonus_id}`, {
+				return await $fetch(`/api/marketing/bonuses/${editingBonus.value.bonus_id}`, {
 					method: 'PUT',
 					body: payload,
 				})
-				emit('toast', 'Bono actualizado', 'success')
 			} else {
-				await $fetch(`/api/marketing/bonuses`, {
+				return await $fetch(`/api/marketing/bonuses`, {
 					method: 'POST',
 					body: payload,
 				})
-				emit('toast', 'Bono creado exitosamente', 'success')
 			}
+		},
+		onSuccess: () => {
+			emit('toast', editingBonus.value ? 'Bono actualizado' : 'Bono creado exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['bonuses'] })
+			queryClient.invalidateQueries({ queryKey: ['bonuses-tpv'] })
 			emit('refresh')
 			closeModal()
-		} catch (error: any) {
+		},
+		onError: (error: any) => {
 			console.error('Error saving bonus:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el bono', 'error')
-		} finally {
+		},
+		onSettled: () => {
 			isSaving.value = false
+		},
+	})
+
+	const saveBonus = async () => {
+		isSaving.value = true
+		const payload = {
+			...form,
+			total_sessions: Number(form.total_sessions),
+			price: Number(form.price),
+			service_id: form.service_id || null,
 		}
+		performSave(payload)
 	}
 
 	const pricePerSession = computed(() => {
