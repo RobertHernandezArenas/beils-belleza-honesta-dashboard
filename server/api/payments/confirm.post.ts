@@ -3,10 +3,9 @@ import { stripe } from '../../utils/stripe'
 import { z } from 'zod'
 import {
 	generateInvoiceNumber,
-	generateInvoiceHash,
-	generateQRData,
-	submitToAEAT,
+	processVerifactuInvoice,
 } from '../../utils/verifactu'
+import type { IInvoice } from '~~/shared/types/invoice'
 
 const confirmSchema = z.object({
 	payment_intent_id: z.string().min(1, 'PaymentIntent ID es obligatorio'),
@@ -51,42 +50,30 @@ export default defineEventHandler(async event => {
 
 		if (!currentCart.invoice_number) {
 			const nif = currentCart.user?.document_number || '00000000T'
-			const invoiceType = currentCart.user?.document_number ? 'F1' : 'F2'
+			const invoiceType = currentCart.user?.document_number ? 'F1' : 'I' // Simplified
 
-			const lastInvoice = await prisma.cart.findFirst({
-				where: { status: 'completed', hash: { not: null } },
-				orderBy: { created_at: 'desc' },
-			})
-			const previousHash = lastInvoice?.hash || null
-
-			const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'F2')
-			const hash = generateInvoiceHash(
-				nif,
+			const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
+			
+			const verifactuPayload: IInvoice = {
+				id: currentCart.cart_id,
 				invoiceNumber,
-				new Date(),
-				invoiceType,
-				currentCart.total,
-				previousHash,
-			)
-			const qrData = generateQRData(nif, invoiceNumber, currentCart.total, hash)
+				issueDate: new Date().toISOString(),
+				issuer: {
+					nif,
+					name: 'Beils Belleza Honesta'
+				},
+				totalAmount: currentCart.total
+			}
+
+			const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
 
 			verifactuData = {
 				invoice_number: invoiceNumber,
 				invoice_type: invoiceType,
-				qr_content: qrData,
+				qr_content: qrUrl,
 				hash: hash,
-				previous_hash: previousHash,
-				aeat_status: 'pending_submission',
+				aeat_status: aeatStatus,
 			}
-
-			submitToAEAT(verifactuData)
-				.then(async (result: { status: string; message: string }) => {
-					await prisma.cart.update({
-						where: { cart_id },
-						data: { aeat_status: result.status },
-					})
-				})
-				.catch(console.error)
 		}
 
 		const isInstallment = currentCart.stripe_installments && currentCart.stripe_installments > 1;
