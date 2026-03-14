@@ -86,6 +86,7 @@ export default defineEventHandler(async event => {
 						})
 					: null
 
+				const config = useRuntimeConfig()
 				const nif = currentUser?.document_number || '00000000T'
 				const invoiceType = currentUser?.document_number ? 'F1' : 'I' // I for simplified
 
@@ -96,8 +97,8 @@ export default defineEventHandler(async event => {
 					invoiceNumber,
 					issueDate: new Date().toISOString(),
 					issuer: {
-						nif,
-						name: 'Beils Belleza Honesta' // Or from a config
+						nif: config.salonNif,
+						name: config.salonName
 					},
 					totalAmount: total
 				}

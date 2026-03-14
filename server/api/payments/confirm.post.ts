@@ -49,6 +49,7 @@ export default defineEventHandler(async event => {
 		let verifactuData: any = {}
 
 		if (!currentCart.invoice_number) {
+			const config = useRuntimeConfig()
 			const nif = currentCart.user?.document_number || '00000000T'
 			const invoiceType = currentCart.user?.document_number ? 'F1' : 'I' // Simplified
 
@@ -59,8 +60,8 @@ export default defineEventHandler(async event => {
 				invoiceNumber,
 				issueDate: new Date().toISOString(),
 				issuer: {
-					nif,
-					name: 'Beils Belleza Honesta'
+					nif: config.salonNif,
+					name: config.salonName
 				},
 				totalAmount: currentCart.total
 			}
