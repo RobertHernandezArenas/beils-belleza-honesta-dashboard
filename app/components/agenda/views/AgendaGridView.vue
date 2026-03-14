@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { computed, onMounted, ref } from 'vue'
 	import { Clock, User as UserIcon, Scissors, MoreVertical, CheckCircle2, XCircle, Pencil, Trash2 } from 'lucide-vue-next'
+	import gsap from 'gsap'
 
 	const props = defineProps<{
 		bookings: any[]
@@ -72,13 +73,32 @@
 		})
 	}
 
+	const getDayBookings = (date: Date, hour: number) => {
+		const dateStr = date.toISOString().split('T')[0];
+		return props.bookings.filter(b => {
+			const bDate = new Date(b.booking_date).toISOString().split('T')[0];
+			const [bookingHour] = b.start_time.split(':').map(Number);
+			return bDate === dateStr && bookingHour === hour;
+		});
+	};
+
 	const getStatusColor = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-warning/20 text-yellow-800 border-warning/50',
-			confirmed: 'bg-info/20 text-info border-info/50',
-			completed: 'bg-success/20 text-success border-success/50',
-			cancelled: 'bg-error/10 text-error border-error/50',
-			no_show: 'bg-bg-muted text-text-muted border-border-strong',
+			pending: 'bg-[#dbd2c6] text-text-primary border-none shadow-sm',
+			confirmed: 'bg-text-primary text-bg-card border-none shadow-md',
+			completed: 'bg-[#bababa] text-text-primary border-none shadow-sm',
+			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
+		}
+		return map[status] || 'bg-bg-muted text-text-muted'
+	}
+
+	const getStatusStrip = (status: string) => {
+		const map: Record<string, string> = {
+			pending: 'bg-black/20 shadow-none',
+			confirmed: 'bg-black/20 shadow-none',
+			completed: 'bg-black/20 shadow-none',
+			cancelled: 'bg-white/20 shadow-none',
+			no_show: 'bg-white/10 shadow-none',
 		}
 		return map[status] || map['pending']
 	}
@@ -86,37 +106,52 @@
 	const isToday = (date: Date) => {
 		return date.toDateString() === new Date().toDateString()
 	}
+
+	onMounted(() => {
+		gsap.from('.grid-booking-card', {
+			opacity: 0,
+			scale: 0.8,
+			y: 10,
+			duration: 0.4,
+			stagger: 0.02,
+			ease: 'expo.out',
+			clearProps: 'all'
+		})
+	})
 </script>
 
 <template>
 	<div class="custom-scrollbar flex-1 overflow-y-auto">
 		<div class="flex min-w-[800px] flex-col min-h-full">
 			<!-- Header Row -->
-			<div class="border-border-default sticky top-0 z-40 flex border-b bg-bg-card/90 backdrop-blur-md">
-				<div class="w-16 shrink-0 border-r border-border-default"></div>
+			<div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/80 backdrop-blur-xl">
+				<div class="border-border-subtle w-16 shrink-0 border-r"></div>
 				<div 
 					v-for="day in daysToDisplay" 
-					:key="day.toISOString()" 
-					class="flex-1 border-r border-border-default p-3 text-center transition-colors"
+					:key="day.toISOString()"
+					class="border-border-subtle flex flex-1 flex-col items-center py-3 border-r last:border-r-0"
 					:class="{ 'bg-primary/5': isToday(day) }">
-					<p class="text-[10px] font-black tracking-widest uppercase opacity-60">
-						{{ new Intl.DateTimeFormat('es-ES', { weekday: 'short' }).format(day) }}
-					</p>
-					<p 
-						class="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-lg font-black"
-						:class="isToday(day) ? 'bg-primary text-white' : 'text-text-primary'">
+					<div class="text-text-muted text-[10px] font-black tracking-widest uppercase opacity-60">
+						{{ day.toLocaleDateString('es-ES', { weekday: 'short' }) }}
+					</div>
+					<div 
+						class="mt-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-black transition-all"
+						:class="isToday(day) ? 'bg-primary text-white shadow-lg' : 'text-text-primary'">
 						{{ day.getDate() }}
-					</p>
+					</div>
 				</div>
 			</div>
 
 			<!-- Grid Body -->
 			<div class="relative flex flex-1">
 				<!-- Hours Column -->
-				<div class="border-border-default sticky left-0 z-20 w-16 border-r bg-bg-card/80 backdrop-blur-md">
-					<div v-for="hour in hours" :key="hour" :style="{ height: `${hourHeight}px` }" class="relative">
-						<span class="text-text-muted absolute -top-2 w-full text-center text-[10px] font-bold">
-							{{ formatHour(hour) }}
+				<div class="border-border-subtle sticky left-0 z-20 w-16 border-r bg-bg-card/80 backdrop-blur-xl">
+					<div 
+						v-for="hour in hours" 
+						:key="hour" 
+						class="border-border-subtle flex h-24 items-start justify-end border-b pr-3 pt-2">
+						<span class="text-text-muted text-[10px] font-black tracking-tighter tabular-nums opacity-60">
+							{{ hour }}:00
 						</span>
 					</div>
 				</div>
@@ -129,27 +164,25 @@
 						class="relative flex-1 border-r border-border-subtle last:border-r-0">
 						
 						<!-- Grid Lines -->
-						<div v-for="hour in hours" :key="hour" :style="{ height: `${hourHeight}px` }" class="border-border-subtle border-b border-dashed"></div>
+						<div v-for="hour in hours" :key="hour" class="border-border-subtle h-24 border-b border-solid"></div>
 
 						<!-- Bookings -->
-						<div
+						<button
 							v-for="booking in getBookingsForDay(day)"
 							:key="booking.booking_id"
-							class="group absolute right-1 left-1 z-10 overflow-hidden rounded-lg border p-1.5 shadow-sm transition-all hover:z-40 hover:scale-[1.02] hover:shadow-md"
+							@click="emit('edit', booking)"
+							class="grid-booking-card group absolute right-0.5 left-0.5 z-10 overflow-hidden rounded-[14px] border-none p-0 shadow-sm transition-all hover:z-40 hover:scale-[1.02] hover:shadow-lg active:scale-95"
 							:class="getStatusColor(booking.status)"
-							:style="getBookingStyle(booking)"
-							@click="emit('edit', booking)">
-							
-							<div class="flex h-full flex-col overflow-hidden">
-								<h4 class="truncate text-[10px] font-black leading-tight tracking-tighter uppercase">
+							:style="getBookingStyle(booking)">
+							<div class="flex h-full flex-col p-2 text-left">
+								<div class="truncate text-[9px] font-black tracking-tight uppercase">
 									{{ booking.client?.name }}
-								</h4>
-								<div class="mt-0.5 flex items-center gap-1 truncate opacity-70">
-									<Clock class="h-2 w-2" />
-									<span class="text-[9px] font-bold">{{ booking.start_time }}</span>
+								</div>
+								<div class="text-[8px] font-black opacity-40 mt-0.5">
+									{{ booking.start_time }}
 								</div>
 							</div>
-						</div>
+						</button>
 					</div>
 				</div>
 			</div>

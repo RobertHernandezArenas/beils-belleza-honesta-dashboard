@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { computed } from 'vue'
+	import { computed, onMounted } from 'vue'
+	import gsap from 'gsap'
 
 	const props = defineProps<{
 		bookings: any[]
@@ -73,58 +74,73 @@
 
 	const getStatusColorClip = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-warning/20 border-warning/50 text-yellow-900',
-			confirmed: 'bg-info/20 border-info/50 text-info',
-			completed: 'bg-success/20 border-success/50 text-success',
-			cancelled: 'bg-error/10 border-error/50 text-error',
+			pending: 'bg-[#dbd2c6] text-text-primary border-none shadow-sm',
+			confirmed: 'bg-text-primary text-bg-card border-none shadow-sm',
+			completed: 'bg-[#bababa] text-text-primary border-none shadow-sm',
+			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
 		}
 		return map[status] || 'bg-bg-muted text-text-muted'
 	}
+
+	onMounted(() => {
+		gsap.from('.month-day-cell', {
+			opacity: 0,
+			scale: 0.95,
+			duration: 0.5,
+			stagger: {
+				each: 0.01,
+				grid: [6, 7],
+				from: 'center'
+			},
+			ease: 'power2.out',
+			clearProps: 'all'
+		})
+	})
 </script>
 
 <template>
 	<div class="flex flex-1 flex-col overflow-hidden">
 		<!-- Month Header -->
-		<div class="grid grid-cols-7 border-b border-border-default">
-			<div v-for="day in daysOfWeek" :key="day" class="py-2 text-center text-[10px] font-black tracking-widest uppercase opacity-60">
+		<div class="grid grid-cols-7 border-b border-border-default bg-bg-card">
+			<div v-for="day in daysOfWeek" :key="day" class="py-3 text-center text-[10px] font-black tracking-[0.2em] uppercase text-text-muted opacity-60">
 				{{ day }}
 			</div>
 		</div>
 
 		<!-- Grid -->
-		<div class="grid flex-1 grid-cols-7 grid-rows-6 border-border-default overflow-hidden">
+		<div class="grid flex-1 grid-cols-7 grid-rows-6 border-border-subtle overflow-hidden bg-bg-card">
 			<div 
 				v-for="{ date, currentMonth } in calendarDays" 
 				:key="date.toISOString()" 
-				class="border-border-subtle group relative flex flex-col border-r border-b p-1 last:border-r-0 transition-colors hover:bg-bg-muted/30"
-				:class="{ 'opacity-40 grayscale-[0.5]': !currentMonth, 'bg-primary/5': isToday(date) }">
+				class="month-day-cell border-border-subtle group relative flex flex-col border-r border-b p-1 last:border-r-0 transition-all duration-300 hover:z-10 hover:bg-bg-hover"
+				:class="{ 'opacity-40 grayscale': !currentMonth, 'bg-primary/5': isToday(date) }">
 				
 				<!-- Day Number -->
-				<div class="flex items-center justify-between p-1">
+				<div class="flex items-center justify-between p-0.5 md:p-1">
 					<button 
 						@click="emit('selectDate', date)"
-						class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all"
+						class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black transition-all md:h-8 md:w-8 md:text-sm"
 						:class="[
-							isToday(date) ? 'bg-primary text-white' : 
-							isSelected(date) ? 'bg-text-primary text-bg-card' : 'text-text-muted group-hover:text-text-primary'
+							isToday(date) ? 'bg-primary text-white shadow-lg' : 
+							isSelected(date) ? 'bg-text-primary text-bg-card shadow-md scale-105' : 'text-text-muted group-hover:text-text-primary'
 						]">
 						{{ date.getDate() }}
 					</button>
-					<span v-if="getBookingsForDay(date).length > 0" class="text-[9px] font-black tracking-tighter opacity-40">
-						{{ getBookingsForDay(date).length }} CITAS
+					<span v-if="getBookingsForDay(date).length > 0 && currentMonth" class="text-[8px] font-black tracking-widest text-primary">
+						{{ getBookingsForDay(date).length }}
 					</span>
 				</div>
 
 				<!-- Day Bookings List -->
-				<div class="custom-scrollbar flex-1 space-y-0.5 overflow-y-auto pt-1">
+				<div class="custom-scrollbar flex-1 space-y-1 overflow-y-auto pt-1 px-1">
 					<button
 						v-for="booking in getBookingsForDay(date).slice(0, 3)"
 						:key="booking.booking_id"
 						@click.stop="emit('edit', booking)"
-						class="flex w-full items-center gap-1.5 truncate rounded-md border px-1.5 py-0.5 text-[9px] font-bold tracking-tight transition-transform hover:scale-[1.02]"
+						class="flex w-full items-center gap-1.5 truncate rounded-full px-2 py-0.5 text-[8px] font-black tracking-tight transition-all hover:scale-[1.05] hover:shadow-lg"
 						:class="getStatusColorClip(booking.status)">
-						<span class="shrink-0 tabular-nums">{{ booking.start_time }}</span>
-						<span class="truncate">{{ booking.client?.name }}</span>
+						<span class="shrink-0 tabular-nums opacity-60">{{ booking.start_time }}</span>
+						<span class="truncate uppercase">{{ booking.client?.name }}</span>
 					</button>
 					<div v-if="getBookingsForDay(date).length > 3" class="px-1.5 text-center text-[8px] font-black tracking-widest opacity-40">
 						+ {{ getBookingsForDay(date).length - 3 }} MAS

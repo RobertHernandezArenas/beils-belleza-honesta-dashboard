@@ -31,6 +31,7 @@
 	import AgendaMonthView from '~/components/agenda/views/AgendaMonthView.vue'
 	import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
 	import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
+	import gsap from 'gsap'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Agenda y Reservas' })
@@ -222,20 +223,53 @@
 		}
 		return map[status] || status
 	}
+
+	// GSAP Animations
+	const viewContainer = ref(null)
+
+	watch(viewMode, () => {
+		if (viewContainer.value) {
+			gsap.fromTo(viewContainer.value, 
+				{ opacity: 0, scale: 0.98, filter: 'blur(10px)' },
+				{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.4, ease: 'power4.out' }
+			)
+		}
+	})
+
+	const handleDateChange = (direction: 'next' | 'prev') => {
+		if (direction === 'next') nextPeriod()
+		else prevPeriod()
+
+		if (viewContainer.value) {
+			const xMove = direction === 'next' ? 30 : -30
+			gsap.fromTo(viewContainer.value,
+				{ x: xMove, opacity: 0, scale: 0.99 },
+				{ x: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }
+			)
+		}
+	}
 </script>
 
 <template>
-	<div
-		class="bg-bg-app text-text-secondary flex h-screen min-h-screen w-full flex-col overflow-hidden p-4 lg:p-8">
+	<div class="bg-bg-app text-text-primary relative flex h-screen min-h-screen w-full flex-col overflow-hidden p-4 lg:p-8 transition-colors duration-700">
+		<!-- Background Glows (Subtler for light mode) -->
+		<div class="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
+		<div class="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
+
 		<!-- Header -->
-		<div class="mb-6 flex shrink-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-			<div class="flex items-center gap-3">
-				<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
-					<CalendarDays class="h-6 w-6" />
+		<div class="relative z-10 mb-8 flex shrink-0 flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+			<div class="flex items-center gap-4 lg:gap-6">
+				<div 
+					class="flex h-10 w-10 items-center justify-center rounded-[16px] bg-text-primary text-bg-card shadow-lg lg:h-16 lg:w-16 lg:rounded-[24px]">
+					<CalendarDays class="h-5 w-5 lg:h-8 lg:w-8" />
 				</div>
-				<div>
-					<h1 class="text-2xl font-bold tracking-tight">Agenda</h1>
-					<p class="text-text-muted text-sm font-medium capitalize">{{ formatDayDate(selectedDate) }}</p>
+				<div class="flex flex-col">
+					<h1 class="text-2xl leading-none font-black tracking-tighter uppercase lg:text-5xl text-text-primary">
+						Agenda
+					</h1>
+					<p class="text-text-muted mt-0.5 text-[9px] font-black tracking-[0.2em] uppercase lg:mt-2 lg:text-xs">
+						{{ formatDate(selectedDate) }}
+					</p>
 				</div>
 			</div>
 
@@ -262,111 +296,84 @@
 
 		<!-- Toolbar -->
 		<div
-			class="bg-bg-card border-border-default mb-4 flex shrink-0 flex-col items-center justify-between rounded-3xl border p-2 shadow-sm sm:flex-row">
-			<!-- Date Nav -->
-			<div class="mb-2 flex items-center gap-1 sm:mb-0">
-				<button
-					class="btn btn-ghost btn-sm text-text-secondary hover:bg-bg-muted flex h-10 items-center gap-2 rounded-xl px-4 font-bold"
-					@click="setToday">
-					<History class="h-4 w-4" />
-					Hoy
-				</button>
-				<button
-					class="btn btn-square btn-ghost btn-sm border-border-default text-text-muted hover:bg-bg-muted ml-2 h-10 w-10 rounded-lg border"
-					@click="prevPeriod">
-					<ChevronLeft class="h-5 w-5" />
-				</button>
-				<button
-					class="btn btn-square btn-ghost btn-sm border-border-default text-text-muted hover:bg-bg-muted h-10 w-10 rounded-lg border"
-					@click="nextPeriod">
-					<ChevronRight class="h-5 w-5" />
-				</button>
-				<span class="ml-3 hidden text-sm font-bold tracking-wide capitalize sm:inline-block">
-					{{ formatDayDate(selectedDate) }}
-				</span>
-			</div>
-
-			<!-- Views Selector (DaisyUI Dropdown) -->
-			<div class="dropdown dropdown-end w-full sm:w-auto">
-				<div 
-					tabindex="0" 
-					role="button" 
-					class="btn bg-bg-muted hover:bg-bg-hover border-border-default h-10 flex min-w-[160px] items-center justify-between rounded-xl border px-4 font-bold shadow-sm transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none">
-					<div class="flex items-center gap-2">
-						<component :is="viewMode === 'day' ? Calendar : 
-										viewMode === 'week' ? CalendarRange : 
-										viewMode === 'month' ? LayoutDashboard : 
-										viewMode === 'year' ? CalendarDays : 
-										viewMode === 'agenda' ? ListTodo : 
-										CalendarDays" 
-									class="text-primary h-4 w-4" />
-						<span class="text-xs tracking-wide uppercase">
-							{{
-								viewMode === 'day' ? 'Día' :
-								viewMode === '4days' ? '4 Días' :
-								viewMode === 'week' ? 'Semana' :
-								viewMode === 'month' ? 'Mes' :
-								viewMode === 'year' ? 'Año' :
-								'Agenda'
-							}}
-						</span>
-					</div>
-					<ChevronDown class="text-text-muted h-4 w-4" />
-				</div>
-				<ul tabindex="0" class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-2 w-full min-w-[180px] rounded-2xl border p-2 shadow-xl backdrop-blur-md sm:w-48">
-					<li v-for="mode in ['day', '4days', 'week', 'month', 'year', 'agenda']" :key="mode">
-						<button 
-							@click="viewMode = mode as any"
-							class="flex items-center gap-3 rounded-xl px-4 py-3 text-[10px] font-black tracking-widest uppercase transition-colors"
-							:class="viewMode === mode ? 'bg-primary/10 text-primary' : 'hover:bg-bg-muted text-text-muted hover:text-text-secondary'">
-							<component :is="mode === 'day' ? Calendar : 
-											mode === 'week' ? CalendarRange : 
-											mode === 'month' ? LayoutDashboard : 
-											mode === 'year' ? CalendarDays : 
-											mode === 'agenda' ? ListTodo : 
-											CalendarDays" 
-										class="h-4 w-4" />
-							{{
-								mode === 'day' ? 'Día' :
-								mode === '4days' ? '4 Días' :
-								mode === 'week' ? 'Semana' :
-								mode === 'month' ? 'Mes' :
-								mode === 'year' ? 'Año' :
-								'Agenda'
-							}}
+			class="relative z-10 mb-6 flex shrink-0 flex-col items-center justify-between gap-4 sm:flex-row">
+			<div class="flex w-full flex-col items-center gap-3 lg:flex-row lg:justify-between">
+				<!-- Date Navigation -->
+				<div class="bg-bg-muted border-border-default flex w-full items-center justify-between gap-1 rounded-full border p-1 shadow-sm md:w-auto">
+					<button 
+						class="text-text-primary hover:bg-bg-hover flex h-8 items-center gap-2 rounded-full px-4 text-[10px] font-black transition-all active:scale-95 md:h-9 md:text-xs"
+						@click="setToday">
+						<History class="h-3.5 w-3.5" />
+						Hoy
+					</button>
+					<div class="bg-border-default h-4 w-px"></div>
+					<div class="flex items-center gap-1">
+						<button
+							class="text-text-muted hover:bg-bg-hover hover:text-text-primary btn btn-square btn-ghost btn-sm h-8 w-8 rounded-full transition-all active:scale-90 md:h-9 md:w-9"
+							@click="handleDateChange('prev')">
+							<ChevronLeft class="h-5 w-5" />
 						</button>
-					</li>
-				</ul>
+						<button
+							class="text-text-muted hover:bg-bg-hover hover:text-text-primary btn btn-square btn-ghost btn-sm h-8 w-8 rounded-full transition-all active:scale-90 md:h-9 md:w-9"
+							@click="handleDateChange('next')">
+							<ChevronRight class="h-5 w-5" />
+						</button>
+					</div>
+				</div>
+
+				<!-- View Switcher (Responsive Switcher) -->
+				<div class="bg-bg-muted border-border-default custom-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-full border p-1 shadow-sm no-scrollbar md:w-auto">
+					<button
+						v-for="mode in ['day', 'week', 'month', 'year', 'agenda']" 
+						:key="mode"
+						@click="viewMode = mode as any"
+						class="h-8 shrink-0 rounded-full px-4 text-[9px] font-black tracking-widest uppercase transition-all duration-300 active:scale-95 md:h-9 md:px-5 md:text-[10px]"
+						:class="[
+							viewMode === mode 
+								? 'bg-text-primary text-bg-card shadow-lg' 
+								: 'text-text-muted hover:text-text-primary hover:bg-bg-hover'
+						]">
+						{{ 
+							mode === 'day' ? 'Día' : 
+							mode === 'week' ? 'Semana' : 
+							mode === 'month' ? 'Mes' : 
+							mode === 'year' ? 'Año' : 
+							'Agenda' 
+						}}
+					</button>
+				</div>
 			</div>
 		</div>
 
 		<!-- Agenda Viewport -->
-		<div
-			class="bg-bg-card border-border-default relative flex flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
-			<div
-				v-if="isPending"
-				class="bg-bg-card/50 absolute inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-				<span class="loading loading-spinner loading-lg text-primary"></span>
+		<div 
+			ref="viewContainer" 
+			class="bg-bg-card border-border-default premium-shadow relative mt-4 flex flex-1 flex-col overflow-hidden rounded-[24px] border md:mt-6 lg:mt-8 md:rounded-[32px]">
+			
+			<div v-if="isPending" class="flex flex-1 items-center justify-center bg-bg-card">
+				<div class="loading loading-spinner text-text-primary loading-lg"></div>
 			</div>
 
 			<!-- Dynamic View Component -->
-			<component 
-				:is="viewMode === 'day' ? AgendaDayView :
-					viewMode === 'week' ? AgendaGridView :
-					viewMode === '4days' ? AgendaGridView :
-					viewMode === 'month' ? AgendaMonthView :
-					viewMode === 'year' ? AgendaYearView :
-					AgendaListView"
-				:bookings="displayBookings"
-				:selectedDate="selectedDate"
-				:isPending="isPending"
-				:daysCount="viewMode === '4days' ? 4 : 7"
-				@edit="openEditModal"
-				@delete="confirmDelete"
-				@status="setBookingStatus"
-				@create="openCreateModal"
-				@selectDate="(d: Date) => { selectedDate = d; viewMode = 'day' }"
-			/>
+			<div ref="viewContainer" class="flex-1 overflow-hidden flex flex-col">
+				<component 
+					:is="viewMode === 'day' ? AgendaDayView :
+						viewMode === 'week' ? AgendaGridView :
+						viewMode === '4days' ? AgendaGridView :
+						viewMode === 'month' ? AgendaMonthView :
+						viewMode === 'year' ? AgendaYearView :
+						AgendaListView"
+					:bookings="displayBookings"
+					:selectedDate="selectedDate"
+					:isPending="isPending"
+					:daysCount="viewMode === '4days' ? 4 : 7"
+					@edit="openEditModal"
+					@delete="confirmDelete"
+					@status="setBookingStatus"
+					@create="openCreateModal"
+					@selectDate="(d: Date) => { selectedDate = d; viewMode = 'day' }"
+				/>
+			</div>
 		</div>
 
 		<!-- Toast Provider -->

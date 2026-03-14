@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { computed } from 'vue'
+	import { computed, onMounted } from 'vue'
+	import gsap from 'gsap'
 
 	const props = defineProps<{
 		bookings: any[]
@@ -46,6 +47,17 @@
 		return date.toDateString() === new Date().toDateString()
 	}
 
+	const getStatusColor = (status: string) => {
+		const map: Record<string, string> = {
+			pending: 'bg-[#dbd2c6] text-text-primary border-none',
+			confirmed: 'bg-text-primary text-bg-card border-none',
+			completed: 'bg-[#bababa] text-text-primary border-none',
+			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
+			no_show: 'bg-transparent border border-border-strong text-text-muted',
+		}
+		return map[status] || map['pending']
+	}
+
 	const isSelectedMonth = (month: number) => {
 		return month === props.selectedDate.getMonth()
 	}
@@ -54,6 +66,18 @@
 		'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
 		'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 	]
+
+	onMounted(() => {
+		gsap.from('.year-month-card', {
+			opacity: 0,
+			scale: 0.9,
+			y: 30,
+			duration: 0.6,
+			stagger: 0.04,
+			ease: 'expo.out',
+			clearProps: 'all'
+		})
+	})
 </script>
 
 <template>
@@ -62,15 +86,15 @@
 			<div 
 				v-for="month in months" 
 				:key="month" 
-				class="bg-bg-card border-border-default rounded-3xl border p-4 shadow-sm transition-all hover:shadow-md"
-				:class="{ 'ring-2 ring-primary/20': isSelectedMonth(month) }">
+				class="year-month-card bg-bg-card border-border-default rounded-[24px] border p-5 shadow-sm transition-all duration-500 hover:bg-bg-hover hover:scale-[1.03]"
+				:class="{ 'ring-2 ring-primary/60 bg-primary/5': isSelectedMonth(month) }">
 				
-				<h3 class="mb-4 text-center text-sm font-black tracking-widest uppercase text-text-primary">
+				<h3 class="mb-5 text-center text-xs font-black tracking-[0.2em] uppercase text-text-muted opacity-60">
 					{{ monthNames[month] }}
 				</h3>
 				
 				<div class="grid grid-cols-7 gap-1">
-					<div v-for="d in ['L', 'M', 'X', 'J', 'V', 'S', 'D']" :key="d" class="text-center text-[8px] font-black opacity-40">
+					<div v-for="d in ['L', 'M', 'X', 'J', 'V', 'S', 'D']" :key="d" class="text-center text-[8px] font-black opacity-40 text-text-muted">
 						{{ d }}
 					</div>
 					
@@ -81,15 +105,15 @@
 						<button 
 							v-if="date"
 							@click="emit('selectDate', date)"
-							class="relative flex h-6 w-6 items-center justify-center rounded-full transition-all hover:bg-bg-muted"
+							class="relative flex h-7 w-7 items-center justify-center rounded-full transition-all hover:bg-bg-hover"
 							:class="[
-								isToday(date) ? 'bg-primary text-white' : 
-								hasBooking(date) ? 'text-primary' : 'text-text-muted'
+								isToday(date) ? 'bg-primary text-white shadow-md' : 
+								hasBooking(date) ? 'text-text-primary font-black' : 'text-text-muted opacity-40'
 							]">
 							{{ date.getDate() }}
 							<span 
 								v-if="hasBooking(date) && !isToday(date)" 
-								class="absolute -bottom-0.5 h-1 w-1 rounded-full bg-primary/40">
+								class="absolute -bottom-0.5 h-1 w-1 rounded-full bg-text-primary shadow-sm">
 							</span>
 						</button>
 					</div>

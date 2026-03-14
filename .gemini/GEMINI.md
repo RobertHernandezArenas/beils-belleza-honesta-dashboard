@@ -56,8 +56,7 @@ El código se organiza para que la lógica de negocio no dependa de la UI:
 
 ## 🎨 Guía de Estilo UI (Vercel Guidelines)
 
-- Paleta de colores: #ffffff - #f2f0eb - #fbfaf9 - #dbd2c6 - #f4f1ee - #1a1a1a - #bababa - #8c8c8c - #666666 -
-  #404040 - #1a1a1a
+- Paleta de colores: #ffffff - #f2f0eb - #fbfaf9 - #dbd2c6 - #f4f1ee - #1a1a1a - #bababa - #8c8c8c - #666666 - #404040 - #1a1a1a
 - Tipografía: ROBOTO CONDENSED + ROBOTO + Arial.
 - Iconos: Usar los iconos de Lucide Icons +DaisyUI.
 - Componentes: Usar los componentes de DaisyUI + TailwinCSS.

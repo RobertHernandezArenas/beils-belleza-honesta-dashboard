@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { computed, onMounted, ref } from 'vue'
 	import { Clock, User as UserIcon, Scissors, MoreVertical, CheckCircle2, XCircle, Pencil, Trash2 } from 'lucide-vue-next'
+	import gsap from 'gsap'
 
 	const props = defineProps<{
 		bookings: any[]
@@ -38,11 +39,21 @@
 
 	const getStatusColor = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-warning/20 text-yellow-800 border-warning/50',
-			confirmed: 'bg-info/20 text-info border-info/50',
-			completed: 'bg-success/20 text-success border-success/50',
-			cancelled: 'bg-error/10 text-error border-error/50',
-			no_show: 'bg-bg-muted text-text-muted border-border-strong',
+			pending: 'bg-[#dbd2c6] text-text-primary border-none shadow-sm',
+			confirmed: 'bg-text-primary text-bg-card border-none shadow-md',
+			completed: 'bg-[#bababa] text-text-primary border-none shadow-sm',
+			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
+		}
+		return map[status] || 'bg-bg-muted text-text-muted'
+	}
+
+	const getStatusStrip = (status: string) => {
+		const map: Record<string, string> = {
+			pending: 'bg-black/20 shadow-none',
+			confirmed: 'bg-black/20 shadow-none',
+			completed: 'bg-black/20 shadow-none',
+			cancelled: 'bg-white/20 shadow-none',
+			no_show: 'bg-white/10 shadow-none',
 		}
 		return map[status] || map['pending']
 	}
@@ -77,6 +88,17 @@
 	onMounted(() => {
 		updateTimeIndicator()
 		setInterval(updateTimeIndicator, 60000)
+
+		// Staggered entry animation
+		gsap.from('.booking-card', {
+			opacity: 0,
+			scale: 0.8,
+			y: 30,
+			duration: 0.5,
+			stagger: 0.04,
+			ease: 'expo.out',
+			clearProps: 'all'
+		})
 	})
 </script>
 
@@ -84,37 +106,47 @@
 	<div class="custom-scrollbar relative flex-1 overflow-y-auto">
 		<div class="flex min-h-full">
 			<!-- Hours Column -->
-			<div class="border-border-default sticky left-0 z-20 w-16 border-r bg-bg-card/80 backdrop-blur-md">
-				<div v-for="hour in hours" :key="hour" :style="{ height: `${hourHeight}px` }" class="relative">
-					<span class="text-text-muted absolute -top-2 w-full text-center text-[10px] font-bold">
-						{{ formatHour(hour) }}
-					</span>
+			<div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/80 backdrop-blur-xl transition-all duration-300">
+			<div class="w-12 shrink-0 border-r border-border-subtle p-2 md:w-16"></div>
+			<div class="flex-1 py-3 text-center md:py-4">
+				<div class="text-text-muted text-[8px] font-black tracking-[0.2em] uppercase md:text-[10px]">
+					{{ selectedDate.toLocaleDateString('es-ES', { weekday: 'long' }) }}
+				</div>
+				<div class="text-text-primary mt-0.5 text-2xl font-black tracking-tighter md:mt-1 md:text-4xl">
+					{{ selectedDate.getDate() }}
 				</div>
 			</div>
+		</div>
 
 			<!-- Timeline Grid -->
 			<div class="relative flex-1">
-				<!-- Grid Lines -->
-				<div v-for="hour in hours" :key="hour" :style="{ height: `${hourHeight}px` }" class="border-border-subtle border-b border-dashed"></div>
+						<!-- Grid Lines -->
+						<div v-for="hour in hours" :key="hour" class="border-border-subtle h-20 border-b border-solid md:h-24"></div>
 
 				<!-- Current Time Indicator -->
-				<div v-if="currentTimePosition >= 0" :style="{ top: `${currentTimePosition}px` }" class="absolute right-0 left-0 z-30 flex items-center">
-					<div class="bg-error h-2 w-2 rounded-full shadow-[0_0_8px_rgba(255,0,0,0.5)]"></div>
-					<div class="bg-error h-0.5 flex-1"></div>
+				<div v-if="currentTimePosition >= 0" :style="{ top: `${currentTimePosition}px` }" class="absolute right-0 left-0 z-30 flex items-center pointer-events-none px-2">
+					<div class="bg-primary h-3 w-3 rounded-full shadow-[0_0_20px_rgba(var(--color-primary),1)] animate-pulse"></div>
+					<div class="bg-primary/30 h-0.5 flex-1 ml-1"></div>
 				</div>
 
 				<!-- Bookings -->
 				<div
 					v-for="booking in bookings"
 					:key="booking.booking_id"
-					class="group absolute right-2 left-2 z-10 overflow-hidden rounded-xl border p-3 shadow-sm transition-all hover:z-40 hover:scale-[1.02] hover:shadow-lg"
+					class="booking-card group absolute right-2 left-3 z-10 overflow-hidden rounded-[24px] border-none p-0 shadow-2xl transition-all hover:z-40 hover:scale-[1.02] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]"
 					:class="getStatusColor(booking.status)"
 					:style="getBookingStyle(booking)">
 					
-					<div class="flex h-full flex-col justify-between overflow-hidden">
+					<!-- Status Strip -->
+					<div 
+						class="absolute top-0 left-0 bottom-0 w-1 rounded-full my-3 ml-1.5"
+						:class="getStatusStrip(booking.status)">
+					</div>
+
+					<div class="flex h-full flex-col justify-between p-4 pl-6 overflow-hidden">
 						<div class="flex items-center justify-between gap-2 overflow-hidden">
 							<div class="flex min-w-0 items-center gap-1.5">
-								<h4 class="truncate text-sm font-bold leading-none tracking-tight">
+								<h4 class="truncate text-base font-black leading-none tracking-tighter uppercase">
 									{{ booking.client?.name }} {{ booking.client?.surname }}
 								</h4>
 							</div>
@@ -134,13 +166,13 @@
 							</div>
 						</div>
 						
-						<div class="mt-0.5 flex items-center gap-2 truncate opacity-80">
-							<span class="flex items-center gap-1.5 text-[10px] font-bold">
-								<Clock class="h-2.5 w-2.5" />
-								{{ booking.start_time }} - {{ booking.end_time }}
+						<div class="mt-1 flex items-center gap-3 truncate opacity-60">
+							<span class="flex items-center gap-1.5 text-[11px] font-black tracking-widest uppercase">
+								<Clock class="h-3 w-3" />
+								{{ booking.start_time }}
 							</span>
-							<span v-if="booking.staff" class="flex items-center gap-1.5 text-[10px] font-bold">
-								<UserIcon class="h-2.5 w-2.5" />
+							<span v-if="booking.staff" class="flex items-center gap-1.5 text-[11px] font-black tracking-widest uppercase">
+								<UserIcon class="h-3 w-3" />
 								{{ booking.staff.name }}
 							</span>
 						</div>
