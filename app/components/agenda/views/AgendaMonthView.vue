@@ -74,12 +74,13 @@
 
 	const getStatusColorClip = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-orange-500/10 text-orange-700 border-none tabular-nums',
-			confirmed: 'bg-primary/10 text-primary border-none tabular-nums',
-			completed: 'bg-emerald-500/10 text-emerald-700 border-none tabular-nums',
-			cancelled: 'bg-stone-500/10 text-stone-700 border-none opacity-60 tabular-nums',
+			pending: 'bg-orange-500/10 text-orange-700 border-none',
+			confirmed: 'bg-emerald-500/10 text-emerald-700 border-none',
+			completed: 'bg-emerald-500/10 text-emerald-700 border-none',
+			cancelled: 'bg-rose-500/10 text-rose-700 border-none opacity-60',
+			no_show: 'bg-transparent border border-border-default text-text-muted',
 		}
-		return map[status] || 'bg-bg-muted text-text-muted border-none'
+		return map[status] || map['pending']
 	}
 
 	onMounted(() => {
