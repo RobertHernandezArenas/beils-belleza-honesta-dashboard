@@ -645,6 +645,7 @@
 		<StripeInstallmentModal
 			v-model="showStripeModal"
 			:total-amount="cartTotal"
+			:cart-items="cartItems"
 			@payment-success="handleStripeSuccess"
 			@payment-error="handleStripeError" />
 
