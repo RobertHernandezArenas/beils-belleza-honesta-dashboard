@@ -1,9 +1,8 @@
 import {
 	generateInvoiceNumber,
-	generateInvoiceHash,
-	generateQRData,
-	submitToAEAT,
+	processVerifactuInvoice,
 } from '../../../utils/verifactu'
+import type { IInvoice } from '~~/shared/types/invoice'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -87,37 +86,32 @@ export default defineEventHandler(async event => {
 						})
 					: null
 
-				const nif = currentUser?.document_number || '00000000T' // F2 fallback
-				const invoiceType = currentUser?.document_number ? 'F1' : 'F2'
+				const config = useRuntimeConfig()
+				const nif = currentUser?.document_number || '00000000T'
+				const invoiceType = currentUser?.document_number ? 'F1' : 'I' // I for simplified
 
-				const lastInvoice = await tx.cart.findFirst({
-					where: { status: 'completed', hash: { not: null } },
-					orderBy: { created_at: 'desc' },
-				})
-				const previousHash = lastInvoice?.hash || null
+				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
+				
+				const verifactuPayload: IInvoice = {
+					id: createdCart.cart_id,
+					invoiceNumber,
+					issueDate: new Date().toISOString(),
+					issuer: {
+						nif: config.salonNif,
+						name: config.salonName
+					},
+					totalAmount: total
+				}
 
-				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'F2')
-				const hash = generateInvoiceHash(nif, invoiceNumber, new Date(), invoiceType, total, previousHash)
-				const qrData = generateQRData(nif, invoiceNumber, total, hash)
+				const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
 
 				verifactuData = {
 					invoice_number: invoiceNumber,
 					invoice_type: invoiceType,
-					qr_content: qrData,
+					qr_content: qrUrl,
 					hash: hash,
-					previous_hash: previousHash,
-					aeat_status: 'pending_submission',
+					aeat_status: aeatStatus,
 				}
-
-				// Async AEAT sumbission wrapper (non-blocking)
-				submitToAEAT(verifactuData)
-					.then(async (result: { status: string; message: string }) => {
-						await prisma.cart.update({
-							where: { cart_id: createdCart.cart_id },
-							data: { aeat_status: result.status },
-						})
-					})
-					.catch(console.error)
 			}
 
 			// Update cart with valid totals and verifactu payload

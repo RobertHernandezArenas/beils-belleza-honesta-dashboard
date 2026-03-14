@@ -20,13 +20,25 @@ export default defineNuxtConfig({
 	},
 
 	// ==========================================
-	// STRIPE API KEYS — Pago Fraccionado / Cuotas
+	// CONFIGURATION
 	// ==========================================
-	// ⚠️  stripeSecretKey: SOLO disponible en el servidor (server/)
-	// 🌐 stripePublicKey: Disponible en el navegador (app/)
 	runtimeConfig: {
+		// Salon / Issuer Info
+		salonNif: process.env.SALON_NIF || '00000000T',
+		salonName: process.env.SALON_NAME || 'Beils Belleza Honesta',
+
+		// Private keys (Server-side only)
+		aeatWsdlUrl: process.env.AEAT_WSDL_URL || 'https://prewww1.aeat.es/wlpl/BURT-JDIT/ws/SuministroFactEmitidas.wsdl',
+		aeatP12CertPath: process.env.AEAT_P12_CERT_PATH,
+		aeatP12Password: process.env.AEAT_P12_PASSWORD,
+
+		// ==========================================
+		// STRIPE API KEYS — Pago Fraccionado / Cuotas
+		// ==========================================
+		// ⚠️  stripeSecretKey: SOLO disponible en el servidor (server/)
 		stripeSecretKey: process.env.STRIPE_SECRET_KEY || '', // ← SECRET KEY aquí
 		public: {
+			// 🌐 stripePublicKey: Disponible en el navegador (app/)
 			stripePublicKey: process.env.STRIPE_PUBLIC_KEY || '', // ← PUBLIC KEY aquí
 		},
 	},

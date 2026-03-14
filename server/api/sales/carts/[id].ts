@@ -1,9 +1,8 @@
 import {
 	generateInvoiceNumber,
-	generateInvoiceHash,
-	generateQRData,
-	submitToAEAT,
+	processVerifactuInvoice,
 } from '../../../utils/verifactu'
+import type { IInvoice } from '~~/shared/types/invoice'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -44,45 +43,32 @@ export default defineEventHandler(async event => {
 			})
 
 			if (currentCart && !currentCart.invoice_number) {
-				const nif = currentCart.user?.document_number || '00000000T' // F2 fallback NIF
-				const invoiceType = currentCart.user?.document_number ? 'F1' : 'F2'
+				const config = useRuntimeConfig()
+				const nif = currentCart.user?.document_number || '00000000T'
+				const invoiceType = currentCart.user?.document_number ? 'F1' : 'I' // Simplified
 
-				// Fetch the latest hash from previous invoices to create the chain
-				const lastInvoice = await prisma.cart.findFirst({
-					where: { status: 'completed', hash: { not: null } },
-					orderBy: { created_at: 'desc' },
-				})
-				const previousHash = lastInvoice?.hash || null
-
-				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'F2')
-				const hash = generateInvoiceHash(
-					nif,
+				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
+				
+				const verifactuPayload: IInvoice = {
+					id: currentCart.cart_id,
 					invoiceNumber,
-					new Date(),
-					invoiceType,
-					currentCart.total,
-					previousHash,
-				)
-				const qrData = generateQRData(nif, invoiceNumber, currentCart.total, hash)
+					issueDate: new Date().toISOString(),
+					issuer: {
+						nif: config.salonNif,
+						name: config.salonName
+					},
+					totalAmount: currentCart.total
+				}
+
+				const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
 
 				verifactuData = {
 					invoice_number: invoiceNumber,
 					invoice_type: invoiceType,
-					qr_content: qrData,
+					qr_content: qrUrl,
 					hash: hash,
-					previous_hash: previousHash,
-					aeat_status: 'pending_submission',
+					aeat_status: aeatStatus,
 				}
-
-				// Simulate asynchronous async submission to AEAT without blocking checkout
-				submitToAEAT(verifactuData)
-					.then(async (result: { status: string; message: string }) => {
-						await prisma.cart.update({
-							where: { cart_id: id },
-							data: { aeat_status: result.status },
-						})
-					})
-					.catch(console.error)
 			}
 		}
 
