@@ -315,7 +315,7 @@
 	})
 
 	const navItems = [
-		{ to: '/', label: 'nav.dashboard', icon: LayoutDashboard },
+		{ to: '/overview', label: 'nav.dashboard', icon: LayoutDashboard },
 		{ to: '/clientes', label: 'nav.clients', icon: UsersRound },
 		{ to: '/clientes/consentimientos', label: 'Consentimientos', icon: FileCheck },
 		{ to: '/clientes/cuestionarios', label: 'Cuestionarios', icon: ClipboardList },
