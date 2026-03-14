@@ -74,12 +74,12 @@
 
 	const getStatusColorClip = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-[#dbd2c6] text-text-primary border-none shadow-sm',
-			confirmed: 'bg-text-primary text-bg-card border-none shadow-sm',
-			completed: 'bg-[#bababa] text-text-primary border-none shadow-sm',
-			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
+			pending: 'bg-orange-500/10 text-orange-700 border-none tabular-nums',
+			confirmed: 'bg-primary/10 text-primary border-none tabular-nums',
+			completed: 'bg-emerald-500/10 text-emerald-700 border-none tabular-nums',
+			cancelled: 'bg-stone-500/10 text-stone-700 border-none opacity-60 tabular-nums',
 		}
-		return map[status] || 'bg-bg-muted text-text-muted'
+		return map[status] || 'bg-bg-muted text-text-muted border-none'
 	}
 
 	onMounted(() => {
@@ -137,7 +137,7 @@
 						v-for="booking in getBookingsForDay(date).slice(0, 3)"
 						:key="booking.booking_id"
 						@click.stop="emit('edit', booking)"
-						class="flex w-full items-center gap-1.5 truncate rounded-full px-2 py-0.5 text-[8px] font-black tracking-tight transition-all hover:scale-[1.05] hover:shadow-lg"
+						class="flex w-full items-center gap-1.5 truncate rounded-md px-2 py-0.5 text-[8px] font-bold tracking-tight transition-all hover:scale-[1.05] hover:shadow-lg"
 						:class="getStatusColorClip(booking.status)">
 						<span class="shrink-0 tabular-nums opacity-60">{{ booking.start_time }}</span>
 						<span class="truncate uppercase">{{ booking.client?.name }}</span>

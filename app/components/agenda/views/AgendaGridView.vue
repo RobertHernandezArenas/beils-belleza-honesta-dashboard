@@ -84,21 +84,21 @@
 
 	const getStatusColor = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-[#dbd2c6] text-text-primary border-none shadow-sm',
-			confirmed: 'bg-text-primary text-bg-card border-none shadow-md',
-			completed: 'bg-[#bababa] text-text-primary border-none shadow-sm',
-			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
+			pending: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
+			confirmed: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
+			completed: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
+			cancelled: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
 		}
-		return map[status] || 'bg-bg-muted text-text-muted'
+		return map[status] || 'bg-bg-muted text-text-muted border border-border-default'
 	}
 
 	const getStatusStrip = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-black/20 shadow-none',
-			confirmed: 'bg-black/20 shadow-none',
-			completed: 'bg-black/20 shadow-none',
-			cancelled: 'bg-white/20 shadow-none',
-			no_show: 'bg-white/10 shadow-none',
+			pending: 'bg-orange-500/40',
+			confirmed: 'bg-primary/40',
+			completed: 'bg-emerald-500/40',
+			cancelled: 'bg-stone-500/40',
+			no_show: 'bg-stone-500/20',
 		}
 		return map[status] || map['pending']
 	}
@@ -171,7 +171,7 @@
 							v-for="booking in getBookingsForDay(day)"
 							:key="booking.booking_id"
 							@click="emit('edit', booking)"
-							class="grid-booking-card group absolute right-0.5 left-0.5 z-10 overflow-hidden rounded-[14px] border-none p-0 shadow-sm transition-all hover:z-40 hover:scale-[1.02] hover:shadow-lg active:scale-95"
+							class="grid-booking-card group absolute right-0.5 left-0.5 z-10 overflow-hidden rounded-xl border-none p-0 shadow-sm transition-all hover:z-40 hover:scale-[1.02] hover:shadow-lg active:scale-95"
 							:class="getStatusColor(booking.status)"
 							:style="getBookingStyle(booking)">
 							<div class="flex h-full flex-col p-2 text-left">

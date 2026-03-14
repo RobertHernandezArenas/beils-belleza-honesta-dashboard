@@ -257,39 +257,36 @@
 		<div class="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
 
 		<!-- Header -->
-		<div class="relative z-10 mb-8 flex shrink-0 flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-			<div class="flex items-center gap-4 lg:gap-6">
+		<div class="relative z-10 mb-8 flex shrink-0 flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
+			<div class="flex items-center gap-4">
 				<div 
-					class="flex h-10 w-10 items-center justify-center rounded-[16px] bg-text-primary text-bg-card shadow-lg lg:h-16 lg:w-16 lg:rounded-[24px]">
-					<CalendarDays class="h-5 w-5 lg:h-8 lg:w-8" />
+					class="bg-text-primary text-bg-app flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg">
+					<CalendarDays class="h-6 w-6" />
 				</div>
-				<div class="flex flex-col">
-					<h1 class="text-2xl leading-none font-black tracking-tighter uppercase lg:text-5xl text-text-primary">
+				<div>
+					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
 						Agenda
 					</h1>
-					<p class="text-text-muted mt-0.5 text-[9px] font-black tracking-[0.2em] uppercase lg:mt-2 lg:text-xs">
-						{{ formatDate(selectedDate) }}
-					</p>
+					<p class="text-text-muted text-sm font-medium">{{ formatDate(selectedDate) }}</p>
 				</div>
 			</div>
 
-			<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
+			<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
 				<!-- Search -->
 				<div class="relative w-full sm:w-3/4 lg:w-64">
-					<Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+					<Search class="text-text-muted absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2" />
 					<input
 						v-model="searchQuery"
 						type="text"
 						placeholder="Buscar cita o cliente..."
-						class="input bg-bg-card border-border-default focus:border-border-strong focus:ring-border-subtle h-11 w-full rounded-xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
+						class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4" />
 				</div>
-
 				<!-- Add -->
 				<button
-					class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-11 flex w-full shrink-0 items-center justify-center gap-2 rounded-xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
+					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
 					@click="openCreateModal">
-					<Plus class="h-4 w-4" />
-					Nueva Cita
+					<Plus class="h-5 w-5" />
+					<span class="font-bold">Nueva Cita</span>
 				</button>
 			</div>
 		</div>
@@ -348,7 +345,7 @@
 		<!-- Agenda Viewport -->
 		<div 
 			ref="viewContainer" 
-			class="bg-bg-card border-border-default premium-shadow relative mt-4 flex flex-1 flex-col overflow-hidden rounded-[24px] border md:mt-6 lg:mt-8 md:rounded-[32px]">
+			class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl premium-shadow">
 			
 			<div v-if="isPending" class="flex flex-1 items-center justify-center bg-bg-card">
 				<div class="loading loading-spinner text-text-primary loading-lg"></div>

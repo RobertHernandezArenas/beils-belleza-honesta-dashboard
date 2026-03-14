@@ -49,11 +49,11 @@
 
 	const getStatusColor = (status: string) => {
 		const map: Record<string, string> = {
-			pending: 'bg-[#dbd2c6] text-text-primary border-none',
-			confirmed: 'bg-text-primary text-bg-card border-none',
-			completed: 'bg-[#bababa] text-text-primary border-none',
-			cancelled: 'bg-bg-muted text-text-light border-none opacity-60',
-			no_show: 'bg-transparent border border-border-strong text-text-muted',
+			pending: 'bg-orange-500/10 text-orange-700 border-none',
+			confirmed: 'bg-primary/10 text-primary border-none',
+			completed: 'bg-emerald-500/10 text-emerald-700 border-none',
+			cancelled: 'bg-stone-500/10 text-stone-700 border-none opacity-60',
+			no_show: 'bg-transparent border border-border-default text-text-muted',
 		}
 		return map[status] || map['pending']
 	}
@@ -86,7 +86,7 @@
 			<div 
 				v-for="month in months" 
 				:key="month" 
-				class="year-month-card bg-bg-card border-border-default rounded-[24px] border p-5 shadow-sm transition-all duration-500 hover:bg-bg-hover hover:scale-[1.03]"
+				class="year-month-card bg-bg-card border-border-default rounded-3xl border p-5 shadow-sm transition-all duration-500 hover:bg-bg-hover hover:scale-[1.03]"
 				:class="{ 'ring-2 ring-primary/60 bg-primary/5': isSelectedMonth(month) }">
 				
 				<h3 class="mb-5 text-center text-xs font-black tracking-[0.2em] uppercase text-text-muted opacity-60">
