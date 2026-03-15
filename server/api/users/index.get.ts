@@ -1,4 +1,3 @@
-import { defineEventHandler, createError } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
 import { maskDocument } from '../../utils/privacy'

@@ -1,4 +1,3 @@
-import { defineEventHandler, getHeader, getCookie, createError } from 'h3'
 import { verifyToken } from '../utils/jwt'
 
 // Protected routes prefix
@@ -7,7 +6,7 @@ const PROTECTED_PREFIX = '/api/'
 const PUBLIC_ROUTES = ['/api/auth/login', '/api/hello']
 
 export default defineEventHandler(event => {
-	const path = event.node.req.url || ''
+	const path = event.path || ''
 
 	// Check if the route is an API route and not in the public list
 	if (!path.startsWith(PROTECTED_PREFIX)) {
@@ -24,7 +23,7 @@ export default defineEventHandler(event => {
 	const authHeader = getHeader(event, 'Authorization')
 
 	if (authHeader && authHeader.startsWith('Bearer ')) {
-		token = authHeader.split(' ')[1]
+		token = authHeader.split(' ')[1] || ''
 	}
 
 	// If no header token, try extracting from the cookie

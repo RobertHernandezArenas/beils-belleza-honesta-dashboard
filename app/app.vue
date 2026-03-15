@@ -11,6 +11,10 @@
 				? `${titleChunk} - Beils Belleza Honesta Plataforma`
 				: 'Beils Bellez Honesta Plataforma'
 		},
+		link: [
+			{ rel: 'manifest', href: '/manifest.webmanifest' },
+			{ rel: 'apple-touch-icon', href: '/images/apple-touch-icon.png' },
+		],
 		meta: [
 			{ charset: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },

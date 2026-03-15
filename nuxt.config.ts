@@ -6,7 +6,65 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	css: ['~/assets/css/main.css'],
 	devtools: { enabled: false },
-	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
+	modules: [
+		'@nuxt/eslint',
+		'@nuxt/fonts',
+		'@nuxtjs/google-fonts',
+		'@pinia/nuxt',
+		'@nuxt/image',
+		'@vite-pwa/nuxt',
+	],
+
+	pwa: {
+		registerType: 'autoUpdate',
+		manifest: {
+			name: 'Beils Dashboard',
+			short_name: 'Beils',
+			description: 'Panel de administración BEILS - Belleza Honesta',
+			theme_color: '#FFFF00',
+			background_color: '#000000',
+			display: 'standalone',
+			start_url: '/',
+			lang: 'es',
+			icons: [
+				{
+					src: '/images/pwa-icon-192.png',
+					sizes: '192x192',
+					type: 'image/png',
+					purpose: 'any maskable',
+				},
+				{
+					src: '/images/pwa-icon-512.png',
+					sizes: '512x512',
+					type: 'image/png',
+					purpose: 'any maskable',
+				},
+				{
+					src: '/images/apple-touch-icon.png',
+					sizes: '180x180',
+					type: 'image/png',
+				},
+			],
+		},
+		workbox: {
+			navigateFallback: '/',
+			globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+			runtimeCaching: [
+				{
+					urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+					handler: 'CacheFirst',
+					options: {
+						cacheName: 'google-fonts-cache',
+					},
+				},
+			],
+		},
+		devOptions: {
+			enabled: true,
+			suppressWarnings: false,
+			type: 'module',
+		},
+	},
 
 	// ==========================================
 	// View Transitions API + Page/Layout Transitions
@@ -19,6 +77,7 @@ export default defineNuxtConfig({
 		layoutTransition: { name: 'layout', mode: 'out-in' },
 		head: {
 			link: [
+				{ rel: 'manifest', href: '/manifest.webmanifest' },
 				{ rel: 'apple-touch-icon', href: '/images/apple-touch-icon.png' },
 				{ rel: 'apple-touch-icon', sizes: '152x152', href: '/images/apple-touch-icon-152x152.png' },
 			],
@@ -58,7 +117,7 @@ export default defineNuxtConfig({
 	},
 
 	build: {
-		transpile: ['echarts', 'vue-echarts', 'zrender'],
+		transpile: ['echarts', 'vue-echarts', 'zrender', 'workbox-window'],
 	},
 
 	telemetry: false, // Disable telemetry for speed
@@ -85,6 +144,7 @@ export default defineNuxtConfig({
 				'zod',
 				'echarts',
 				'vue-echarts',
+				'workbox-window',
 			],
 		},
 	},

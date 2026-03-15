@@ -10,9 +10,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	}
 
 	const isLoginRoute = to.path === '/'
+	const isPwaFile = ['/manifest.json', '/manifest.webmanifest', '/sw.js', '/dev-sw.js'].includes(to.path) || to.path.startsWith('/workbox-')
 
-	// Usuario no autenticado intentando acceder a ruta protegida
-	if (!authStore.isAuthenticated && !isLoginRoute) {
+	// Usuario no autenticado intentando acceder a ruta protegida o no-Pwa
+	if (!authStore.isAuthenticated && !isLoginRoute && !isPwaFile) {
 		return navigateTo('/')
 	}
 
