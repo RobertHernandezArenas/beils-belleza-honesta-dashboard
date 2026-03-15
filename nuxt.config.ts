@@ -17,6 +17,12 @@ export default defineNuxtConfig({
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'layout', mode: 'out-in' },
+		head: {
+			link: [
+				{ rel: 'apple-touch-icon', href: '/images/apple-touch-icon.png' },
+				{ rel: 'apple-touch-icon', sizes: '152x152', href: '/images/apple-touch-icon-152x152.png' },
+			],
+		},
 	},
 
 	// ==========================================

@@ -142,7 +142,7 @@
 								</button>
 								<ul
 									tabindex="0"
-									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[1] mt-1 w-40 rounded-xl border p-2 shadow-lg">
+									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 									<li>
 										<a @click="openEditModal(service)" class="hover:bg-bg-muted font-medium">
 											<Edit2 class="h-4 w-4" />
