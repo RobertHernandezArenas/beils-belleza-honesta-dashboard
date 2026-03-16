@@ -1,5 +1,3 @@
-import { ref } from 'vue'
-
 export function useDataPrivacy() {
 	// Local cache for revealed documents in this component/session
 	const revealedDocs = ref<Record<string, string>>({})

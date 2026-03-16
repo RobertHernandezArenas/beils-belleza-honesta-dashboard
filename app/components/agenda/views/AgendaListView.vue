@@ -11,7 +11,6 @@
 		CalendarDays,
 	} from 'lucide-vue-next'
 	import gsap from 'gsap'
-	import { onMounted } from 'vue'
 
 	defineProps<{
 		bookings: any[]

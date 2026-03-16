@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-	import { ref } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Search, Plus, ClipboardList, Edit, Trash2 } from 'lucide-vue-next'
 	import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.vue'
@@ -84,7 +83,8 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
+	<div
+		class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:flex lg:h-[calc(100dvh-73px)] lg:flex-col lg:overflow-hidden lg:p-10">
 		<div class="mx-auto flex h-full w-full max-w-[1400px] flex-col lg:overflow-hidden">
 			<header class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
 				<div>
@@ -140,8 +140,9 @@
 				v-else
 				class="bg-bg-card border-border-subtle flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
 				<div class="w-full flex-1 overflow-auto">
-					<table class="w-full min-w-[750px] relative text-left text-sm">
-						<thead class="bg-bg-muted/50 text-text-secondary border-border-subtle sticky top-0 z-10 border-b backdrop-blur-md">
+					<table class="relative w-full min-w-[750px] text-left text-sm">
+						<thead
+							class="bg-bg-muted/50 text-text-secondary border-border-subtle sticky top-0 z-10 border-b backdrop-blur-md">
 							<tr>
 								<th class="px-6 py-4 font-bold">Cliente</th>
 								<th class="px-6 py-4 font-bold">Título</th>
@@ -154,10 +155,12 @@
 							<tr
 								v-for="item in filteredItems"
 								:key="item.questionnaire_id"
-								class="border-border-default hover:bg-bg-muted/40 border-b transition-colors last:border-0">
+								@click="openEdit(item)"
+								class="border-border-default hover:bg-bg-muted/40 group cursor-pointer border-b transition-colors last:border-0">
 								<td class="px-6 py-4">
 									<div class="flex flex-col">
-										<span class="text-text-primary font-bold">
+										<span
+											class="text-text-primary group-hover:text-primary font-bold transition-colors">
 											{{ item.user?.name }} {{ item.user?.surname }}
 										</span>
 										<span class="text-text-muted mt-0.5 text-xs font-medium">
@@ -185,14 +188,14 @@
 											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-text-primary tooltip tooltip-left transition-colors"
 											data-tip="Editar"
 											aria-label="Editar"
-											@click="openEdit(item)">
+											@click.stop="openEdit(item)">
 											<Edit class="h-4 w-4" />
 										</button>
 										<button
 											class="btn btn-sm btn-circle btn-ghost text-error/70 hover:bg-error/10 hover:text-error tooltip tooltip-left transition-colors"
 											data-tip="Eliminar"
 											aria-label="Eliminar"
-											@click="openDelete(item)">
+											@click.stop="openDelete(item)">
 											<Trash2 class="h-4 w-4" />
 										</button>
 									</div>

@@ -56,7 +56,8 @@ El código se organiza para que la lógica de negocio no dependa de la UI:
 
 ## 🎨 Guía de Estilo UI (Vercel Guidelines)
 
-- Paleta de colores: #ffffff - #f2f0eb - #fbfaf9 - #dbd2c6 - #f4f1ee - #1a1a1a - #bababa - #8c8c8c - #666666 - #404040 - #1a1a1a
+- Paleta de colores: #ffffff - #f2f0eb - #fbfaf9 - #dbd2c6 - #f4f1ee - #1a1a1a - #bababa - #8c8c8c - #666666 -
+  #404040 - #1a1a1a
 - Tipografía: ROBOTO CONDENSED + ROBOTO + Arial.
 - Iconos: Usar los iconos de Lucide Icons +DaisyUI.
 - Componentes: Usar los componentes de DaisyUI + TailwinCSS.
@@ -134,7 +135,7 @@ Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
 - Navegación mediante `div @click` (usar `NuxtLink` o `button`).
 - Hardcodear fechas o monedas (usar `Intl.*`).
 - Ignorar el modo oscuro (verificar siempre contraste en `dark mode`).
-- Evitar realizar imports que Nuxt resuelve por defecto (ej. `import { ref } from 'vue'`).
+- Evitar realizar imports que Nuxt resuelve por defecto (ej. ``).
 - **SSR ECharts Crash:** Está absolutamente PROHIBIDO usar `vue-echarts` o `echarts` sin asegurar que
   `['echarts', 'vue-echarts', 'zrender']` estén dentro del array `build.transpile` en `nuxt.config.ts`. Omitir
   esto provoca el infame error Server-Side `Cannot access 'renderer$1' before initialization`.

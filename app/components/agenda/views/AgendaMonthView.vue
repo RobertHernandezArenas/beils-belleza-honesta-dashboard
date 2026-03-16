@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { computed, onMounted } from 'vue'
 	import gsap from 'gsap'
 
 	const props = defineProps<{

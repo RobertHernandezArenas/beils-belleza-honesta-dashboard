@@ -1,6 +1,4 @@
 <script setup lang="ts">
-	import { computed, onMounted, ref } from 'vue'
-	import { Clock, User as UserIcon, Scissors, MoreVertical, CheckCircle2, XCircle, Pencil, Trash2 } from 'lucide-vue-next'
 	import gsap from 'gsap'
 
 	const props = defineProps<{

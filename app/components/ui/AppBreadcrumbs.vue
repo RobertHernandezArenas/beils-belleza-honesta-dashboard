@@ -1,10 +1,10 @@
 <script setup lang="ts">
 	import { ChevronRight, Home } from 'lucide-vue-next'
-	import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+	import { useRoute } from 'vue-router'
+	import { useI18n } from 'vue-i18n'
+
+	const { t } = useI18n()
 
 	const props = defineProps<{
 		currentLabel: string
@@ -13,17 +13,17 @@ const { t } = useI18n()
 	const route = useRoute()
 
 	const breadcrumbs = computed(() => {
-	const isHome = route.path === '/overview' || route.path === '/'
+		const isHome = route.path === '/overview' || route.path === '/'
 
-	if (isHome) {
-		return [{ label: t('nav.dashboard'), to: '/overview', active: true, icon: true }]
-	}
+		if (isHome) {
+			return [{ label: t('nav.dashboard'), to: '/overview', active: true, icon: true }]
+		}
 
-	return [
-		{ label: t('nav.dashboard'), to: '/overview', active: false, icon: true },
-		{ label: props.currentLabel, to: route.path, active: true, icon: false },
-	]
-})
+		return [
+			{ label: t('nav.dashboard'), to: '/overview', active: false, icon: true },
+			{ label: props.currentLabel, to: route.path, active: true, icon: false },
+		]
+	})
 </script>
 
 <template>

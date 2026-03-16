@@ -1,9 +1,10 @@
 <script setup lang="ts">
-	import { ref, reactive, watch, computed } from 'vue'
+	import { ref, reactive, watch, computed, nextTick } from 'vue'
 	import { z } from 'zod'
-	import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-	import { ClipboardList, Save, AlertCircle, Edit } from 'lucide-vue-next'
+	import { useMutation, useQueryClient } from '@tanstack/vue-query'
+	import { ClipboardList, Save, AlertCircle, Edit, X } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
+	import ClientAutocomplete from '~/components/shared/ClientAutocomplete.vue'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -16,6 +17,8 @@
 	const localVisible = ref(props.modelValue)
 	const questionnaireDialog = ref<HTMLDialogElement | null>(null)
 	const { animateOpen, animateClose } = useModalAnimation()
+
+	const selectedClient = ref<any | null>(null)
 
 	watch(
 		() => props.modelValue,
@@ -40,11 +43,6 @@
 		},
 	)
 
-	const { data: clients } = useQuery<any[]>({
-		queryKey: ['clients-list'],
-		queryFn: () => $fetch('/api/clients'),
-	})
-
 	const form = reactive({
 		user_id: '',
 		title: '',
@@ -68,10 +66,14 @@
 			form.user_id = props.itemToEdit.user_id || ''
 			form.title = props.itemToEdit.title || ''
 			form.data = props.itemToEdit.data ? JSON.stringify(props.itemToEdit.data, null, 2) : '{}'
+			
+			// Set selected client for display
+			selectedClient.value = props.itemToEdit.user || null
 		} else {
 			form.user_id = ''
 			form.title = ''
 			form.data = '{}'
+			selectedClient.value = null
 		}
 	}
 
@@ -136,26 +138,33 @@
 	<dialog ref="questionnaireDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
 			class="modal-box bg-bg-app border-border-default m-4 max-w-2xl border p-0 shadow-xl sm:rounded-3xl">
-			<div class="bg-bg-card border-border-subtle flex items-center gap-4 border-b p-6 sm:rounded-t-3xl">
-				<div
-					class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-					<Edit v-if="isEditing" class="h-6 w-6" />
-					<ClipboardList v-else class="h-6 w-6" />
+			<!-- Header -->
+			<div class="bg-bg-card border-border-subtle flex items-center justify-between border-b p-6 sm:rounded-t-3xl">
+				<div class="flex items-center gap-4">
+					<div
+						class="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+						<Edit v-if="isEditing" class="h-6 w-6" />
+						<ClipboardList v-else class="h-6 w-6" />
+					</div>
+					<div>
+						<h3 class="text-text-primary text-lg font-bold">
+							{{ isEditing ? 'Editar Cuestionario' : 'Nuevo Cuestionario' }}
+						</h3>
+						<p class="text-text-muted text-sm font-medium">
+							{{
+								isEditing
+									? 'Actualiza los datos del cuestionario'
+									: 'Registra un cuestionario para un cliente'
+							}}
+						</p>
+					</div>
 				</div>
-				<div>
-					<h3 class="text-text-primary text-lg font-bold">
-						{{ isEditing ? 'Editar Cuestionario' : 'Nuevo Cuestionario' }}
-					</h3>
-					<p class="text-text-muted text-sm font-medium">
-						{{
-							isEditing
-								? 'Actualiza los datos del cuestionario'
-								: 'Registra un cuestionario para un cliente'
-						}}
-					</p>
-				</div>
+				<button @click="localVisible = false" class="btn btn-ghost btn-circle btn-sm text-text-muted">
+					<X class="h-5 w-5" />
+				</button>
 			</div>
 
+			<!-- Error Alert -->
 			<div
 				v-if="apiError"
 				class="bg-error/10 border-error/20 mx-6 mt-6 flex items-start gap-3 rounded-xl border p-4">
@@ -163,30 +172,21 @@
 				<p class="text-error text-sm font-medium">{{ apiError }}</p>
 			</div>
 
+			<!-- Formulario -->
 			<form @submit.prevent="onSubmit" class="space-y-5 p-6">
 				<div class="grid grid-cols-1 gap-5">
-					<div class="form-control">
-						<label class="label">
-							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
-								Cliente *
-							</span>
-						</label>
-						<select
+					<!-- Client Selection (Autocomplete) -->
+					<div>
+						<ClientAutocomplete
 							v-model="form.user_id"
-							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
-							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.user_id }"
+							v-model:selected-client="selectedClient"
 							:disabled="isEditing"
-							@change="clearError('user_id')">
-							<option value="" disabled>Selecciona un cliente...</option>
-							<option v-for="c in clients" :key="c.user_id" :value="c.user_id">
-								{{ c.name }} {{ c.surname }} — {{ c.email }}
-							</option>
-						</select>
-						<span v-if="errors.user_id" class="text-error mt-1.5 ml-1 text-xs font-bold">
-							{{ errors.user_id }}
-						</span>
+							:error="errors.user_id"
+							@clear-error="clearError('user_id')"
+						/>
 					</div>
 
+					<!-- Título -->
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
@@ -205,6 +205,7 @@
 						</span>
 					</div>
 
+					<!-- Datos (JSON) -->
 					<div class="form-control">
 						<label class="label">
 							<span class="label-text text-text-secondary text-xs font-bold tracking-wider uppercase">
@@ -224,6 +225,7 @@
 					</div>
 				</div>
 
+				<!-- Acciones -->
 				<div class="modal-action border-border-subtle mt-8 flex gap-3 border-t pt-4">
 					<button
 						type="button"
@@ -240,7 +242,7 @@
 						<template v-else>
 							<Save class="h-4 w-4" />
 							<span class="font-bold tracking-wide">
-								{{ isEditing ? 'Guardar' : 'Crear Cuestionario' }}
+								{{ isEditing ? 'Guardar Cambios' : 'Crear Cuestionario' }}
 							</span>
 						</template>
 					</button>

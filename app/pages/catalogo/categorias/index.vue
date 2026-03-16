@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-	import { ref } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Plus, Layers } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
@@ -121,7 +120,7 @@
 							<h3 class="text-text-primary truncate text-lg font-bold">{{ category.name }}</h3>
 							<p
 								v-if="category.description"
-								class="text-text-muted mt-0.5 truncate max-w-full text-xs font-medium"
+								class="text-text-muted mt-0.5 max-w-full truncate text-xs font-medium"
 								:title="category.description">
 								{{ category.description }}
 							</p>

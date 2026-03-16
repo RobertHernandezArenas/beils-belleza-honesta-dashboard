@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { computed, onMounted } from 'vue'
 	import gsap from 'gsap'
 
 	const props = defineProps<{
@@ -17,19 +16,19 @@
 	const getDaysInMonth = (year: number, month: number) => {
 		const date = new Date(year, month, 1)
 		const days = []
-		
+
 		// Start day (Mon=1 ... Sun=0)
 		let startDay = date.getDay() - 1
 		if (startDay === -1) startDay = 6
-		
+
 		// Fill empty slots
 		for (let i = 0; i < startDay; i++) days.push(null)
-		
+
 		const lastDay = new Date(year, month + 1, 0).getDate()
 		for (let i = 1; i <= lastDay; i++) {
 			days.push(new Date(year, month, i))
 		}
-		
+
 		return days
 	}
 
@@ -63,8 +62,18 @@
 	}
 
 	const monthNames = [
-		'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-		'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+		'Enero',
+		'Febrero',
+		'Marzo',
+		'Abril',
+		'Mayo',
+		'Junio',
+		'Julio',
+		'Agosto',
+		'Septiembre',
+		'Octubre',
+		'Noviembre',
+		'Diciembre',
 	]
 
 	onMounted(() => {
@@ -75,7 +84,7 @@
 			duration: 0.6,
 			stagger: 0.04,
 			ease: 'expo.out',
-			clearProps: 'all'
+			clearProps: 'all',
 		})
 	})
 </script>
@@ -83,38 +92,43 @@
 <template>
 	<div class="custom-scrollbar flex-1 overflow-y-auto p-6">
 		<div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			<div 
-				v-for="month in months" 
-				:key="month" 
-				class="year-month-card bg-bg-card border-border-default rounded-3xl border p-5 shadow-sm transition-all duration-500 hover:bg-bg-hover hover:scale-[1.03]"
-				:class="{ 'ring-2 ring-primary/60 bg-primary/5': isSelectedMonth(month) }">
-				
-				<h3 class="mb-5 text-center text-xs font-black tracking-[0.2em] uppercase text-text-muted opacity-60">
+			<div
+				v-for="month in months"
+				:key="month"
+				class="year-month-card bg-bg-card border-border-default hover:bg-bg-hover rounded-3xl border p-5 shadow-sm transition-all duration-500 hover:scale-[1.03]"
+				:class="{ 'ring-primary/60 bg-primary/5 ring-2': isSelectedMonth(month) }">
+				<h3
+					class="text-text-muted mb-5 text-center text-xs font-black tracking-[0.2em] uppercase opacity-60">
 					{{ monthNames[month] }}
 				</h3>
-				
+
 				<div class="grid grid-cols-7 gap-1">
-					<div v-for="d in ['L', 'M', 'X', 'J', 'V', 'S', 'D']" :key="d" class="text-center text-[8px] font-black opacity-40 text-text-muted">
+					<div
+						v-for="d in ['L', 'M', 'X', 'J', 'V', 'S', 'D']"
+						:key="d"
+						class="text-text-muted text-center text-[8px] font-black opacity-40">
 						{{ d }}
 					</div>
-					
-					<div 
-						v-for="(date, idx) in getDaysInMonth(currentYear, month)" 
-						:key="idx" 
+
+					<div
+						v-for="(date, idx) in getDaysInMonth(currentYear, month)"
+						:key="idx"
 						class="flex aspect-square items-center justify-center text-[10px] font-bold">
-						<button 
+						<button
 							v-if="date"
 							@click="emit('selectDate', date)"
-							class="relative flex h-7 w-7 items-center justify-center rounded-full transition-all hover:bg-bg-hover"
+							class="hover:bg-bg-hover relative flex h-7 w-7 items-center justify-center rounded-full transition-all"
 							:class="[
-								isToday(date) ? 'bg-primary text-white shadow-md' : 
-								hasBooking(date) ? 'text-text-primary font-black' : 'text-text-muted opacity-40'
+								isToday(date)
+									? 'bg-primary text-white shadow-md'
+									: hasBooking(date)
+										? 'text-text-primary font-black'
+										: 'text-text-muted opacity-40',
 							]">
 							{{ date.getDate() }}
-							<span 
-								v-if="hasBooking(date) && !isToday(date)" 
-								class="absolute -bottom-0.5 h-1 w-1 rounded-full bg-text-primary shadow-sm">
-							</span>
+							<span
+								v-if="hasBooking(date) && !isToday(date)"
+								class="bg-text-primary absolute -bottom-0.5 h-1 w-1 rounded-full shadow-sm"></span>
 						</button>
 					</div>
 				</div>

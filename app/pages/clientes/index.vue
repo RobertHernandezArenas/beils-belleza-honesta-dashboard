@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-	import { ref } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import {
 		Search,
@@ -102,10 +101,13 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
+	<div
+		class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:flex lg:h-[calc(100dvh-73px)] lg:flex-col lg:overflow-hidden lg:p-10">
 		<div class="mx-auto flex h-full w-full max-w-[1400px] flex-col lg:overflow-hidden">
 			<!-- Header -->
-			<header data-aos="fade-up" class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
+			<header
+				data-aos="fade-up"
+				class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
 				<div>
 					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
 						{{ t('catalog.clients.title') }}
@@ -132,9 +134,7 @@
 			</header>
 
 			<!-- Content -->
-			<div
-				v-if="isPending"
-				class="glass-card w-full space-y-4 rounded-3xl p-6 premium-shadow">
+			<div v-if="isPending" class="glass-card premium-shadow w-full space-y-4 rounded-3xl p-6">
 				<div v-for="i in 5" :key="i" class="bg-bg-muted/50 h-16 w-full animate-pulse rounded-2xl"></div>
 			</div>
 
@@ -146,7 +146,7 @@
 
 			<div
 				v-else-if="clients?.length === 0"
-				class="glass-card flex flex-col items-center justify-center rounded-3xl py-24 text-center premium-shadow">
+				class="glass-card premium-shadow flex flex-col items-center justify-center rounded-3xl py-24 text-center">
 				<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
 					<UserCircle class="text-text-muted/50 h-10 w-10" />
 				</div>
@@ -158,9 +158,10 @@
 				v-else
 				data-aos="fade-up"
 				data-aos-delay="100"
-				class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl premium-shadow">
-				<div class="w-full flex-1 overflow-auto lg:overflow-x-hidden custom-scrollbar pr-0 lg:pr-6">
-					<table class="w-full max-lg:min-w-[950px] relative text-left text-sm lg:text-[13px] table-fixed lg:table-auto">
+				class="glass-card premium-shadow flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl">
+				<div class="custom-scrollbar w-full flex-1 overflow-auto pr-0 lg:overflow-x-hidden lg:pr-6">
+					<table
+						class="relative w-full table-fixed text-left text-sm max-lg:min-w-[950px] lg:table-auto lg:text-[13px]">
 						<thead class="glass-header text-text-secondary sticky top-0 z-10 border-b">
 							<tr>
 								<th class="px-6 py-5 font-bold tracking-tight">Cliente</th>
@@ -170,16 +171,16 @@
 								<th class="px-6 py-5 text-right font-bold tracking-tight">Acciones</th>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-border-subtle/50">
+						<tbody class="divide-border-subtle/50 divide-y">
 							<tr
 								v-for="client in clients"
 								:key="client.user_id"
-								class="premium-lift group hover:bg-white/60 cursor-pointer transition-all duration-300"
+								class="premium-lift group cursor-pointer transition-all duration-300 hover:bg-white/60"
 								@click="navigateTo(`/clientes/${client.user_id}`)">
 								<td class="px-3 py-5">
 									<div class="flex items-center gap-4">
 										<div
-											class="bg-linear-to-br from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border shadow-xs transition-transform group-hover:scale-105">
+											class="from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
 											<span class="text-base font-black tracking-tight">
 												{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
 											</span>
@@ -191,7 +192,8 @@
 												@click.stop>
 												{{ client.name }} {{ client.surname }}
 											</NuxtLink>
-											<p class="text-text-muted mt-0.5 max-w-[200px] truncate text-xs font-semibold tracking-tight opacity-70">
+											<p
+												class="text-text-muted mt-0.5 max-w-[200px] truncate text-xs font-semibold tracking-tight opacity-70">
 												{{ client.email }}
 											</p>
 										</div>
@@ -199,21 +201,26 @@
 								</td>
 								<td class="px-6 py-5" @click.stop>
 									<div class="flex flex-col">
-										<span class="text-text-primary text-sm font-bold tabular-nums">{{ client.phone }}</span>
+										<span class="text-text-primary text-sm font-bold tabular-nums">
+											{{ client.phone }}
+										</span>
 										<div class="mt-1 flex items-center gap-1.5">
-											<span class="text-text-muted bg-bg-muted/50 rounded px-1.5 py-0.5 text-[10px] font-black tracking-widest uppercase">
+											<span
+												class="text-text-muted bg-bg-muted/50 rounded px-1.5 py-0.5 text-[10px] font-black tracking-widest uppercase">
 												{{ client.document_type }}
 											</span>
 											<span class="text-text-muted text-[11px] font-bold tracking-tight">
 												{{ revealedDocs[client.user_id] || client.document_number }}
 											</span>
 											<button
-												class="text-text-muted hover:text-primary disabled:opacity-50 ml-0.5 transition-colors"
+												class="text-text-muted hover:text-primary ml-0.5 transition-colors disabled:opacity-50"
 												role="button"
 												:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
 												:disabled="revealedLoading[client.user_id]"
 												@click="toggleDocumentVisibility(client.user_id, client.document_number)">
-												<span v-if="revealedLoading[client.user_id]" class="loading loading-spinner loading-xs h-3 w-3"></span>
+												<span
+													v-if="revealedLoading[client.user_id]"
+													class="loading loading-spinner loading-xs h-3 w-3"></span>
 												<component
 													v-else
 													:is="revealedDocs[client.user_id] ? EyeOff : Eye"
@@ -225,13 +232,13 @@
 								<td class="px-3 py-5">
 									<div class="flex items-center gap-2">
 										<div
-											class="text-text-secondary bg-white/50 border-border-default/30 flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold shadow-xs transition-colors group-hover:border-primary/20 group-hover:bg-primary/5"
+											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-white/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
 											title="Citas Reservadas">
 											<CalendarDays class="text-primary/70 h-3.5 w-3.5" />
 											<span class="tabular-nums">{{ client._count?.client_bookings || 0 }}</span>
 										</div>
 										<div
-											class="text-text-secondary bg-white/50 border-border-default/30 flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold shadow-xs transition-colors group-hover:border-primary/20 group-hover:bg-primary/5"
+											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-white/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
 											title="Consentimientos Firmados">
 											<ExternalLink class="text-primary/70 h-3.5 w-3.5" />
 											<span class="tabular-nums">{{ client._count?.consents || 0 }}</span>
@@ -243,8 +250,8 @@
 										class="inline-flex items-center rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase"
 										:class="
 											client.status === 'ON'
-												? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
-												: 'bg-rose-500/10 text-rose-700 border-rose-500/20'
+												? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700'
+												: 'border-rose-500/20 bg-rose-500/10 text-rose-700'
 										">
 										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"></span>
 										{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
@@ -266,7 +273,7 @@
 											<Edit class="h-4.5 w-4.5" />
 										</button>
 										<button
-											class="btn btn-sm btn-circle btn-ghost text-rose-500/40 hover:bg-rose-500/10 hover:text-rose-600 transition-all duration-300"
+											class="btn btn-sm btn-circle btn-ghost text-rose-500/40 transition-all duration-300 hover:bg-rose-500/10 hover:text-rose-600"
 											title="Eliminar Cliente"
 											@click.stop="openDeleteModal(client)">
 											<Trash2 class="h-4.5 w-4.5" />
@@ -279,21 +286,27 @@
 				</div>
 
 				<!-- Pagination Footer -->
-				<div class="glass-header flex flex-col items-center justify-between gap-4 border-t px-8 py-5 sm:flex-row">
+				<div
+					class="glass-header flex flex-col items-center justify-between gap-4 border-t px-8 py-5 sm:flex-row">
 					<div class="text-text-muted flex items-center gap-6 text-xs font-bold tracking-tight">
-						<span class="hidden opacity-60 sm:inline">Mostrando {{ clients.length }} de {{ pagination.total }} clientes</span>
+						<span class="hidden opacity-60 sm:inline">
+							Mostrando {{ clients.length }} de {{ pagination.total }} clientes
+						</span>
 						<div class="flex items-center gap-3">
 							<span class="opacity-60">Filas:</span>
-							<div class="relative group">
-								<div class="bg-white border border-border-default/50 rounded-xl h-9 px-3 flex items-center justify-between gap-2 hover:bg-bg-hover transition-all shadow-sm">
-									<span class="text-xs font-bold text-text-primary tabular-nums shrink-0">{{ limit }}</span>
+							<div class="group relative">
+								<div
+									class="border-border-default/50 hover:bg-bg-hover flex h-9 items-center justify-between gap-2 rounded-xl border bg-white px-3 shadow-sm transition-all">
+									<span class="text-text-primary shrink-0 text-xs font-bold tabular-nums">
+										{{ limit }}
+									</span>
 									<span class="text-text-muted pointer-events-none opacity-50">
 										<ChevronDown class="h-3 w-3" />
 									</span>
 								</div>
 								<select
 									v-model="limit"
-									class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+									class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
 									@change="page = 1">
 									<option :value="10">10</option>
 									<option :value="25">25</option>
@@ -304,19 +317,21 @@
 						</div>
 					</div>
 
-					<div class="join overflow-hidden rounded-2xl border border-border-default/50 shadow-sm">
+					<div class="join border-border-default/50 overflow-hidden rounded-2xl border shadow-sm">
 						<button
-							class="join-item btn btn-sm bg-white/50 border-none hover:bg-white disabled:bg-transparent disabled:opacity-30"
+							class="join-item btn btn-sm border-none bg-white/50 hover:bg-white disabled:bg-transparent disabled:opacity-30"
 							:disabled="page === 1"
 							@click="page--">
 							«
 						</button>
 						<button
-							class="join-item btn btn-sm bg-white/80 pointer-events-none border-none border-x border-border-default/20 px-6 font-bold tracking-tight">
-							Pág. {{ page }} <span class="text-text-muted mx-1 font-medium italic">de</span> {{ pagination.totalPages || 1 }}
+							class="join-item btn btn-sm border-border-default/20 pointer-events-none border-x border-none bg-white/80 px-6 font-bold tracking-tight">
+							Pág. {{ page }}
+							<span class="text-text-muted mx-1 font-medium italic">de</span>
+							{{ pagination.totalPages || 1 }}
 						</button>
 						<button
-							class="join-item btn btn-sm bg-white/50 border-none hover:bg-white disabled:bg-transparent disabled:opacity-30"
+							class="join-item btn btn-sm border-none bg-white/50 hover:bg-white disabled:bg-transparent disabled:opacity-30"
 							:disabled="page >= pagination.totalPages"
 							@click="page++">
 							»

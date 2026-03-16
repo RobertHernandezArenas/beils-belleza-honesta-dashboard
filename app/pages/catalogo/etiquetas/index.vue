@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-	import { ref } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Plus, Hash } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'

@@ -90,21 +90,29 @@ async function seedDB() {
 		const clients = allUsers.filter(u => u.role === 'CLIENT')
 		const admin = allUsers.find(u => u.role === 'ADMIN')
 
-		console.log('📝 Seeding child records (Consents, Questionnaires & Bookings)...')
+		console.log('📝 Seeding child records (Consents, Questionnaires, Revokes & Bookings)...')
 
 		const consentsToCreate = []
 		const questionnairesToCreate = []
+		const revokesToCreate = []
 		const bookingsToCreate = []
 
 		for (const client of clients) {
 			// GENERATE CONSENTS
-			const numConsents = Math.floor(Math.random() * 3) // 0 to 2
+			// Most clients have 1-2 consents
+			const numConsents = Math.floor(Math.random() * 3) + 1 
 			for (let i = 0; i < numConsents; i++) {
 				consentsToCreate.push({
 					user_id: client.user_id,
 					document_url: `https://storage.example.com/consents/${client.user_id}_doc_${i}.pdf`,
-					status: getRandomItem(['SIGNED', 'UNSIGNED']),
-					notes: 'Consentimiento para tratamientos estéticos firmado digitalmente.',
+					status: getRandomItem(['SIGNED', 'SIGNED', 'UNSIGNED']), // More signed than unsigned
+					notes: getRandomItem([
+						'Consentimiento para tratamientos estéticos firmado digitalmente.',
+						'Aceptación de política de privacidad y protección de datos.',
+						'Consentimiento informado para depilación láser.',
+						'Autorización para uso de imágenes con fines promocionales.',
+						''
+					]),
 					signed_date: new Date(Date.now() - Math.random() * 10000000000),
 				})
 			}
@@ -114,13 +122,33 @@ async function seedDB() {
 			for (let i = 0; i < numQuestionnaires; i++) {
 				questionnairesToCreate.push({
 					user_id: client.user_id,
-					title: `Ficha de Diagnóstico ${i + 1}`,
+					title: getRandomItem([
+						'Ficha de Diagnóstico Facial',
+						'Cuestionario de Salud Inicial',
+						'Evaluación de Alergias',
+						'Historial de Tratamientos'
+					]),
 					data: {
-						allergies: Math.random() > 0.8 ? ['Látex'] : ['Ninguna'],
-						skin_type: getRandomItem(['Seca', 'Grasa', 'Mixta', 'Sensible']),
-						concerns: 'Tratamiento facial',
+						allergies: Math.random() > 0.8 ? ['Látex', 'Níquel'] : ['Ninguna'],
+						skin_type: getRandomItem(['Seca', 'Grasa', 'Mixta', 'Sensible', 'Normal']),
+						concerns: getRandomItem(['Arrugas', 'Manchas', 'Acné', 'Flacidez', 'Deshidratación']),
+						medications: Math.random() > 0.9 ? 'Ibuprofeno' : 'Ninguno'
 					},
 					created_at: new Date(Date.now() - Math.random() * 5000000000),
+				})
+			}
+
+			// GENERATE REVOCATIONS (Rare event)
+			if (Math.random() > 0.9) {
+				revokesToCreate.push({
+					user_id: client.user_id,
+					reason: getRandomItem([
+						'El cliente ya no desea recibir comunicaciones comerciales.',
+						'Desacuerdo con los nuevos términos de servicio.',
+						'Solicitud expresa de borrado de datos (Derecho al olvido).',
+						'Cambio de opinión sobre el tratamiento.'
+					]),
+					date_revoked: new Date(Date.now() - Math.random() * 2000000000),
 				})
 			}
 
@@ -151,11 +179,15 @@ async function seedDB() {
 
 		if (consentsToCreate.length > 0) await prisma.consent.createMany({ data: consentsToCreate })
 		if (questionnairesToCreate.length > 0) await prisma.questionnaire.createMany({ data: questionnairesToCreate })
+		if (revokesToCreate.length > 0) await prisma.revoke.createMany({ data: revokesToCreate })
 		if (bookingsToCreate.length > 0) await prisma.booking.createMany({ data: bookingsToCreate })
 
 		console.log('✅ Database seeded successfully!')
 		console.log(`🔑 Admin account: admin@beilsbellezahonesta.com / ${defaultPassword}`)
 		console.log(`🔑 Total Users seeded: ${usersData.length} (1 Admin + 100 Clients)`)
+		console.log(`📊 Consents created: ${consentsToCreate.length}`)
+		console.log(`📊 Questionnaires created: ${questionnairesToCreate.length}`)
+		console.log(`📊 Revocations created: ${revokesToCreate.length}`)
 		console.log(`📈 Male/Female Distribution: ~22% Male / ~78% Female`)
 	} catch (error: any) {
 		console.error('❌ Error seeding database:', error.message || error)

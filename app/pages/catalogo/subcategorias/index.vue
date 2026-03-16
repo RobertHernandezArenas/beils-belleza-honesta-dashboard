@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-	import { ref } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Plus, ListTree } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
@@ -122,10 +121,10 @@
 						</div>
 						<div class="flex flex-col overflow-hidden pr-2">
 							<span
-								class="text-primary truncate mb-1 text-[10px] font-bold tracking-widest uppercase drop-shadow-sm">
+								class="text-primary mb-1 truncate text-[10px] font-bold tracking-widest uppercase drop-shadow-sm">
 								{{ subcategory.category.name }}
 							</span>
-							<h3 class="text-text-primary truncate mb-1 text-lg leading-tight font-bold">
+							<h3 class="text-text-primary mb-1 truncate text-lg leading-tight font-bold">
 								{{ subcategory.name }}
 							</h3>
 							<p

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref } from 'vue'
 	import { useQuery } from '@tanstack/vue-query'
 	import { useRoute } from 'vue-router'
 	import {
@@ -132,14 +131,19 @@
 							</span>
 							<div class="flex items-center gap-1.5">
 								<FileText class="h-4 w-4" />
-								<span>{{ client.document_type }}: {{ revealedDocs[client.user_id] || client.document_number || 'N/A' }}</span>
+								<span>
+									{{ client.document_type }}:
+									{{ revealedDocs[client.user_id] || client.document_number || 'N/A' }}
+								</span>
 								<button
-									class="text-text-muted hover:text-primary disabled:opacity-50 ml-1 transition-colors"
+									class="text-text-muted hover:text-primary ml-1 transition-colors disabled:opacity-50"
 									role="button"
 									:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
 									:disabled="revealedLoading[client.user_id]"
 									@click="toggleDocumentVisibility(client.user_id, client.document_number)">
-									<span v-if="revealedLoading[client.user_id]" class="loading loading-spinner loading-xs h-3 w-3"></span>
+									<span
+										v-if="revealedLoading[client.user_id]"
+										class="loading loading-spinner loading-xs h-3 w-3"></span>
 									<component
 										v-else
 										:is="revealedDocs[client.user_id] ? EyeOff : Eye"
