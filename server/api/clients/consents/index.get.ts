@@ -21,10 +21,10 @@ export default defineEventHandler(async event => {
 		})
 
 		return consents
-	} catch (error) {
+	} catch (error: any) {
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error al obtener consentimientos',
+			statusMessage: error.message || 'Error al obtener consentimientos',
 		})
 	}
 })

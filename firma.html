@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>firma</title>
+	</head>
+	<body>
+		<canvas
+			id="canvas"
+			width="400"
+			height="200"
+			style="border: 1px solid #000"
+		></canvas>
+		<button id="resetBtn">Resetear firma</button>
+		<button id="copyBtn">Copiar firma</button>
+		<button id="downloadBtn">Descargar firma</button>
+
+		<img
+			src="data:image/png;base64,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"
+			alt=""
+		/>
+
+		<script>
+			const canvas = document.getElementById('canvas');
+			const ctx = canvas.getContext('2d');
+			const resetBtn = document.getElementById('resetBtn');
+			const copyBtn = document.getElementById('copyBtn');
+			const downloadBtn = document.getElementById('downloadBtn');
+
+			let isDrawing = false;
+			let lastX = 0;
+			let lastY = 0;
+
+			function draw(e) {
+				if (!isDrawing) return;
+				ctx.beginPath();
+				ctx.moveTo(lastX, lastY);
+				ctx.lineTo(e.offsetX, e.offsetY);
+				ctx.stroke();
+				[lastX, lastY] = [e.offsetX, e.offsetY];
+			}
+
+			canvas.addEventListener('mousedown', e => {
+				isDrawing = true;
+				[lastX, lastY] = [e.offsetX, e.offsetY];
+			});
+
+			canvas.addEventListener('mousemove', draw);
+			canvas.addEventListener('mouseup', () => (isDrawing = false));
+			canvas.addEventListener('mouseout', () => (isDrawing = false));
+
+			resetBtn.addEventListener('click', () => {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			});
+
+			copyBtn.addEventListener('click', () => {
+				const imgData = canvas.toDataURL(); // Obtiene la imagen como base64
+				navigator.clipboard
+					.writeText(imgData)
+					.then(() => {
+						alert('Firma copiada al portapapeles');
+					})
+					.catch(err => {
+						console.error('Error al copiar la firma:', err);
+					});
+			});
+
+			downloadBtn.addEventListener('click', () => {
+				const imgData = canvas.toDataURL(); // Obtiene la imagen como base64
+				const link = document.createElement('a');
+				link.href = imgData;
+				link.download = 'firma.png';
+				link.click();
+			});
+		</script>
+	</body>
+</html>
