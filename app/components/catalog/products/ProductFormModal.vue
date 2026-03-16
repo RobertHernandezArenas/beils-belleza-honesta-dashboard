@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref, reactive, watch, nextTick, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { ChevronDown, Euro, Check, Plus, Package, ImageIcon, Filter } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'

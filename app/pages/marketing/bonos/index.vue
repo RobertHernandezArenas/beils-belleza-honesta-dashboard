@@ -1,8 +1,8 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Gift, Plus, Search, MoreVertical, Edit2, Trash2, Repeat } from 'lucide-vue-next'
 	import BonusFormModal from '~/components/marketing/BonusFormModal.vue'
+	import type { IBonus } from '~~/shared/types/marketing'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Bonos de Sesiones | Marketing' })
@@ -20,7 +20,7 @@
 		return params
 	})
 
-	const { data: bonuses, isPending } = useQuery({
+	const { data: bonuses, isPending } = useQuery<IBonus[]>({
 		queryKey: ['bonuses', queryParams],
 		queryFn: () => $fetch('/api/marketing/bonuses', { query: queryParams.value }),
 	})

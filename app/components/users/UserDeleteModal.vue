@@ -39,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, watch, nextTick } from 'vue'
 	import { AlertTriangle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref, computed, watch } from 'vue'
 	import { useMutation } from '@tanstack/vue-query'
 	import { CreditCard, X, Check, AlertCircle, Loader2 } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { CreditCard, Plus, Search, MoreVertical, Edit2, Trash2 } from 'lucide-vue-next'
 	import GiftcardFormModal from '~/components/marketing/GiftcardFormModal.vue'
+	import type { IGiftcard } from '~~/shared/types/marketing'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Tarjetas de Regalo | Marketing' })
@@ -20,7 +20,7 @@
 		return params
 	})
 
-	const { data: giftcards, isPending } = useQuery({
+	const { data: giftcards, isPending } = useQuery<IGiftcard[]>({
 		queryKey: ['giftcards', queryParams],
 		queryFn: () => $fetch('/api/marketing/giftcards', { query: queryParams.value }),
 	})
@@ -40,7 +40,7 @@
 		modalRef.value?.showModal(null)
 	}
 
-	const openEditModal = (giftcard: any) => {
+	const openEditModal = (giftcard: IGiftcard) => {
 		modalRef.value?.showModal(giftcard)
 	}
 
@@ -140,7 +140,7 @@
 								</button>
 								<ul
 									tabindex="0"
-									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[1] mt-1 w-40 rounded-xl border p-2 shadow-lg">
+									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 									<li>
 										<a @click="openEditModal(card)" class="hover:bg-bg-muted font-medium">
 											<Edit2 class="h-4 w-4" />

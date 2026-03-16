@@ -1,8 +1,9 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Ticket, Plus, Search, MoreVertical, Edit2, Trash2, Percent } from 'lucide-vue-next'
 	import CouponFormModal from '~/components/marketing/CouponFormModal.vue'
+	import type { ICoupon } from '~~/shared/types/marketing'
+	import { formatDate, formatCurrency } from '~/utils/format'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Cupones de Descuento | Marketing' })
@@ -20,7 +21,7 @@
 		return params
 	})
 
-	const { data: coupons, isPending } = useQuery({
+	const { data: coupons, isPending } = useQuery<ICoupon[]>({
 		queryKey: ['coupons', queryParams],
 		queryFn: () => $fetch('/api/marketing/coupons', { query: queryParams.value }),
 	})

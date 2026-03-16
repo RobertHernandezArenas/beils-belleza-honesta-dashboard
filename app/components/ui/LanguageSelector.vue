@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref, computed, onMounted, onUnmounted } from 'vue'
 	import { ChevronDown } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 

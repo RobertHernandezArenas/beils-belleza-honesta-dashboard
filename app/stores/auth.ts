@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import { useCookie, useFetch } from '#imports'
 
 export const useAuthStore = defineStore('auth', () => {

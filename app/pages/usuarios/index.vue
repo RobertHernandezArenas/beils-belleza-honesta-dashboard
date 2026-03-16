@@ -54,7 +54,6 @@
 </template>
 
 <script lang="ts" setup>
-	import { ref, computed, watch } from 'vue'
 	import { useI18n } from 'vue-i18n'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useUsersFilterStore } from '~/stores/useUsersFilterStore'

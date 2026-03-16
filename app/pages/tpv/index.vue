@@ -1,6 +1,5 @@
 <script setup lang="ts">
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { ref, computed, watch, nextTick, onMounted } from 'vue'
 	import {
 		ShoppingBag,
 		Search,

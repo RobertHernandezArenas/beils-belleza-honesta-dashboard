@@ -42,15 +42,18 @@ El código se organiza para que la lógica de negocio no dependa de la UI:
 
 - **Caching:** Usar para todas las peticiones asíncronas.
 - **Mutations:** Todas las acciones de escritura (POST/PUT/DELETE) deben pasar por `useMutation` para manejar
-  estados de carga y errores de forma centralizada.
-- **Invalidación:** Tras una mutación exitosa, invalidar las queries relacionadas para mantener la UI
-  sincronizada.
+-   **Caching:** Usar para todas las peticiones asíncronas.
+-   **Mutations:** Todas las acciones de escritura (POST/PUT/DELETE) deben pasar por `useMutation` para manejar
+    estados de carga y errores de forma centralizada.
+-   **Invalidación:** Tras una mutación exitosa, invalidar las queries relacionadas para mantener la UI
+    sincronizada.
 
 ### Pinia (Global State)
 
-- Usar **Composition API syntax** (`ref`, `computed`).
-- Solo almacenar estado que realmente sea global (Sesión de usuario, preferencias de tema, notificaciones
-  persistentes). La data del servidor vive en Vue Query.
+-   Usar **Composition API syntax** (`ref`, `computed`).
+-   **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`, `watch`, `onMounted`, `defineProps`, `defineEmits`) as they are auto-imported by Nuxt. This keeps components cleaner and avoids redundancy.
+-   Solo almacenar estado que realmente sea global (Sesión de usuario, preferencias de tema, notificaciones
+    persistentes). La data del servidor vive en Vue Query.
 
 ---
 

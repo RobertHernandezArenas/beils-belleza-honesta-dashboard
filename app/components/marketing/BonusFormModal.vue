@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
+	import type { IBonus } from '~~/shared/types/marketing'
 
 	interface ServiceOption {
 		service_id: string
@@ -9,7 +10,7 @@
 	}
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
-	const editingBonus = ref<any | null>(null)
+	const editingBonus = ref<IBonus | null>(null)
 	const isSaving = ref(false)
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
@@ -31,7 +32,7 @@
 		queryFn: () => $fetch<ServiceOption[]>('/api/services'),
 	})
 
-	const showModal = (bonus: any | null) => {
+	const showModal = (bonus: IBonus | null) => {
 		editingBonus.value = bonus
 		if (bonus) {
 			form.name = bonus.name || ''

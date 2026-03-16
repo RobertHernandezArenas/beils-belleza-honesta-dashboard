@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import {
 		Package,

@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 
 export const useUsersFilterStore = defineStore('usersFilter', () => {
 	const showFilters = ref(false)

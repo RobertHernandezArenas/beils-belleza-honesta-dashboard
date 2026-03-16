@@ -1,8 +1,8 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Scissors, Plus, Search, MoreVertical, Edit2, Trash2, Clock, AlertCircle } from 'lucide-vue-next'
 	import ServiceFormModal from '~/components/services/ServiceFormModal.vue'
+	import type { IService } from '~/../shared/types/catalog'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Servicios | Catálogo' })
@@ -20,7 +20,7 @@
 		return params
 	})
 
-	const { data: services, isPending } = useQuery<any[]>({
+	const { data: services, isPending } = useQuery<IService[]>({
 		queryKey: ['services', queryParams],
 		queryFn: () => $fetch('/api/services', { query: queryParams.value }),
 	})

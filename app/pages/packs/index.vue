@@ -1,8 +1,8 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { PackageSearch, Plus, Search, MoreVertical, Edit2, Trash2, ListTree } from 'lucide-vue-next'
 	import PackFormModal from '~/components/packs/PackFormModal.vue'
+	import type { IPack } from '~/../shared/types/catalog'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Packs de Servicios | Catálogo' })
@@ -20,7 +20,7 @@
 		return params
 	})
 
-	const { data: packs, isPending } = useQuery({
+	const { data: packs, isPending } = useQuery<IPack[]>({
 		queryKey: ['packs', queryParams],
 		queryFn: () => $fetch('/api/catalog/packs', { query: queryParams.value }),
 	})
@@ -119,7 +119,7 @@
 					class="group bg-bg-card border-border-default hover:border-border-strong relative flex flex-col justify-between gap-4 rounded-3xl border p-5 shadow-sm transition-colors duration-300 hover:shadow-md sm:flex-row sm:items-center">
 					<div class="flex flex-1 items-start gap-4">
 						<div
-							class="bg-bg-muted border-border-default h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl border">
+							class="bg-bg-muted border-border-default h-16 w-16 shrink-0 overflow-hidden rounded-2xl border">
 							<img
 								v-if="pack.image_url"
 								:src="pack.image_url"
@@ -178,7 +178,7 @@
 							</button>
 							<ul
 								tabindex="0"
-								class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[1] mt-1 w-40 rounded-xl border p-2 shadow-lg">
+								class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 								<li>
 									<a @click="openEditModal(pack)" class="hover:bg-bg-muted font-medium">
 										<Edit2 class="h-4 w-4" />

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-	import { ref, computed } from 'vue'
 	import { useQuery } from '@tanstack/vue-query'
 	import {
 		PieChart as PieChartIcon,

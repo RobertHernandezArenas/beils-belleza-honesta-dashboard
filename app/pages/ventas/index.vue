@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
 	import { useQuery } from '@tanstack/vue-query'
 	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt, CreditCard, Eye, EyeOff } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
