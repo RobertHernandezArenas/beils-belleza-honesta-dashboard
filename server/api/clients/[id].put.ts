@@ -1,4 +1,3 @@
-import { defineEventHandler, readBody, createError, getRouterParam } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { z } from 'zod'
 import { requireAdmin } from '../../utils/auth'

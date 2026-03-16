@@ -213,6 +213,7 @@
 		FileCheck,
 		ClipboardList,
 		ShieldOff,
+		Image,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -323,7 +324,7 @@
 		{ to: '/catalogo/productos', label: 'Productos', icon: Package },
 		{ to: '/catalogo/categorias', label: 'Categorías', icon: Layers },
 		{ to: '/catalogo/subcategorias', label: 'Subcategorías', icon: ListTree },
-
+		{ to: '/multimedia', label: 'Multimedia', icon: Image },
 		{ to: '/catalogo/etiquetas', label: 'Etiquetas', icon: Hash },
 		{ to: '/servicios', label: 'Servicios', icon: Scissors },
 		{ to: '/packs', label: 'Packs & Promociones', icon: PackageSearch },

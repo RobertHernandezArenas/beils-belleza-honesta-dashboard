@@ -16,8 +16,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		'/sw.js',
 		'/dev-sw.js',
 	]
-	const isPublicFile = publicFiles.includes(to.path) || to.path.startsWith('/workbox-')
-
+	const isPublicFile = ['/manifest.json', '/manifest.webmanifest', '/sw.js', '/dev-sw.js'].includes(to.path) || to.path.startsWith('/workbox-')
 	const isLoginRoute = to.path === '/'
 
 	// Usuario no autenticado intentando acceder a ruta protegida

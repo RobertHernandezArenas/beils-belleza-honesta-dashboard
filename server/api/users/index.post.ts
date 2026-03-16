@@ -1,4 +1,3 @@
-import { defineEventHandler, readBody, createError } from 'h3'
 import { prisma } from '../../utils/prisma'
 import bcrypt from 'bcryptjs'
 

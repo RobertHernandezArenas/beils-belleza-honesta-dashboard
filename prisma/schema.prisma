@@ -88,11 +88,11 @@ model User {
 // }
 
 model Consent {
-  consentId              String              @id @default(uuid()) @db.Char(100)
+  consent_id             String              @id @default(uuid()) @db.Char(100)
   user_id                String?             @db.Char(100)
   consent_type           ConsentType?    
-  accepted               Boolean?            @default(true)
-  accepted_at            DateTime?           @db.DateTime
+  status                 String              @default("UNSIGNED") @db.VarChar(20)
+  signed_date            DateTime            @default(now())
   document_url           String?             @db.VarChar(255)
   notes                  String?             @db.VarChar(255)
   created_at             DateTime?           @default(now())

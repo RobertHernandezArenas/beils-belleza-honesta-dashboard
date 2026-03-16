@@ -2,6 +2,7 @@ import { defineEventHandler, readMultipartFormData, createError } from 'h3'
 import { writeFile, mkdir } from 'node:fs/promises'
 import { join, extname } from 'node:path'
 import { randomUUID } from 'node:crypto'
+import sharp from 'sharp'
 
 export default defineEventHandler(async event => {
 	try {
@@ -22,7 +23,10 @@ export default defineEventHandler(async event => {
 			})
 		}
 
-		// Validate type (optional but recommended)
+		const type = formData.find(item => item.name === 'type')?.data.toString() || 'clientes'
+		const category = formData.find(item => item.name === 'category')?.data.toString() || 'imagenes'
+
+		// Validate type
 		const contentType = file.type || ''
 		if (!contentType.startsWith('image/')) {
 			throw createError({
@@ -32,24 +36,37 @@ export default defineEventHandler(async event => {
 		}
 
 		// Determine target directory
-		const targetFolder = 'public/multimedia/imagenes/clientes'
-		const absoluteFolderPath = join(process.cwd(), targetFolder)
-		
-		// Ensure directory exists
-		await mkdir(absoluteFolderPath, { recursive: true })
+		const uploadDir = join(process.cwd(), 'public', 'multimedia', category, type)
+		await mkdir(uploadDir, { recursive: true })
 
-		// Generate random filename to avoid collisions
 		const fileExtension = extname(file.filename || '.jpg')
-		const newFilename = `${randomUUID()}${fileExtension}`
-		const filePath = join(absoluteFolderPath, newFilename)
+		const baseFilename = `${randomUUID()}`
+		const filename = `${baseFilename}${fileExtension}`
+		
+		if (category === 'imagenes' && contentType.startsWith('image/')) {
+			// Optimize image with Sharp if it's an image
+			const optimizedFilename = `${baseFilename}.webp`
+			const optimizedPath = join(uploadDir, optimizedFilename)
+			
+			await sharp(file.data)
+				.resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+				.webp({ quality: 80 })
+				.toFile(optimizedPath)
 
-		// Save file
-		await writeFile(filePath, file.data)
-
-		// Return the public URL
-		return {
-			url: `/multimedia/imagenes/clientes/${newFilename}`,
-			filename: newFilename,
+			return {
+				url: `/multimedia/${category}/${type}/${optimizedFilename}`,
+				filename: optimizedFilename,
+				size: file.data.length,
+			}
+		} else {
+			// Just save the file
+			const filePath = join(uploadDir, filename)
+			await writeFile(filePath, file.data)
+			return {
+				url: `/multimedia/${category}/${type}/${filename}`,
+				filename,
+				size: file.data.length,
+			}
 		}
 	} catch (error: any) {
 		console.error('Error uploading file:', error)

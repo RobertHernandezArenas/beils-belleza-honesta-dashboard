@@ -1,4 +1,3 @@
-import { defineEventHandler, readBody, createError } from 'h3'
 import { stripe } from '../../utils/stripe'
 import { z } from 'zod'
 

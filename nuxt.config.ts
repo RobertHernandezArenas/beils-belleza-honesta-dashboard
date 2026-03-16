@@ -6,67 +6,7 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	css: ['~/assets/css/main.css'],
 	devtools: { enabled: false },
-	modules: [
-		'@nuxt/eslint',
-		'@nuxt/fonts',
-		'@nuxtjs/google-fonts',
-		'@pinia/nuxt',
-		'@nuxt/image',
-		'@vite-pwa/nuxt',
-	],
-
-	// ==========================================
-	// PWA Configuration
-	// ==========================================
-	pwa: {
-		registerType: 'autoUpdate',
-		manifest: {
-			name: 'Beils Belleza Honesta',
-			short_name: 'Beils',
-			description: 'Panel de administración de Beils Belleza Honesta',
-			theme_color: '#020617',
-			background_color: '#ffffff',
-			display: 'standalone',
-			start_url: '/',
-			lang: 'es',
-			icons: [
-				{
-					src: '/images/pwa-icon-192.png',
-					sizes: '192x192',
-					type: 'image/png',
-				},
-				{
-					src: '/images/pwa-icon-512.png',
-					sizes: '512x512',
-					type: 'image/png',
-				},
-			],
-		},
-		workbox: {
-			navigateFallback: '/',
-			globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-			runtimeCaching: [
-				{
-					urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-					handler: 'CacheFirst',
-					options: {
-						cacheName: 'google-fonts-cache',
-						expiration: {
-							maxEntries: 10,
-							maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-						},
-						cacheableResponse: {
-							statuses: [0, 200],
-						},
-					},
-				},
-			],
-		},
-		devOptions: {
-			enabled: true,
-			type: 'classic',
-		},
-	},
+	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
 
 	// ==========================================
 	// View Transitions API + Page/Layout Transitions
@@ -146,7 +86,6 @@ export default defineNuxtConfig({
 				'zod',
 				'echarts',
 				'vue-echarts',
-				'workbox-window',
 			],
 		},
 	},
