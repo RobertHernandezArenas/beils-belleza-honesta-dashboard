@@ -18,6 +18,7 @@ const clientSchema = z.object({
 	document_type: z.enum(['DNI', 'PASSPORT', 'NIE']).default('DNI'),
 	document_number: z.string().optional().default(''),
 	status: z.enum(['ON', 'OFF']).default('ON'),
+	avatar: z.string().optional().default(''),
 })
 
 export default defineEventHandler(async event => {
@@ -49,7 +50,6 @@ export default defineEventHandler(async event => {
 				birth_date: new Date(parsedData.birth_date),
 				password: hashedPassword,
 				role: 'CLIENT',
-				avatar: '',
 			},
 		})
 

@@ -132,7 +132,7 @@
 <template>
 	<dialog ref="consentDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
-			class="modal-box bg-bg-app border-border-default m-4 max-w-2xl border p-0 shadow-xl sm:rounded-3xl">
+			class="modal-box bg-bg-app border-border-default m-4 flex max-h-[90dvh] max-w-2xl flex-col overflow-hidden border p-0 shadow-xl sm:rounded-3xl">
 			<!-- Header -->
 			<div class="bg-bg-card border-border-subtle flex items-center justify-between border-b p-6 sm:rounded-t-3xl">
 				<div class="flex items-center gap-4">
@@ -168,7 +168,7 @@
 			</div>
 
 			<!-- Formulario -->
-			<form @submit.prevent="onSubmit" class="space-y-5 p-6">
+			<form id="consentForm" @submit.prevent="onSubmit" class="flex-1 space-y-5 overflow-y-auto p-6 scroll-smooth">
 				<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 					<!-- Client Selection (Autocomplete) -->
 					<div class="md:col-span-2">
@@ -222,7 +222,7 @@
 						</label>
 						<select
 							v-model="form.status"
-							class="select bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4">
+							class="select bg-white border-border-default focus:bg-white focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl shadow-inner transition-colors focus:ring-4">
 							<option value="UNSIGNED">Sin Firmar</option>
 							<option value="SIGNED">Firmado</option>
 						</select>
@@ -242,30 +242,31 @@
 							class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"></textarea>
 					</div>
 				</div>
-
-				<!-- Acciones -->
-				<div class="modal-action border-border-subtle mt-8 flex gap-3 border-t pt-4">
-					<button
-						type="button"
-						class="btn btn-ghost hover:bg-bg-muted text-text-muted h-12 flex-1 rounded-xl border-transparent font-bold transition-colors"
-						@click="localVisible = false"
-						:disabled="isPending">
-						Cancelar
-					</button>
-					<button
-						type="submit"
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
-						:disabled="isPending">
-						<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
-						<template v-else>
-							<Save class="h-4 w-4" />
-							<span class="font-bold tracking-wide">
-								{{ isEditing ? 'Guardar Cambios' : 'Crear Consentimiento' }}
-							</span>
-						</template>
-					</button>
-				</div>
 			</form>
+
+			<!-- Acciones -->
+			<div class="modal-action border-border-subtle sticky bottom-0 z-20 flex gap-3 border-t bg-bg-app p-6">
+				<button
+					type="button"
+					class="btn btn-ghost hover:bg-bg-muted text-text-muted h-12 flex-1 rounded-xl border-transparent font-bold transition-colors"
+					@click="localVisible = false"
+					:disabled="isPending">
+					Cancelar
+				</button>
+				<button
+					type="submit"
+					form="consentForm"
+					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
+					:disabled="isPending">
+					<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
+					<template v-else>
+						<Save class="h-4 w-4" />
+						<span class="font-bold tracking-wide">
+							{{ isEditing ? 'Guardar Cambios' : 'Crear Consentimiento' }}
+						</span>
+					</template>
+				</button>
+			</div>
 		</div>
 		<form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
 			<button @click="localVisible = false">Cerrar</button>

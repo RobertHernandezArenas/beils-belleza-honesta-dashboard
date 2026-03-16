@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { UserPlus, Save, AlertCircle, Edit, User, CreditCard, Search } from 'lucide-vue-next'
+	import { UserPlus, Save, AlertCircle, Edit, User, CreditCard, Search, Camera, Trash2 } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
@@ -55,7 +55,28 @@
 		gender: '',
 		birth_date: new Date().toISOString().split('T')[0],
 		status: 'ON',
+		avatar: '',
 	})
+
+	const avatarPreview = ref('')
+	const avatarFile = ref<File | null>(null)
+	const fileInput = ref<HTMLInputElement | null>(null)
+
+	const triggerFileInput = () => fileInput.value?.click()
+
+	const onFileChange = (e: Event) => {
+		const target = e.target as HTMLInputElement
+		if (target.files && target.files[0]) {
+			avatarFile.value = target.files[0]
+			avatarPreview.value = URL.createObjectURL(target.files[0])
+		}
+	}
+
+	const removeAvatar = () => {
+		avatarFile.value = null
+		avatarPreview.value = ''
+		form.avatar = ''
+	}
 
 	const errors = reactive({
 		name: '',
@@ -126,6 +147,8 @@
 			form.gender = props.clientToEdit.gender || ''
 			form.birth_date = props.clientToEdit.birth_date ? new Date(props.clientToEdit.birth_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
 			form.status = props.clientToEdit.status || 'ON'
+			form.avatar = props.clientToEdit.avatar || ''
+			avatarPreview.value = props.clientToEdit.avatar || ''
 		} else {
 			form.name = ''
 			form.surname = ''
@@ -140,7 +163,10 @@
 			form.gender = ''
 			form.birth_date = new Date().toISOString().split('T')[0]
 			form.status = 'ON'
+			form.avatar = ''
+			avatarPreview.value = ''
 		}
+		avatarFile.value = null
 	}
 
 	const clearError = (field: keyof typeof errors) => {
@@ -162,10 +188,27 @@
 		gender: z.string().optional().default(''),
 		birth_date: z.string().optional().default(new Date().toISOString()),
 		status: z.enum(['ON', 'OFF']),
+		avatar: z.string().optional().default(''),
 	})
 
 	const { mutate: saveClient, isPending } = useMutation({
 		mutationFn: async (data: typeof form) => {
+			// Subir imagen primero si hay un archivo seleccionado
+			if (avatarFile.value) {
+				const formData = new FormData()
+				formData.append('file', avatarFile.value)
+				try {
+					const uploadRes = await $fetch<{ url: string }>('/api/multimedia/upload', {
+						method: 'POST',
+						body: formData,
+					})
+					data.avatar = uploadRes.url
+				} catch (err) {
+					console.error('Error uploading avatar:', err)
+					throw new Error('Error al subir la imagen')
+				}
+			}
+
 			const url = isEditing.value ? `/api/clients/${props.clientToEdit!.user_id}` : '/api/clients'
 			const method = isEditing.value ? 'PUT' : 'POST'
 
@@ -211,7 +254,7 @@
 <template>
 	<dialog ref="clientDialog" class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': localVisible }">
 		<div
-			class="modal-box bg-bg-app border-border-default m-0 max-h-[96dvh] w-full max-w-2xl border p-0 shadow-2xl transition-all sm:m-4 sm:max-h-[90dvh] sm:rounded-3xl rounded-t-[2.5rem]">
+			class="modal-box bg-bg-app border-border-default m-0 flex max-h-[96dvh] w-full max-w-2xl flex-col overflow-hidden border p-0 shadow-2xl transition-all sm:m-4 sm:max-h-[90dvh] sm:rounded-3xl rounded-t-[2.5rem]">
 			
 			<!-- Bottom Sheet Handle (Mobile Only) -->
 			<div 
@@ -252,7 +295,45 @@
 				id="clientForm"
 				@submit.prevent="onSubmit" 
 				@scroll.passive="handleScroll"
-				class="space-y-4 p-4 sm:space-y-5 sm:p-6 overflow-y-auto max-h-[calc(96dvh-160px)] sm:max-h-[calc(90dvh-160px)] scroll-smooth">
+				class="flex-1 space-y-4 overflow-y-auto p-4 scroll-smooth sm:space-y-5 sm:p-6">
+				
+				<!-- Sección: Avatar -->
+				<div class="flex flex-col items-center justify-center gap-4 py-4">
+					<div class="relative group">
+						<div class="h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-bg-muted flex items-center justify-center transition-all group-hover:border-primary/30">
+							<img v-if="avatarPreview" :src="avatarPreview" class="h-full w-full object-cover" />
+							<User v-else class="h-10 w-10 sm:h-12 sm:w-12 text-text-muted/40" />
+							
+							<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" @click="triggerFileInput">
+								<Camera class="text-white h-6 w-6 sm:h-8 sm:w-8" />
+							</div>
+						</div>
+						
+						<button 
+							v-if="avatarPreview" 
+							type="button"
+							@click="removeAvatar"
+							class="absolute -top-1 -right-1 bg-rose-500 text-white p-1.5 rounded-full shadow-lg hover:bg-rose-600 transition-colors">
+							<Trash2 class="h-3.5 w-3.5" />
+						</button>
+					</div>
+					
+					<div class="text-center">
+						<button 
+							type="button" 
+							@click="triggerFileInput"
+							class="text-primary text-xs font-black uppercase tracking-widest hover:underline">
+							{{ avatarPreview ? 'Cambiar Foto' : 'Subir Foto' }}
+						</button>
+						<input 
+							ref="fileInput"
+							type="file" 
+							class="hidden" 
+							accept="image/*"
+							@change="onFileChange" />
+					</div>
+				</div>
+
 				<!-- Sección: Información Personal -->
 				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
@@ -299,7 +380,7 @@
 							</label>
 							<select
 								v-model="form.document_type"
-								class="select bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								class="select bg-white border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
 								<option value="DNI">DNI (España)</option>
 								<option value="NIE">NIE (España)</option>
 								<option value="PASSPORT">{{ t('catalog.clients.form.passport') }}</option>
@@ -341,7 +422,7 @@
 							</label>
 							<select
 								v-model="form.gender"
-								class="select bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								class="select bg-white border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
 								<option value="">{{ t('catalog.clients.form.selectGender') }}</option>
 								<option value="male">{{ t('catalog.clients.form.male') }}</option>
 								<option value="female">{{ t('catalog.clients.form.female') }}</option>
@@ -397,7 +478,7 @@
 							</label>
 							<select
 								v-model="form.status"
-								class="select bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								class="select bg-white border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
 								<option value="ON">Activo</option>
 								<option value="OFF">Inactivo</option>
 							</select>
