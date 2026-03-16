@@ -54,6 +54,7 @@ async function seedDB() {
 		await prisma.product.deleteMany()
 		await prisma.subcategory.deleteMany()
 		await prisma.category.deleteMany()
+		await prisma.service.deleteMany()
 		await prisma.user.deleteMany()
 
 		console.log('👤 Seeding Users (1 Admin + 100 Clients)...')
