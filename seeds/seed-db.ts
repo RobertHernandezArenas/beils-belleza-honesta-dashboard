@@ -42,6 +42,18 @@ async function seedDB() {
 		await prisma.cartItem.deleteMany()
 		await prisma.cart.deleteMany()
 		await prisma.sequence.deleteMany()
+		await prisma.clientBonus.deleteMany()
+		await prisma.bonus.deleteMany()
+		await prisma.giftcard.deleteMany()
+		await prisma.coupon.deleteMany()
+		await prisma.packItemProduct.deleteMany()
+		await prisma.packItemService.deleteMany()
+		await prisma.pack.deleteMany()
+		await prisma.productTag.deleteMany()
+		await prisma.tag.deleteMany()
+		await prisma.product.deleteMany()
+		await prisma.subcategory.deleteMany()
+		await prisma.category.deleteMany()
 		await prisma.user.deleteMany()
 
 		console.log('👤 Seeding Users (1 Admin + 100 Clients)...')
@@ -180,6 +192,80 @@ async function seedDB() {
 		if (consentsToCreate.length > 0) await prisma.consent.createMany({ data: consentsToCreate })
 		if (questionnairesToCreate.length > 0) await prisma.questionnaire.createMany({ data: questionnairesToCreate })
 		if (revokesToCreate.length > 0) await prisma.revoke.createMany({ data: revokesToCreate })
+		
+		console.log('📦 Seeding Catalog (Categories, Products, Services)...')
+		
+		const category = await prisma.category.create({
+			data: {
+				name: 'Cuidado Facial',
+				description: 'Tratamientos y productos para la piel del rostro.',
+				subcategories: {
+					create: [
+						{ name: 'Limpieza', description: 'Leches, geles y tónicos.' },
+						{ name: 'Hidratación', description: 'Cremas y serums hidratantes.' }
+					]
+				}
+			}
+		})
+
+		const subcategories = await prisma.subcategory.findMany({ where: { category_id: category.category_id } })
+
+		await prisma.product.create({
+			data: {
+				name: 'Crema Hidratante Pro-Age',
+				description: 'Crema con ácido hialurónico.',
+				price: 45.0,
+				stock: 20,
+				category_id: category.category_id,
+				subcategory_id: subcategories[1].subcategory_id,
+				image_url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400'
+			}
+		})
+
+		const facialService = await prisma.service.create({
+			data: {
+				name: 'Higiene Facial Completa',
+				description: 'Limpieza profunda con extracción.',
+				price: 60.0,
+				duration: 60,
+				code: 'HF-01'
+			}
+		})
+
+		console.log('🎟️ Seeding Coupons & Bonuses...')
+
+		await prisma.coupon.createMany({
+			data: [
+				{
+					code: 'BIENVENIDA10',
+					description: '10% de descuento en tu primer servicio.',
+					discount_type: 'percentage',
+					discount_value: 10,
+					status: 'activo',
+					valid_until: new Date(2026, 11, 31)
+				},
+				{
+					code: 'FIEL20',
+					description: '20€ de descuento por fidelidad.',
+					discount_type: 'fixed',
+					discount_value: 20,
+					min_purchase: 100,
+					status: 'activo'
+				}
+			]
+		})
+
+		await prisma.bonus.create({
+			data: {
+				name: 'Bono 5 Higienes Faciales',
+				description: 'Paquete de 5 sesiones de higiene facial con descuento.',
+				total_sessions: 5,
+				price: 250.0,
+				service_id: facialService.service_id,
+				status: 'activo'
+			}
+		})
+
 		if (bookingsToCreate.length > 0) await prisma.booking.createMany({ data: bookingsToCreate })
 
 		console.log('✅ Database seeded successfully!')

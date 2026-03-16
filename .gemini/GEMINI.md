@@ -143,5 +143,6 @@ Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
   `['echarts', 'vue-echarts', 'zrender']` estén dentro del array `build.transpile` en `nuxt.config.ts`. Omitir
   esto provoca el infame error Server-Side `Cannot access 'renderer$1' before initialization`.
 - **Be Careful:** Element is missing end tag
+- **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
 
 "La limpieza en el código es el primer paso hacia un servicio honesto." 🌿

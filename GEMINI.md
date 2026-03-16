@@ -87,6 +87,7 @@ Vue files should be declarative and follow this order:
 - **Hardcoding:** Never hardcode dates or currencies; use `Intl.*` formatters.
 - **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`) as they are auto-imported.
 - **Be Careful:** Element is missing end tag
+- **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
 
 
 ## Documentation
