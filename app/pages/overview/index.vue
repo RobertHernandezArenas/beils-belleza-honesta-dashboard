@@ -139,6 +139,12 @@
 		if (!products.value) return []
 		return products.value.filter((p: any) => p.stock <= (p.min_stock || 0))
 	})
+
+	// Manejo de errores de avatar
+	const avatarErrors = reactive(new Set<string>())
+	const handleAvatarError = (id: string) => {
+		avatarErrors.add(id)
+	}
 </script>
 
 <template>
@@ -277,7 +283,11 @@
 										<span class="text-sm font-bold">{{ formatTime(booking.booking_date) }}</span>
 									</div>
 									<div class="bg-primary/10 text-primary border-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border overflow-hidden">
-										<img v-if="booking.client?.avatar" :src="booking.client.avatar" class="h-full w-full object-cover" />
+										<img 
+											v-if="booking.client?.avatar && !avatarErrors.has(booking.client.user_id)" 
+											:src="booking.client.avatar" 
+											class="h-full w-full object-cover"
+											@error="handleAvatarError(booking.client.user_id)" />
 										<span v-else class="text-xs font-bold">{{ booking.client?.name?.charAt(0) }}{{ booking.client?.surname?.charAt(0) }}</span>
 									</div>
 								</div>
@@ -350,7 +360,11 @@
 								<div class="flex items-center gap-4">
 									<div
 										class="bg-primary/5 text-primary group-hover:bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors border-primary/10 border overflow-hidden">
-										<img v-if="sale.user?.avatar" :src="sale.user.avatar" class="h-full w-full object-cover" />
+										<img 
+											v-if="sale.user?.avatar && !avatarErrors.has(sale.user.user_id)" 
+											:src="sale.user.avatar" 
+											class="h-full w-full object-cover"
+											@error="handleAvatarError(sale.user.user_id)" />
 										<ShoppingBag v-else class="h-4 w-4" />
 									</div>
 									<div class="flex flex-col">

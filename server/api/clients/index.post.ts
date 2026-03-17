@@ -18,6 +18,7 @@ const clientSchema = z.object({
 	document_number: z.string().optional().default(''),
 	status: z.enum(['ON', 'OFF']).default('ON'),
 	avatar: z.string().optional().default(''),
+	user_id: z.string().optional(),
 })
 
 export default defineEventHandler(async event => {
@@ -46,6 +47,7 @@ export default defineEventHandler(async event => {
 		const user = await prisma.user.create({
 			data: {
 				...parsedData,
+				user_id: parsedData.user_id || undefined,
 				birth_date: new Date(parsedData.birth_date),
 				password: hashedPassword,
 				role: 'CLIENT',

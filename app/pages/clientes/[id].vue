@@ -68,6 +68,12 @@
 
 	// Privacidad de documentos
 	const { revealedDocs, revealedLoading, toggleDocumentVisibility } = useDataPrivacy()
+
+	// Manejo de errores de avatar
+	const avatarError = ref(false)
+	const handleAvatarError = () => {
+		avatarError.value = true
+	}
 </script>
 
 <template>
@@ -113,7 +119,11 @@
 					class="bg-bg-card border-border-subtle flex flex-col items-start gap-6 rounded-3xl border p-6 shadow-sm md:flex-row md:items-center lg:p-8">
 					<div
 						class="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 shrink-0 items-center justify-center rounded-3xl border overflow-hidden">
-						<img v-if="client.avatar" :src="client.avatar" class="h-full w-full object-cover" />
+						<img 
+							v-if="client.avatar && !avatarError" 
+							:src="client.avatar" 
+							class="h-full w-full object-cover"
+							@error="handleAvatarError" />
 						<span v-else class="text-4xl font-bold tracking-tight">
 							{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
 						</span>

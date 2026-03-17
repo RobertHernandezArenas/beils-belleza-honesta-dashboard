@@ -25,6 +25,7 @@ export default defineEventHandler(async event => {
 
 		const type = formData.find(item => item.name === 'type')?.data.toString() || 'clientes'
 		const category = formData.find(item => item.name === 'category')?.data.toString() || 'imagenes'
+		const subdirectory = formData.find(item => item.name === 'subdirectory')?.data.toString() || ''
 
 		// Validate type
 		const contentType = file.type || ''
@@ -35,8 +36,9 @@ export default defineEventHandler(async event => {
 			})
 		}
 
-		// Determine target directory
-		const uploadDir = join(process.cwd(), 'public', 'multimedia', category, type)
+		// Determine target directory and sanitize subdirectory
+		const safeSubdirectory = subdirectory.replace(/[^a-zA-Z0-9-_]/g, '_')
+		const uploadDir = join(process.cwd(), 'public', 'multimedia', category, type, safeSubdirectory)
 		await mkdir(uploadDir, { recursive: true })
 
 		const fileExtension = extname(file.filename || '.jpg')
@@ -54,7 +56,7 @@ export default defineEventHandler(async event => {
 				.toFile(optimizedPath)
 
 			return {
-				url: `/multimedia/${category}/${type}/${optimizedFilename}`,
+				url: `/multimedia/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${optimizedFilename}`,
 				filename: optimizedFilename,
 				size: file.data.length,
 			}
@@ -63,7 +65,7 @@ export default defineEventHandler(async event => {
 			const filePath = join(uploadDir, filename)
 			await writeFile(filePath, file.data)
 			return {
-				url: `/multimedia/${category}/${type}/${filename}`,
+				url: `/multimedia/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${filename}`,
 				filename,
 				size: file.data.length,
 			}

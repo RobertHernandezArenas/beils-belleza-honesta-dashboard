@@ -77,6 +77,16 @@
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
 
+	// Manejo de errores de avatar
+	const avatarError = ref(false)
+	const handleAvatarError = () => {
+		avatarError.value = true
+	}
+
+	watch(selectedClient, () => {
+		avatarError.value = false
+	})
+
 	// Fetch Data
 	const { data: clientsResponse } = useQuery<any>({
 		queryKey: ['clients-tpv'],
@@ -453,7 +463,11 @@
 						<div class="flex items-center gap-3">
 							<div
 								class="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full overflow-hidden">
-								<img v-if="selectedClient.avatar" :src="selectedClient.avatar" class="h-full w-full object-cover" />
+								<img 
+									v-if="selectedClient.avatar && !avatarError" 
+									:src="selectedClient.avatar" 
+									class="h-full w-full object-cover"
+									@error="handleAvatarError" />
 								<span v-else class="text-sm font-bold">
 									{{ selectedClient.name.charAt(0) }}{{ selectedClient.surname.charAt(0) }}
 								</span>

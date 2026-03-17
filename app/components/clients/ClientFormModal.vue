@@ -56,6 +56,7 @@
 		birth_date: new Date().toISOString().split('T')[0],
 		status: 'ON',
 		avatar: '',
+		user_id: '', // Optional pre-generated ID
 	})
 
 	const avatarPreview = ref('')
@@ -72,10 +73,20 @@
 		}
 	}
 
+	const avatarError = ref(false)
+	const handleAvatarError = () => {
+		avatarError.value = true
+	}
+
+	watch(() => avatarPreview.value, () => {
+		avatarError.value = false
+	})
+
 	const removeAvatar = () => {
 		avatarFile.value = null
 		avatarPreview.value = ''
 		form.avatar = ''
+		avatarError.value = false
 	}
 
 	const errors = reactive({
@@ -164,6 +175,7 @@
 			form.birth_date = new Date().toISOString().split('T')[0]
 			form.status = 'ON'
 			form.avatar = ''
+			form.user_id = ''
 			avatarPreview.value = ''
 		}
 		avatarFile.value = null
@@ -197,6 +209,16 @@
 			if (avatarFile.value) {
 				const formData = new FormData()
 				formData.append('file', avatarFile.value)
+				
+				// Generar nombre de subcarpeta descriptivo
+				const clientId = isEditing.value ? props.clientToEdit!.user_id : (form as any).user_id || crypto.randomUUID()
+				if (!isEditing.value) (form as any).user_id = clientId
+				
+				const slugify = (text: string) => text.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-')
+				const subdirectory = `${slugify(form.name)}-${slugify(form.surname)}-${clientId.substring(0, 8)}`
+				
+				formData.append('subdirectory', subdirectory)
+				
 				try {
 					const uploadRes = await $fetch<{ url: string }>('/api/multimedia/upload', {
 						method: 'POST',
@@ -300,8 +322,15 @@
 				<!-- Sección: Avatar -->
 				<div class="flex flex-col items-center justify-center gap-4 py-4">
 					<div class="relative group">
-						<div class="h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-bg-muted flex items-center justify-center transition-all group-hover:border-primary/30">
-							<img v-if="avatarPreview" :src="avatarPreview" class="h-full w-full object-cover" />
+						<div class="h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-bg-muted flex items-center justify-center transition-all group-hover:border-primary/30 from-primary/20 to-primary/5 bg-linear-to-br">
+							<img 
+								v-if="avatarPreview && !avatarError" 
+								:src="avatarPreview" 
+								class="h-full w-full object-cover"
+								@error="handleAvatarError" />
+							<span v-else-if="form.name || form.surname" class="text-3xl sm:text-4xl font-black text-primary tracking-tight">
+								{{ (form.name?.charAt(0) || '') }}{{ (form.surname?.charAt(0) || '') }}
+							</span>
 							<User v-else class="h-10 w-10 sm:h-12 sm:w-12 text-text-muted/40" />
 							
 							<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" @click="triggerFileInput">
