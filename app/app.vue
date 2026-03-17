@@ -12,7 +12,6 @@
 				: 'Beils Bellez Honesta Plataforma'
 		},
 		link: [
-			{ rel: 'manifest', href: '/manifest.webmanifest' },
 			{ rel: 'apple-touch-icon', href: '/images/apple-touch-icon.png' },
 		],
 		meta: [

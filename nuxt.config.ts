@@ -19,7 +19,6 @@ export default defineNuxtConfig({
 		layoutTransition: { name: 'layout', mode: 'out-in' },
 		head: {
 			link: [
-				{ rel: 'manifest', href: '/manifest.webmanifest' },
 				{ rel: 'apple-touch-icon', href: '/images/apple-touch-icon.png' },
 				{ rel: 'apple-touch-icon', sizes: '152x152', href: '/images/apple-touch-icon-152x152.png' },
 			],

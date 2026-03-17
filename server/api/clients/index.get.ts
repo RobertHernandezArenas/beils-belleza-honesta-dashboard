@@ -43,6 +43,7 @@ export default defineEventHandler(async event => {
 					document_type: true,
 					document_number: true,
 					status: true,
+					avatar: true,
 					_count: {
 						select: { client_bookings: true, consents: true },
 					},

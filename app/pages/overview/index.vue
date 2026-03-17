@@ -17,27 +17,27 @@
 	const authStore = useAuthStore()
 
 	// Queries
-	const { data: carts, isPending: loadingCarts } = useQuery({
+	const { data: carts, isPending: loadingCarts } = useQuery<any[]>({
 		queryKey: ['carts-overview'],
 		queryFn: () => $fetch('/api/sales/carts'),
 	})
 
-	const { data: bookings, isPending: loadingBookings } = useQuery({
+	const { data: bookings, isPending: loadingBookings } = useQuery<any[]>({
 		queryKey: ['bookings-overview'],
 		queryFn: () => $fetch('/api/agenda/bookings'),
 	})
 
-	const { data: clients, isPending: loadingClients } = useQuery({
+	const { data: clients, isPending: loadingClients } = useQuery<any[]>({
 		queryKey: ['clients-overview'],
 		queryFn: () => $fetch('/api/users?role=CLIENT'),
 	})
 
-	const { data: debts, isPending: loadingDebts } = useQuery({
+	const { data: debts, isPending: loadingDebts } = useQuery<any[]>({
 		queryKey: ['debts-overview'],
 		queryFn: () => $fetch('/api/sales/debts'),
 	})
 
-	const { data: products, isPending: loadingProducts } = useQuery({
+	const { data: products, isPending: loadingProducts } = useQuery<any[]>({
 		queryKey: ['products-overview'],
 		queryFn: () => $fetch('/api/catalog/products'),
 	})
@@ -270,14 +270,20 @@
 								v-for="booking in upcomingBookings"
 								:key="booking.booking_id"
 								class="group hover:bg-bg-muted/50 flex cursor-pointer items-center gap-4 rounded-2xl p-4 transition-colors">
-								<!-- Time -->
-								<div
-									class="bg-bg-muted text-text-primary flex h-12 w-16 shrink-0 flex-col items-center justify-center rounded-xl tabular-nums">
-									<span class="text-sm font-bold">{{ formatTime(booking.booking_date) }}</span>
+								<!-- Time & Avatar -->
+								<div class="flex items-center gap-3">
+									<div
+										class="bg-bg-muted text-text-primary flex h-12 w-16 shrink-0 flex-col items-center justify-center rounded-xl tabular-nums">
+										<span class="text-sm font-bold">{{ formatTime(booking.booking_date) }}</span>
+									</div>
+									<div class="bg-primary/10 text-primary border-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border overflow-hidden">
+										<img v-if="booking.client?.avatar" :src="booking.client.avatar" class="h-full w-full object-cover" />
+										<span v-else class="text-xs font-bold">{{ booking.client?.name?.charAt(0) }}{{ booking.client?.surname?.charAt(0) }}</span>
+									</div>
 								</div>
-
+								
 								<!-- Info -->
-								<div class="flex flex-1 flex-col justify-center overflow-hidden">
+								<div class="flex flex-1 flex-col justify-center overflow-hidden ml-1">
 									<h4 class="text-text-primary truncate font-bold">
 										{{ booking.client?.name }} {{ booking.client?.surname }}
 									</h4>
@@ -343,8 +349,9 @@
 								class="group flex items-center justify-between py-4">
 								<div class="flex items-center gap-4">
 									<div
-										class="bg-primary/5 text-primary group-hover:bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors">
-										<ShoppingBag class="h-4 w-4" />
+										class="bg-primary/5 text-primary group-hover:bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors border-primary/10 border overflow-hidden">
+										<img v-if="sale.user?.avatar" :src="sale.user.avatar" class="h-full w-full object-cover" />
+										<ShoppingBag v-else class="h-4 w-4" />
 									</div>
 									<div class="flex flex-col">
 										<p class="text-text-primary text-sm font-bold">

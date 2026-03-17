@@ -45,8 +45,7 @@ export default defineEventHandler(async event => {
 				duration: true,
 				notes: true,
 				client_id: true,
-				staff_id: true,
-				client: { select: { name: true, surname: true, phone: true } },
+				client: { select: { name: true, surname: true, phone: true, avatar: true } },
 				staff: { select: { name: true, surname: true } },
 			},
 			orderBy: [{ booking_date: 'asc' }, { start_time: 'asc' }],
@@ -84,7 +83,7 @@ export default defineEventHandler(async event => {
 				notes: body.notes,
 			},
 			include: {
-				client: { select: { name: true, surname: true, phone: true } },
+				client: { select: { name: true, surname: true, phone: true, avatar: true } },
 				staff: { select: { name: true, surname: true } },
 			},
 		})

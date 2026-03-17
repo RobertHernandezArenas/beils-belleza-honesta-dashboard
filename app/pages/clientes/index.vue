@@ -180,8 +180,9 @@
 								<td class="px-3 py-5">
 									<div class="flex items-center gap-4">
 										<div
-											class="from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
-											<span class="text-base font-black tracking-tight">
+											class="from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105 overflow-hidden">
+											<img v-if="client.avatar" :src="client.avatar" class="h-full w-full object-cover" />
+											<span v-else class="text-base font-black tracking-tight">
 												{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
 											</span>
 										</div>

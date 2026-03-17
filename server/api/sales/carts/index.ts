@@ -17,7 +17,7 @@ export default defineEventHandler(async event => {
 		const carts = await prisma.cart.findMany({
 			where: whereClause,
 			include: {
-				user: { select: { name: true, surname: true, email: true } },
+				user: { select: { name: true, surname: true, email: true, avatar: true } },
 				items: true,
 				debts: true,
 			},
@@ -125,7 +125,7 @@ export default defineEventHandler(async event => {
 					stripe_payment_intent_id: cartData.stripe_payment_intent_id || null,
 					stripe_status: cartData.stripe_status || null,
 				},
-				include: { items: true, user: { select: { name: true, surname: true } } },
+				include: { items: true, user: { select: { name: true, surname: true, avatar: true } } },
 			})
 
 			// Create the associated Debt if it is a Stripe Installment Plan inside the transaction
