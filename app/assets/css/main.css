@@ -8,7 +8,7 @@
 	--font-condensed: 'Roboto Condensed', ui-sans-serif, system-ui;
 
 	/* Beils Palette mapped to Tailwind colors */
-	--color-bg-app: #fbfaf9;
+	--color-bg-app: #FFFFFF;
 	--color-bg-card: #ffffff;
 	--color-bg-muted: #f4f1ee;
 	--color-bg-hover: #f2f0eb;

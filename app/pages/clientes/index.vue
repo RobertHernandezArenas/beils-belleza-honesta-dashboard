@@ -115,7 +115,7 @@
 				data-aos="fade-up"
 				class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
 				<div>
-					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
+					<h1 class="text-text-primary mb-2 text-3xl font-medium tracking-tight">
 						{{ t('catalog.clients.title') }}
 					</h1>
 					<p class="text-text-muted text-sm font-medium">{{ t('catalog.clients.subtitle') }}</p>
@@ -123,12 +123,12 @@
 
 				<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
 					<div class="relative w-full sm:w-3/4 lg:w-auto">
-						<Search class="text-text-muted absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2" />
+						<Search class="text-text-muted absolute top-1/2 left-4 z-2 h-4 w-4 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
-							type="text"
+							type="search"
 							placeholder="Buscar nombre o correo..."
-							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4 sm:w-full lg:w-64" />
+							class="border-text-secondary/30 placeholder:text-text-muted/50 h-12 w-full rounded-full border pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] ring-0! outline-0! transition-colors sm:w-full lg:w-64" />
 					</div>
 					<button
 						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
@@ -164,17 +164,24 @@
 				v-else
 				data-aos="fade-up"
 				data-aos-delay="100"
-				class="glass-card premium-shadow flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl">
-				<div class="custom-scrollbar w-full flex-1 overflow-auto pr-0 lg:overflow-x-hidden lg:pr-6">
+				class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl">
+				<div class="custom-scrollbar w-full flex-1 overflow-x-auto">
 					<table
-						class="relative w-full table-fixed text-left text-sm max-lg:min-w-[950px] lg:table-auto lg:text-[13px]">
-						<thead class="glass-header text-text-secondary sticky top-0 z-10 border-b">
+						class="w-full min-w-[700px] table-auto border border-[#fbfaf9] text-left text-sm lg:table-fixed lg:text-[13px]">
+						<thead class="text-text-secondary sticky top-0 z-10 bg-[#fbfaf9]">
 							<tr>
-								<th class="px-6 py-5 font-bold tracking-tight">Cliente</th>
-								<th class="px-6 py-5 font-bold tracking-tight">Contacto</th>
-								<th class="px-6 py-5 font-bold tracking-tight">Actividad</th>
-								<th class="px-6 py-5 text-center font-bold tracking-tight">Estado</th>
-								<th class="px-6 py-5 text-right font-bold tracking-tight">Acciones</th>
+								<th class="px-6 py-4 text-[14px] font-bold tracking-tight lg:w-[30%]">Cliente</th>
+								<th class="px-6 py-4 text-[14px] font-bold tracking-tight lg:w-[25%]">Contacto</th>
+								<th
+									class="hidden px-6 py-4 text-[14px] font-bold tracking-tight md:table-cell lg:w-[20%]">
+									Actividad
+								</th>
+								<th class="px-6 py-4 text-center text-[14px] font-bold tracking-tight lg:w-[12%]">
+									Estado
+								</th>
+								<th class="px-6 py-4 pr-8 text-right text-[14px] font-bold tracking-tight lg:w-[13%]">
+									Acciones
+								</th>
 							</tr>
 						</thead>
 						<tbody class="divide-border-subtle/50 divide-y">
@@ -183,48 +190,52 @@
 								:key="client.user_id"
 								class="premium-lift group cursor-pointer transition-all duration-300 hover:bg-white/60"
 								@click="navigateTo(`/clientes/${client.user_id}`)">
-								<td class="px-3 py-5">
-									<div class="flex items-center gap-4">
+								<!-- Columna Cliente -->
+								<td class="px-6 py-4">
+									<div class="flex items-center gap-3">
 										<div
-											class="from-primary/20 to-primary/5 text-primary border-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105 overflow-hidden">
-											<img 
-												v-if="client.avatar && !avatarErrors.has(client.user_id)" 
-												:src="client.avatar" 
+											class="from-primary/20 to-primary/5 text-primary border-primary/20 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
+											<img
+												v-if="client.avatar && !avatarErrors.has(client.user_id)"
+												:src="client.avatar"
 												class="h-full w-full object-cover"
 												@error="handleAvatarError(client.user_id)" />
-											<span v-else class="text-base font-black tracking-tight">
+											<span v-else class="text-sm font-black tracking-tight">
 												{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
 											</span>
 										</div>
-										<div class="flex flex-col">
-											<NuxtLink
-												:to="`/clientes/${client.user_id}`"
-												class="text-text-primary group-hover:text-primary text-sm font-bold transition-colors"
-												@click.stop>
+										<div class="flex min-w-0 flex-col">
+											<span
+												class="text-text-primary group-hover:text-primary truncate text-sm font-bold transition-colors">
 												{{ client.name }} {{ client.surname }}
-											</NuxtLink>
+											</span>
 											<p
-												class="text-text-muted mt-0.5 max-w-[200px] truncate text-xs font-semibold tracking-tight opacity-70">
+												class="text-text-muted mt-0.5 truncate text-[11px] font-semibold tracking-tight opacity-70">
 												{{ client.email }}
 											</p>
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-5" @click.stop>
+
+								<!-- Columna Contacto -->
+								<td class="px-6 py-4" @click.stop>
 									<div class="flex flex-col">
 										<span class="text-text-primary text-sm font-bold tabular-nums">
 											{{ client.phone }}
 										</span>
-										<div class="mt-1 flex items-center gap-1.5">
+										<div class="mt-1 flex items-center gap-1.5 overflow-hidden">
 											<span
-												class="text-text-muted bg-bg-muted/50 rounded px-1.5 py-0.5 text-[10px] font-black tracking-widest uppercase">
+												class="text-text-muted bg-bg-muted/50 shrink-0 rounded px-1.5 py-0.5 text-[9px] font-black tracking-widest uppercase">
 												{{ client.document_type }}
 											</span>
-											<span class="text-text-muted text-[11px] font-bold tracking-tight">
-												{{ revealedDocs[client.user_id] || client.document_number }}
+											<span class="text-text-muted truncate text-[11px] font-bold tracking-tight">
+												{{
+													revealedDocs[client.user_id] ||
+													`${client.document_number.slice(0, 4)}***`
+												}}
 											</span>
 											<button
-												class="text-text-muted hover:text-primary ml-0.5 transition-colors disabled:opacity-50"
+												class="text-text-muted hover:text-primary ml-0.5 shrink-0 transition-colors disabled:opacity-50"
 												role="button"
 												:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
 												:disabled="revealedLoading[client.user_id]"
@@ -240,7 +251,9 @@
 										</div>
 									</div>
 								</td>
-								<td class="px-3 py-5">
+
+								<!-- Columna Actividad (Oculta en móviles) -->
+								<td class="hidden px-6 py-4 md:table-cell">
 									<div class="flex items-center gap-2">
 										<div
 											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-white/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
@@ -256,7 +269,9 @@
 										</div>
 									</div>
 								</td>
-								<td class="px-6 py-5 text-center">
+
+								<!-- Columna Estado -->
+								<td class="px-6 py-4 text-center">
 									<span
 										class="inline-flex items-center rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase"
 										:class="
@@ -268,7 +283,9 @@
 										{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
 									</span>
 								</td>
-								<td class="px-6 py-5 text-right">
+
+								<!-- Columna Acciones -->
+								<td class="px-6 py-4 pr-8 text-right">
 									<div class="flex items-center justify-end gap-1.5">
 										<NuxtLink
 											:to="`/clientes/${client.user_id}`"
@@ -298,7 +315,7 @@
 
 				<!-- Pagination Footer -->
 				<div
-					class="glass-header flex flex-col items-center justify-between gap-4 border-t px-8 py-5 sm:flex-row">
+					class="flex flex-col items-center justify-between gap-4 border-[#fbfaf9] px-8 py-5 sm:flex-row">
 					<div class="text-text-muted flex items-center gap-6 text-xs font-bold tracking-tight">
 						<span class="hidden opacity-60 sm:inline">
 							Mostrando {{ clients.length }} de {{ pagination.total }} clientes

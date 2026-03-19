@@ -6,53 +6,7 @@
 
 		<div class="drawer-content relative z-10 flex h-dvh flex-col">
 			<!-- NAVBAR (Glassmorphism) -->
-			<nav
-				class="bg-bg-card/90 sticky top-0 z-50 h-[73px] w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
-				<div class="flex w-full items-center justify-between">
-					<div class="flex items-center gap-4">
-						<div class="lg:hidden">
-							<label
-								for="my-drawer-4"
-								aria-label="open sidebar"
-								class="btn btn-square btn-ghost text-text-secondary hover:bg-bg-muted hover:text-text-secondary">
-								<Transition name="swap" mode="out-in">
-									<PanelLeftClose v-if="isDrawerOpen" class="h-6 w-6" />
-									<PanelLeftOpen v-else class="h-6 w-6" />
-								</Transition>
-							</label>
-						</div>
-
-						<!-- Breadcrumb / Titulo en top bar -->
-						<UiAppBreadcrumbs :current-label="currentRouteTranslated" />
-					</div>
-
-					<div class="flex items-center gap-4">
-						<!-- Selector de Idioma (Trend UI 2026) -->
-						<UiLanguageSelector />
-
-						<!-- Perfil rápido superior -->
-						<button
-							v-if="authStore.user"
-							class="group bg-bg-card hover:border-border-strong hover:bg-bg-muted relative flex items-center gap-2 rounded-full border border-transparent p-1 pr-3 transition-colors">
-							<div class="avatar">
-								<div
-									class="ring-border-default group-hover:ring-border-strong w-8 rounded-full ring-1">
-									<img
-										:src="
-											authStore.user.avatar ||
-											`https://ui-avatars.com/api/?name=${authStore.user.name}+${authStore.user.surname || ''}&background=random`
-										"
-										alt="User Avatar"
-										width="32"
-										height="32"
-										class="object-cover brightness-110 saturate-0 transition-[filter] group-hover:saturate-100" />
-								</div>
-							</div>
-						</button>
-					</div>
-				</div>
-			</nav>
-
+			
 			<!-- Contenido de la Página -->
 			<main class="w-full flex-1 overflow-y-auto">
 				<slot />
