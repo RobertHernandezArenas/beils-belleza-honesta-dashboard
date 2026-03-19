@@ -194,7 +194,7 @@
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-3">
 										<div
-											class="from-primary/20 to-primary/5 text-primary border-primary/20 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
+											class="from-primary/20 to-primary/5 text-primary border-text-secondary flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
 											<img
 												v-if="client.avatar && !avatarErrors.has(client.user_id)"
 												:src="client.avatar"
