@@ -1,12 +1,27 @@
 <template>
 	<div class="drawer lg:drawer-open bg-bg-app text-text-secondary relative h-dvh overflow-hidden font-sans">
-		<!-- Minimalist background without blobs -->
-
 		<input id="my-drawer-4" v-model="isDrawerOpen" type="checkbox" class="drawer-toggle" />
 
+		<!-- NAVBAR (Glassmorphism) -->
 		<div class="drawer-content relative z-10 flex h-dvh flex-col">
-			<!-- NAVBAR (Glassmorphism) -->
-			
+			<nav
+				class="bg-bg-card/90 sticky top-0 z-50 h-[73px] w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
+				<div class="flex w-full items-center justify-between">
+					<div class="flex items-center gap-4">
+						<div class="lg:hidden">
+							<label
+								for="my-drawer-4"
+								aria-label="open sidebar"
+								class="btn btn-square btn-ghost text-text-secondary hover:bg-bg-muted hover:text-text-secondary">
+								<Transition name="swap" mode="out-in">
+									<PanelLeftClose v-if="isDrawerOpen" class="h-6 w-6" />
+									<PanelLeftOpen v-else class="h-6 w-6" />
+								</Transition>
+							</label>
+						</div>
+					</div>
+				</div>
+			</nav>
 			<!-- Contenido de la Página -->
 			<main class="w-full flex-1 overflow-y-auto">
 				<slot />
@@ -30,17 +45,12 @@
 					class="relative z-10 flex h-[73px] min-h-[73px] w-full items-center justify-start gap-3 border-b border-transparent p-6">
 					<div class="group relative shrink-0">
 						<NuxtLink to="/">
-							<NuxtImg
-								src="/images/tp-dash.svg"
-								class="relative w-9 brightness-0 drop-shadow-sm"
+							<img
+								src="/assets/images/beils_.svg"
+								class="relative w-25 brightness-0 drop-shadow-sm"
 								alt="Logo" />
 						</NuxtLink>
 					</div>
-					<NuxtLink to="/">
-						<span class="text-text-secondary text-xl font-bold tracking-wider drop-shadow-none">
-							BEILS
-						</span>
-					</NuxtLink>
 				</div>
 
 				<!-- Navegación -->
@@ -53,10 +63,14 @@
 						<!-- GSAP Active Pill Background -->
 						<div
 							ref="activePill"
-							class="bg-text-secondary absolute left-0 w-full rounded-[1.25rem] opacity-0 shadow-md pointer-events-none"
-							style="z-index: 0; min-height: 48px;"></div>
+							class="bg-text-secondary pointer-events-none absolute left-0 w-full rounded-[1.25rem] opacity-0 shadow-md"
+							style="z-index: 0; min-height: 48px"></div>
 
-						<li v-for="item in navItems" :key="item.to || item.label" class="relative z-10" :ref="setNavRef(item.to)">
+						<li
+							v-for="item in navItems"
+							:key="item.to || item.label"
+							class="relative z-10"
+							:ref="setNavRef(item.to)">
 							<NuxtLink
 								v-if="item.to"
 								:to="item.to"
@@ -197,17 +211,17 @@
 	const currentActivePath = computed(() => {
 		// Normalizamos el path eliminando trailing slash temporalmente si existe
 		const path = route.path === '/' ? '/' : route.path.replace(/\/$/, '')
-		
+
 		if (navRefs.value[path]) {
 			return path
 		}
-		
+
 		// Fallback para rutas hijas que no están en el menú principal
 		const partialMatch = Object.keys(navRefs.value)
 			.filter(k => k !== '/')
 			.sort((a, b) => b.length - a.length)
 			.find(k => path.startsWith(k))
-			
+
 		return partialMatch || '/'
 	})
 
@@ -219,21 +233,21 @@
 
 	const updateActivePill = (immediate = false) => {
 		if (!activePill.value) return
-		
+
 		const activeEl = navRefs.value[currentActivePath.value]
 		if (activeEl) {
 			const top = activeEl.offsetTop
 			const height = activeEl.offsetHeight
-			
+
 			if (immediate) {
 				gsap.set(activePill.value, { y: top, height, opacity: 1 })
 			} else {
-				gsap.to(activePill.value, { 
-					y: top, 
-					height, 
-					opacity: 1, 
-					duration: 0.45, 
-					ease: 'power3.inOut' 
+				gsap.to(activePill.value, {
+					y: top,
+					height,
+					opacity: 1,
+					duration: 0.45,
+					ease: 'power3.inOut',
 				})
 			}
 		} else {
@@ -245,7 +259,7 @@
 		() => route.path,
 		() => {
 			nextTick(() => updateActivePill(false))
-		}
+		},
 	)
 
 	// GSAP sidebar nav stagger entrance
