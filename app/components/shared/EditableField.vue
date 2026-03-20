@@ -117,6 +117,16 @@ const animateBackToText = () => {
   })
 }
 
+const handleBlur = () => {
+  // Los select nativos pueden disparar blur al abrir sus opciones nativas según el SO.
+  if (props.type === 'select') return
+  setTimeout(() => {
+    if (isEditing.value) {
+      saveEdit()
+    }
+  }, 200)
+}
+
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Enter') saveEdit()
   if (e.key === 'Escape') cancelEdit()
@@ -150,14 +160,16 @@ const handleKeyDown = (e: KeyboardEvent) => {
       <div v-if="label" class="text-[10px] font-bold text-primary uppercase tracking-wider pl-1 mb-1">
         Editando: {{ label }}
       </div>
-      <div class="flex items-center gap-2 w-full relative">
+      <div class="flex items-center gap-2 w-full">
         <template v-if="type === 'select'">
           <select 
             ref="inputRef"
             v-model="localValue" 
-            class="select select-sm w-full bg-bg-card border-primary focus:ring-primary/30 focus:border-primary shadow-[0_0_15px_rgba(var(--color-primary),0.1)] transition-all font-medium text-text-primary"
-            @blur="saveEdit"
-            @keydown="handleKeyDown"
+            class="select select-sm flex-1 bg-bg-card border-primary focus:ring-primary/30 focus:border-primary shadow-[0_0_15px_rgba(var(--color-primary),0.1)] transition-all font-medium text-text-primary"
+            @change="saveEdit"
+            @blur="handleBlur"
+            @keydown.stop="handleKeyDown"
+            @click.stop
           >
             <option v-for="opt in options" :key="opt.value" :value="opt.value">
               {{ opt.label }}
@@ -170,18 +182,19 @@ const handleKeyDown = (e: KeyboardEvent) => {
             v-model="localValue" 
             :type="type" 
             :placeholder="placeholder"
-            class="input input-sm w-full bg-bg-card border-primary focus:ring-primary/30 focus:border-primary shadow-[0_0_15px_rgba(var(--color-primary),0.1)] transition-all font-medium text-text-primary"
-            @blur="saveEdit"
-            @keydown="handleKeyDown"
+            class="input input-sm flex-1 bg-bg-card border-primary focus:ring-primary/30 focus:border-primary shadow-[0_0_15px_rgba(var(--color-primary),0.1)] transition-all font-medium text-text-primary"
+            @blur="handleBlur"
+            @keydown.stop="handleKeyDown"
+            @click.stop
           />
         </template>
         
-        <!-- Actions (Absolute positioning for quick access without layout shift) -->
-        <div class="absolute right-1 flex items-center gap-1 z-10" @mousedown.prevent>
-          <button @click.prevent="saveEdit" class="btn btn-xs btn-circle btn-success text-white shadow-sm" title="Guardar">
+        <!-- Actions (Inline positioning side-by-side to avoid overlapping arrow/text) -->
+        <div class="flex items-center gap-1 shrink-0">
+          <button @click.stop.prevent="saveEdit" @mousedown.stop.prevent class="btn btn-xs btn-circle btn-success text-white shadow-sm" title="Guardar">
             <Check class="w-3 h-3" />
           </button>
-          <button @click.prevent="cancelEdit" class="btn btn-xs btn-circle btn-ghost text-error" title="Cancelar">
+          <button @click.stop.prevent="cancelEdit" @mousedown.stop.prevent class="btn btn-xs btn-circle btn-ghost text-error" title="Cancelar">
             <X class="w-3 h-3" />
           </button>
         </div>

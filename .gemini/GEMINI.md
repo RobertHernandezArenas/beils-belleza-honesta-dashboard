@@ -131,16 +131,15 @@ Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
 
 ---
 
-## 🚫 Anti-patrones (No hacer)
-
-- Usar `transition: all` (especificar propiedades: `transition-opacity`).
-- Navegación mediante `div @click` (usar `NuxtLink` o `button`).
-- Hardcodear fechas o monedas (usar `Intl.*`).
-- Ignorar el modo oscuro (verificar siempre contraste en `dark mode`).
-- Evitar realizar imports que Nuxt resuelve por defecto (ej. ``).
-- **SSR ECharts Crash:** Está absolutamente PROHIBIDO usar `vue-echarts` o `echarts` sin asegurar que
-  `['echarts', 'vue-echarts', 'zrender']` estén dentro del array `build.transpile` en `nuxt.config.ts`. Omitir
-  esto provoca el infame error Server-Side `Cannot access 'renderer$1' before initialization`.
+## 🚫 Anti-patterns & Critical Rules
+- **SSR ECharts Crash:** **PROHIBITED** to use `echarts` without ensuring `['echarts', 'vue-echarts', 'zrender']` are in `build.transpile` in `nuxt.config.ts`.
+- **Transitions:** Avoid `transition: all`. Explicitly list properties (e.g., `transition-opacity`).
+- **Navigation:** Use `NuxtLink` or `button`, never `div @click` for navigation.
+- **Hardcoding:** Never hardcode dates or currencies; use `Intl.*` formatters.
+- **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`) as they are auto-imported.
+- **DaisyUI Dropdowns & Z-Index:** When using DaisyUI `dropdown` components near `sticky` elements, explicitly assign a higher `z-index` (e.g., `relative z-30`) to the dropdown's parent to avoid it being hidden underneath the sticky layers.
+- **Select Elements & Blur Events:** Native `<select>` elements can trigger a `@blur` event when opening their OS-level dropdowns. Do NOT auto-close or destroy editable containers strictly on `@blur` for `<select>` elements.
+- **Inline Editing Actions:** When building inline editable fields with Save/Cancel buttons, avoid `absolute` positioning that overlays native UI elements. Use side-by-side flex layouts (`flex-1` and `shrink-0`) and always apply `@mousedown.stop.prevent` and `@click.stop.prevent` to action buttons to prevent focus loss and event bubbling conflicts.
 - **Be Careful:** Element is missing end tag
 - **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
 

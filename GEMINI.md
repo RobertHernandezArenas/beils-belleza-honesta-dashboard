@@ -87,6 +87,8 @@ Vue files should be declarative and follow this order:
 - **Hardcoding:** Never hardcode dates or currencies; use `Intl.*` formatters.
 - **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`) as they are auto-imported.
 - **DaisyUI Dropdowns & Z-Index:** When using DaisyUI `dropdown` components near `sticky` elements, explicitly assign a higher `z-index` (e.g., `relative z-30`) to the dropdown's parent to avoid it being hidden underneath the sticky layers.
+- **Select Elements & Blur Events:** Native `<select>` elements can trigger a `@blur` event when opening their OS-level dropdowns. Do NOT auto-close or destroy editable containers strictly on `@blur` for `<select>` elements.
+- **Inline Editing Actions:** When building inline editable fields with Save/Cancel buttons, avoid `absolute` positioning that overlays native UI elements. Use side-by-side flex layouts (`flex-1` and `shrink-0`) and always apply `@mousedown.stop.prevent` and `@click.stop.prevent` to action buttons to prevent focus loss and event bubbling conflicts.
 - **Be Careful:** Element is missing end tag
 - **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
 
