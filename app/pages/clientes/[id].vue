@@ -333,8 +333,8 @@ const handleNewBooking = () => {
                   <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
                     <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Deudas Pendientes</h3>
                   </div>
-                  <div class="p-0">
-                    <table v-if="client.debts?.length > 0" class="table w-full">
+                  <div class="p-0 overflow-x-auto">
+                    <table v-if="client.debts?.length > 0" class="table w-full min-w-[500px]">
                       <thead class="bg-bg-muted/50 text-text-secondary border-b border-border-default h-12">
                         <tr>
                           <th class="pl-6 text-xs font-black uppercase">Descripción</th>

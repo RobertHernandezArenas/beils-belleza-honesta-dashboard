@@ -54,6 +54,15 @@
 	const selectedImageSrc = ref('')
 	const currentFileMeta = ref<{ name: string; type: string } | null>(null)
 	const avatarTimestamp = ref(Date.now())
+	const localAvatarPreview = ref<string | null>(null)
+
+	const displayAvatar = computed(() => {
+		if (localAvatarPreview.value) return localAvatarPreview.value
+		if (!props.client?.avatar) return null
+		const base = props.client.avatar
+		const sep = base.includes('?') ? '&' : '?'
+		return `${base}${sep}t=${avatarTimestamp.value}`
+	})
 
 	const handleFileSelect = (e: Event) => {
 		const target = e.target as HTMLInputElement
@@ -89,6 +98,8 @@
 			})
 
 			if (response.url) {
+				if (localAvatarPreview.value) URL.revokeObjectURL(localAvatarPreview.value)
+				localAvatarPreview.value = URL.createObjectURL(blob)
 				avatarTimestamp.value = Date.now()
 				emit('update', 'avatar', response.url)
 				emit('toast', 'Avatar actualizado correctamente', 'success')
@@ -112,11 +123,11 @@
 
 <template>
 	<div class="glass-header relative z-30 overflow-visible rounded-3xl p-6 shadow-sm lg:p-8">
-		<!-- Decorative background elements -->
-		<div
-			class="bg-primary/5 pointer-events-none absolute -top-24 -right-24 z-0 h-64 w-64 rounded-full blur-3xl"></div>
-		<div
-			class="bg-secondary/5 pointer-events-none absolute -bottom-24 -left-24 z-0 h-64 w-64 rounded-full blur-3xl"></div>
+		<!-- Decorative background elements wrapper to prevent x-overflow -->
+		<div class="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-3xl">
+			<div class="bg-primary/5 absolute -top-24 -right-24 h-64 w-64 rounded-full blur-3xl"></div>
+			<div class="bg-secondary/5 absolute -bottom-24 -left-24 h-64 w-64 rounded-full blur-3xl"></div>
+		</div>
 
 		<div class="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center">
 			<!-- Avatar Section -->
@@ -136,8 +147,8 @@
 						<span class="text-[9px] font-bold tracking-wider uppercase">Cambiar</span>
 					</div>
 					<img
-						v-if="client.avatar && !avatarError"
-						:src="`${client.avatar}?t=${avatarTimestamp}`"
+						v-if="displayAvatar && !avatarError"
+						:src="displayAvatar"
 						class="h-full w-full object-cover"
 						@error="handleAvatarError" />
 					<div
