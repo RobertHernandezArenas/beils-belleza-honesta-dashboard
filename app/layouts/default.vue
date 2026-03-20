@@ -286,9 +286,6 @@
 	const navItems = [
 		{ to: '/overview', label: 'nav.dashboard', icon: LayoutDashboard },
 		{ to: '/clientes', label: 'nav.clients', icon: UsersRound },
-		{ to: '/clientes/consentimientos', label: 'Consentimientos', icon: FileCheck },
-		{ to: '/clientes/cuestionarios', label: 'Cuestionarios', icon: ClipboardList },
-		{ to: '/clientes/revocaciones', label: 'Revocaciones', icon: ShieldOff },
 		{ to: '/catalogo/productos', label: 'Productos', icon: Package },
 		{ to: '/catalogo/categorias', label: 'Categorías', icon: Layers },
 		{ to: '/catalogo/subcategorias', label: 'Subcategorías', icon: ListTree },
