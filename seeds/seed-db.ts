@@ -296,6 +296,21 @@ async function seedDB() {
 					}
 				})
 			}
+
+			// Debts (20% conversion)
+			if (Math.random() > 0.8) {
+				const amount = 50 + Math.random() * 150
+				await prisma.debt.create({
+					data: {
+						user_id: client.user_id,
+						amount,
+						remaining: amount,
+						status: 'pending',
+						due_date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
+						notes: 'Tratamiento pack avanzado pendiente de pago.'
+					}
+				})
+			}
 		}
 
 		console.log('✅ Database seeded successfully!')

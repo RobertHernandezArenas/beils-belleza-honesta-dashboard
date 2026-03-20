@@ -121,7 +121,7 @@
 		return filtered
 	})
 
-	const showModal = (booking: any | null, defaultDate: Date) => {
+	const showModal = (booking: any | null, defaultDate: Date, defaultClientId?: string) => {
 		editingBooking.value = booking
 
 		if (booking) {
@@ -136,7 +136,7 @@
 			form.duration = booking.duration || 60
 			form.notes = booking.notes || ''
 		} else {
-			form.client_id = ''
+			form.client_id = defaultClientId || ''
 			form.staff_id = ''
 			form.item_type = 'service'
 			activeTab.value = 'service'

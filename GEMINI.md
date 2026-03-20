@@ -86,6 +86,7 @@ Vue files should be declarative and follow this order:
 - **Navigation:** Use `NuxtLink` or `button`, never `div @click` for navigation.
 - **Hardcoding:** Never hardcode dates or currencies; use `Intl.*` formatters.
 - **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`) as they are auto-imported.
+- **DaisyUI Dropdowns & Z-Index:** When using DaisyUI `dropdown` components near `sticky` elements, explicitly assign a higher `z-index` (e.g., `relative z-30`) to the dropdown's parent to avoid it being hidden underneath the sticky layers.
 - **Be Careful:** Element is missing end tag
 - **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
 
