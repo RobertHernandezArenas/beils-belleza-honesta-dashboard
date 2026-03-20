@@ -6,6 +6,7 @@ import {
   FileSignature, FileText, ShieldOff, ImageUp
 } from 'lucide-vue-next'
 import EditableField from '~/components/shared/EditableField.vue'
+import ImageCropperModal from '~/components/shared/ImageCropperModal.vue'
 
 const props = defineProps({
   client: {
@@ -32,15 +33,36 @@ const triggerAvatarUpload = () => {
   fileInput.value?.click()
 }
 
-const uploadAvatar = async (e: Event) => {
+const showCropper = ref(false)
+const selectedImageSrc = ref('')
+const currentFileMeta = ref<{ name: string, type: string } | null>(null)
+const avatarTimestamp = ref(Date.now())
+
+const handleFileSelect = (e: Event) => {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
+  currentFileMeta.value = { name: file.name, type: file.type }
+
+  // Use FileReader to create data URL for cropper
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    selectedImageSrc.value = e.target?.result as string
+    showCropper.value = true
+  }
+  reader.readAsDataURL(file)
+
+  // reset input so the same file can be selected again
+  if (fileInput.value) fileInput.value.value = ''
+}
+
+const uploadCroppedImage = async (blob: Blob) => {
   isUploadingAvatar.value = true
+  avatarError.value = false
   try {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', blob, currentFileMeta.value?.name || 'avatar.jpg')
     formData.append('category', 'usuarios')
     formData.append('type', 'clientes')
 
@@ -50,13 +72,14 @@ const uploadAvatar = async (e: Event) => {
     })
     
     if (response.url) {
+      avatarTimestamp.value = Date.now()
       emit('update', 'avatar', response.url)
+      emit('toast', 'Avatar actualizado correctamente', 'success')
     }
   } catch (err: any) {
     emit('toast', err.data?.statusMessage || 'Error subiendo la imagen', 'error')
   } finally {
     isUploadingAvatar.value = false
-    if (fileInput.value) fileInput.value.value = ''
   }
 }
 
@@ -93,7 +116,7 @@ const getStatusBadge = (status: string) => status === 'ON' ? 'badge-success' : '
           </div>
           <img 
             v-if="client.avatar && !avatarError" 
-            :src="client.avatar" 
+            :src="`${client.avatar}?t=${avatarTimestamp}`" 
             class="h-full w-full object-cover"
             @error="handleAvatarError"
           />
@@ -101,7 +124,7 @@ const getStatusBadge = (status: string) => status === 'ON' ? 'badge-success' : '
             {{ client.name.charAt(0) }}{{ client.surname?.charAt(0) || '' }}
           </div>
         </div>
-        <input type="file" class="hidden" ref="fileInput" accept="image/jpeg, image/png, image/webp" @change="uploadAvatar" />
+        <input type="file" class="hidden" ref="fileInput" accept="image/jpeg, image/png, image/webp" @change="handleFileSelect" />
         <div 
           class="absolute bottom-1 right-1 h-6 w-6 rounded-full border-4 border-white shadow-sm z-30 pointer-events-none"
           :class="client.status === 'ON' ? 'bg-success' : 'bg-error'"
@@ -235,6 +258,12 @@ const getStatusBadge = (status: string) => status === 'ON' ? 'badge-success' : '
         </div>
       </div>
     </div>
+    
+    <ImageCropperModal 
+      v-model="showCropper" 
+      :image-src="selectedImageSrc"
+      @crop="uploadCroppedImage"
+    />
   </div>
 </template>
 

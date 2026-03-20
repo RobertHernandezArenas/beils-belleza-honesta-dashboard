@@ -45,6 +45,7 @@
 		"soap": "^1.8.0",
 		"stripe": "^20.4.1",
 		"vue": "3.5.28",
+		"vue-advanced-cropper": "^2.8.9",
 		"vue-echarts": "^8.0.1",
 		"vue-i18n": "11.2.8",
 		"vue-router": "4.6.4",
