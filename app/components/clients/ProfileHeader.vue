@@ -208,7 +208,7 @@
 
 				<div class="text-text-secondary flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium">
 					<div class="flex items-center gap-2">
-						<Mail class="h-4 w-4 opacity-70" />
+						<Mail class="h-5 w-5 opacity-70" />
 						<EditableField
 							:model-value="client.email"
 							label="Email"
