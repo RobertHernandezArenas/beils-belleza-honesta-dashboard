@@ -171,7 +171,6 @@ async function seedDB() {
 
 		await prisma.user.createMany({ data: usersData })
 		const allUsers = await prisma.user.findMany()
-		const clients = allUsers.filter(u => u.role === 'CLIENT')
 		const staffMembers = allUsers.filter(u => u.role === 'STAFF' || u.role === 'ADMIN')
 
 		console.log('🏷️ Seeding Catalog...')
@@ -247,7 +246,7 @@ async function seedDB() {
 			]
 		})
 
-		for (const client of clients) {
+		for (const client of allUsers) {
 			// Consents (70% conversion)
 			if (Math.random() > 0.3) {
 				await prisma.consent.create({

@@ -24,7 +24,15 @@ export default defineEventHandler(async event => {
 					take: 5,
 				},
 				debts: {
-					where: { status: 'pending' },
+					where: { status: { in: ['pending', 'partial'] } },
+					include: {
+						cart: {
+							include: { items: true }
+						},
+						payments: {
+							orderBy: { payment_date: 'desc' }
+						}
+					}
 				},
 			},
 		})

@@ -193,7 +193,7 @@
 						v-model="localValue"
 						:type="type"
 						:placeholder="placeholder"
-						class="input input-sm bg-bg-card focus:ring-primary/30 focus:border-primary text-text-primary flex-1 border-text-secondary/30 font-medium shadow-[0_0_15px_rgba(var(--color-primary),0.1)] ring-0! outline-0! transition-all rounded-full focus-visible:border-text-secondary/30 focus-visible:ring-0! focus-visible:outline-0!"
+						class="input input-md bg-bg-card focus:ring-primary/30 focus:border-primary text-text-primary flex-1 border-text-secondary/30 font-medium shadow-[0_0_15px_rgba(var(--color-primary),0.1)] ring-0! outline-0! transition-all rounded-full focus-visible:border-text-secondary/30 focus-visible:ring-0! focus-visible:outline-0!"
 						@blur="handleBlur"
 						@keydown.stop="handleKeyDown"
 						@click.stop />

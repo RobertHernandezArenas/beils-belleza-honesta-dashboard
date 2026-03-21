@@ -37,12 +37,12 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start xl:flex xl:flex-col">
     <!-- Contact & Location Card -->
     <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-      <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-        <h3 class="text-text-primary flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
-          <MapPin class="h-4 w-4 text-primary" />
+      <div class="border-border-subtle bg-text-secondary  border-b px-6 py-4">
+        <h3 class="text-bg-card flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+          <MapPin class="h-4 w-4 text-bg-card" />
           Ubicación y Contacto
         </h3>
       </div>
@@ -58,8 +58,8 @@ const formatDate = (dateStr: string) => {
           />
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1 w-full">
-            <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">Ciudad</span>
+          <div class="flex w-full flex-col gap-1">
+            <span class="text-text-muted text-[10px] font-black tracking-widest uppercase">Ciudad</span>
             <EditableField 
               :model-value="client.city" 
               label="Ciudad"
@@ -68,13 +68,23 @@ const formatDate = (dateStr: string) => {
               class="text-text-primary text-sm font-bold"
             />
           </div>
-          <div class="flex flex-col gap-1 w-full">
-            <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">C.P.</span>
+          <div class="flex w-full flex-col gap-1">
+            <span class="text-text-muted text-[10px] font-black tracking-widest uppercase">C.P.</span>
             <EditableField 
               :model-value="client.postal_code" 
               label="Código Postal"
               :is-mutating="isUpdating" 
               @save="emit('update', 'postal_code', $event)" 
+              class="text-text-primary text-sm font-bold"
+            />
+          </div>
+          <div class="flex w-full flex-col gap-1 col-span-2">
+            <span class="text-text-muted text-[10px] font-black tracking-widest uppercase">País</span>
+            <EditableField 
+              :model-value="client.country" 
+              label="País"
+              :is-mutating="isUpdating" 
+              @save="emit('update', 'country', $event)" 
               class="text-text-primary text-sm font-bold"
             />
           </div>
@@ -84,9 +94,9 @@ const formatDate = (dateStr: string) => {
 
     <!-- Document Info Card -->
     <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-      <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-        <h3 class="text-text-primary flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
-          <FileSignature class="h-4 w-4 text-primary" />
+      <div class="border-border-subtle bg-text-secondary border-b px-6 py-4">
+        <h3 class="text-bg-card flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+          <FileSignature class="h-4 w-4 text-bg-card" />
           Identificación
         </h3>
       </div>
@@ -144,10 +154,10 @@ const formatDate = (dateStr: string) => {
     </div>
 
     <!-- Demographic Card -->
-    <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-      <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-        <h3 class="text-text-primary flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
-          <Calendar class="h-4 w-4 text-primary" />
+    <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm md:col-span-2 xl:col-span-1">
+      <div class="border-border-subtle bg-text-secondary border-b px-6 py-4">
+        <h3 class="text-bg-card flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+          <Calendar class="h-4 w-4 text-bg-card" />
           Datos Demográficos
         </h3>
       </div>

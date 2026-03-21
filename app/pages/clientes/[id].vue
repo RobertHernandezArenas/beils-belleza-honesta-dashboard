@@ -21,6 +21,7 @@ import ConsentFormModal from '~/components/clients/ConsentFormModal.vue'
 import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.vue'
 import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
 import RevokeFormModal from '~/components/clients/RevokeFormModal.vue'
+import DebtDetailsModal from '~/components/clients/DebtDetailsModal.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 definePageMeta({ layout: 'default' })
@@ -95,6 +96,7 @@ const isConsentModalOpen = ref(false)
 const isQuestionnaireModalOpen = ref(false)
 const isRevokeModalOpen = ref(false)
 const bookingModalRef = ref<any>(null)
+const debtDetailsModalRef = ref<any>(null)
 
 const mockItemToEdit = computed(() => {
   if (!client.value) return null
@@ -128,7 +130,7 @@ const handleNewBooking = () => {
 </script>
 
 <template>
-  <div class="bg-bg-app min-h-screen w-full p-4 font-sans lg:p-10">
+  <div class="bg-bg-app overflow-x-clip min-h-screen w-full p-4 font-sans lg:p-10">
     <div class="mx-auto max-w-[1400px]">
       <!-- Breadcrumbs / Back button -->
       <div class="mb-8 flex items-center justify-between">
@@ -192,7 +194,7 @@ const handleNewBooking = () => {
         </div>
 
         <!-- 3. Two Column Layout -->
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-[380px_1fr]">
+        <div class="flex flex-col-reverse gap-8 xl:grid xl:grid-cols-[340px_1fr] 2xl:grid-cols-[380px_1fr]">
           <!-- Left Sidebar -->
           <aside class="space-y-6">
             <ProfileInfoSidebar 
@@ -203,7 +205,7 @@ const handleNewBooking = () => {
           </aside>
 
           <!-- Right Content Area -->
-          <main class="min-h-[600px]">
+          <main class="min-h-[600px] w-full min-w-0">
             <Transition name="page" mode="out-in">
               <!-- OVERVIEW TAB -->
               <div v-if="currentTab === 'overview'" key="overview">
@@ -337,21 +339,35 @@ const handleNewBooking = () => {
                     <table v-if="client.debts?.length > 0" class="table w-full min-w-[500px]">
                       <thead class="bg-bg-muted/50 text-text-secondary border-b border-border-default h-12">
                         <tr>
-                          <th class="pl-6 text-xs font-black uppercase">Descripción</th>
+                          <th class="pl-6 text-xs font-black uppercase">Concepto</th>
                           <th class="text-xs font-black uppercase">Vencimiento</th>
-                          <th class="text-xs font-black uppercase text-right pr-6">Importe</th>
+                          <th class="text-xs font-black uppercase text-right">Pendiente</th>
+                          <th class="text-xs font-black uppercase text-right pr-6 min-w-[120px]">Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="debt in client.debts" :key="debt.debt_id" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-16">
+                        <tr v-for="debt in client.debts" :key="debt.debt_id" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-[72px]">
                           <td class="pl-6">
-                            <span class="text-text-primary text-sm font-bold">{{ debt.notes || 'Deuda de cargo' }}</span>
+                             <div class="flex items-center gap-3">
+                               <div class="w-10 h-10 rounded-xl bg-bg-muted flex items-center justify-center shrink-0">
+                                 <Receipt class="w-5 h-5 text-text-primary" />
+                               </div>
+                               <div class="flex flex-col max-w-[200px]">
+                                 <span class="text-text-primary text-sm font-bold truncate">{{ debt.notes || 'Deuda de cargo' }}</span>
+                                 <span v-if="debt.cart?.items?.length" class="text-text-muted text-[10px] font-bold uppercase">{{ debt.cart.items.length }} Items de compra</span>
+                                 <span v-else class="text-text-muted text-[10px] font-bold uppercase">Deuda manual</span>
+                               </div>
+                             </div>
                           </td>
                           <td>
                              <span class="text-text-muted text-xs font-bold uppercase">{{ debt.due_date ? formatDate(debt.due_date) : 'Sin fecha' }}</span>
                           </td>
-                          <td class="text-right pr-6">
-                            <span class="text-error text-sm font-black tabular-nums">{{ debt.amount.toFixed(2) }}€</span>
+                          <td class="text-right">
+                            <span class="text-error text-sm font-black tabular-nums">{{ debt.remaining.toFixed(2) }}€</span>
+                            <span v-if="debt.remaining < debt.amount" class="text-text-muted block text-[10px] font-bold uppercase">de {{ debt.amount.toFixed(2) }}€</span>
+                          </td>
+                          <td class="pr-6 text-right">
+                             <button @click="debtDetailsModalRef?.open(debt)" class="btn btn-sm btn-ghost hover:bg-bg-muted rounded-xl text-text-primary">Detalles</button>
                           </td>
                         </tr>
                       </tbody>
@@ -376,6 +392,7 @@ const handleNewBooking = () => {
       <QuestionnaireFormModal v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" />
       <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" />
       <BookingFormModal ref="bookingModalRef" />
+      <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
       
       <!-- Toast -->
       <div v-if="showToast" class="toast toast-end toast-bottom z-100">

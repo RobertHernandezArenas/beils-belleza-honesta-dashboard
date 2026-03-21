@@ -129,7 +129,7 @@
 			<div class="bg-secondary/5 absolute -bottom-24 -left-24 h-64 w-64 rounded-full blur-3xl"></div>
 		</div>
 
-		<div class="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center">
+		<div class="relative z-10 flex flex-col items-start gap-6 md:flex-row md:flex-wrap xl:flex-nowrap xl:items-center">
 			<!-- Avatar Section -->
 			<div class="relative shrink-0">
 				<div
@@ -265,15 +265,15 @@
 			</div>
 
 			<!-- Actions Stack -->
-			<div class="flex w-full gap-3 lg:w-auto lg:flex-col lg:justify-center">
+			<div class="flex w-full gap-3 mt-4 md:mt-0 md:ml-auto md:w-auto md:flex-row xl:flex-col md:justify-end xl:justify-center shrink-0">
 				<button
 					@click="$emit('new-booking')"
-					class="btn btn-primary btn-sm h-12 flex-1 rounded-xl px-6 font-bold lg:flex-none">
+					class="btn btn-primary btn-sm h-12 flex-1 rounded-xl px-6 font-bold md:flex-none">
 					<Plus class="mr-2 h-4 w-4" />
 					Nueva Cita
 				</button>
 
-				<div class="dropdown dropdown-end flex-1 lg:flex-none">
+				<div class="dropdown dropdown-end flex-1 md:flex-none">
 					<div
 						tabindex="0"
 						role="button"
