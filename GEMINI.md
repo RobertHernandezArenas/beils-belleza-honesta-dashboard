@@ -91,7 +91,10 @@ Vue files should be declarative and follow this order:
 - **Inline Editing Actions:** When building inline editable fields with Save/Cancel buttons, avoid `absolute` positioning that overlays native UI elements. Use side-by-side flex layouts (`flex-1` and `shrink-0`) and always apply `@mousedown.stop.prevent` and `@click.stop.prevent` to action buttons to prevent focus loss and event bubbling conflicts.
 - **Be Careful:** Element is missing end tag
 - **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
-
+- **Float Precision in DB/Math:** When working with DB `Float` arrays (e.g. debts/money), always apply strict rounding before logical comparisons (`Number(val.toFixed(2))`) to prevent IEEE 754 precision drift (e.g. `100.0100000001`) from blocking legitimate full exact payments.
+- **Data Query Truncation:** Never hardcode `take: N` or artificial dataset limits on generic API endpoints that feed "Complete History" UI tables. If performance is an issue, explicitly implement standard pagination.
+- **Backend Cascade Synchronization:** When a child entity's lifecycle resolves (e.g. a Debt becomes `paid`), the backend MUST automatically run side-effects on its parent (e.g. updating the associated `Cart` to `completed` and firing VeriFactu) within the very same transaction.
+- **Frontend Mutation Reactivity:** All modals, forms, and detached components that perform state mutations MUST emit a `@refresh` or `@success` event. The parent views MUST listen to this event and call `queryClient.invalidateQueries` to ensure the timeline/history syncs globally without requiring a manual browser reload.
 
 ## Documentation
 - Update the documentation when you make changes to the project + README.md.

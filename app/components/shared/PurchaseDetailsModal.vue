@@ -18,13 +18,6 @@ const close = () => {
 const printReceipt = () => {
   if (!cart.value) return
 
-  const iframe = document.createElement('iframe')
-  iframe.style.display = 'none'
-  document.body.appendChild(iframe)
-
-  const doc = iframe.contentWindow?.document
-  if (!doc) return
-
   const dateStr = new Date(cart.value.created_at).toLocaleString()
   const itemsHtml = cart.value.items?.map((item: any) => `
     <tr>
@@ -96,10 +89,29 @@ const printReceipt = () => {
     </html>
   `
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  if (isMobile) {
+    const printWin = window.open('', '_blank')
+    if (printWin) {
+      printWin.document.open()
+      printWin.document.write(html)
+      printWin.document.close()
+      printWin.focus()
+      setTimeout(() => {
+        printWin.print()
+      }, 500)
+      return
+    }
+  }
+
+  const iframe = document.createElement('iframe')
+  iframe.style.display = 'none'
+  document.body.appendChild(iframe)
+  const doc = iframe.contentWindow?.document
+  if (!doc) return
   doc.open()
   doc.write(html)
   doc.close()
-
   setTimeout(() => {
     iframe.contentWindow?.focus()
     iframe.contentWindow?.print()
@@ -111,13 +123,6 @@ const printReceipt = () => {
 
 const printInvoice = () => {
   if (!cart.value) return
-
-  const iframe = document.createElement('iframe')
-  iframe.style.display = 'none'
-  document.body.appendChild(iframe)
-
-  const doc = iframe.contentWindow?.document
-  if (!doc) return
   
   const dateStr = new Date(cart.value.created_at).toLocaleString()
   
@@ -266,10 +271,29 @@ const printInvoice = () => {
     </html>
   `
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  if (isMobile) {
+    const printWin = window.open('', '_blank')
+    if (printWin) {
+      printWin.document.open()
+      printWin.document.write(html)
+      printWin.document.close()
+      printWin.focus()
+      setTimeout(() => {
+        printWin.print()
+      }, 500)
+      return
+    }
+  }
+
+  const iframe = document.createElement('iframe')
+  iframe.style.display = 'none'
+  document.body.appendChild(iframe)
+  const doc = iframe.contentWindow?.document
+  if (!doc) return
   doc.open()
   doc.write(html)
   doc.close()
-
   setTimeout(() => {
     iframe.contentWindow?.focus()
     iframe.contentWindow?.print()

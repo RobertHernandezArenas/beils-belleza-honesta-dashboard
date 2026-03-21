@@ -20,6 +20,7 @@ import ProfileOverview from '~/components/clients/ProfileOverview.vue'
 import ConsentFormModal from '~/components/clients/ConsentFormModal.vue'
 import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.vue'
 import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
+import BookingDetailsModal from '~/components/agenda/BookingDetailsModal.vue'
 import RevokeFormModal from '~/components/clients/RevokeFormModal.vue'
 import DebtDetailsModal from '~/components/clients/DebtDetailsModal.vue'
 import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
@@ -97,6 +98,7 @@ const isConsentModalOpen = ref(false)
 const isQuestionnaireModalOpen = ref(false)
 const isRevokeModalOpen = ref(false)
 const bookingModalRef = ref<any>(null)
+const bookingDetailsModalRef = ref<any>(null)
 const debtDetailsModalRef = ref<any>(null)
 const purchaseDetailsModalRef = ref<any>(null)
 
@@ -128,6 +130,10 @@ const handleFieldUpdate = (field: string, value: any) => {
 
 const handleNewBooking = () => {
   bookingModalRef.value?.showModal(null, new Date(), clientId)
+}
+
+const handleEditBooking = (b: any) => {
+  bookingModalRef.value?.showModal(b, new Date(b.booking_date), clientId)
 }
 </script>
 
@@ -259,7 +265,7 @@ const handleNewBooking = () => {
                           </span>
                         </td>
                         <td class="text-right pr-6">
-                          <button class="btn btn-ghost btn-xs rounded-lg hover:bg-primary/10 hover:text-primary transition-all">
+                          <button @click="bookingDetailsModalRef?.open(booking)" class="btn btn-ghost btn-xs rounded-lg hover:bg-primary/10 hover:text-primary transition-all">
                             Detalles
                           </button>
                         </td>
@@ -443,7 +449,8 @@ const handleNewBooking = () => {
       <ConsentFormModal v-model="isConsentModalOpen" :item-to-edit="mockItemToEdit" />
       <QuestionnaireFormModal v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" />
       <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" />
-      <BookingFormModal ref="bookingModalRef" />
+      <BookingDetailsModal ref="bookingDetailsModalRef" @edit="handleEditBooking" />
+      <BookingFormModal ref="bookingModalRef" @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
       <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
       <PurchaseDetailsModal ref="purchaseDetailsModalRef" />
       

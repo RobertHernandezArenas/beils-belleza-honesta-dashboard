@@ -21,7 +21,6 @@ export default defineEventHandler(async event => {
 				revokes: true,
 				client_bookings: {
 					orderBy: { booking_date: 'desc' },
-					take: 5,
 				},
 				carts: {
 					where: { status: 'completed' },

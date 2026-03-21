@@ -134,6 +134,21 @@ const printReceipt = (payment: any) => {
     </html>
   `
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  if (isMobile) {
+    const printWin = window.open('', '_blank')
+    if (printWin) {
+      printWin.document.open()
+      printWin.document.write(html)
+      printWin.document.close()
+      printWin.focus()
+      setTimeout(() => {
+        printWin.print()
+      }, 500)
+      return
+    }
+  }
+
   doc.open()
   doc.write(html)
   doc.close()
