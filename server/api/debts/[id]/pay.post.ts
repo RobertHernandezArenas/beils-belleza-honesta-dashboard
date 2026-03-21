@@ -1,5 +1,7 @@
 import { prisma } from '../../../utils/prisma'
 import { requireAdmin } from '../../../utils/auth'
+import { generateInvoiceNumber, processVerifactuInvoice } from '../../../utils/verifactu'
+import type { IInvoice } from '~~/shared/types/invoice'
 
 export default defineEventHandler(async event => {
 	try {
@@ -47,6 +49,56 @@ export default defineEventHandler(async event => {
 					notes: notes || null,
 				},
 			})
+
+			// If debt is fully paid and has an associated cart, mark cart as completed and generate Invoice
+			if (newStatus === 'paid' && debt.cart_id) {
+				const currentCart = await tx.cart.findUnique({
+					where: { cart_id: debt.cart_id },
+					include: { user: { select: { document_number: true } } },
+				})
+
+				if (currentCart && currentCart.status !== 'completed') {
+					let verifactuData: any = {}
+
+					if (!currentCart.invoice_number) {
+						const config = useRuntimeConfig()
+						const nif = currentCart.user?.document_number || '00000000T'
+						const invoiceType = currentCart.user?.document_number ? 'F1' : 'I'
+
+						const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
+						
+						const verifactuPayload: IInvoice = {
+							id: currentCart.cart_id,
+							invoiceNumber,
+							issueDate: new Date().toISOString(),
+							issuer: {
+								nif: config.salonNif,
+								name: config.salonName
+							},
+							totalAmount: currentCart.total
+						}
+
+						const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
+
+						verifactuData = {
+							invoice_number: invoiceNumber,
+							invoice_type: invoiceType,
+							qr_content: qrUrl,
+							hash: hash,
+							aeat_status: aeatStatus,
+						}
+					}
+
+					await tx.cart.update({
+						where: { cart_id: debt.cart_id },
+						data: {
+							status: 'completed',
+							payment_method: payment_method || currentCart.payment_method, // Last payment method used
+							...verifactuData,
+						},
+					})
+				}
+			}
 
 			return { debt: updatedDebt, payment }
 		})
