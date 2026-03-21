@@ -23,6 +23,11 @@ export default defineEventHandler(async event => {
 					orderBy: { booking_date: 'desc' },
 					take: 5,
 				},
+				carts: {
+					where: { status: 'completed' },
+					orderBy: { created_at: 'desc' },
+					include: { items: true }
+				},
 				debts: {
 					where: { status: { in: ['pending', 'partial'] } },
 					include: {

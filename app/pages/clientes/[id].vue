@@ -22,6 +22,7 @@ import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.
 import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
 import RevokeFormModal from '~/components/clients/RevokeFormModal.vue'
 import DebtDetailsModal from '~/components/clients/DebtDetailsModal.vue'
+import PurchaseDetailsModal from '~/components/clients/PurchaseDetailsModal.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 definePageMeta({ layout: 'default' })
@@ -97,6 +98,7 @@ const isQuestionnaireModalOpen = ref(false)
 const isRevokeModalOpen = ref(false)
 const bookingModalRef = ref<any>(null)
 const debtDetailsModalRef = ref<any>(null)
+const purchaseDetailsModalRef = ref<any>(null)
 
 const mockItemToEdit = computed(() => {
   if (!client.value) return null
@@ -346,7 +348,7 @@ const handleNewBooking = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="debt in client.debts" :key="debt.debt_id" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-[72px]">
+                        <tr v-for="debt in client.debts" :key="debt.debt_id" @click="debtDetailsModalRef?.open(debt)" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-[72px] cursor-pointer">
                           <td class="pl-6">
                              <div class="flex items-center gap-3">
                                <div class="w-10 h-10 rounded-xl bg-bg-muted flex items-center justify-center shrink-0">
@@ -381,6 +383,56 @@ const handleNewBooking = () => {
                     </div>
                   </div>
                 </div>
+
+                <!-- HISTORIAL DE COMPRAS -->
+                <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
+                  <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
+                    <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Historial de Compras</h3>
+                  </div>
+                  <div class="p-0 overflow-x-auto">
+                    <table v-if="client.carts?.length > 0" class="table w-full min-w-[500px]">
+                      <thead class="bg-bg-muted/50 text-text-secondary border-b border-border-default h-12">
+                        <tr>
+                          <th class="pl-6 text-xs font-black uppercase">Detalle Ticket</th>
+                          <th class="text-xs font-black uppercase">Estado</th>
+                          <th class="text-xs font-black uppercase">Método Pago</th>
+                          <th class="text-xs font-black uppercase text-right pr-6">Total Cobrado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="cart in client.carts" :key="cart.cart_id" @click="purchaseDetailsModalRef?.open(cart)" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-[72px] cursor-pointer">
+                          <td class="pl-6">
+                             <div class="flex items-center gap-3">
+                               <div class="w-10 h-10 rounded-xl bg-bg-muted flex items-center justify-center shrink-0">
+                                 <Receipt class="w-5 h-5 text-text-primary" />
+                               </div>
+                               <div class="flex flex-col">
+                                 <span class="text-text-primary text-sm font-bold">{{ formatDate(cart.created_at) }}</span>
+                                 <span class="text-text-muted text-[10px] font-bold uppercase">{{ cart.items?.length || 0 }} Conceptos</span>
+                               </div>
+                             </div>
+                          </td>
+                          <td>
+                             <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-lg" :class="cart.status === 'completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ cart.status }}</span>
+                          </td>
+                          <td>
+                             <span class="text-text-muted text-[10px] font-bold uppercase tracking-wider bg-bg-muted/50 px-2 py-1.5 rounded-md">{{ cart.payment_method || 'N/A' }}</span>
+                          </td>
+                          <td class="text-right pr-6">
+                            <span class="text-text-primary text-sm font-black tabular-nums">{{ cart.total.toFixed(2) }}€</span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div v-else class="flex flex-col items-center justify-center py-20 text-center">
+                      <div class="bg-primary/10 text-primary mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                        <Receipt class="h-8 w-8" />
+                      </div>
+                      <p class="text-text-primary text-lg font-bold">Sin compras recientes</p>
+                      <p class="text-text-muted mt-1 text-sm font-medium">Este cliente todavía no tiene historial de ventas cerradas.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Transition>
           </main>
@@ -393,6 +445,7 @@ const handleNewBooking = () => {
       <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" />
       <BookingFormModal ref="bookingModalRef" />
       <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
+      <PurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
       <!-- Toast -->
       <div v-if="showToast" class="toast toast-end toast-bottom z-100">
