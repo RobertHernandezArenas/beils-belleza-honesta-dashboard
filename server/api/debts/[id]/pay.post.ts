@@ -26,7 +26,9 @@ export default defineEventHandler(async event => {
 
 			// Don't overpay
 			const paymentAmount = Math.min(amount, debt.remaining)
-			const newRemaining = debt.remaining - paymentAmount
+			let newRemaining = Number((debt.remaining - paymentAmount).toFixed(2))
+			if (newRemaining < 0.01) newRemaining = 0
+			
 			const newStatus = newRemaining <= 0 ? 'paid' : 'partial'
 
 			const updatedDebt = await tx.debt.update({

@@ -10,10 +10,22 @@ const isProcessing = ref(false)
 
 const emit = defineEmits(['payment-success', 'toast'])
 
+const isValidPayment = computed(() => {
+  if (!amountToPay.value || amountToPay.value <= 0 || !debt.value) return false
+  const safeAmount = Number(Number(amountToPay.value).toFixed(2))
+  const safeRemaining = Number(Number(debt.value.remaining).toFixed(2))
+  return safeAmount <= safeRemaining
+})
+
 const open = (debtData: any) => {
-  debt.value = debtData
+  debt.value = JSON.parse(JSON.stringify(debtData)) // Deep copy to avoid proxy mutation issues
+  if (debt.value) {
+    debt.value.amount = Number(Number(debt.value.amount).toFixed(2))
+    debt.value.remaining = Number(Number(debt.value.remaining).toFixed(2))
+  }
   amountToPay.value = 0
   paymentMethod.value = 'card'
+  isProcessing.value = false
   modalRef.value?.showModal()
 }
 
@@ -141,7 +153,7 @@ const close = () => {
 }
 
 const processPayment = async () => {
-  if (!amountToPay.value || amountToPay.value <= 0 || amountToPay.value > debt.value.remaining) {
+  if (!isValidPayment.value) {
     emit('toast', 'Importe inválido', 'error')
     return
   }
@@ -240,7 +252,7 @@ defineExpose({ open, close })
                         </button>
                      </div>
 
-                     <button @click="processPayment" :disabled="isProcessing || !amountToPay || amountToPay <= 0 || amountToPay > debt.remaining" class="btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all border-0">
+                     <button @click="processPayment" :disabled="isProcessing || !isValidPayment" class="btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all border-0">
                         <span v-if="isProcessing" class="loading loading-spinner loading-sm"></span>
                         Abonar {{ amountToPay ? amountToPay.toFixed(2) : '0.00' }}€
                      </button>
