@@ -22,7 +22,7 @@ import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.
 import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
 import RevokeFormModal from '~/components/clients/RevokeFormModal.vue'
 import DebtDetailsModal from '~/components/clients/DebtDetailsModal.vue'
-import PurchaseDetailsModal from '~/components/clients/PurchaseDetailsModal.vue'
+import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 definePageMeta({ layout: 'default' })

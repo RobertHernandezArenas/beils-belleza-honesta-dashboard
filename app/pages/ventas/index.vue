@@ -4,6 +4,7 @@
 	import { useI18n } from 'vue-i18n'
 	import QrcodeVue from 'qrcode.vue'
 	import { useDataPrivacy } from '~/composables/useDataPrivacy'
+	import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Ventas | Finanzas' })
@@ -12,11 +13,10 @@
 	const searchQuery = ref('')
 	const filterDate = ref('')
 
-	const selectedSale = ref<any | null>(null)
-	const detailsModalRef = ref<HTMLDialogElement | null>(null)
+	const purchaseDetailsModalRef = ref<any>(null)
 
-	const printTicket = () => {
-		window.print()
+	const openDetails = (sale: any) => {
+		purchaseDetailsModalRef.value?.open(sale)
 	}
 
 	// We fetch carts with status completed
@@ -78,18 +78,6 @@
 	const getTotalItems = (items: any[]) => {
 		if (!items) return 0
 		return items.reduce((acc: number, item: any) => acc + item.quantity, 0)
-	}
-
-	const openDetails = (sale: any) => {
-		selectedSale.value = sale
-		detailsModalRef.value?.showModal()
-	}
-
-	const closeDetails = () => {
-		detailsModalRef.value?.close()
-		setTimeout(() => {
-			selectedSale.value = null
-		}, 300)
 	}
 
 	// Privacidad de documentos
@@ -254,237 +242,7 @@
 		</div>
 
 		<!-- Details Modal -->
-		<dialog ref="detailsModalRef" class="modal">
-			<div
-				class="modal-box bg-bg-card text-text-secondary w-11/12 max-w-2xl overflow-hidden rounded-4xl p-0 shadow-xl"
-				v-if="selectedSale">
-				<!-- Modal Header -->
-				<div
-					class="bg-bg-muted/30 border-border-default sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md">
-					<div>
-						<h3 class="text-xl font-bold tracking-tight">
-							{{
-								selectedSale.invoice_type === 'F1'
-									? 'Factura'
-									: selectedSale.invoice_type === 'F2'
-										? 'Factura Simplificada'
-										: $t('sales.modal.title')
-							}}
-						</h3>
-						<p class="text-text-muted text-xs font-medium tracking-wider uppercase">
-							<span
-								v-if="selectedSale.invoice_number"
-								class="text-text-primary border-border-default mr-1 border-r pr-2">
-								{{ selectedSale.invoice_number }}
-							</span>
-							<span v-else class="border-border-default mr-1 border-r pr-2">
-								#{{ selectedSale.cart_id.split('-')[0] }}
-							</span>
-							<span class="ml-1">{{ formatDate(selectedSale.created_at) }}</span>
-						</p>
-					</div>
-					<button
-						type="button"
-						class="btn btn-sm btn-circle btn-ghost text-text-light hover:bg-text-primary print:hidden"
-						@click="closeDetails">
-						✕
-					</button>
-				</div>
-
-				<!-- Modal Body -->
-				<div class="p-6">
-					<!-- Client Info Summary -->
-					<div
-						class="bg-bg-muted/30 border-border-default mb-6 flex items-center justify-between rounded-2xl border p-4">
-						<div class="flex items-center gap-3">
-							<div class="avatar placeholder">
-								<div
-									class="bg-primary/10 text-primary flex w-12 items-center justify-center rounded-full">
-									<span
-										class="flex h-full w-full items-center justify-center text-sm font-bold uppercase">
-										{{
-											selectedSale.user
-												? `${selectedSale.user.name?.charAt(0)}${selectedSale.user.surname?.charAt(0)}`
-												: 'W'
-										}}
-									</span>
-								</div>
-							</div>
-							<div>
-								<div class="text-text-primary font-bold">
-									{{
-										selectedSale.user
-											? `${selectedSale.user.name} ${selectedSale.user.surname}`
-											: $t('sales.modal.walkInClient')
-									}}
-								</div>
-								<div class="text-text-muted flex items-center gap-2 text-xs" v-if="selectedSale.user?.document_number">
-									<span>NIF/CIF: {{ revealedDocs[selectedSale.user_id] || selectedSale.user.document_number }}</span>
-									<button
-										class="text-text-muted hover:text-primary disabled:opacity-50 transition-colors"
-										role="button"
-										:aria-label="revealedDocs[selectedSale.user_id] ? 'Ocultar' : 'Mostrar'"
-										:disabled="revealedLoading[selectedSale.user_id]"
-										@click="toggleDocumentVisibility(selectedSale.user_id, selectedSale.user.document_number)">
-										<span v-if="revealedLoading[selectedSale.user_id]" class="loading loading-spinner loading-xs h-3 w-3"></span>
-										<component
-											v-else
-											:is="revealedDocs[selectedSale.user_id] ? EyeOff : Eye"
-											class="h-3.5 w-3.5" />
-									</button>
-								</div>
-								<div class="text-text-muted text-xs" v-if="selectedSale.user?.email">
-									{{ selectedSale.user.email }}
-								</div>
-							</div>
-						</div>
-						<div class="text-right">
-							<div class="text-text-muted text-xs font-bold tracking-wider uppercase">
-								{{ $t('sales.modal.method') }}
-							</div>
-							<div
-								class="badge badge-sm font-bold tracking-wider uppercase"
-								:class="getPaymentMethodBadge(selectedSale.payment_method).class">
-								{{ getPaymentMethodBadge(selectedSale.payment_method).label }}
-							</div>
-						</div>
-					</div>
-
-					<!-- Items List -->
-					<h4 class="text-text-primary mb-3 text-sm font-bold tracking-wider uppercase">
-						{{ $t('sales.modal.itemsTitle') }} ({{ getTotalItems(selectedSale.items) }})
-					</h4>
-					<div class="border-border-default bg-bg-app mb-6 rounded-2xl border">
-						<div class="max-h-[300px] overflow-y-auto">
-							<table class="table w-full">
-								<thead class="bg-bg-muted/50 sticky top-0 z-10 backdrop-blur-sm">
-									<tr class="text-text-muted border-none text-xs tracking-wider uppercase">
-										<th class="py-3 pl-4">{{ $t('sales.modal.table.concept') }}</th>
-										<th class="text-center">{{ $t('sales.modal.table.qty') }}</th>
-										<th class="text-right">{{ $t('sales.modal.table.price') }}</th>
-										<th class="pr-4 text-right">{{ $t('sales.modal.table.subtotal') }}</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="item in selectedSale.items"
-										:key="item.cart_item_id"
-										class="border-border-default hover:bg-bg-muted/30 border-t">
-										<td class="py-3 pl-4">
-											<div class="text-text-primary font-bold">{{ item.name }}</div>
-											<div class="text-text-muted text-[10px] uppercase">{{ item.item_type }}</div>
-										</td>
-										<td class="text-center font-medium">{{ item.quantity }}</td>
-										<td class="text-right tabular-nums">{{ formatCurrency(item.unit_price) }}</td>
-										<td class="text-text-primary pr-4 text-right font-bold tabular-nums">
-											{{ formatCurrency(item.total) }}
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					<!-- Totals Summary -->
-					<div class="flex flex-col items-end gap-2 text-sm">
-						<div class="text-text-muted flex w-full max-w-[250px] justify-between font-medium">
-							<span>{{ $t('sales.modal.totals.subtotal') }}:</span>
-							<span class="tabular-nums">{{ formatCurrency(selectedSale.subtotal) }}</span>
-						</div>
-						<div
-							class="text-error flex w-full max-w-[250px] justify-between font-medium"
-							v-if="selectedSale.discount > 0">
-							<span>{{ $t('sales.modal.totals.discount') }}:</span>
-							<span class="tabular-nums">-{{ formatCurrency(selectedSale.discount) }}</span>
-						</div>
-						<div
-							class="border-border-default text-text-primary mt-2 flex w-full max-w-[250px] justify-between border-t pt-2 text-lg font-black">
-							<span>{{ $t('sales.modal.totals.total') }}:</span>
-							<span class="tabular-nums">{{ formatCurrency(selectedSale.total) }}</span>
-						</div>
-					</div>
-
-					<!-- Stripe Payment Details -->
-					<div
-						v-if="selectedSale.payment_method === 'stripe'"
-						class="border-border-default bg-indigo-50/30 mt-6 rounded-2xl border p-5">
-						<div class="mb-3 flex items-center gap-2">
-							<CreditCard class="h-5 w-5 text-indigo-600" />
-							<h5 class="text-sm font-bold tracking-wider text-indigo-800 uppercase">Pago Stripe</h5>
-						</div>
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-							<!-- Status -->
-							<div>
-								<p class="text-text-muted mb-1 text-[10px] font-bold tracking-wider uppercase">Estado</p>
-								<span
-									class="badge badge-sm font-bold"
-									:class="getStripeStatusBadge(selectedSale.stripe_status).class">
-									{{ getStripeStatusBadge(selectedSale.stripe_status).label }}
-								</span>
-							</div>
-							<!-- Installments -->
-							<div>
-								<p class="text-text-muted mb-1 text-[10px] font-bold tracking-wider uppercase">Cuotas</p>
-								<span class="text-text-primary text-sm font-bold tabular-nums">
-									{{ selectedSale.stripe_installments || 1 }}
-									{{ (selectedSale.stripe_installments || 1) > 1 ? 'pagos mensuales' : 'pago único' }}
-								</span>
-							</div>
-							<!-- Payment Intent ID -->
-							<div v-if="selectedSale.stripe_payment_intent_id">
-								<p class="text-text-muted mb-1 text-[10px] font-bold tracking-wider uppercase">ID Pago</p>
-								<span class="text-text-muted font-mono text-xs">
-									{{ selectedSale.stripe_payment_intent_id.slice(0, 20) }}…
-								</span>
-							</div>
-						</div>
-					</div>
-
-					<!-- VERI*FACTU & QR Block -->
-					<div
-						v-if="selectedSale.qr_content"
-						class="border-border-default bg-bg-muted/10 mt-6 flex flex-col items-center justify-between gap-6 rounded-2xl border-t px-2 pt-6 pb-2 md:flex-row">
-						<div class="flex max-w-sm flex-col gap-2">
-							<div class="flex items-center gap-2">
-								<span
-									class="badge badge-success badge-sm border-none px-2 py-3 text-[10px] font-bold tracking-widest uppercase opacity-90">
-									AEAT Verificada
-								</span>
-								<h5 class="text-text-primary font-bold tracking-widest">VERI*FACTU</h5>
-							</div>
-							<p class="text-text-muted text-[11px] leading-relaxed">
-								Esta factura ha sido enviada al registro oficial de la Agencia Estatal de
-								Administración Tributaria. Puede verificar su vigencia escaneando este código QR con
-								un dispositivo habilitado.
-							</p>
-						</div>
-						<div class="border-border-default shrink-0 rounded-xl border bg-white p-2 shadow-sm">
-							<qrcode-vue :value="selectedSale.qr_content" :size="90" level="M" />
-						</div>
-					</div>
-				</div>
-
-				<!-- Footer Action -->
-				<div
-					class="bg-bg-muted/30 border-border-default sticky bottom-0 z-20 flex w-full justify-end gap-3 p-4 backdrop-blur-md print:hidden">
-					<button
-						type="button"
-						class="btn btn-ghost text-text-muted hover:bg-bg-hover h-12 rounded-xl"
-						@click="closeDetails">
-						{{ $t('sales.modal.buttons.close') }}
-					</button>
-					<button
-						type="button"
-						@click="printTicket"
-						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 rounded-xl border-none font-bold shadow-md">
-						{{ $t('sales.modal.buttons.download') }}
-					</button>
-				</div>
-			</div>
-			<form method="dialog" class="modal-backdrop bg-text-secondary/40 backdrop-blur-sm">
-				<button @click="closeDetails">close</button>
-			</form>
-		</dialog>
+		<PurchaseDetailsModal ref="purchaseDetailsModalRef" />
 	</div>
 </template>
 
