@@ -30,6 +30,7 @@
 	import AgendaMonthView from '~/components/agenda/views/AgendaMonthView.vue'
 	import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
 	import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
+	import BookingDetailsModal from '~/components/agenda/BookingDetailsModal.vue'
 	import gsap from 'gsap'
 
 	definePageMeta({ layout: 'default' })
@@ -40,6 +41,7 @@
 	const toastMessage = ref('')
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
+	const detailsModalRef = ref<InstanceType<typeof BookingDetailsModal> | null>(null)
 
 	// Calendar State
 	const currentDate = ref(new Date())
@@ -178,6 +180,10 @@
 
 	const openEditModal = (booking: any) => {
 		modalRef.value?.showModal(booking, selectedDate.value)
+	}
+
+	const openDetailsModal = (booking: any) => {
+		detailsModalRef.value?.open(booking)
 	}
 
 	const confirmDelete = (id: string) => {
@@ -363,7 +369,7 @@
 					:selectedDate="selectedDate"
 					:isPending="isPending"
 					:daysCount="viewMode === '4days' ? 4 : 7"
-					@edit="openEditModal"
+					@edit="openDetailsModal"
 					@delete="confirmDelete"
 					@status="setBookingStatus"
 					@create="openCreateModal"
@@ -388,5 +394,10 @@
 			ref="modalRef"
 			@refresh="queryClient.invalidateQueries({ queryKey: ['bookings'] })"
 			@toast="displayToast" />
+
+		<!-- Details Modal -->
+		<BookingDetailsModal
+			ref="detailsModalRef"
+			@edit="openEditModal" />
 	</div>
 </template>

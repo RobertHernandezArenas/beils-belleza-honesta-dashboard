@@ -162,9 +162,10 @@
 				<div
 					v-for="booking in bookings"
 					:key="booking.booking_id"
-					class="booking-card group absolute right-2 left-3 z-10 overflow-hidden rounded-2xl p-0 transition-all hover:z-40 hover:scale-[1.01] hover:shadow-xl"
+					class="booking-card group absolute right-2 left-3 z-10 cursor-pointer overflow-hidden rounded-2xl p-0 transition-all hover:z-40 hover:scale-[1.01] hover:shadow-xl"
 					:class="getStatusColor(booking.status)"
-					:style="getBookingStyle(booking)">
+					:style="getBookingStyle(booking)"
+					@click="emit('edit', booking)">
 					<!-- Status Strip -->
 					<div
 						class="absolute top-0 bottom-0 left-0 my-3 ml-1.5 w-1 rounded-full"
