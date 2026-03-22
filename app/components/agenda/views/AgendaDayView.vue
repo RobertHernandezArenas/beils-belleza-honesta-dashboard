@@ -22,7 +22,7 @@
 		(e: 'status', id: string, status: string): void
 	}>()
 
-	const hourHeight = 80 // pixels per hour
+	const hourHeight = 96 // pixels per hour (exactly matches Tailwind's h-24)
 	const startHour = 8 // start at 8 AM
 	const endHour = 22 // end at 10 PM
 	const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i)
@@ -112,8 +112,8 @@
 
 <template>
 	<div class="custom-scrollbar relative flex-1 overflow-y-auto">
-		<div class="flex min-h-full">
-			<!-- Hours Column -->
+		<div class="flex flex-col min-h-full">
+			<!-- Top Header -->
 			<div
 				class="border-border-subtle bg-bg-card/80 sticky top-0 z-40 flex border-b backdrop-blur-xl transition-all duration-300">
 				<div class="border-border-subtle w-12 shrink-0 border-r p-2 md:w-16"></div>
@@ -128,12 +128,25 @@
 			</div>
 
 			<!-- Timeline Grid -->
-			<div class="relative flex-1">
-				<!-- Grid Lines -->
-				<div
-					v-for="hour in hours"
-					:key="hour"
-					class="border-border-subtle h-20 border-b border-solid md:h-24"></div>
+			<div class="relative flex flex-1">
+				<!-- Hours Column (Eje Y Y lateral) -->
+				<div class="border-border-subtle sticky left-0 z-20 w-12 shrink-0 border-r bg-bg-card/80 backdrop-blur-xl md:w-16">
+					<div 
+						v-for="hour in hours" 
+						:key="'label-'+hour" 
+						class="border-border-subtle flex h-24 items-start justify-end border-b pr-2 pt-2 md:pr-3">
+						<span class="text-text-muted text-[9px] font-black tracking-tighter tabular-nums opacity-60 md:text-[10px]">
+							{{ formatHour(hour) }}
+						</span>
+					</div>
+				</div>
+
+				<div class="relative flex-1">
+					<!-- Grid Lines -->
+					<div
+						v-for="hour in hours"
+						:key="'grid-'+hour"
+						class="border-border-subtle h-24 border-b border-solid w-full"></div>
 
 				<!-- Current Time Indicator -->
 				<div
@@ -217,6 +230,7 @@
 							</span>
 						</div>
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>

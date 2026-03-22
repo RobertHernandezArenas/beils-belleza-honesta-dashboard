@@ -69,6 +69,27 @@ export default defineEventHandler(async event => {
 			endTime = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
 		}
 
+		// --- VALIDATION: OVERLAP CHECK ---
+		const bookingDate = new Date(body.booking_date)
+		const startTime = body.start_time
+		const overlapping = await prisma.booking.findFirst({
+			where: {
+				booking_date: bookingDate,
+				status: { notIn: ['cancelled', 'no_show'] },
+				// Overlap logic: (s1 < e2) AND (e1 > s2)
+				start_time: { lt: endTime },
+				end_time: { gt: startTime }
+			}
+		})
+
+		if (overlapping) {
+			throw createError({
+				statusCode: 409,
+				statusMessage: `Ya existe una cita programada en este horario (${overlapping.start_time} - ${overlapping.end_time})`
+			})
+		}
+		// --- END VALIDATION ---
+
 		const booking = await prisma.booking.create({
 			data: {
 				client_id: body.client_id,

@@ -56,9 +56,13 @@
 	})
 
 	const getBookingsForDay = (date: Date) => {
-		const dateStr = date.toISOString().split('T')[0]
+		const offset1 = date.getTimezoneOffset() * 60000;
+		const dateStr = new Date(date.getTime() - offset1).toISOString().split('T')[0]
+		
 		return props.bookings.filter(b => {
-			const bDate = new Date(b.booking_date).toISOString().split('T')[0]
+			const bObj = new Date(b.booking_date)
+			const offset2 = bObj.getTimezoneOffset() * 60000;
+			const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
 			return bDate === dateStr
 		})
 	}
@@ -112,20 +116,20 @@
 			<div 
 				v-for="{ date, currentMonth } in calendarDays" 
 				:key="date.toISOString()" 
-				class="month-day-cell border-border-subtle group relative flex flex-col border-r border-b p-1 last:border-r-0 transition-all duration-300 hover:z-10 hover:bg-bg-hover"
+				@click="emit('selectDate', date)"
+				class="month-day-cell border-border-subtle group relative flex flex-col border-r border-b p-1 last:border-r-0 transition-all duration-300 hover:z-10 hover:bg-bg-hover hover:border-primary/30 cursor-pointer"
 				:class="{ 'opacity-40 grayscale': !currentMonth, 'bg-primary/5': isToday(date) }">
 				
 				<!-- Day Number -->
 				<div class="flex items-center justify-between p-0.5 md:p-1">
-					<button 
-						@click="emit('selectDate', date)"
+					<div 
 						class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black transition-all md:h-8 md:w-8 md:text-sm"
 						:class="[
 							isToday(date) ? 'bg-primary text-white shadow-lg' : 
 							isSelected(date) ? 'bg-text-primary text-bg-card shadow-md scale-105' : 'text-text-muted group-hover:text-text-primary'
 						]">
 						{{ date.getDate() }}
-					</button>
+					</div>
 					<span v-if="getBookingsForDay(date).length > 0 && currentMonth" class="text-[8px] font-black tracking-widest text-primary">
 						{{ getBookingsForDay(date).length }}
 					</span>

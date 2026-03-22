@@ -32,17 +32,45 @@ export default defineEventHandler(async event => {
 		delete payload.created_at
 		delete payload.updated_at
 
-		if (payload.booking_date) {
-			payload.booking_date = new Date(payload.booking_date)
+		// --- VALIDATION: OVERLAP CHECK ---
+		const current = await prisma.booking.findUnique({ where: { booking_id: id } })
+		if (!current) throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
+
+		const finalDate = payload.booking_date ? new Date(payload.booking_date) : current.booking_date
+		const finalStart = payload.start_time || current.start_time
+		const finalDuration = payload.duration !== undefined ? Number(payload.duration) : current.duration
+		
+		// Calculate final end_time
+		let finalEnd = current.end_time
+		if (payload.start_time !== undefined || payload.duration !== undefined) {
+			const [h, m] = finalStart.split(':').map(Number)
+			const dObj = new Date()
+			dObj.setHours(h, m + finalDuration, 0)
+			finalEnd = `${String(dObj.getHours()).padStart(2, '0')}:${String(dObj.getMinutes()).padStart(2, '0')}`
+			payload.end_time = finalEnd
 		}
 
-		// Recalculate end_time if start_time or duration changed
-		if (payload.start_time && payload.duration) {
-			const [hours, minutes] = payload.start_time.split(':').map(Number)
-			const dateObj = new Date()
-			dateObj.setHours(hours, minutes + Number(payload.duration), 0)
-			payload.end_time = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
+		// Only check overlap if it's not being cancelled
+		const finalStatus = payload.status || current.status
+		if (!['cancelled', 'no_show'].includes(finalStatus)) {
+			const overlapping = await prisma.booking.findFirst({
+				where: {
+					booking_date: finalDate,
+					booking_id: { not: id },
+					status: { notIn: ['cancelled', 'no_show'] },
+					start_time: { lt: finalEnd },
+					end_time: { gt: finalStart }
+				}
+			})
+
+			if (overlapping) {
+				throw createError({
+					statusCode: 409,
+					statusMessage: `Conflicto de horario: Ya existe otra cita (${overlapping.start_time} - ${overlapping.end_time})`
+				})
+			}
 		}
+		// --- END VALIDATION ---
 
 		const updatedBooking = await prisma.booking.update({
 			where: { booking_id: id },

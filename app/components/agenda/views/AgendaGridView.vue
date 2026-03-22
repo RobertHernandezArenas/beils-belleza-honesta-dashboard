@@ -13,7 +13,7 @@
 		(e: 'status', id: string, status: string): void
 	}>()
 
-	const hourHeight = 60 // pixels per hour (slightly smaller for week view)
+	const hourHeight = 96 // pixels per hour (exactly matches Tailwind's h-24: 24 * 4px)
 	const startHour = 8 
 	const endHour = 22 
 	const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i)
@@ -64,9 +64,13 @@
 	}
 
 	const getBookingsForDay = (date: Date) => {
-		const dateStr = date.toISOString().split('T')[0]
+		const offset1 = date.getTimezoneOffset() * 60000;
+		const dateStr = new Date(date.getTime() - offset1).toISOString().split('T')[0]
+		
 		return props.bookings.filter(b => {
-			const bDate = new Date(b.booking_date).toISOString().split('T')[0]
+			const bObj = new Date(b.booking_date)
+			const offset2 = bObj.getTimezoneOffset() * 60000;
+			const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
 			return bDate === dateStr
 		})
 	}

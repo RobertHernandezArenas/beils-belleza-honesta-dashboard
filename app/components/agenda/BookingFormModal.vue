@@ -63,6 +63,8 @@
 	const editingBooking = ref<any | null>(null)
 	const activeTab = ref<'service' | 'pack'>('service')
 	const { animateOpen, animateClose } = useModalAnimation()
+	const localError = ref('')
+	const showLocalError = ref(false)
 
 	const emit = defineEmits(['refresh', 'toast'])
 
@@ -81,13 +83,18 @@
 		}, 200)
 	}
 
+	const getLocalDateString = (d: Date) => {
+		const offset = d.getTimezoneOffset() * 60000;
+		return new Date(d.getTime() - offset).toISOString().slice(0, 10);
+	}
+
 	const form = reactive({
 		client_id: '',
 		staff_id: '',
 		item_type: 'service',
 		item_id: '',
 		status: 'pending',
-		booking_date: new Date().toISOString().slice(0, 10),
+		booking_date: getLocalDateString(new Date()),
 		start_time: '10:00',
 		duration: 60,
 		notes: '',
@@ -131,7 +138,7 @@
 			activeTab.value = booking.item_type as 'service' | 'pack'
 			form.item_id = booking.item_id || ''
 			form.status = booking.status || 'pending'
-			form.booking_date = new Date(booking.booking_date).toISOString().slice(0, 10)
+			form.booking_date = getLocalDateString(new Date(booking.booking_date))
 			form.start_time = booking.start_time || '10:00'
 			form.duration = booking.duration || 60
 			form.notes = booking.notes || ''
@@ -142,7 +149,7 @@
 			activeTab.value = 'service'
 			form.item_id = ''
 			form.status = 'pending'
-			form.booking_date = defaultDate.toISOString().slice(0, 10)
+			form.booking_date = getLocalDateString(defaultDate)
 			form.start_time = '10:00'
 			form.duration = 60
 			form.notes = ''
@@ -173,6 +180,8 @@
 	}
 
 	const closeModal = () => {
+		showLocalError.value = false
+		localError.value = ''
 		animateClose(modalRef.value)
 	}
 
@@ -207,7 +216,14 @@
 		},
 		onError: (error: any) => {
 			console.error('Error saving booking:', error)
-			emit('toast', error.data?.statusMessage || 'Error al guardar la cita', 'error')
+			const serverMsg = error.data?.statusMessage || error.message
+			
+			// Show local error to bypass modal z-index issues
+			localError.value = serverMsg || 'Error al guardar la cita'
+			showLocalError.value = true
+			setTimeout(() => { showLocalError.value = false }, 5000)
+
+			emit('toast', serverMsg || 'Error al guardar la cita', 'error')
 		},
 	})
 
@@ -479,5 +495,15 @@
 		<form method="dialog" class="modal-backdrop bg-text-secondary/40 backdrop-blur-sm">
 			<button>close</button>
 		</form>
+
+		<!-- Local Error Toast (Inside Dialog for top-layer visibility) -->
+		<div v-show="showLocalError" class="toast toast-top toast-center z-1000 mt-4">
+			<div class="alert alert-error rounded-2xl border-none font-bold text-white shadow-2xl transition-all duration-300">
+				<div class="flex flex-col gap-1 items-center text-center">
+					<span class="text-[10px] opacity-80 uppercase tracking-widest font-black">Conflicto de Agenda</span>
+					<span class="text-sm leading-tight">{{ localError }}</span>
+				</div>
+			</div>
+		</div>
 	</dialog>
 </template>
