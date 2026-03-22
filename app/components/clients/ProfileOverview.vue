@@ -1,20 +1,38 @@
 <script setup lang="ts">
 	import {
 		Calendar, FileSignature, FileText, ArrowRight, Clock,
-		CheckCircle2, XCircle, AlertCircle, ShoppingBag, Sparkles, TrendingUp, Wallet, ArrowUpRight
+		CheckCircle2, XCircle, AlertCircle, ShoppingBag, Sparkles, TrendingUp, Wallet, ArrowUpRight,
+		CalendarClock, History
 	} from 'lucide-vue-next'
+
+    import { ref, watch, computed, type PropType } from 'vue'
 
 	const props = defineProps({
 		client: { type: Object as PropType<any>, required: true },
 	})
 
+    const emit = defineEmits(['update'])
+
     const kpis = computed(() => props.client?.kpis || {
         topServices: [], topProducts: [], ltv: 0, aov: 0, bookingFrequencyDays: 0, totalBookings: 0
     })
 
-	const formatDateTime = (dateStr: string) => {
-		if (!dateStr) return 'N/A'
-		return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(dateStr))
+    const isSavingNotes = ref(false)
+    const notesText = ref(props.client?.notes || '')
+    watch(() => props.client?.notes, (newVal) => {
+        if (!isSavingNotes.value) notesText.value = newVal || ''
+    })
+
+    const saveNotes = () => {
+        isSavingNotes.value = true
+        emit('update', 'notes', notesText.value)
+        setTimeout(() => { isSavingNotes.value = false }, 500)
+    }
+
+	const formatDateTime = (dateVal: string | Date) => {
+		if (!dateVal) return 'N/A'
+		const d = dateVal instanceof Date ? dateVal : new Date(dateVal)
+		return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(d)
 	}
 
 	const getStatusIcon = (status: string) => {
@@ -24,10 +42,62 @@
 		switch (status) { case 'completed': return 'text-success'; case 'cancelled': return 'text-error'; case 'pending': return 'text-warning'; default: return 'text-primary' }
 	}
 
+	const upcomingBooking = computed(() => {
+		if (!props.client.client_bookings) return null
+		
+		// Reset time of "now" to midnight to correctly compare dates instead of timestamps
+		const now = new Date()
+		now.setHours(0,0,0,0)
+
+		const futureBookings = props.client.client_bookings
+			.filter((b: any) => {
+				const bDate = new Date(b.booking_date)
+				bDate.setHours(0,0,0,0)
+				return bDate.getTime() >= now.getTime() && (b.status === 'pending' || b.status === 'confirmed')
+			})
+			.sort((a: any, b: any) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
+		return futureBookings[0] || null
+	})
+
+	const lastVisitDays = computed(() => {
+		if (!props.client.client_bookings) return null
+		
+		const now = new Date()
+		now.setHours(0,0,0,0)
+
+		const pastBookings = props.client.client_bookings
+			.filter((b: any) => {
+				const bDate = new Date(b.booking_date)
+				bDate.setHours(0,0,0,0)
+				return bDate.getTime() <= now.getTime() && b.status === 'completed'
+			})
+			.sort((a: any, b: any) => new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime())
+		
+		const last = pastBookings[0]
+		if (!last) return null
+		
+		const lastDate = new Date(last.booking_date)
+		lastDate.setHours(0,0,0,0)
+
+		const diffTime = Math.abs(now.getTime() - lastDate.getTime())
+		const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+		return { days: diffDays, date: last.booking_date }
+	})
+
+	const parseBookingDateTime = (dateStr?: string, timeStr?: string) => {
+		if (!dateStr) return new Date()
+		const d = new Date(dateStr)
+		if (timeStr && timeStr.includes(':')) {
+			const [hh, mm] = timeStr.split(':')
+			d.setHours(parseInt(hh || '0', 10), parseInt(mm || '0', 10), 0, 0)
+		}
+		return d
+	}
+
 	const timeline = computed(() => {
 		const activities: any[] = []
 		props.client.client_bookings?.forEach((b: any) => {
-			activities.push({ id: b.booking_id, date: new Date(b.booking_date), type: 'booking', title: `Cita: ${b.item_type}`, status: b.status, icon: Calendar, color: 'bg-primary/10 text-primary' })
+			activities.push({ id: b.booking_id, date: parseBookingDateTime(b.booking_date as string, b.start_time as string), type: 'booking', title: `Cita: ${b.item_type}`, status: b.status, icon: Calendar, color: 'bg-primary/10 text-primary' })
 		})
 		props.client.consents?.forEach((c: any) => {
 			activities.push({ id: c.consent_id, date: new Date(c.signed_date), type: 'consent', title: `Consentimiento: ${c.consent_type || 'General'}`, status: c.status, icon: FileSignature, color: 'bg-success/10 text-success' })
@@ -42,7 +112,46 @@
 <template>
     <div class="flex flex-col gap-6 lg:gap-8">
         <!-- Quick KPIs Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 min-[820px]:grid-cols-3 gap-4 lg:gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 min-[820px]:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6">
+            
+            <!-- Proxima Cita -->
+            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-primary/30 transition-colors">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Próxima Cita</p>
+                        <h4 class="text-text-primary text-xl font-black tracking-tight" v-if="upcomingBooking">
+                            {{ new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(new Date(upcomingBooking.booking_date)) }}
+                        </h4>
+                        <h4 class="text-text-muted text-base font-black italic mt-1" v-else>No programada</h4>
+                    </div>
+                    <div class="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-2xl shrink-0">
+                        <CalendarClock class="w-6 h-6" />
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+                    <Clock class="w-4 h-4 text-primary" /> <span class="truncate">{{ upcomingBooking ? `${upcomingBooking.start_time} - ${upcomingBooking.item_type}` : 'Agenda libre' }}</span>
+                </div>
+            </div>
+
+            <!-- Ultima Visita -->
+            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-warning/30 transition-colors">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Última Visita</p>
+                        <h4 class="text-text-primary text-2xl font-black tracking-tight" v-if="lastVisitDays">
+                            {{ lastVisitDays.days === 0 ? 'Hoy' : `Hace ${lastVisitDays.days}` }} <span class="text-sm text-text-muted font-bold block sm:inline" v-if="lastVisitDays.days !== 0">días</span>
+                        </h4>
+                        <h4 class="text-text-muted text-base font-black italic mt-1" v-else>Sin histórico</h4>
+                    </div>
+                    <div class="bg-warning/10 text-warning group-hover:bg-warning group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-2xl shrink-0">
+                        <History class="w-6 h-6" />
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+                    <CheckCircle2 class="w-4 h-4 text-warning" /> {{ lastVisitDays ? new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(lastVisitDays.date)) : 'Nuevo cliente' }}
+                </div>
+            </div>
+
             <!-- LTV -->
             <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-success/30 transition-colors">
                 <div class="flex items-start justify-between">
@@ -153,9 +262,12 @@
                         <h3 class="text-text-primary text-sm font-bold tracking-wider uppercase">Anotaciones Comerciales</h3>
                     </div>
                     <div class="p-6 flex flex-col gap-4">
-                        <textarea class="textarea textarea-bordered border-border-subtle bg-bg-muted/30 focus:border-primary focus:ring-primary h-36 w-full rounded-2xl p-4 text-sm font-medium focus:ring-1 resize-none" placeholder="Escribe aquí notas médicas, incidencias o preferencias especiales de este cliente..."></textarea>
+                        <textarea v-model="notesText" class="textarea textarea-bordered border-border-subtle bg-bg-muted/30 focus:border-primary focus:ring-primary h-36 w-full rounded-2xl p-4 text-sm font-medium focus:ring-1 resize-none" placeholder="Escribe aquí notas médicas, incidencias o preferencias especiales de este cliente..."></textarea>
                         <div class="flex justify-end">
-                            <button class="btn bg-primary text-bg-card hover:bg-primary/90 rounded-xl font-bold px-8">Guardar</button>
+                            <button @click="saveNotes" :disabled="isSavingNotes" class="btn bg-primary text-bg-card hover:bg-primary/90 rounded-xl font-bold px-8">
+                                <span v-if="isSavingNotes" class="loading loading-spinner w-4 h-4"></span>
+                                {{ isSavingNotes ? 'Guardando...' : 'Guardar' }}
+                            </button>
                         </div>
                     </div>
                 </div>

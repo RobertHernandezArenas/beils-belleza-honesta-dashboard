@@ -217,7 +217,7 @@ const handleEditBooking = (b: any) => {
             <Transition name="page" mode="out-in">
               <!-- OVERVIEW TAB -->
               <div v-if="currentTab === 'overview'" key="overview">
-                <ProfileOverview :client="client" />
+                <ProfileOverview :client="client" @update="handleFieldUpdate" />
               </div>
 
               <!-- BOOKINGS TAB -->
