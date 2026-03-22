@@ -17,6 +17,7 @@ const clientSchema = z.object({
 	document_number: z.string().optional(),
 	status: z.enum(['ON', 'OFF']).optional(),
 	avatar: z.string().optional(),
+	annotations: z.string().optional(),
 })
 
 export default defineEventHandler(async event => {

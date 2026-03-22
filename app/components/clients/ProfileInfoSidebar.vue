@@ -37,7 +37,7 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start xl:flex xl:flex-col">
+  <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start xl:flex xl:flex-col 3xl:gap-8">
     <!-- Contact & Location Card -->
     <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
       <div class="border-border-subtle bg-text-secondary  border-b px-6 py-4">
@@ -46,7 +46,7 @@ const formatDate = (dateStr: string) => {
           Ubicación y Contacto
         </h3>
       </div>
-      <div class="p-6 space-y-4">
+      <div class="p-6 3xl:p-8 space-y-4 3xl:space-y-6">
         <div class="flex flex-col gap-1 w-full">
           <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">Dirección</span>
           <EditableField 
@@ -100,7 +100,7 @@ const formatDate = (dateStr: string) => {
           Identificación
         </h3>
       </div>
-      <div class="p-6 space-y-4">
+      <div class="p-6 3xl:p-8 space-y-4 3xl:space-y-6">
         <div class="flex items-center justify-between gap-4">
           <div class="flex flex-col gap-1 w-full flex-1 min-w-0">
             <div class="w-fit">
@@ -161,7 +161,7 @@ const formatDate = (dateStr: string) => {
           Datos Demográficos
         </h3>
       </div>
-      <div class="p-6 space-y-4">
+      <div class="p-6 3xl:p-8 space-y-4 3xl:space-y-6">
         <div class="flex justify-between items-center border-b border-border-subtle pb-3 gap-4">
           <span class="text-text-muted text-xs font-bold uppercase shrink-0">Nacimiento</span>
           <EditableField

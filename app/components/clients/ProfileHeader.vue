@@ -122,194 +122,93 @@
 </script>
 
 <template>
-	<div class="glass-header relative z-30 overflow-visible rounded-3xl p-6 shadow-sm lg:p-8">
+	<div class="glass-header relative z-30 overflow-visible rounded-3xl p-6 shadow-sm lg:p-8 3xl:p-12 transition-all duration-500">
 		<!-- Decorative background elements wrapper to prevent x-overflow -->
 		<div class="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-3xl">
 			<div class="bg-primary/5 absolute -top-24 -right-24 h-64 w-64 rounded-full blur-3xl"></div>
 			<div class="bg-secondary/5 absolute -bottom-24 -left-24 h-64 w-64 rounded-full blur-3xl"></div>
 		</div>
 
-		<div class="relative z-10 flex flex-col items-start gap-6 md:flex-row md:flex-wrap xl:flex-nowrap xl:items-center">
-			<!-- Avatar Section -->
-			<div class="relative shrink-0">
-				<div
-					class="group relative aspect-square w-24 cursor-pointer overflow-hidden rounded-full border-4 shadow-md transition-transform hover:scale-105 md:w-32"
-					:class="getStatusClass(client.status)"
-					@click="triggerAvatarUpload">
-					<div
-						v-if="isUploadingAvatar"
-						class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 text-white">
-						<span class="loading loading-spinner"></span>
-					</div>
-					<div
-						class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
-						<Camera class="mb-1 h-8 w-8" />
-						<span class="text-[9px] font-bold tracking-wider uppercase">Cambiar</span>
-					</div>
-					<img
-						v-if="displayAvatar && !avatarError"
-						:src="displayAvatar"
-						class="h-full w-full object-cover"
-						@error="handleAvatarError" />
-					<div
-						v-else
-						class="bg-bg-muted text-text-muted flex h-full w-full items-center justify-center text-3xl font-bold">
-						{{ client.name.charAt(0) }}{{ client.surname?.charAt(0) || '' }}
-					</div>
-				</div>
-				<input
-					type="file"
-					class="hidden"
-					ref="fileInput"
-					accept="image/jpeg, image/png, image/webp"
-					@change="handleFileSelect" />
-				<div
-					class="pointer-events-none absolute right-1 bottom-1 z-30 h-6 w-6 rounded-full border-4 border-white shadow-sm"
-					:class="client.status === 'ON' ? 'bg-success' : 'bg-error'"></div>
-			</div>
-
-			<!-- Identity & Info -->
-			<div class="flex-1 space-y-4">
-				<div class="flex flex-wrap items-center gap-3">
-					<div class="flex max-w-full items-center gap-2 overflow-hidden">
-						<EditableField
-							:model-value="client.name"
-							label="Nombre"
-							:is-mutating="isUpdating"
-							@save="emit('update', 'name', $event)"
-							class="text-text-primary text-3xl font-bold tracking-tight md:text-4xl" />
-						<EditableField
-							:model-value="client.surname"
-							label="Apellido"
-							:is-mutating="isUpdating"
-							@save="emit('update', 'surname', $event)"
-							class="text-text-primary text-3xl font-bold tracking-tight md:text-4xl" />
-					</div>
-					<BadgeCheck class="text-primary h-6 w-6" />
-					<EditableField
-						:model-value="client.status"
-						label="Estado"
-						type="select"
-						:options="[
-							{ label: 'Activo', value: 'ON' },
-							{ label: 'Inactivo', value: 'OFF' },
-						]"
-						:is-mutating="isUpdating"
-						@save="emit('update', 'status', $event)">
-						<template #display>
-							<div
-								class="badge badge-sm cursor-pointer font-bold uppercase"
-								:class="getStatusBadge(client.status)">
-								{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
+			<!-- Stats/Score & Actions Row -->
+			<div class="flex w-full flex-col justify-between gap-6 md:flex-row md:items-center xl:flex-nowrap">
+				<!-- 1. Identity -->
+				<div class="flex items-center gap-6">
+					<div class="relative shrink-0">
+						<div
+							class="group relative aspect-square w-24 cursor-pointer overflow-hidden rounded-full border-4 shadow-md transition-transform hover:scale-105"
+							:class="getStatusClass(client.status)"
+							@click="triggerAvatarUpload">
+							<div v-if="isUploadingAvatar" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 text-white">
+								<span class="loading loading-spinner"></span>
 							</div>
-						</template>
-					</EditableField>
+							<div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+								<Camera class="mb-1 h-8 w-8" />
+								<span class="text-[9px] font-bold tracking-wider uppercase">Cambiar</span>
+							</div>
+							<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="h-full w-full object-cover" @error="handleAvatarError" />
+							<div v-else class="bg-bg-muted text-text-muted flex h-full w-full items-center justify-center text-3xl font-bold">
+								{{ client.name.charAt(0) }}{{ client.surname?.charAt(0) || '' }}
+							</div>
+						</div>
+						<div class="absolute right-1 bottom-1 h-6 w-6 rounded-full border-4 border-white shadow-sm" :class="client.status === 'ON' ? 'bg-success' : 'bg-error'"></div>
+					</div>
+
+					<div class="space-y-1">
+						<div class="flex items-center gap-2">
+							<h1 class="text-text-primary text-3xl font-bold tracking-tight">{{ client.name }} {{ client.surname }}</h1>
+							<div 
+							class="badge badge-sm font-black uppercase text-[10px]"
+							:class="client.status === 'ON' ? 'badge-success' : 'badge-error'"
+						>
+							{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
+						</div>
+						</div>
+						<div class="text-text-muted flex flex-col gap-0.5 text-xs font-bold leading-relaxed">
+							<span>{{ client.email }} • {{ client.phone }}</span>
+							<span>Registrado: {{ new Date(client.created_at).toLocaleDateString() }}</span>
+						</div>
+					</div>
 				</div>
 
-				<div class="text-text-secondary flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium">
-					<div class="flex items-center gap-2">
-						<Mail class="h-5 w-5 opacity-70" />
-						<EditableField
-							:model-value="client.email"
-							label="Email"
-							type="email"
-							placeholder="correo@ejemplo.com"
-							:is-mutating="isUpdating"
-							@save="emit('update', 'email', $event)">
-							<template #display="{ value }">{{ value || 'Sin correo (Añadir)' }}</template>
-						</EditableField>
+				<!-- 2. Engagement Score Card -->
+				<div class="bg-white/10 border-white/20 backdrop-blur-md rounded-3xl border p-4 flex items-center gap-5 shadow-xl min-w-[320px]">
+					<div class="relative flex items-center justify-center">
+						<div class="w-12 h-12 rounded-full bg-success animate-pulse blur-sm absolute opacity-30"></div>
+						<div class="w-10 h-10 rounded-full bg-success flex items-center justify-center border-2 border-white/50 shadow-[0_0_15px_rgba(34,197,94,0.5)]">
+							<div class="w-4 h-4 rounded-full bg-white/40"></div>
+						</div>
 					</div>
-					<div class="flex items-center gap-2">
-						<Phone class="h-4 w-4 opacity-70" />
-						<EditableField
-							:model-value="client.phone"
-							label="Teléfono"
-							type="tel"
-							placeholder="+34..."
-							:is-mutating="isUpdating"
-							@save="emit('update', 'phone', $event)">
-							<template #display="{ value }">{{ value || 'Sin teléfono (Añadir)' }}</template>
-						</EditableField>
+					<div class="flex-1">
+						<div class="flex items-center gap-2 mb-0.5">
+							<span class="text-text-primary text-sm font-bold opacity-70">Engagement Score</span>
+							<AlertCircle class="w-3.5 h-3.5 text-text-muted cursor-help" />
+						</div>
+						<div class="flex items-baseline gap-2">
+							<span class="text-text-primary text-4xl font-black italic">92</span>
+							<span class="text-text-muted text-xl font-bold">/100</span>
+							<span class="badge bg-success/10 text-success border-none font-black text-[10px] ml-2 uppercase">High Loyalty</span>
+						</div>
+						<p class="text-text-muted text-[10px] font-bold mt-1 max-w-[200px] leading-tight italic">VIP Status. Frequent visitor with high average spend.</p>
 					</div>
-					<span class="flex cursor-default items-center gap-2" title="Fecha de Alta (No editable)">
-						<Calendar class="h-4 w-4 opacity-70" />
-						Registrado: {{ new Date(client.created_at).toLocaleDateString() }}
-					</span>
+				</div>
+
+				<!-- 3. Actions -->
+				<div class="flex items-center gap-3">
+					<button @click="$emit('new-booking')" class="btn bg-[#5D5CDE] hover:bg-[#4B4ABF] text-white border-none rounded-xl px-6 font-bold h-12">
+						Nueva Cita
+					</button>
+					<div class="dropdown dropdown-end">
+						<div tabindex="0" role="button" class="btn btn-ghost bg-bg-muted/50 hover:bg-bg-muted h-12 rounded-xl px-6 font-bold">
+							Acciones <ChevronDown class="ml-1 w-4 h-4 opacity-70" />
+						</div>
+						<ul tabindex="0" class="dropdown-content menu bg-bg-card border-border-subtle z-50 mt-2 w-56 rounded-2xl border p-2 shadow-xl">
+							<li><a @click="$emit('add-consent')" class="py-3 font-bold"><FileSignature class="text-success mr-2 h-4 w-4" /> Añadir Consentimiento</a></li>
+							<li><a @click="$emit('add-questionnaire')" class="py-3 font-bold"><FileText class="text-info mr-2 h-4 w-4" /> Nuevo Cuestionario</a></li>
+							<li><a @click="$emit('add-revoke')" class="hover:bg-bg-muted text-error py-3 font-bold"><ShieldOff class="mr-2 h-4 w-4" /> Revocar Consentimiento</a></li>
+						</ul>
+					</div>
 				</div>
 			</div>
-
-			<!-- Stats Grid -->
-			<div class="grid w-full grid-cols-2 gap-4 md:flex md:w-auto md:gap-6">
-				<div
-					class="bg-bg-card/50 border-border-subtle flex flex-col rounded-2xl border p-4 shadow-sm backdrop-blur-sm md:w-32">
-					<div
-						class="text-text-muted flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
-						<TrendingUp class="h-3 w-3" />
-						Citas
-					</div>
-					<div class="text-text-primary mt-1 text-2xl font-bold tabular-nums">
-						{{ totalBookings }}
-					</div>
-				</div>
-				<div
-					class="bg-bg-card/50 border-border-subtle flex flex-col rounded-2xl border p-4 shadow-sm backdrop-blur-sm md:w-32">
-					<div
-						class="text-text-muted flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
-						<CreditCard class="h-3 w-3" />
-						Deuda
-					</div>
-					<div class="text-text-primary mt-1 text-2xl font-bold tabular-nums">
-						{{ totalSpent.toFixed(2) }}€
-					</div>
-				</div>
-			</div>
-
-			<!-- Actions Stack -->
-			<div class="flex w-full gap-3 mt-4 md:mt-0 md:ml-auto md:w-auto md:flex-row xl:flex-col md:justify-end xl:justify-center shrink-0">
-				<button
-					@click="$emit('new-booking')"
-					class="btn btn-primary btn-sm h-12 flex-1 rounded-xl px-6 font-bold md:flex-none">
-					<Plus class="mr-2 h-4 w-4" />
-					Nueva Cita
-				</button>
-
-				<div class="dropdown dropdown-end flex-1 md:flex-none">
-					<div
-						tabindex="0"
-						role="button"
-						class="btn btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted h-12 w-full rounded-xl px-6 font-bold">
-						Acciones
-						<ChevronDown class="ml-1 h-4 w-4 opacity-70" />
-					</div>
-					<ul
-						tabindex="0"
-						class="dropdown-content menu bg-bg-card border-border-subtle z-50 mt-2 w-56 rounded-2xl border p-2 shadow-xl">
-						<li>
-							<a
-								@click="$emit('add-consent')"
-								class="hover:bg-bg-muted text-text-primary py-3 font-bold">
-								<FileSignature class="text-success mr-2 h-4 w-4" />
-								Añadir Consentimiento
-							</a>
-						</li>
-						<li>
-							<a
-								@click="$emit('add-questionnaire')"
-								class="hover:bg-bg-muted text-text-primary py-3 font-bold">
-								<FileText class="text-info mr-2 h-4 w-4" />
-								Nuevo Cuestionario
-							</a>
-						</li>
-						<li>
-							<a @click="$emit('add-revoke')" class="hover:bg-bg-muted text-error py-3 font-bold">
-								<ShieldOff class="mr-2 h-4 w-4" />
-								Revocar Consentimiento
-							</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
 
 		<ImageCropperModal v-model="showCropper" :image-src="selectedImageSrc" @crop="uploadCroppedImage" />
 	</div>

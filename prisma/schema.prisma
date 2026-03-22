@@ -48,6 +48,7 @@ model User {
   avatar                   String               @db.VarChar(255)
   document_type            DocumentType         @default(DNI)
   document_number          String               @db.VarChar(20)
+  annotations              String?              @db.Text
   refresh_token            String?              @db.Text
   
   carts                    Cart[]

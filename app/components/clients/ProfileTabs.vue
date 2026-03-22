@@ -22,8 +22,6 @@ const emit = defineEmits(['update:modelValue'])
 
 const tabs = [
   { id: 'overview', name: 'Resumen', icon: User },
-  { id: 'bookings', name: 'Historial de Citas', icon: CalendarDays, count: 'bookings' },
-  { id: 'documents', name: 'Documentos y Formularios', icon: FileText, count: 'documents' },
   { id: 'billing', name: 'Facturación y Deudas', icon: CreditCard, count: 'debts' },
 ]
 

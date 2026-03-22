@@ -138,8 +138,8 @@ const handleEditBooking = (b: any) => {
 </script>
 
 <template>
-  <div class="bg-bg-app overflow-x-clip min-h-screen w-full p-4 font-sans lg:p-10">
-    <div class="mx-auto max-w-[1400px]">
+  <div class="bg-bg-app overflow-x-clip min-h-screen w-full p-4 font-sans lg:p-10 3xl:p-16 transition-all duration-500">
+    <div class="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1800px]">
       <!-- Breadcrumbs / Back button -->
       <div class="mb-8 flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -202,9 +202,15 @@ const handleEditBooking = (b: any) => {
         </div>
 
         <!-- 3. Two Column Layout -->
-        <div class="flex flex-col-reverse gap-8 xl:grid xl:grid-cols-[340px_1fr] 2xl:grid-cols-[380px_1fr]">
-          <!-- Left Sidebar -->
-          <aside class="space-y-6">
+        <div 
+          class="flex flex-col-reverse gap-8 transition-all duration-700"
+          :class="{
+            'xl:grid xl:grid-cols-[340px_1fr] 2xl:grid-cols-[380px_1fr]': currentTab !== 'overview',
+            'w-full': currentTab === 'overview'
+          }"
+        >
+          <!-- Left Sidebar (Only visible if NOT in overview) -->
+          <aside v-if="currentTab !== 'overview'" class="space-y-6">
             <ProfileInfoSidebar 
               :client="client" 
               :is-updating="isUpdating"
@@ -220,122 +226,7 @@ const handleEditBooking = (b: any) => {
                 <ProfileOverview :client="client" @update="handleFieldUpdate" />
               </div>
 
-              <!-- BOOKINGS TAB -->
-              <div v-else-if="currentTab === 'bookings'" key="bookings" class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-                <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-                  <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Historial Completo de Citas</h3>
-                </div>
-                <div class="overflow-x-auto">
-                  <table v-if="client.client_bookings?.length > 0" class="table w-full">
-                    <thead class="bg-bg-muted/50 text-text-secondary border-b border-border-default h-14">
-                      <tr>
-                        <th class="pl-6 text-xs font-black uppercase">Fecha y Hora</th>
-                        <th class="text-xs font-black uppercase">Servicio / Pack</th>
-                        <th class="text-xs font-black uppercase">Estado</th>
-                        <th class="text-xs font-black uppercase text-right pr-6">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border-subtle">
-                      <tr v-for="booking in client.client_bookings" :key="booking.booking_id" class="group hover:bg-bg-muted/30 transition-colors h-16">
-                        <td class="pl-6">
-                          <div class="flex flex-col">
-                            <span class="text-text-primary text-sm font-bold">{{ formatDate(booking.booking_date) }}</span>
-                            <span class="text-text-muted text-[11px] font-bold">{{ booking.start_time }} - {{ booking.end_time }}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div class="flex items-center gap-2">
-                            <div class="bg-primary/10 h-8 w-8 rounded-lg flex items-center justify-center">
-                               <CalendarDays class="h-4 w-4 text-primary" />
-                            </div>
-                            <span class="text-text-primary text-sm font-bold capitalize">{{ booking.item_type }}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span
-                            class="badge badge-sm font-bold uppercase ring-1 ring-inset"
-                            :class="{
-                              'bg-warning/10 text-warning ring-warning/20': booking.status === 'pending',
-                              'bg-success/10 text-success ring-success/20': booking.status === 'completed',
-                              'bg-primary/10 text-primary ring-primary/20': booking.status === 'confirmed',
-                              'bg-error/10 text-error ring-error/20': booking.status === 'cancelled' || booking.status === 'no_show',
-                            }"
-                          >
-                            {{ booking.status }}
-                          </span>
-                        </td>
-                        <td class="text-right pr-6">
-                          <button @click="bookingDetailsModalRef?.open(booking)" class="btn btn-ghost btn-xs rounded-lg hover:bg-primary/10 hover:text-primary transition-all">
-                            Detalles
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div v-else class="flex flex-col items-center justify-center py-20 text-center">
-                    <CalendarDays class="text-text-muted mb-4 h-12 w-12 opacity-20" />
-                    <p class="text-text-primary text-lg font-bold">Sin historial de citas</p>
-                    <p class="text-text-muted mt-1 text-sm">Este cliente aún no ha agendado su primera sesión.</p>
-                  </div>
-                </div>
-              </div>
 
-              <!-- DOCUMENTS TAB -->
-              <div v-else-if="currentTab === 'documents'" key="documents" class="space-y-8">
-                <!-- Consents -->
-                <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-                  <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-                    <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Consentimientos Informados</h3>
-                  </div>
-                  <div class="p-6">
-                    <div v-if="client.consents?.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <div v-for="consent in client.consents" :key="consent.consent_id" class="bg-bg-muted/50 border-border-subtle hover:border-primary/30 flex items-center gap-4 rounded-2xl border p-4 transition-all hover:scale-[1.02]">
-                        <div class="bg-success/20 text-success flex h-10 w-10 items-center justify-center rounded-xl shadow-inner">
-                          <FileSignature class="h-5 w-5" />
-                        </div>
-                        <div class="flex-1 min-w-0">
-                          <h4 class="text-text-primary truncate text-sm font-bold uppercase leading-none">{{ consent.consent_type || 'General' }}</h4>
-                          <p class="text-text-muted mt-1 text-[10px] font-bold uppercase tracking-wider">Firmado el {{ formatDate(consent.signed_date) }}</p>
-                        </div>
-                        <a :href="consent.document_url" target="_blank" class="btn btn-ghost btn-square btn-sm rounded-xl">
-                          <ExternalLink class="h-4 w-4" />
-                        </a>
-                      </div>
-                    </div>
-                    <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-                      <FileSignature class="text-text-muted mb-4 h-12 w-12 opacity-20" />
-                      <p class="text-text-primary font-bold">Sin consentimientos firmados</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Questionnaires -->
-                <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-                  <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-                    <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Cuestionarios de Salud</h3>
-                  </div>
-                  <div class="p-6">
-                    <div v-if="client.questionnaires?.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                       <div v-for="q in client.questionnaires" :key="q.questionnaire_id" class="bg-bg-muted/50 border-border-subtle hover:border-primary/30 flex items-center justify-between rounded-2xl border p-4 transition-all hover:scale-[1.02]">
-                        <div class="flex items-center gap-4">
-                          <div class="bg-info/20 text-info flex h-10 w-10 items-center justify-center rounded-xl shadow-inner">
-                            <FileText class="h-5 w-5" />
-                          </div>
-                          <div class="flex flex-col">
-                            <h4 class="text-text-primary text-sm font-bold uppercase leading-none">{{ q.title }}</h4>
-                            <p class="text-text-muted mt-1 text-[10px] font-bold uppercase tracking-wider">Completado: {{ formatDate(q.created_at) }}</p>
-                          </div>
-                        </div>
-                        <button class="btn btn-ghost btn-xs font-bold uppercase">Ver Respuestas</button>
-                      </div>
-                    </div>
-                    <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-                      <FileText class="text-text-muted mb-4 h-12 w-12 opacity-20" />
-                      <p class="text-text-primary font-bold">Sin cuestionarios registrados</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               <!-- BILLING TAB -->
               <div v-else-if="currentTab === 'billing'" key="billing" class="space-y-6">

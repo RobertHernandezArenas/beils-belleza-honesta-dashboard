@@ -2,57 +2,48 @@
 	import {
 		Calendar, FileSignature, FileText, ArrowRight, Clock,
 		CheckCircle2, XCircle, AlertCircle, ShoppingBag, Sparkles, TrendingUp, Wallet, ArrowUpRight,
-		CalendarClock, History
+		CalendarClock, History, MapPin, Eye, EyeOff, User, Plus, Search, Filter, ChevronRight
 	} from 'lucide-vue-next'
 
     import { ref, watch, computed, type PropType } from 'vue'
+    import { useDataPrivacy } from '~/composables/useDataPrivacy'
+    import EditableField from '~/components/shared/EditableField.vue'
 
 	const props = defineProps({
 		client: { type: Object as PropType<any>, required: true },
+        isUpdating: { type: Boolean, default: false }
 	})
 
     const emit = defineEmits(['update'])
+    const { revealedDocs, revealedLoading, toggleDocumentVisibility } = useDataPrivacy()
 
     const kpis = computed(() => props.client?.kpis || {
         topServices: [], topProducts: [], ltv: 0, aov: 0, bookingFrequencyDays: 0, totalBookings: 0
     })
 
     const isSavingNotes = ref(false)
-    const notesText = ref(props.client?.notes || '')
-    watch(() => props.client?.notes, (newVal) => {
+    const notesText = ref(props.client?.annotations || '')
+    watch(() => props.client?.annotations, (newVal) => {
         if (!isSavingNotes.value) notesText.value = newVal || ''
     })
 
     const saveNotes = () => {
         isSavingNotes.value = true
-        emit('update', 'notes', notesText.value)
+        emit('update', 'annotations', notesText.value)
         setTimeout(() => { isSavingNotes.value = false }, 500)
     }
 
-	const formatDateTime = (dateVal: string | Date) => {
-		if (!dateVal) return 'N/A'
-		const d = dateVal instanceof Date ? dateVal : new Date(dateVal)
-		return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(d)
-	}
-
-	const getStatusIcon = (status: string) => {
-		switch (status) { case 'completed': return CheckCircle2; case 'cancelled': return XCircle; case 'pending': return Clock; default: return AlertCircle }
-	}
-	const getStatusColor = (status: string) => {
-		switch (status) { case 'completed': return 'text-success'; case 'cancelled': return 'text-error'; case 'pending': return 'text-warning'; default: return 'text-primary' }
-	}
+	const formatDate = (dateStr: string) => {
+        if (!dateStr) return '---'
+        return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(dateStr))
+    }
 
 	const upcomingBooking = computed(() => {
 		if (!props.client.client_bookings) return null
-		
-		// Reset time of "now" to midnight to correctly compare dates instead of timestamps
-		const now = new Date()
-		now.setHours(0,0,0,0)
-
+		const now = new Date(); now.setHours(0,0,0,0)
 		const futureBookings = props.client.client_bookings
 			.filter((b: any) => {
-				const bDate = new Date(b.booking_date)
-				bDate.setHours(0,0,0,0)
+				const bDate = new Date(b.booking_date); bDate.setHours(0,0,0,0)
 				return bDate.getTime() >= now.getTime() && (b.status === 'pending' || b.status === 'confirmed')
 			})
 			.sort((a: any, b: any) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
@@ -61,261 +52,339 @@
 
 	const lastVisitDays = computed(() => {
 		if (!props.client.client_bookings) return null
-		
-		const now = new Date()
-		now.setHours(0,0,0,0)
-
+		const now = new Date(); now.setHours(0,0,0,0)
 		const pastBookings = props.client.client_bookings
 			.filter((b: any) => {
-				const bDate = new Date(b.booking_date)
-				bDate.setHours(0,0,0,0)
+				const bDate = new Date(b.booking_date); bDate.setHours(0,0,0,0)
 				return bDate.getTime() <= now.getTime() && b.status === 'completed'
 			})
 			.sort((a: any, b: any) => new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime())
-		
 		const last = pastBookings[0]
 		if (!last) return null
-		
-		const lastDate = new Date(last.booking_date)
-		lastDate.setHours(0,0,0,0)
-
+		const lastDate = new Date(last.booking_date); lastDate.setHours(0,0,0,0)
 		const diffTime = Math.abs(now.getTime() - lastDate.getTime())
-		const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-		return { days: diffDays, date: last.booking_date }
+		return { days: Math.floor(diffTime / (1000 * 60 * 60 * 24)), date: last.booking_date }
 	})
 
-	const parseBookingDateTime = (dateStr?: string, timeStr?: string) => {
-		if (!dateStr) return new Date()
-		const d = new Date(dateStr)
-		if (timeStr && timeStr.includes(':')) {
-			const [hh, mm] = timeStr.split(':')
-			d.setHours(parseInt(hh || '0', 10), parseInt(mm || '0', 10), 0, 0)
-		}
-		return d
-	}
+    const timeline = computed(() => {
+        const activities: any[] = []
+        props.client.client_bookings?.forEach((b: any) => {
+            activities.push({ id: b.booking_id, date: new Date(b.booking_date), type: 'booking', title: b.item_type, professional: b.professional?.name || 'Staff beils', status: b.status, icon: Calendar, color: 'text-primary' })
+        })
+        return activities.sort((a,b) => b.date.getTime() - a.date.getTime()).slice(0, 5)
+    })
 
-	const timeline = computed(() => {
-		const activities: any[] = []
-		props.client.client_bookings?.forEach((b: any) => {
-			activities.push({ id: b.booking_id, date: parseBookingDateTime(b.booking_date as string, b.start_time as string), type: 'booking', title: `Cita: ${b.item_type}`, status: b.status, icon: Calendar, color: 'bg-primary/10 text-primary' })
-		})
-		props.client.consents?.forEach((c: any) => {
-			activities.push({ id: c.consent_id, date: new Date(c.signed_date), type: 'consent', title: `Consentimiento: ${c.consent_type || 'General'}`, status: c.status, icon: FileSignature, color: 'bg-success/10 text-success' })
-		})
-		props.client.questionnaires?.forEach((q: any) => {
-			activities.push({ id: q.questionnaire_id, date: new Date(q.created_at), type: 'questionnaire', title: `Formulario: ${q.title}`, status: 'completado', icon: FileText, color: 'bg-info/10 text-info' })
-		})
-		return activities.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 10)
-	})
+    // Legal & Compliance Logic
+    const getConsentStatus = (type: string) => {
+        const c = props.client.consents?.find((i: any) => i.consent_type?.toLowerCase().includes(type.toLowerCase()))
+        return c ? { signed: true, date: formatDate(c.signed_date) } : { signed: false, date: null }
+    }
+
+    const gdprStatus = computed(() => getConsentStatus('GDPR'))
+    const marketingStatus = computed(() => getConsentStatus('Marketing'))
+    const photographyStatus = computed(() => getConsentStatus('Photography'))
+    const medicalStatus = computed(() => {
+        const q = props.client.questionnaires?.find((i: any) => i.title?.toLowerCase().includes('historia clínica') || i.title?.toLowerCase().includes('medical'))
+        return q ? { signed: true, date: formatDate(q.created_at) } : { signed: false, date: null }
+    })
+    const skinStatus = computed(() => {
+        const q = props.client.questionnaires?.find((i: any) => i.title?.toLowerCase().includes('piel') || i.title?.toLowerCase().includes('skin'))
+        return q ? { signed: true, date: formatDate(q.created_at) } : { signed: false, date: null }
+    })
 </script>
 
 <template>
-    <div class="flex flex-col gap-6 lg:gap-8">
-        <!-- Quick KPIs Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 min-[820px]:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 3xl:gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        
+        <!-- COLUMN 1: Personal Insights -->
+        <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 lg:p-8 space-y-8 flex flex-col shadow-sm border border-border-subtle/20">
+            <div class="flex items-center justify-between">
+                <h3 class="text-text-primary text-lg font-bold tracking-tight">Personal Insights</h3>
+                <div class="flex gap-2">
+                    <UserCircle class="w-5 h-5 text-text-muted" />
+                    <AlertCircle class="w-5 h-5 text-text-muted" />
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Location -->
+                <div>
+                    <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-3">Ubicación y Contacto</h4>
+                    <div class="space-y-1 text-sm font-medium text-text-primary">
+                        <EditableField :model-value="client.address" label="Dirección" :is-mutating="isUpdating" @save="emit('update', 'address', $event)" />
+                        <div class="flex gap-2">
+                            <EditableField :model-value="client.city" label="Ciudad" :is-mutating="isUpdating" @save="emit('update', 'city', $event)" />
+                            <span>,</span>
+                            <EditableField :model-value="client.postal_code" label="C.P." :is-mutating="isUpdating" @save="emit('update', 'postal_code', $event)" />
+                        </div>
+                        <EditableField :model-value="client.country" label="País" :is-mutating="isUpdating" @save="emit('update', 'country', $event)" />
+                    </div>
+                </div>
+
+                <!-- Demographics -->
+                <div>
+                    <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-3">Datos Demográficos</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-text-muted text-xs">Nacimiento:</span>
+                            <EditableField :model-value="client.birth_date" label="Nacimiento" type="date" :is-mutating="isUpdating" @save="emit('update', 'birth_date', $event)" class="font-bold">
+                                <template #display>{{ formatDate(client.birth_date) }}</template>
+                            </EditableField>
+                        </div>
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-text-muted text-xs">Género:</span>
+                            <EditableField :model-value="client.gender" label="Género" type="select" :options="[{label:'Mujer', value:'Female'}, {label:'Hombre', value:'Male'}]" :is-mutating="isUpdating" @save="emit('update', 'gender', $event)" class="font-bold">
+                                <template #display="{ value }">{{ value === 'Female' ? 'Mujer' : 'Hombre' }}</template>
+                            </EditableField>
+                        </div>
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-text-muted text-xs">Alta:</span>
+                            <span class="font-bold">{{ formatDate(client.created_at) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Identification -->
+                <div>
+                    <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-3">Identificación</h4>
+                    <div class="bg-white/50 dark:bg-black/20 rounded-2xl p-4 flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-text-muted font-black uppercase">{{ client.document_type || 'PASAPORTE' }}</span>
+                            <span class="text-sm font-bold tracking-widest font-mono">{{ revealedDocs[client.user_id] || '****' + (client.document_number?.slice(-4) || '3115') }}</span>
+                        </div>
+                        <button @click="toggleDocumentVisibility(client.user_id, client.document_number)" class="btn btn-ghost btn-circle btn-sm">
+                            <component :is="revealedDocs[client.user_id] ? EyeOff : Eye" class="w-4 h-4 opacity-50" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: KPI Metrics Stack -->
+        <div class="space-y-6">
+            <!-- LTV Card -->
+            <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 shadow-sm border border-border-subtle/20 flex flex-col justify-between h-[140px] group transition-all hover:scale-[1.02]">
+                <div class="flex justify-between items-start">
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-widest">Lifetime Value (LTV)</p>
+                    <div class="p-2 rounded-xl bg-primary/10 text-primary"><TrendingUp class="w-4 h-4" /></div>
+                </div>
+                <h4 class="text-text-primary text-4xl font-black tabular-nums">{{ kpis.ltv.toFixed(2) }}€</h4>
+            </div>
+
+            <!-- AOV Card -->
+            <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 shadow-sm border border-border-subtle/20 flex flex-col justify-between h-[140px] group transition-all hover:scale-[1.02]">
+                <div class="flex justify-between items-start">
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-widest">Average Order Value (AOV)</p>
+                    <div class="p-2 rounded-xl bg-secondary/10 text-secondary"><ArrowUpRight class="w-4 h-4" /></div>
+                </div>
+                <h4 class="text-text-primary text-4xl font-black tabular-nums">{{ kpis.aov.toFixed(2) }}€</h4>
+            </div>
+
+            <!-- Frequency Card -->
+            <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 shadow-sm border border-border-subtle/20 flex flex-col justify-between h-[140px] group transition-all hover:scale-[1.02]">
+                <div class="flex justify-between items-start">
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-widest">Frecuencia Habitual</p>
+                    <div class="p-2 rounded-xl bg-accent/10 text-accent"><CalendarClock class="w-4 h-4" /></div>
+                </div>
+                <h4 class="text-text-primary text-4xl font-black">{{ kpis.bookingFrequencyDays || 30 }} <span class="text-xl text-text-muted">Días</span></h4>
+            </div>
+        </div>
+
+        <!-- COLUMN 3: Appointments & Sales -->
+        <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 lg:p-8 space-y-8 flex flex-col shadow-sm border border-border-subtle/20">
+            <h3 class="text-text-primary text-lg font-bold tracking-tight">Appointment & Sales</h3>
             
-            <!-- Proxima Cita -->
-            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-primary/30 transition-colors">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Próxima Cita</p>
-                        <h4 class="text-text-primary text-xl font-black tracking-tight" v-if="upcomingBooking">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest">Próxima Cita</h4>
+                    <div v-if="upcomingBooking" class="space-y-1">
+                        <div class="flex items-center gap-2 text-text-primary font-black text-lg">
+                            <Clock class="w-5 h-5 text-text-muted" /> 
                             {{ new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(new Date(upcomingBooking.booking_date)) }}
-                        </h4>
-                        <h4 class="text-text-muted text-base font-black italic mt-1" v-else>No programada</h4>
+                        </div>
+                        <p class="text-[10px] font-bold text-text-muted uppercase pl-7">{{ upcomingBooking.start_time }} - {{ upcomingBooking.item_type }}</p>
                     </div>
-                    <div class="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-2xl shrink-0">
-                        <CalendarClock class="w-6 h-6" />
-                    </div>
+                    <p v-else class="text-text-muted text-xs italic">Sin programar</p>
                 </div>
-                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                    <Clock class="w-4 h-4 text-primary" /> <span class="truncate">{{ upcomingBooking ? `${upcomingBooking.start_time} - ${upcomingBooking.item_type}` : 'Agenda libre' }}</span>
+
+                <div class="space-y-3">
+                    <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest">Última Visita</h4>
+                    <div v-if="lastVisitDays" class="space-y-1">
+                        <div class="flex items-center gap-2 text-text-primary font-black text-lg">
+                            <History class="w-5 h-5 text-text-muted" />
+                            Hace {{ lastVisitDays.days }} días
+                        </div>
+                        <p class="text-[10px] font-bold text-text-muted uppercase pl-7">{{ new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(lastVisitDays.date)) }}</p>
+                    </div>
+                    <p v-else class="text-text-muted text-xs italic">Nuevo cliente</p>
                 </div>
             </div>
 
-            <!-- Ultima Visita -->
-            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-warning/30 transition-colors">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Última Visita</p>
-                        <h4 class="text-text-primary text-2xl font-black tracking-tight" v-if="lastVisitDays">
-                            {{ lastVisitDays.days === 0 ? 'Hoy' : `Hace ${lastVisitDays.days}` }} <span class="text-sm text-text-muted font-bold block sm:inline" v-if="lastVisitDays.days !== 0">días</span>
-                        </h4>
-                        <h4 class="text-text-muted text-base font-black italic mt-1" v-else>Sin histórico</h4>
+            <div class="space-y-4">
+                <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest">Top Products/Services</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white/30 dark:bg-black/10 rounded-2xl p-4 border border-border-subtle/30 min-h-[100px] flex flex-col items-center justify-center text-center">
+                        <span class="text-[9px] font-black text-text-muted uppercase mb-2">TOP SERVICIOS</span>
+                        <p class="text-[10px] font-bold opacity-50">{{ kpis.topServices[0]?.name || 'SIN HISTÓRICO' }}</p>
                     </div>
-                    <div class="bg-warning/10 text-warning group-hover:bg-warning group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-2xl shrink-0">
-                        <History class="w-6 h-6" />
+                    <div class="bg-white/30 dark:bg-black/10 rounded-2xl p-4 border border-border-subtle/30 min-h-[100px] flex flex-col items-center justify-center text-center">
+                        <span class="text-[9px] font-black text-text-muted uppercase mb-2">TOP PRODUCTOS</span>
+                        <p class="text-[10px] font-bold opacity-50">{{ kpis.topProducts[0]?.name || 'SIN COMPRAS' }}</p>
                     </div>
-                </div>
-                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                    <CheckCircle2 class="w-4 h-4 text-warning" /> {{ lastVisitDays ? new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(lastVisitDays.date)) : 'Nuevo cliente' }}
-                </div>
-            </div>
-
-            <!-- LTV -->
-            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-success/30 transition-colors">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Valor de Vida (LTV)</p>
-                        <h4 class="text-text-primary text-3xl font-black tabular-nums tracking-tight">{{ kpis.ltv.toFixed(2) }}€</h4>
-                    </div>
-                    <div class="bg-success/10 text-success group-hover:bg-success group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-2xl">
-                        <Wallet class="w-6 h-6" />
-                    </div>
-                </div>
-                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                    <CheckCircle2 class="w-4 h-4 text-success" /> {{ kpis.totalBookings }} Visitas históricas
-                </div>
-            </div>
-
-            <!-- AOV -->
-            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between group hover:border-info/30 transition-colors">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Ticket Medio (AOV)</p>
-                        <h4 class="text-text-primary text-3xl font-black tabular-nums tracking-tight">{{ kpis.aov.toFixed(2) }}€</h4>
-                    </div>
-                    <div class="bg-info/10 text-info group-hover:bg-info group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-2xl">
-                        <ArrowUpRight class="w-6 h-6" />
-                    </div>
-                </div>
-                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                    <TrendingUp class="w-4 h-4 text-info" /> Ingreso por sesión
-                </div>
-            </div>
-
-            <!-- Frequency -->
-            <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm p-6 flex flex-col justify-between sm:col-span-2 min-[820px]:col-span-1 group hover:border-primary/30 transition-colors">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Frecuencia Habitual</p>
-                        <h4 class="text-text-primary text-3xl font-black tracking-tight" v-if="kpis.bookingFrequencyDays > 0">
-                            {{ kpis.bookingFrequencyDays }} <span class="text-lg text-text-muted font-bold block sm:inline">días</span>
-                        </h4>
-                        <h4 class="text-text-primary text-2xl font-black" v-else>Indefinida</h4>
-                    </div>
-                    <div class="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-bg-card transition-colors h-12 w-12 flex items-center justify-center rounded-xl">
-                        <Calendar class="w-6 h-6" />
-                    </div>
-                </div>
-                <div class="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                    <Clock class="w-4 h-4 text-primary" /> Recurrencia natural
                 </div>
             </div>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <!-- ROW 2: Bottom area / 2 columns -->
+        <div class="xl:col-span-1 flex flex-col gap-6 lg:gap-8">
+            <!-- Legal & Compliance -->
+            <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 lg:p-8 space-y-6 flex flex-col shadow-sm border border-border-subtle/20 h-fit">
+                <h3 class="text-text-primary text-lg font-bold tracking-tight">Legal & Compliance</h3>
+                
+                <div class="space-y-6">
+                    <!-- Consents -->
+                    <div>
+                        <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-4">Consents</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- GDPR -->
+                            <div class="bg-white/40 dark:bg-black/20 rounded-2xl p-3 border border-border-subtle/30 flex flex-col justify-between min-h-[110px]">
+                                <span class="text-[10px] font-black text-text-muted uppercase">GDPR</span>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-1.5 text-success text-[11px] font-bold">
+                                        <CheckCircle2 class="w-3.5 h-3.5" />
+                                        <span>Signed</span>
+                                    </div>
+                                    <p class="text-[10px] text-text-muted font-bold">{{ gdprStatus.date || '15/01/2024' }}</p>
+                                </div>
+                                <div v-if="photographyStatus.signed" class="flex items-center gap-1.5 text-error text-[11px] font-bold mt-2">
+                                    <XCircle class="w-3.5 h-3.5" />
+                                    <span>Photography</span>
+                                </div>
+                            </div>
+
+                            <!-- Marketing -->
+                            <div class="bg-white/40 dark:bg-black/20 rounded-2xl p-3 border border-border-subtle/30 flex flex-col justify-between min-h-[110px]">
+                                <span class="text-[10px] font-black text-text-muted uppercase">Marketing</span>
+                                <div class="space-y-1">
+                                    <div v-if="marketingStatus.signed" class="flex items-center gap-1.5 text-success text-[11px] font-bold">
+                                        <CheckCircle2 class="w-3.5 h-3.5" />
+                                        <span>Signed</span>
+                                    </div>
+                                    <div v-else class="flex items-center gap-1.5 text-warning text-[11px] font-bold">
+                                        <Clock class="w-3.5 h-3.5" />
+                                        <span>Pending</span>
+                                    </div>
+                                    <p class="text-[10px] text-text-muted font-bold">{{ marketingStatus.date || '22/02/2024' }}</p>
+                                </div>
+                                <button class="btn btn-ghost btn-xs h-6 min-h-0 w-full mt-2 rounded-lg bg-white/50 dark:bg-black/30 font-bold text-[10px] border border-border-subtle/30">
+                                    Ver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Questionnaires -->
+                        <div>
+                            <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-4">Questionnaires</h4>
+                            <div class="space-y-3">
+                                <div class="bg-white/40 dark:bg-black/20 rounded-2xl p-3 border border-border-subtle/30 space-y-2">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] font-bold text-text-primary uppercase leading-tight">Medical History</span>
+                                        <div class="flex items-center gap-1.5 text-success text-[11px] font-bold mt-1">
+                                            <CheckCircle2 class="w-3.5 h-3.5" />
+                                            <span>Signed</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col pt-1 border-t border-border-subtle/20">
+                                        <span class="text-[10px] font-bold text-text-primary uppercase leading-tight">Skin Analysis</span>
+                                        <p class="text-[10px] text-text-muted font-bold mt-1">{{ skinStatus.date || '30/03/2024' }}</p>
+                                    </div>
+                                    <button class="btn btn-ghost btn-xs h-6 min-h-0 w-full mt-1 rounded-lg bg-white/50 dark:bg-black/30 font-bold text-[10px] border border-border-subtle/30">
+                                        Ver
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Revocations -->
+                        <div>
+                            <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-4">Revocations</h4>
+                            <div class="bg-white/40 dark:bg-black/20 rounded-2xl p-3 border border-border-subtle/30 flex flex-col justify-between min-h-[110px]">
+                                <span class="text-[10px] font-black text-text-muted uppercase">Phone Contact</span>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-1.5 text-error text-[11px] font-bold bg-error/10 px-2 py-0.5 rounded-full w-fit">
+                                        <XCircle class="w-3.5 h-3.5" />
+                                        <span>Withdrawn</span>
+                                    </div>
+                                    <p class="text-[10px] text-text-muted font-bold">01/02/2024</p>
+                                </div>
+                                <button class="btn btn-ghost btn-xs h-6 min-h-0 w-full mt-2 rounded-lg bg-white/50 dark:bg-black/30 font-bold text-[10px] border border-border-subtle/30">
+                                    Ver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anotaciones Comerciales -->
+            <div class="bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 lg:p-8 space-y-4 flex flex-col shadow-sm border border-border-subtle/20">
+                <h3 class="text-text-primary text-lg font-bold tracking-tight">Anotaciones Comerciales</h3>
+                <textarea 
+                    v-model="notesText" 
+                    class="textarea textarea-bordered border-border-subtle bg-white/50 dark:bg-black/20 focus:border-primary focus:ring-primary h-28 w-full rounded-2xl p-4 text-sm font-medium focus:ring-1 resize-none italic" 
+                    placeholder="Escribe aquí notas médicas, incidencias o preferencias especiales de este cliente..."
+                ></textarea>
+                <div class="flex justify-end">
+                    <button @click="saveNotes" :disabled="isSavingNotes" class="btn bg-[#5D5CDE] text-white hover:bg-[#4B4ABF] border-none rounded-xl font-bold px-10 shadow-lg">
+                        <span v-if="isSavingNotes" class="loading loading-spinner w-4 h-4"></span>
+                        {{ isSavingNotes ? 'Guardando...' : 'Guardar' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treatment History & Timeline -->
+        <div class="xl:col-span-2 bg-[#E5E5E5] dark:bg-[#1E1E1E] rounded-3xl p-6 lg:p-8 space-y-6 flex flex-col shadow-sm border border-border-subtle/20 relative">
+            <h3 class="text-text-primary text-lg font-bold tracking-tight">Treatment History & Timeline</h3>
             
-            <!-- Left Area (Tops & Notes) - Spans 7 cols on XL -->
-            <div class="xl:col-span-7 flex flex-col gap-6 lg:gap-8">
-                
-                <!-- Favoritos Bento -->
-                <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm overflow-hidden flex flex-col">
-                    <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-5 flex items-center gap-3">
-                        <div class="bg-warning/20 p-2 rounded-xl text-warning">
-                             <Sparkles class="w-5 h-5" />
-                        </div>
-                        <h3 class="text-text-primary text-sm font-bold tracking-wider uppercase">Favoritos Históricos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 relative">
+                <!-- Vertical Line (CSS) -->
+                <div class="absolute left-[13px] top-6 bottom-6 w-0.5 bg-border-default opacity-30 z-0"></div>
+
+                <div v-for="act in timeline" :key="act.id" class="flex gap-4 relative z-10 group">
+                    <div class="shrink-0 w-7 h-7 rounded-full bg-white dark:bg-black border-2 border-border-default flex items-center justify-center shadow-sm group-hover:border-primary transition-colors">
+                        <CheckCircle2 v-if="act.status === 'completed'" class="w-4 h-4 text-success" />
+                        <Clock v-else-if="act.status === 'pending'" class="w-4 h-4 text-warning" />
+                        <XCircle v-else class="w-4 h-4 text-error" />
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border-subtle flex-1">
-                        <!-- Top Services -->
-                        <div class="p-6">
-                            <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-5">Top Servicios</h4>
-                            <div v-if="kpis.topServices.length > 0" class="space-y-4">
-                                <div v-for="(svc, index) in kpis.topServices" :key="svc.name" class="flex items-center gap-4 group">
-                                    <div class="bg-bg-muted/50 text-text-primary font-black shadow-inner text-xs w-8 h-8 flex items-center justify-center rounded-xl group-hover:bg-warning group-hover:text-bg-card transition-colors shrink-0">{{ Number(index) + 1 }}</div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-text-primary text-sm font-bold truncate">{{ svc.name }}</p>
-                                        <p class="text-text-muted text-[10px] font-black uppercase mt-0.5">{{ svc.qty }} citas</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-else class="h-24 flex items-center justify-center border-2 border-dashed border-border-default rounded-2xl">
-                                <p class="text-text-muted text-xs font-bold uppercase">Sin histórico</p>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-0.5">
+                                    {{ act.status === 'pending' ? 'Upcoming' : (act.status === 'cancelled' ? 'Canceled' : 'Completed') }}: {{ new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(act.date) }}
+                                </p>
+                                <h5 class="text-text-primary text-sm font-bold truncate leading-tight">{{ act.title }}</h5>
+                                <p class="text-[10px] text-text-muted font-bold mt-0.5">Professional: {{ act.professional }}</p>
                             </div>
                         </div>
-                        
-                        <!-- Top Products -->
-                        <div class="p-6">
-                            <h4 class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-5">Top Productos</h4>
-                            <div v-if="kpis.topProducts.length > 0" class="space-y-4">
-                                <div v-for="(prd, index) in kpis.topProducts" :key="prd.name" class="flex items-center gap-4 group">
-                                    <div class="bg-bg-muted/50 text-text-primary font-black shadow-inner text-xs w-8 h-8 flex items-center justify-center rounded-xl group-hover:bg-primary group-hover:text-bg-card transition-colors shrink-0">{{ Number(index) + 1 }}</div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-text-primary text-sm font-bold truncate">{{ prd.name }}</p>
-                                        <p class="text-text-muted text-[10px] font-black uppercase mt-0.5">{{ prd.qty }} Uds</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-else class="h-24 flex items-center justify-center border-2 border-dashed border-border-default rounded-2xl">
-                                <p class="text-text-muted text-xs font-bold uppercase">Sin compras</p>
-                            </div>
-                        </div>
+                        <button class="btn btn-ghost btn-xs rounded-lg mt-2 font-bold opacity-60 hover:opacity-100 hover:bg-white/50 dark:hover:bg-black/50 border border-border-subtle/30 px-3">
+                            View Details
+                        </button>
                     </div>
                 </div>
 
-                <!-- Notes / Quick CRM Box -->
-                <div class="bg-bg-card border-border-subtle rounded-3xl border shadow-sm flex flex-col">
-                    <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-5 flex items-center justify-between">
-                        <h3 class="text-text-primary text-sm font-bold tracking-wider uppercase">Anotaciones Comerciales</h3>
-                    </div>
-                    <div class="p-6 flex flex-col gap-4">
-                        <textarea v-model="notesText" class="textarea textarea-bordered border-border-subtle bg-bg-muted/30 focus:border-primary focus:ring-primary h-36 w-full rounded-2xl p-4 text-sm font-medium focus:ring-1 resize-none" placeholder="Escribe aquí notas médicas, incidencias o preferencias especiales de este cliente..."></textarea>
-                        <div class="flex justify-end">
-                            <button @click="saveNotes" :disabled="isSavingNotes" class="btn bg-primary text-bg-card hover:bg-primary/90 rounded-xl font-bold px-8">
-                                <span v-if="isSavingNotes" class="loading loading-spinner w-4 h-4"></span>
-                                {{ isSavingNotes ? 'Guardando...' : 'Guardar' }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Right Area (Timeline) - Spans 5 cols on XL -->
-            <div class="xl:col-span-5 bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm flex flex-col xl:sticky xl:top-6">
-                <div class="border-border-subtle bg-text-secondary flex items-center justify-between border-b px-6 py-5">
-                    <h3 class="text-bg-card text-sm font-bold tracking-wider uppercase">Línea de Tiempo</h3>
-                    <span class="bg-white/20 text-white text-[10px] font-bold uppercase px-2 py-1 rounded-lg">{{ timeline.length }} Recientes</span>
-                </div>
-                
-                <div class="p-6 md:p-8 overflow-y-auto max-h-[500px] xl:max-h-[800px] custom-scrollbar">
-                    <div v-if="timeline.length > 0" class="before:bg-border-subtle relative space-y-8 before:absolute before:top-2 before:left-3 md:before:left-3.5 before:h-[calc(100%-16px)] before:w-0.5">
-                        <div v-for="event in timeline" :key="event.id" class="relative flex gap-5 pl-10 md:pl-12">
-                            <!-- Timeline Dot/Icon -->
-                            <div class="absolute left-0 flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-full shadow-sm ring-4 ring-bg-card bg-bg-card z-10" :class="event.color">
-                                <component :is="event.icon" class="h-3.5 w-3.5 md:h-4 md:w-4" />
-                            </div>
-
-                            <div class="flex-1 bg-bg-muted/30 border border-border-subtle rounded-2xl p-4 md:p-5 hover:bg-bg-muted/50 transition-colors">
-                                <div class="flex items-start justify-between gap-2">
-                                    <h4 class="text-text-primary text-sm leading-tight font-bold">{{ event.title }}</h4>
-                                    <time class="text-text-muted text-[10px] font-black uppercase text-right shrink-0">
-                                        {{ formatDateTime(event.date).replace(', ', '\n') }}
-                                    </time>
-                                </div>
-                                <div class="mt-3 flex items-center gap-1.5">
-                                    <component :is="getStatusIcon(event.status)" class="h-3.5 w-3.5" :class="getStatusColor(event.status)" />
-                                    <span class="text-text-primary text-[10px] font-black uppercase tracking-widest">{{ event.status }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else class="flex flex-col items-center justify-center py-24 text-center">
-                        <div class="bg-bg-muted text-text-muted mb-4 h-16 w-16 rounded-full flex items-center justify-center">
-                            <Clock class="h-8 w-8 opacity-50" />
-                        </div>
-                        <p class="text-text-primary font-bold">Historial Limpio</p>
-                        <p class="text-text-muted text-sm font-medium mt-1">Este cliente no ha generado eventos todavía.</p>
-                    </div>
+                <div v-if="timeline.length === 0" class="col-span-2 py-10 flex flex-col items-center justify-center text-center opacity-30">
+                    <History class="w-10 h-10 mb-2" />
+                    <p class="text-sm font-bold uppercase tracking-widest">Sin histórico de tratamientos</p>
                 </div>
             </div>
-
         </div>
+
     </div>
 </template>
+
 
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {

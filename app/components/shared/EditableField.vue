@@ -177,7 +177,7 @@
 					<select
 						ref="inputRef"
 						v-model="localValue"
-						class="select select-sm bg-bg-card border-primary focus:ring-primary/30 focus:border-primary text-text-primary flex-1 font-medium shadow-[0_0_15px_rgba(var(--color-primary),0.1)] transition-all"
+						class="select select-md bg-bg-card focus:ring-primary/30 focus:border-primary text-text-primary flex-1 border-text-secondary/30 font-medium shadow-[0_0_15px_rgba(var(--color-primary),0.1)] ring-0! outline-0! transition-all rounded-full focus-visible:border-text-secondary/30 focus-visible:ring-0! focus-visible:outline-0!"
 						@change="saveEdit"
 						@blur="handleBlur"
 						@keydown.stop="handleKeyDown"

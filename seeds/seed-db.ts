@@ -57,6 +57,7 @@ const UserSchema = z.object({
 	avatar: z.string().url(),
 	document_type: z.enum(['DNI', 'PASSPORT', 'NIE']),
 	document_number: z.string(),
+	annotations: z.string().optional().default(''),
 })
 
 // --- Helper Functions ---
@@ -120,6 +121,7 @@ async function seedDB() {
 			avatar: 'https://ui-avatars.com/api/?name=Robert+Admin&background=020617&color=fff',
 			document_type: 'DNI',
 			document_number: '12345678A',
+			annotations: 'Administrador principal del sistema Beils. Acceso total.',
 		}))
 
 		// 2. Staff
@@ -142,6 +144,7 @@ async function seedDB() {
 				avatar: `https://ui-avatars.com/api/?name=${name}+${surname}&background=6366f1&color=fff`,
 				document_type: 'DNI',
 				document_number: `${getRandomNumber(10000000, 99999999)}P`,
+				annotations: `Especialista en tratamientos Beils. Miembro del equipo de ${getRandomItem(cities)}.`,
 			}))
 		}
 
@@ -166,6 +169,7 @@ async function seedDB() {
 				avatar: `https://ui-avatars.com/api/?name=${name}+${surname}&background=f1f5f9&color=0f172a`,
 				document_type: getRandomItem(['DNI', 'PASSPORT', 'NIE']),
 				document_number: `${getRandomNumber(10000000, 99999999)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
+				annotations: Math.random() > 0.5 ? 'Cliente habitual con preferencia por tratamientos faciales y productos orgánicos.' : 'Nuevo cliente interesado en promociones de bienvenida.',
 			}))
 		}
 

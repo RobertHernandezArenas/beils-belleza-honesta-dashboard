@@ -18,6 +18,7 @@ const clientSchema = z.object({
 	document_number: z.string().optional().default(''),
 	status: z.enum(['ON', 'OFF']).default('ON'),
 	avatar: z.string().optional().default(''),
+	annotations: z.string().optional().default(''),
 	user_id: z.string().optional(),
 })
 
