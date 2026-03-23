@@ -14,6 +14,11 @@ export default defineNuxtConfig({
 	experimental: {
 		payloadExtraction: true,
 	},
+	// NUXT Plugin to disable sourcemap
+	sourcemap: {
+		server: false,
+		client: false,
+	},
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'layout', mode: 'out-in' },
@@ -34,7 +39,8 @@ export default defineNuxtConfig({
 		salonName: process.env.SALON_NAME || 'Beils Belleza Honesta',
 
 		// Private keys (Server-side only)
-		aeatWsdlUrl: process.env.AEAT_WSDL_URL || 'https://prewww1.aeat.es/wlpl/BURT-JDIT/ws/SuministroFactEmitidas.wsdl',
+		aeatWsdlUrl:
+			process.env.AEAT_WSDL_URL || 'https://prewww1.aeat.es/wlpl/BURT-JDIT/ws/SuministroFactEmitidas.wsdl',
 		aeatP12CertPath: process.env.AEAT_P12_CERT_PATH,
 		aeatP12Password: process.env.AEAT_P12_PASSWORD,
 
