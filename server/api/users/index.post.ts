@@ -1,62 +1,56 @@
 import { prisma } from '../../utils/prisma'
+import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 
+const userSchema = z.object({
+	email: z.string().email('Email inválido'),
+	name: z.string().min(2, 'El nombre es obligatorio'),
+	surname: z.string().optional().default(''),
+	phone: z.string().optional().default(''),
+	address: z.string().optional().default(''),
+	city: z.string().optional().default(''),
+	country: z.string().optional().default(''),
+	postal_code: z.string().optional().default(''),
+	gender: z.string().optional().default(''),
+	birth_date: z.string().optional().default(new Date().toISOString()),
+	document_type: z.enum(['DNI', 'PASSPORT', 'NIE']).default('DNI'),
+	document_number: z.string().optional().default(''),
+	role: z.enum(['ADMIN', 'STAFF', 'CLIENT']).default('CLIENT'),
+	status: z.enum(['ON', 'OFF']).default('ON'),
+	avatar: z.string().optional(),
+	password: z.string().optional().default('123456'),
+})
+
 export default defineEventHandler(async event => {
-	const body = await readBody(event)
-	const {
-		name,
-		email,
-		role,
-		document_type,
-		document_number,
-		phone,
-		address,
-		city,
-		country,
-		postal_code,
-		gender,
-		birth_date,
-		password,
-	} = body
-
-	if (!email || !name) {
-		throw createError({ statusCode: 400, statusMessage: 'Faltan campos obligatorios' })
-	}
-
 	try {
-		const existingUser = await prisma.user.findUnique({ where: { email } })
+		const body = await readBody(event)
+		const parsedData = userSchema.parse(body)
+
+		const existingUser = await prisma.user.findUnique({ 
+			where: { email: parsedData.email } 
+		})
+		
 		if (existingUser) {
 			throw createError({ statusCode: 400, statusMessage: 'El email ya está en uso' })
 		}
 
-		const hashedPassword = await bcrypt.hash(password || '123456', 10)
+		const hashedPassword = await bcrypt.hash(parsedData.password, 10)
 
 		const newUser = await prisma.user.create({
 			data: {
-				name,
-				surname: body.surname || '',
-				email,
+				...parsedData,
 				password: hashedPassword,
-				role: role || 'CLIENT',
-				status: body.status || 'ON',
-				avatar:
-					body.avatar ||
-					`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
-				phone: phone || '',
-				address: address || '',
-				city: city || '',
-				country: country || '',
-				postal_code: postal_code || '',
-				gender: gender || '',
-				birth_date: birth_date ? new Date(birth_date) : new Date('1990-01-01'),
-				document_type: document_type || 'DNI',
-				document_number: document_number || '',
+				birth_date: new Date(parsedData.birth_date),
+				avatar: parsedData.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(parsedData.name)}&background=random`,
 			},
 		})
 
 		const { password: _, ...userData } = newUser
 		return userData
 	} catch (error: any) {
+		if (error instanceof z.ZodError) {
+			throw createError({ statusCode: 400, statusMessage: error.message })
+		}
 		throw createError({
 			statusCode: error.statusCode || 500,
 			statusMessage: error.statusMessage || 'Error al crear usuario',

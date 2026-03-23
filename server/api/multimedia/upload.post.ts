@@ -14,6 +14,16 @@ export default defineEventHandler(async event => {
 			})
 		}
 
+		// Security: Check overall payload size (Risk 1.4 & 6.1)
+		const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+		const totalSize = formData.reduce((acc, item) => acc + (item.data?.length || 0), 0)
+		if (totalSize > MAX_FILE_SIZE) {
+			throw createError({
+				statusCode: 413,
+				statusMessage: 'El archivo excede el límite de 5MB',
+			})
+		}
+
 		// Look for the "file" field
 		const file = formData.find(item => item.name === 'file')
 		if (!file || !file.data) {

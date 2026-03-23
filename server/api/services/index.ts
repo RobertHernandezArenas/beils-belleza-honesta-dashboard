@@ -1,4 +1,14 @@
 
+import { z } from 'zod'
+
+const serviceSchema = z.object({
+	name: z.string().min(2, 'El nombre es obligatorio'),
+	description: z.string().optional(),
+	code: z.string().optional(),
+	price: z.number().min(0, 'El precio no puede ser negativo'),
+	duration: z.number().int().positive('La duración debe ser un número positivo'),
+	status: z.enum(['activo', 'inactivo']).default('activo'),
+})
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -34,12 +44,20 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'POST') {
-		const body = await readBody(event)
+		try {
+			const body = await readBody(event)
+			const parsedData = serviceSchema.parse(body)
 
-		const service = await prisma.service.create({
-			data: body,
-		})
+			const service = await prisma.service.create({
+				data: parsedData,
+			})
 
-		return service
+			return service
+		} catch (error: any) {
+			if (error instanceof z.ZodError) {
+				throw createError({ statusCode: 400, statusMessage: error.message })
+			}
+			throw error
+		}
 	}
 })

@@ -65,6 +65,9 @@ model User {
   updated_at               DateTime             @updatedAt
 
   @@map("users")
+  @@index([role])
+  @@index([status])
+  @@index([created_at])
 }
 
 // ==========================================
@@ -205,6 +208,9 @@ model Product {
   updated_at     DateTime     @updatedAt
 
   @@map("products")
+  @@index([category_id])
+  @@index([subcategory_id])
+  @@index([status])
 }
 
 model ProductTag {
@@ -424,6 +430,9 @@ model Cart {
   updated_at   DateTime     @updatedAt
 
   @@map("carts")
+  @@index([user_id])
+  @@index([status])
+  @@index([created_at])
 }
 
 model CartItem {
@@ -469,6 +478,9 @@ model Debt {
   payments        DebtPayment[]
 
   @@map("debts")
+  @@index([user_id])
+  @@index([status])
+  @@index([created_at])
 }
 
 model DebtPayment {
@@ -520,4 +532,8 @@ model Booking {
   updated_at    DateTime  @updatedAt
 
   @@map("bookings")
+  @@index([client_id])
+  @@index([staff_id])
+  @@index([booking_date])
+  @@index([status])
 }

@@ -1,7 +1,14 @@
 import { prisma } from '../../../utils/prisma'
+import { z } from 'zod'
 import { requireAdmin } from '../../../utils/auth'
 import { generateInvoiceNumber, processVerifactuInvoice } from '../../../utils/verifactu'
 import type { IInvoice } from '~~/shared/types/invoice'
+
+const paymentSchema = z.object({
+	amount: z.number().positive('El importe debe ser mayor a 0'),
+	payment_method: z.string().default('transfer'),
+	notes: z.string().optional(),
+})
 
 export default defineEventHandler(async event => {
 	try {
@@ -12,11 +19,8 @@ export default defineEventHandler(async event => {
 		}
 
 		const body = await readBody(event)
-		const { amount, payment_method, notes } = body
-
-		if (!amount || typeof amount !== 'number' || amount <= 0) {
-			throw createError({ statusCode: 400, statusMessage: 'El importe del pago debe ser mayor a 0' })
-		}
+		const parsedBody = paymentSchema.parse(body)
+		const { amount, payment_method, notes } = parsedBody
 
 		const result = await prisma.$transaction(async tx => {
 			const debt = await tx.debt.findUnique({ where: { debt_id: debtId } })
@@ -45,66 +49,84 @@ export default defineEventHandler(async event => {
 				data: {
 					debt_id: debtId,
 					amount: paymentAmount,
-					payment_method: payment_method || 'transfer',
+					payment_method,
 					notes: notes || null,
 				},
 			})
 
-			// If debt is fully paid and has an associated cart, mark cart as completed and generate Invoice
+			// Check if we need to complete the cart (Rule: paid debt completes the cart)
+			let needsVerifactu = false
+			let cartToUpdate: any = null
+
 			if (newStatus === 'paid' && debt.cart_id) {
 				const currentCart = await tx.cart.findUnique({
 					where: { cart_id: debt.cart_id },
-					include: { user: { select: { document_number: true } } },
+					include: { user: { select: { document_number: true, user_id: true } } },
 				})
 
 				if (currentCart && currentCart.status !== 'completed') {
-					let verifactuData: any = {}
-
-					if (!currentCart.invoice_number) {
-						const config = useRuntimeConfig()
-						const nif = currentCart.user?.document_number || '00000000T'
-						const invoiceType = currentCart.user?.document_number ? 'F1' : 'I'
-
-						const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
-						
-						const verifactuPayload: IInvoice = {
-							id: currentCart.cart_id,
-							invoiceNumber,
-							issueDate: new Date().toISOString(),
-							issuer: {
-								nif: config.salonNif,
-								name: config.salonName
-							},
-							totalAmount: currentCart.total
-						}
-
-						const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
-
-						verifactuData = {
-							invoice_number: invoiceNumber,
-							invoice_type: invoiceType,
-							qr_content: qrUrl,
-							hash: hash,
-							aeat_status: aeatStatus,
-						}
-					}
-
+					needsVerifactu = !currentCart.invoice_number
+					cartToUpdate = currentCart
+					
 					await tx.cart.update({
 						where: { cart_id: debt.cart_id },
 						data: {
 							status: 'completed',
-							payment_method: payment_method || currentCart.payment_method, // Last payment method used
-							...verifactuData,
+							payment_method: payment_method || currentCart.payment_method,
 						},
 					})
 				}
 			}
 
-			return { debt: updatedDebt, payment }
+			return { debt: updatedDebt, payment, needsVerifactu, cartToUpdate }
 		})
 
-		return { success: true, data: result }
+		// Perform VeriFactu submission OUTSIDE the transaction
+		if (result.needsVerifactu && result.cartToUpdate) {
+			try {
+				const { cartToUpdate } = result
+				const config = useRuntimeConfig()
+				const invoiceType = cartToUpdate.user?.document_number ? 'F1' : 'I'
+
+				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
+				
+				const verifactuPayload: IInvoice = {
+					id: cartToUpdate.cart_id,
+					invoiceNumber,
+					issueDate: new Date().toISOString(),
+					issuer: {
+						nif: config.salonNif,
+						name: config.salonName
+					},
+					totalAmount: cartToUpdate.total
+				}
+
+				const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
+
+				await prisma.cart.update({
+					where: { cart_id: cartToUpdate.cart_id },
+					data: {
+						invoice_number: invoiceNumber,
+						invoice_type: invoiceType,
+						qr_content: qrUrl,
+						hash: hash,
+						aeat_status: aeatStatus,
+					}
+				})
+			} catch (vError) {
+				console.error('VeriFactu processing failed for debt payment post-transaction:', vError)
+				await prisma.cart.update({
+					where: { cart_id: result.cartToUpdate.cart_id },
+					data: { aeat_status: 'error' }
+				}).catch(() => {})
+			}
+		}
+
+		return { success: true, data: { debt: result.debt, payment: result.payment } }
 	} catch (error: any) {
+		if (error instanceof z.ZodError) {
+			throw createError({ statusCode: 400, statusMessage: error.message })
+		}
 		throw createError({
 			statusCode: error.statusCode || 500,
 			statusMessage: error.statusMessage || String(error),

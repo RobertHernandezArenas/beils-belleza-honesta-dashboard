@@ -15,11 +15,12 @@ export const submitToAeat = async (xmlPayload: string): Promise<boolean> => {
 	}
 
 	try {
-		const p12Buffer = fs.readFileSync(config.aeatP12CertPath)
+		const p12Buffer = await fs.promises.readFile(config.aeatP12CertPath)
 		const agent = new https.Agent({
 			pfx: p12Buffer,
 			passphrase: config.aeatP12Password,
-			rejectUnauthorized: process.env.NODE_ENV === 'production'
+			rejectUnauthorized: process.env.NODE_ENV === 'production',
+			timeout: 10000 // 10s socket timeout
 		})
 
 		const client = await soap.createClientAsync(config.aeatWsdlUrl, {

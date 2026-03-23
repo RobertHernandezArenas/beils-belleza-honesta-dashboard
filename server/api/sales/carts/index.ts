@@ -46,13 +46,13 @@ export default defineEventHandler(async event => {
 					notes: cartData.notes,
 					applied_coupon: cartData.applied_coupon,
 					applied_giftcard: cartData.applied_giftcard,
-					subtotal: 0, // Placeholder, updated later
+					subtotal: 0, 
 					discount: discount,
-					total: 0, // Placeholder
+					total: 0, 
 					items: {
 						create: items.map((item: any) => {
 							const itemSubtotal = item.quantity * item.unit_price
-							const itemTotal = itemSubtotal // Simple version, ignoring specific item tax calculation for simplicity unless requested
+							const itemTotal = itemSubtotal 
 
 							subtotal = Number((subtotal + itemSubtotal).toFixed(2))
 							total = Number((total + itemTotal).toFixed(2))
@@ -73,62 +73,21 @@ export default defineEventHandler(async event => {
 			})
 
 			total = Number((total - discount).toFixed(2))
-			if (Number(total.toFixed(2)) < 0) total = 0
+			if (total < 0) total = 0
 
-			let verifactuData: any = {}
-
-			if (cartData.status === 'completed') {
-				// Fetch user for NIF/CIF if user_id exists
-				const currentUser = user_id
-					? await tx.user.findUnique({
-							where: { user_id },
-							select: { document_number: true },
-						})
-					: null
-
-				const config = useRuntimeConfig()
-				const nif = currentUser?.document_number || '00000000T'
-				const invoiceType = currentUser?.document_number ? 'F1' : 'I' // I for simplified
-
-				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
-				
-				const verifactuPayload: IInvoice = {
-					id: createdCart.cart_id,
-					invoiceNumber,
-					issueDate: new Date().toISOString(),
-					issuer: {
-						nif: config.salonNif,
-						name: config.salonName
-					},
-					totalAmount: total
-				}
-
-				const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
-
-				verifactuData = {
-					invoice_number: invoiceNumber,
-					invoice_type: invoiceType,
-					qr_content: qrUrl,
-					hash: hash,
-					aeat_status: aeatStatus,
-				}
-			}
-
-			// Update cart with valid totals and verifactu payload
+			// Update cart with valid totals
 			const updatedCart = await tx.cart.update({
 				where: { cart_id: createdCart.cart_id },
 				data: { 
 					subtotal, 
 					total, 
-					...verifactuData,
 					stripe_installments: cartData.stripe_installments ? Number(cartData.stripe_installments) : null,
 					stripe_payment_intent_id: cartData.stripe_payment_intent_id || null,
 					stripe_status: cartData.stripe_status || null,
-				},
-				include: { items: true, user: { select: { name: true, surname: true, avatar: true } } },
+				}
 			})
 
-			// Create the associated Debt if it is a Stripe Installment Plan inside the transaction
+			// Create the associated Debt if it is a Stripe Installment Plan
 			if (updatedCart.payment_method === 'stripe' && updatedCart.stripe_installments && updatedCart.stripe_installments > 1 && updatedCart.user_id) {
 				const installmentsCount = updatedCart.stripe_installments;
 				const firstPayment = Number((updatedCart.total / installmentsCount).toFixed(2));
@@ -149,6 +108,58 @@ export default defineEventHandler(async event => {
 			return updatedCart;
 		})
 
-		return cart
+		// Perform VeriFactu submission OUTSIDE the transaction (Risk 3.2 mitigate)
+		if (cartData.status === 'completed') {
+			try {
+				const currentUser = cart.user_id
+					? await prisma.user.findUnique({
+							where: { user_id: cart.user_id },
+							select: { document_number: true },
+						})
+					: null
+
+				const config = useRuntimeConfig()
+				const invoiceType = currentUser?.document_number ? 'F1' : 'I'
+
+				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
+				
+				const verifactuPayload: IInvoice = {
+					id: cart.cart_id,
+					invoiceNumber,
+					issueDate: new Date().toISOString(),
+					issuer: {
+						nif: config.salonNif,
+						name: config.salonName
+					},
+					totalAmount: cart.total
+				}
+
+				const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
+
+				// Update cart with verifactu results
+				await prisma.cart.update({
+					where: { cart_id: cart.cart_id },
+					data: {
+						invoice_number: invoiceNumber,
+						invoice_type: invoiceType,
+						qr_content: qrUrl,
+						hash: hash,
+						aeat_status: aeatStatus,
+					}
+				})
+			} catch (vError) {
+				console.error('VeriFactu processing failed after transaction:', vError)
+				await prisma.cart.update({
+					where: { cart_id: cart.cart_id },
+					data: { aeat_status: 'error' }
+				}).catch(() => {})
+			}
+		}
+
+		// Re-fetch final cart with items and user info for response
+		return await prisma.cart.findUnique({
+			where: { cart_id: cart.cart_id },
+			include: { items: true, user: { select: { name: true, surname: true, avatar: true } } },
+		})
 	}
 })
