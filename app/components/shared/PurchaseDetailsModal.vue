@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { X, Receipt, CheckCircle, CreditCard, Banknote, Printer, FileText } from 'lucide-vue-next'
+
+import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 const modalRef = ref<HTMLDialogElement | null>(null)
 const cart = ref<any>(null)
@@ -323,10 +326,10 @@ defineExpose({ open, close })
           </div>
         </div>
         <div class="flex items-center gap-2">
-            <button @click="printReceipt" title="Imprimir Ticket Térmico" class="btn btn-outline btn-sm text-text-primary border-border-default hover:bg-bg-muted rounded-xl">
+            <button @click="printReceipt" :aria-label="locale === 'es' ? 'Imprimir Ticket Térmico' : 'Print Thermal Ticket'" title="Imprimir Ticket Térmico" class="btn btn-outline btn-sm text-text-primary border-border-default hover:bg-bg-muted rounded-xl">
                 <Printer class="w-4 h-4 mr-1 hidden sm:block" /> Ticket
             </button>
-            <button @click="printInvoice" title="Imprimir Factura A4" class="btn btn-primary btn-sm text-bg-card rounded-xl shadow-sm">
+            <button @click="printInvoice" :aria-label="locale === 'es' ? 'Imprimir Factura A4' : 'Print A4 Invoice'" title="Imprimir Factura A4" class="btn btn-primary btn-sm text-bg-card rounded-xl shadow-sm">
                 <FileText class="w-4 h-4 mr-1 hidden sm:block" /> Factura A4
             </button>
             <button @click.prevent="close" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted ml-1">

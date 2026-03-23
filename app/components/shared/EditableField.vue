@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { ref, watch, nextTick } from 'vue'
+
 	import { Edit2, Check, X } from 'lucide-vue-next'
 	import gsap from 'gsap'
 

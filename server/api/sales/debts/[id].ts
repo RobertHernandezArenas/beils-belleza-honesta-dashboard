@@ -27,8 +27,8 @@ export default defineEventHandler(async event => {
 		const payload: any = { status: body.status, notes: body.notes }
 
 		if (body.remaining !== undefined) {
-			payload.remaining = Number(body.remaining)
-			if (payload.remaining <= 0) {
+			payload.remaining = Number(Number(body.remaining).toFixed(2))
+			if (Number(payload.remaining.toFixed(2)) <= 0) {
 				payload.remaining = 0
 				payload.status = 'paid'
 			}

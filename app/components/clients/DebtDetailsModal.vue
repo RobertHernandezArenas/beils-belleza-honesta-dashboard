@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 const modalRef = ref<HTMLDialogElement | null>(null)
 const debt = ref<any>(null)
@@ -290,7 +293,7 @@ defineExpose({ open, close })
                         </div>
                         <div class="flex flex-col items-end gap-1">
                            <div class="flex items-center gap-2">
-                              <button @click="printReceipt(pay)" class="btn btn-ghost btn-xs text-text-muted hover:text-primary p-1 h-auto min-h-0" title="Imprimir Recibo">
+                              <button @click="printReceipt(pay)" class="btn btn-ghost btn-xs text-text-muted hover:text-primary p-1 h-auto min-h-0" :aria-label="locale === 'es' ? 'Imprimir Recibo' : 'Print Receipt'" title="Imprimir Recibo">
                                  <Printer class="w-3.5 h-3.5" />
                               </button>
                               <span class="text-success text-sm font-black tabular-nums">-{{ pay.amount.toFixed(2) }}€</span>

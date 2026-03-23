@@ -10,7 +10,7 @@
 		clientToEdit?: any | null
 	}>()
 
-	const emit = defineEmits(['update:modelValue', 'close'])
+	const emit = defineEmits(['update:modelValue', 'close', 'success'])
 	const { t } = useI18n()
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
@@ -242,6 +242,7 @@
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['clients-list'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
+			emit('success')
 			localVisible.value = false
 		},
 		onError: (err: any) => {

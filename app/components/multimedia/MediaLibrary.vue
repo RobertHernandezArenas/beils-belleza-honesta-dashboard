@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+
 import { Upload, Image as ImageIcon, Video, FileText, Search, X, Check } from 'lucide-vue-next'
 
 const categories = [

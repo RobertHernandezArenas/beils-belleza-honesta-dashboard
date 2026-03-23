@@ -54,8 +54,8 @@ export default defineEventHandler(async event => {
 							const itemSubtotal = item.quantity * item.unit_price
 							const itemTotal = itemSubtotal // Simple version, ignoring specific item tax calculation for simplicity unless requested
 
-							subtotal += itemSubtotal
-							total += itemTotal
+							subtotal = Number((subtotal + itemSubtotal).toFixed(2))
+							total = Number((total + itemTotal).toFixed(2))
 
 							return {
 								item_type: item.item_type,
@@ -72,8 +72,8 @@ export default defineEventHandler(async event => {
 				},
 			})
 
-			total = total - discount
-			if (total < 0) total = 0
+			total = Number((total - discount).toFixed(2))
+			if (Number(total.toFixed(2)) < 0) total = 0
 
 			let verifactuData: any = {}
 
@@ -131,8 +131,8 @@ export default defineEventHandler(async event => {
 			// Create the associated Debt if it is a Stripe Installment Plan inside the transaction
 			if (updatedCart.payment_method === 'stripe' && updatedCart.stripe_installments && updatedCart.stripe_installments > 1 && updatedCart.user_id) {
 				const installmentsCount = updatedCart.stripe_installments;
-				const firstPayment = updatedCart.total / installmentsCount;
-				const remainingAmount = updatedCart.total - firstPayment;
+				const firstPayment = Number((updatedCart.total / installmentsCount).toFixed(2));
+				const remainingAmount = Number((updatedCart.total - firstPayment).toFixed(2));
 
 				await tx.debt.create({
 					data: {

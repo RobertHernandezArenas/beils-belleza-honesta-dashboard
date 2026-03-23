@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue'
+
 	import {
 		Mail,
 		Phone,
@@ -140,6 +140,8 @@
 						<div
 							class="group relative aspect-square w-24 cursor-pointer overflow-hidden rounded-full border-4 shadow-md transition-transform hover:scale-105"
 							:class="getStatusClass(client.status)"
+							role="button"
+							:aria-label="$t('common.edit') + ' ' + $t('users.avatar')"
 							@click="triggerAvatarUpload">
 							<div v-if="isUploadingAvatar" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 text-white">
 								<span class="loading loading-spinner"></span>
@@ -202,8 +204,8 @@
 					<button @click="$emit('new-booking')" class="btn bg-[#5D5CDE] hover:bg-[#4B4ABF] text-white border-none rounded-xl px-6 font-bold h-12">
 						{{ $t('nav.agenda') === 'nav.agenda' ? 'Nueva Cita' : $t('nav.agenda') }}
 					</button>
-					<div class="dropdown dropdown-end">
-						<div tabindex="0" role="button" class="btn btn-ghost bg-bg-muted/50 hover:bg-bg-muted h-12 rounded-xl px-6 font-bold">
+					<div class="dropdown dropdown-end relative z-40">
+						<div tabindex="0" role="button" class="btn btn-ghost bg-bg-muted/50 hover:bg-bg-muted h-12 rounded-xl px-6 font-bold" aria-haspopup="menu" :aria-label="$t('users.table.actions')">
 							{{ $t('users.table.actions') }} <ChevronDown class="ml-1 w-4 h-4 opacity-70" />
 						</div>
 						<ul tabindex="0" class="dropdown-content menu bg-bg-card border-border-subtle z-50 mt-2 w-56 rounded-2xl border p-2 shadow-xl">

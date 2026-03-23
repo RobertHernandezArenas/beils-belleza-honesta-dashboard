@@ -5,7 +5,7 @@
 		CalendarClock, History, MapPin, Eye, EyeOff, User, Plus, Search, Filter, ChevronRight, ShieldOff
 	} from 'lucide-vue-next'
 
-    import { ref, watch, computed, type PropType } from 'vue'
+
     import { useI18n } from 'vue-i18n'
     import { useDataPrivacy } from '~/composables/useDataPrivacy'
     import EditableField from '~/components/shared/EditableField.vue'

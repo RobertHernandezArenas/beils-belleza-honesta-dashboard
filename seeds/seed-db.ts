@@ -193,7 +193,10 @@ async function seedDB() {
 					subcategories: {
 						create: [
 							{ name: `${cat.name} Avanzado`, description: `Tecnología de punta aplicada a ${cat.name}` },
-							{ name: `${cat.name} Esencial`, description: `Cuidados diarios y básicos de ${cat.name}` }
+							{ name: `${cat.name} Esencial`, description: `Cuidados diarios y básicos de ${cat.name}` },
+							{ name: `${cat.name} Premium`, description: `Experiencia de lujo en ${cat.name}` },
+							{ name: `${cat.name} Express`, description: `Sesiones rápidas de ${cat.name}` },
+							{ name: `${cat.name} Ecológico`, description: `Tratamientos 100% naturales para ${cat.name}` }
 						]
 					}
 				}
@@ -302,7 +305,7 @@ async function seedDB() {
 
 			// Debts (20% conversion)
 			if (Math.random() > 0.8) {
-				const amount = 50 + Math.random() * 150
+				const amount = Number((50 + Math.random() * 150).toFixed(2))
 				await prisma.debt.create({
 					data: {
 						user_id: client.user_id,

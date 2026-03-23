@@ -6,7 +6,6 @@ export default defineEventHandler(async event => {
 		include: {
 			subcategories: {
 				select: { subcategory_id: true, name: true },
-				take: 4, // Fetch at most 4 to prevent huge payloads for UI preview
 			},
 			_count: {
 				select: { subcategories: true },

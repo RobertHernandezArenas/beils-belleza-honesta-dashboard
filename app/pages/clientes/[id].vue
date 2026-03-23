@@ -175,9 +175,9 @@ const handleEditBooking = (b: any) => {
         <p class="mt-2 text-sm font-medium opacity-80 max-w-md">
           {{ error.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
         </p>
-        <button @click="navigateTo('/clientes')" class="btn btn-error btn-sm mt-8 rounded-xl font-bold">
+        <NuxtLink to="/clientes" class="btn btn-error btn-sm mt-8 rounded-xl font-bold">
           {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
-        </button>
+        </NuxtLink>
       </div>
 
       <!-- Content -->
@@ -250,7 +250,7 @@ const handleEditBooking = (b: any) => {
 /* Animations for tab transition */
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .page-enter-from {
   opacity: 0;
