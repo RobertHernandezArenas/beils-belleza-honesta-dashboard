@@ -115,6 +115,8 @@
 		queryFn: () => $fetch('/api/marketing/bonuses'),
 	})
 
+	const { emitSync } = useSync()
+
 	// Process checkout mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
 		mutationFn: async (payload: any) => {
@@ -140,6 +142,15 @@
 		},
 		onSuccess: () => {
 			displayToast('Venta registrada con éxito', 'success')
+			
+			// Notify other tabs for immediate refresh
+			if (selectedClient.value?.user_id) {
+				emitSync({ 
+					type: 'REFRESH_CLIENT', 
+					clientId: selectedClient.value.user_id 
+				})
+			}
+			
 			// Invalidate relevant queries
 			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
 			queryClient.invalidateQueries({ queryKey: ['debts'] })

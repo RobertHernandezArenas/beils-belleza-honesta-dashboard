@@ -196,8 +196,17 @@
 					"appointments": "Appointments & Sales",
 					"compliance": "Legal & Compliance",
 					"notes": "Commercial Notes",
-					"timeline": "History & Timeline",
-					"billing": "Billing & Debts"
+					"billing": "Billing & Debts",
+					"timeline": "History & Timeline"
+				},
+				"timeline": {
+					"bookingService": "Appt: Service",
+					"bookingPack": "Appt: Pack",
+					"purchase": "Sale recorded",
+					"method": "Method",
+					"posPayment": "POS Payment",
+					"items": "items",
+					"none": "No treatment history"
 				},
 				"compliance": {
 					"consents": "Consents",

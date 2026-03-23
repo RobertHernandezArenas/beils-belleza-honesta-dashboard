@@ -16,6 +16,7 @@
 		ImageUp,
 	} from 'lucide-vue-next'
 	import EditableField from '~/components/shared/EditableField.vue'
+	import { useI18n } from 'vue-i18n'
 	import ImageCropperModal from '~/components/shared/ImageCropperModal.vue'
 
 	const props = defineProps({
@@ -28,6 +29,8 @@
 			default: false,
 		},
 	})
+
+	const { locale } = useI18n()
 
 	const emit = defineEmits([
 		'update',
@@ -184,9 +187,11 @@
 							<AlertCircle class="w-3.5 h-3.5 text-text-muted cursor-help" />
 						</div>
 						<div class="flex items-baseline gap-2">
-							<span class="text-text-primary text-4xl font-black italic">92</span>
+							<span class="text-text-primary text-4xl font-black italic">{{ client.kpis?.engagementScore || 0 }}</span>
 							<span class="text-text-muted text-xl font-bold">/100</span>
-							<span class="badge bg-success/10 text-success border-none font-black text-[10px] ml-2 uppercase">{{ $t('catalog.clients.profile.kpis.loyaltyHigh') }}</span>
+							<span class="badge border-none font-black text-[10px] ml-2 uppercase" :class="(client.kpis?.engagementScore || 0) > 80 ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">
+								{{ (client.kpis?.engagementScore || 0) > 80 ? $t('catalog.clients.profile.kpis.loyaltyHigh') : (locale === 'es' ? 'Fidelidad Media' : 'Medium Loyalty') }}
+							</span>
 						</div>
 						<p class="text-text-muted text-[10px] font-bold mt-1 max-w-[200px] leading-tight italic">{{ $t('catalog.clients.profile.kpis.vipStatus') }}</p>
 					</div>

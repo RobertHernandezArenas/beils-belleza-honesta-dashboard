@@ -197,8 +197,17 @@
 					"appointments": "Citas y Ventas",
 					"compliance": "Legal y Privacidad",
 					"notes": "Anotaciones Comerciales",
-					"timeline": "Historial y Cronología",
-					"billing": "Facturación y Deudas"
+					"billing": "Facturación y Deudas",
+					"timeline": "Historial y Cronología"
+				},
+				"timeline": {
+					"bookingService": "Cita: Servicio",
+					"bookingPack": "Cita: Pack",
+					"purchase": "Venta registrada",
+					"method": "Método",
+					"posPayment": "Pago POS",
+					"items": "ítems",
+					"none": "Sin histórico de tratamientos"
 				},
 				"compliance": {
 					"consents": "Consentimientos",

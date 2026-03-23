@@ -45,15 +45,24 @@ const addToast = (payload: { message: string, type?: 'success' | 'error' } | str
   setTimeout(() => (showToast.value = false), 3000)
 }
 
+const { onSync } = useSync()
 
+// Handle remote sync events (from other tabs like TPV)
+onSync((event) => {
+  if (event.type === 'REFRESH_CLIENT' && (!event.clientId || event.clientId === clientId)) {
+    queryClient.invalidateQueries({ queryKey: ['client', clientId] })
+  }
+})
 
 const {
   data: client,
   isPending,
   error,
+  isFetching,
 } = useQuery<any, any>({
   queryKey: ['client', clientId],
   queryFn: () => $fetch(`/api/clients/${clientId}`),
+  refetchInterval: 3000,
 })
 
 useHead({
@@ -190,7 +199,13 @@ const handleEditBooking = (b: any) => {
         <!-- 2. Continuous Content (Overview + Billing) -->
         <div class="space-y-8 lg:space-y-12 pb-20">
             <!-- Strategic Overview -->
-            <ProfileOverview :client="client" @update="handleFieldUpdate" />
+            <ProfileOverview 
+                :client="client" 
+                @update="handleFieldUpdate" 
+                @open-booking="bookingDetailsModalRef?.open($event)"
+                @open-purchase="purchaseDetailsModalRef?.open($event)"
+                @open-debt="debtDetailsModalRef?.open($event)"
+            />
 
             <!-- Divider -->
             <div class="border-t border-border-subtle/20 my-8"></div>
@@ -205,9 +220,9 @@ const handleEditBooking = (b: any) => {
       </div>
 
       <!-- Modals -->
-      <ConsentFormModal v-model="isConsentModalOpen" :item-to-edit="mockItemToEdit" />
-      <QuestionnaireFormModal v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" />
-      <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" />
+      <ConsentFormModal v-model="isConsentModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
+      <QuestionnaireFormModal v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
+      <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
       <BookingDetailsModal ref="bookingDetailsModalRef" @edit="handleEditBooking" />
       <BookingFormModal ref="bookingModalRef" @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
       <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />

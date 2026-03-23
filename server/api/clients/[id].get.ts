@@ -23,7 +23,7 @@ export default defineEventHandler(async event => {
 					orderBy: { booking_date: 'desc' },
 				},
 				carts: {
-					where: { status: 'completed' },
+					where: { status: { in: ['completed', 'pending'] } },
 					orderBy: { created_at: 'desc' },
 					include: { items: true }
 				},
@@ -84,13 +84,31 @@ export default defineEventHandler(async event => {
 			bookingFrequencyDays = Math.round(diffDays / (bookings.length - 1))
 		}
 
+		// Engagement Score Calculation (Simple Algorithm)
+		let engagementScore = 60 // Base score
+		engagementScore += Math.min(20, bookings.length * 2) // Frequency
+		engagementScore += Math.min(20, Math.floor(ltv / 50)) // Spending
+		if (client.consents.length >= 3) engagementScore += 10 // Compliance
+		
+		const hasRecent = client.client_bookings.some(b => {
+			const d = new Date(b.booking_date)
+			const diff = (new Date().getTime() - d.getTime()) / (1000 * 60 * 60 * 24)
+			return diff < 30
+		})
+		if (hasRecent) engagementScore += 10
+		
+		const noShows = client.client_bookings.filter(b => b.status === 'no_show').length
+		engagementScore -= (noShows * 15)
+		engagementScore = Math.max(0, Math.min(100, engagementScore))
+
 		const kpis = {
 			topServices: topServices.map(ts => ({ name: ts.name, qty: ts._sum.quantity || 0, total: ts._sum.total || 0 })),
 			topProducts: topProducts.map(tp => ({ name: tp.name, qty: tp._sum.quantity || 0, total: tp._sum.total || 0 })),
 			ltv,
 			aov,
 			bookingFrequencyDays,
-			totalBookings: bookings.length
+			totalBookings: bookings.length,
+			engagementScore
 		}
 
 		// Remove password from response and mask document number if not revealed

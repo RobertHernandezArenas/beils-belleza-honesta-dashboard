@@ -2,7 +2,7 @@
 	import {
 		Calendar, FileSignature, FileText, ArrowRight, Clock,
 		CheckCircle2, XCircle, AlertCircle, ShoppingBag, Sparkles, TrendingUp, Wallet, ArrowUpRight,
-		CalendarClock, History, MapPin, Eye, EyeOff, User, Plus, Search, Filter, ChevronRight
+		CalendarClock, History, MapPin, Eye, EyeOff, User, Plus, Search, Filter, ChevronRight, ShieldOff
 	} from 'lucide-vue-next'
 
     import { ref, watch, computed, type PropType } from 'vue'
@@ -16,7 +16,7 @@
         isUpdating: { type: Boolean, default: false }
 	})
 
-    const emit = defineEmits(['update'])
+    const emit = defineEmits(['update', 'open-booking', 'open-purchase', 'open-debt'])
     const { revealedDocs, revealedLoading, toggleDocumentVisibility } = useDataPrivacy()
 
     const kpis = computed(() => props.client?.kpis || {
@@ -29,7 +29,7 @@
         if (!isSavingNotes.value) notesText.value = newVal || ''
     })
 
-    const { locale } = useI18n()
+    const { locale, t } = useI18n()
 
     const saveNotes = () => {
         isSavingNotes.value = true
@@ -72,10 +72,98 @@
 
     const timeline = computed(() => {
         const activities: any[] = []
+        
+        // Citas (Bookings)
         props.client.client_bookings?.forEach((b: any) => {
-            activities.push({ id: b.booking_id, date: new Date(b.booking_date), type: 'booking', title: b.item_type, professional: b.professional?.name || 'Staff beils', status: b.status, icon: Calendar, color: 'text-primary' })
+            activities.push({ 
+                id: `booking-${b.booking_id}-${b.status}`, 
+                date: new Date(b.booking_date), 
+                type: 'booking', 
+                title: b.item_type === 'service' ? t('catalog.clients.profile.timeline.bookingService') : t('catalog.clients.profile.timeline.bookingPack'),
+                professional: b.professional?.name || t('catalog.clients.profile.kpis.unspecified'), 
+                status: b.status, 
+                icon: Calendar, 
+                color: 'text-primary',
+                raw: b
+            })
         })
-        return activities.sort((a,b) => b.date.getTime() - a.date.getTime()).slice(0, 5)
+
+        // Compras (Carts) - Incluye completados y pendientes
+        props.client.carts?.forEach((c: any) => {
+            activities.push({
+                id: `cart-${c.cart_id}-${c.status}`,
+                date: new Date(c.created_at),
+                type: 'purchase',
+                title: c.status === 'completed' ? t('catalog.clients.profile.timeline.purchase') : (locale.value === 'es' ? 'Compra Pendiente (Deuda)' : 'Pending Purchase (Debt)'),
+                professional: c.payment_method?.toUpperCase() || t('catalog.clients.profile.timeline.posPayment'),
+                status: c.status,
+                icon: ShoppingBag,
+                color: c.status === 'completed' ? 'text-success' : 'text-warning',
+                raw: c
+            })
+        })
+
+        // Deudas (Debts)
+        props.client.debts?.forEach((d: any) => {
+            activities.push({
+                id: `debt-${d.debt_id}-${d.status}`,
+                date: new Date(d.created_at),
+                type: 'debt',
+                title: t('catalog.clients.profile.billing.debts'),
+                professional: `${d.amount.toFixed(2)}€`,
+                status: d.status,
+                icon: Wallet,
+                color: 'text-error',
+                raw: d
+            })
+        })
+
+        // Consentimientos (Consents)
+        props.client.consents?.forEach((c: any) => {
+            activities.push({
+                id: `consent-${c.consent_id}`,
+                date: new Date(c.signed_date || c.created_at),
+                type: 'compliance',
+                title: `${t('catalog.clients.profile.compliance.consents')}: ${c.consent_type || 'General'}`,
+                professional: c.status,
+                status: c.status === 'SIGNED' ? 'completed' : 'pending',
+                icon: FileSignature,
+                color: 'text-success',
+                raw: c
+            })
+        })
+
+        // Cuestionarios (Questionnaires)
+        props.client.questionnaires?.forEach((q: any) => {
+            activities.push({
+                id: `quest-${q.questionnaire_id}`,
+                date: new Date(q.created_at),
+                type: 'compliance',
+                title: `${t('catalog.clients.profile.compliance.questionnaires')}: ${q.title}`,
+                professional: t('catalog.clients.profile.compliance.status.signed'),
+                status: 'completed',
+                icon: FileText,
+                color: 'text-info',
+                raw: q
+            })
+        })
+
+        // Revocaciones (Revokes)
+        props.client.revokes?.forEach((r: any) => {
+            activities.push({
+                id: `revoke-${r.revoke_id}`,
+                date: new Date(r.date_revoked || r.created_at),
+                type: 'compliance',
+                title: t('catalog.clients.profile.compliance.revocations'),
+                professional: r.reason || 'N/A',
+                status: 'cancelled',
+                icon: ShieldOff,
+                color: 'text-error',
+                raw: r
+            })
+        })
+
+        return activities.sort((a,b) => b.date.getTime() - a.date.getTime()).slice(0, 10)
     })
 
     // Legal & Compliance Logic
@@ -358,10 +446,20 @@
                 <div class="absolute left-[13px] top-6 bottom-6 w-0.5 bg-border-default opacity-30 z-0"></div>
 
                 <div v-for="act in timeline" :key="act.id" class="flex gap-4 relative z-10 group">
-                    <div class="shrink-0 w-7 h-7 rounded-full bg-white dark:bg-black border-2 border-border-default flex items-center justify-center shadow-sm group-hover:border-primary transition-colors">
-                        <CheckCircle2 v-if="act.status === 'completed'" class="w-4 h-4 text-success" />
-                        <Clock v-else-if="act.status === 'pending'" class="w-4 h-4 text-warning" />
-                        <XCircle v-else class="w-4 h-4 text-error" />
+                    <div class="shrink-0 w-7 h-7 rounded-full bg-white dark:bg-black border-2 flex items-center justify-center shadow-sm group-hover:border-primary transition-colors" 
+                         :class="[
+                            act.type === 'purchase' || act.type === 'compliance' ? 'border-success/40' : 
+                            act.type === 'debt' ? 'border-error/40' : 
+                            'border-border-default'
+                         ]">
+                        <component :is="act.icon" class="w-3.5 h-3.5" :class="[
+                            act.type === 'purchase' || (act.type === 'compliance' && act.status === 'completed') ? 'text-success' : 
+                            act.type === 'debt' ? 'text-error' : 
+                            (act.status === 'pending' ? 'text-warning' : 'text-primary')
+                        ]" />
+                        
+                        <!-- Small status dot -->
+                        <div v-if="act.status === 'completed'" class="absolute -right-0.5 -bottom-0.5 w-2 h-2 bg-success rounded-full border border-white dark:border-black"></div>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-start">
@@ -370,10 +468,17 @@
                                     {{ act.status === 'pending' ? $t('catalog.clients.profile.appointments.status.upcoming') : (act.status === 'cancelled' ? $t('catalog.clients.profile.appointments.status.canceled') : $t('catalog.clients.profile.appointments.status.completed')) }}: {{ new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(act.date) }}
                                 </p>
                                 <h5 class="text-text-primary text-sm font-bold truncate leading-tight">{{ act.title }}</h5>
-                                <p class="text-[10px] text-text-muted font-bold mt-0.5">{{ $t('catalog.clients.profile.kpis.professional') }}: {{ act.professional }}</p>
+                                <p class="text-[10px] text-text-muted font-bold mt-0.5 leading-none">
+                                    {{ act.type === 'purchase' ? $t('catalog.clients.profile.timeline.method') : $t('catalog.clients.profile.kpis.professional') }}: 
+                                    <span class="text-text-primary">{{ act.professional }}</span>
+                                </p>
                             </div>
                         </div>
-                        <button class="btn btn-ghost btn-xs rounded-lg mt-2 font-bold opacity-60 hover:opacity-100 hover:bg-white/50 dark:hover:bg-black/50 border border-border-subtle/30 px-3">
+                        <button 
+                            @click="act.type === 'booking' ? $emit('open-booking', act.raw) : (act.type === 'debt' ? $emit('open-debt', act.raw) : (act.type === 'purchase' ? $emit('open-purchase', act.raw) : null))"
+                            v-if="act.type !== 'compliance'"
+                            class="btn btn-ghost btn-xs rounded-lg mt-2 font-bold opacity-60 hover:opacity-100 hover:bg-white/50 dark:hover:bg-black/50 border border-border-subtle/30 px-3"
+                        >
                             {{ $t('catalog.clients.profile.kpis.viewDetails') }}
                         </button>
                     </div>
@@ -381,7 +486,7 @@
 
                 <div v-if="timeline.length === 0" class="col-span-2 py-10 flex flex-col items-center justify-center text-center opacity-30">
                     <History class="w-10 h-10 mb-2" />
-                    <p class="text-sm font-bold uppercase tracking-widest">{{ locale === 'es' ? 'Sin histórico de tratamientos' : 'No treatment history' }}</p>
+                    <p class="text-sm font-bold uppercase tracking-widest">{{ $t('catalog.clients.profile.timeline.none') }}</p>
                 </div>
             </div>
         </div>

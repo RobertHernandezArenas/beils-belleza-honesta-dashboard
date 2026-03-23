@@ -191,6 +191,8 @@
 		form.item_id = '' // Reset selection on change
 	}
 
+	const { emitSync } = useSync()
+
 	const { mutate: performSave, isPending: isSaving } = useMutation({
 		mutationFn: async (payload: any) => {
 			if (editingBooking.value) {
@@ -210,6 +212,15 @@
 				? 'Cita actualizada correctamente'
 				: 'Cita programada con éxito'
 			emit('toast', msg, 'success')
+			
+			// Notify other tabs for immediate refresh
+			if (form.client_id) {
+				emitSync({ 
+					type: 'REFRESH_CLIENT', 
+					clientId: form.client_id 
+				})
+			}
+
 			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			emit('refresh')
 			closeModal()

@@ -10,7 +10,7 @@
 		itemToEdit?: any | null
 	}>()
 
-	const emit = defineEmits(['update:modelValue', 'close'])
+	const emit = defineEmits(['update:modelValue', 'close', 'success'])
 	const queryClient = useQueryClient()
 
 	const localVisible = ref(props.modelValue)
@@ -87,6 +87,8 @@
 		data: z.string().min(1, 'Los datos son obligatorios'),
 	})
 
+	const { emitSync } = useSync()
+
 	const { mutate: saveItem, isPending } = useMutation({
 		mutationFn: async (payload: any) => {
 			const url = isEditing.value
@@ -97,6 +99,13 @@
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['questionnaires-list'] })
+			
+			// Notify other tabs
+			if (form.user_id) {
+				emitSync({ type: 'REFRESH_CLIENT', clientId: form.user_id })
+			}
+
+			emit('success')
 			localVisible.value = false
 		},
 		onError: (err: any) => {
