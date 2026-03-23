@@ -1,8 +1,10 @@
 import 'dotenv/config'
 // Triggering Nitro reload to pick up new Prisma Client
-import { PrismaClient } from '@prisma/client'
+import pkg from '@prisma/client'
+import type { PrismaClient as PrismaClientType } from '@prisma/client'
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 import * as mariadb from 'mariadb'
+const { PrismaClient } = pkg
 
 // Create a connection pool config for the adapter
 const poolConfig = {
@@ -17,7 +19,7 @@ const poolConfig = {
 // Initialize the Prisma MariaDB adapter
 const adapter = new PrismaMariaDb(poolConfig)
 
-const localGlobal = global as unknown as { prisma: PrismaClient }
+const localGlobal = global as unknown as { prisma: PrismaClientType }
 
 export const prisma =
 	localGlobal.prisma ||
