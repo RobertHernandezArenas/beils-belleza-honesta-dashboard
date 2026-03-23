@@ -179,42 +179,129 @@
 				"postalCode": "Postal Code",
 				"country": "Country",
 				"status": "Status"
+			},
+			"profile": {
+				"title": "Client Profile",
+				"subtitle": "Beils CRM Management",
+				"status": {
+					"loading": "Loading Client...",
+					"error": "Error loading profile",
+					"errorMsg": "We could not connect to the server to get the client data.",
+					"updated": "Profile updated successfully",
+					"updateError": "Error updating profile"
+				},
+				"sections": {
+					"insights": "Personal Insights",
+					"kpis": "Key Metrics",
+					"appointments": "Appointments & Sales",
+					"compliance": "Legal & Compliance",
+					"notes": "Commercial Notes",
+					"timeline": "History & Timeline",
+					"billing": "Billing & Debts"
+				},
+				"compliance": {
+					"consents": "Consents",
+					"questionnaires": "Questionnaires",
+					"revocations": "Revocations",
+					"status": {
+						"signed": "Signed",
+						"pending": "Pending",
+						"withdrawn": "Withdrawn",
+						"withdrawn_phone": "Do Not Contact"
+					},
+					"items": {
+						"gdpr": "GDPR",
+						"marketing": "Marketing",
+						"photo": "Photography",
+						"medical": "Medical History",
+						"skin": "Skin Analysis",
+						"phone": "Phone Contact"
+					}
+				},
+				"kpis": {
+					"engagement": "Engagement Score",
+					"lastVisit": "Last Visit",
+					"totalSpent": "Total Spent",
+					"activePacks": "Active Packs",
+					"loyaltyHigh": "High Loyalty",
+					"vipStatus": "VIP Status. Frequent visitor with high average spend.",
+					"registered": "Registered",
+					"topItems": "Top Services/Products",
+					"professional": "Professional",
+					"viewDetails": "View Details",
+					"verifyId": "Be sure to verify the client's identity before performing medical treatments.",
+					"unspecified": "Unspecified"
+				},
+				"appointments": {
+					"status": {
+						"upcoming": "Upcoming",
+						"completed": "Completed",
+						"canceled": "Canceled",
+						"pending": "Pending"
+					}
+				},
+				"billing": {
+					"debts": "Pending Debts",
+					"history": "Purchase History",
+					"table": {
+						"concept": "Concept",
+						"due": "Due Date",
+						"pending": "Pending Amount",
+						"total": "Total Collected",
+						"ticket": "Ticket Details",
+						"method": "Payment Method",
+						"status": "Status",
+						"actions": "Actions"
+					},
+					"empty": {
+						"noDebts": "No pending debts",
+						"noDebtsSub": "Client is up to date with payments in Beils",
+						"noSales": "No sales history",
+						"noSalesSub": "This client hasn't made any purchases in the center yet"
+					},
+					"manage": "Manage",
+					"pending": "PENDING"
+				}
 			}
+		},
+		"menu": {
+			"products": "Products",
+			"categories": "Categories",
+			"subcategories": "Subcategories",
+			"tags": "Tags",
+			"packs": "Packs & Promos",
+			"bonuses": "Bonuses",
+			"coupons": "Coupons",
+			"giftCards": "Gift Cards",
+			"services": "Services",
+			"sales": "Sales",
+			"debts": "Debits & Collections",
+			"agenda": "Agenda",
+			"consents": "Consents",
+			"questionnaires": "Questionnaires",
+			"revocations": "Revocations",
+			"pos": "Point of Sale"
+		},
+		"tpv": {
+			"title": "POS / Point of Sale",
+			"searchCat": "Search in catalog...",
+			"noResults": "No results found in this category",
+			"searchClient": "Search client by phone or name...",
+			"clientSelected": "Selected Client",
+			"emptyCart": "Your cart is empty",
+			"emptyCartSub": "Add products or services from the catalog on the left.",
+			"subtotal": "Subtotal",
+			"discount": "Discount / Coupon",
+			"total": "Total to Pay",
+			"card": "Card",
+			"cash": "Cash",
+			"mixed": "Mixed",
+			"debt": "Debt",
+			"process": "Process Payment",
+			"packs": "Packs",
+			"stripeInstallments": "Stripe — Installments (1-3-4-6)"
 		}
 	},
-	"Productos": "Products",
-	"Categorías": "Categories",
-	"Subcategorías": "Subcategories",
-	"Etiquetas": "Tags",
-	"Packs & Promociones": "Packs & Promos",
-	"Bonos": "Bonuses",
-	"Cupones": "Coupons",
-	"Tarjetas de Regalo": "Gift Cards",
-	"Servicios": "Services",
-	"Ventas": "Sales",
-	"Deudas y Cobros": "Debts & Collections",
-	"Agenda": "Agenda",
-	"Consentimientos": "Consents",
-	"Cuestionarios": "Questionnaires",
-	"Revocaciones": "Revocations",
-	"Terminal Venta": "POS Terminal",
-	"Stripe — Cuotas (1-3-4-6)": "Stripe — Installments (1-3-4-6)",
-	"TPV / Punto de Venta": "POS / Point of Sale",
-	"Packs": "Packs",
-	"Buscar en catálogo...": "Search in catalog...",
-	"No se encontraron resultados en esta categoría": "No results found in this category",
-	"Buscar cliente por teléfono o nombre...": "Search client by phone or name...",
-	"Cliente Seleccionado": "Selected Client",
-	"El carrito está vacío": "The cart is empty",
-	"Añade productos o servicios desde el catálogo de la izquierda.": "Add products or services from the catalog on the left.",
-	"Subtotal": "Subtotal",
-	"Descuento / Cupón": "Discount / Coupon",
-	"Total a Pagar": "Total to Pay",
-	"Tarjeta": "Card",
-	"Efectivo": "Cash",
-	"Mixto": "Mixed",
-	"Deuda": "Debt",
-	"Procesar Cobro": "Process Payment",
 	"finances": {
 		"debts": {
 			"title": "Accounts Receivable",

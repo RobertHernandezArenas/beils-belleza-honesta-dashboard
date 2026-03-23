@@ -143,7 +143,7 @@
 							</div>
 							<div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
 								<Camera class="mb-1 h-8 w-8" />
-								<span class="text-[9px] font-bold tracking-wider uppercase">Cambiar</span>
+								<span class="text-[9px] font-bold tracking-wider uppercase">{{ $t('common.edit') }}</span>
 							</div>
 							<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="h-full w-full object-cover" @error="handleAvatarError" />
 							<div v-else class="bg-bg-muted text-text-muted flex h-full w-full items-center justify-center text-3xl font-bold">
@@ -160,12 +160,12 @@
 							class="badge badge-sm font-black uppercase text-[10px]"
 							:class="client.status === 'ON' ? 'badge-success' : 'badge-error'"
 						>
-							{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
+							{{ client.status === 'ON' ? $t('users.constants.status.ON') : $t('users.constants.status.OFF') }}
 						</div>
 						</div>
 						<div class="text-text-muted flex flex-col gap-0.5 text-xs font-bold leading-relaxed">
 							<span>{{ client.email }} • {{ client.phone }}</span>
-							<span>Registrado: {{ new Date(client.created_at).toLocaleDateString() }}</span>
+							<span>{{ $t('catalog.clients.profile.kpis.registered') }}: {{ new Date(client.created_at).toLocaleDateString() }}</span>
 						</div>
 					</div>
 				</div>
@@ -180,31 +180,31 @@
 					</div>
 					<div class="flex-1">
 						<div class="flex items-center gap-2 mb-0.5">
-							<span class="text-text-primary text-sm font-bold opacity-70">Engagement Score</span>
+							<span class="text-text-primary text-sm font-bold opacity-70">{{ $t('catalog.clients.profile.kpis.engagement') }}</span>
 							<AlertCircle class="w-3.5 h-3.5 text-text-muted cursor-help" />
 						</div>
 						<div class="flex items-baseline gap-2">
 							<span class="text-text-primary text-4xl font-black italic">92</span>
 							<span class="text-text-muted text-xl font-bold">/100</span>
-							<span class="badge bg-success/10 text-success border-none font-black text-[10px] ml-2 uppercase">High Loyalty</span>
+							<span class="badge bg-success/10 text-success border-none font-black text-[10px] ml-2 uppercase">{{ $t('catalog.clients.profile.kpis.loyaltyHigh') }}</span>
 						</div>
-						<p class="text-text-muted text-[10px] font-bold mt-1 max-w-[200px] leading-tight italic">VIP Status. Frequent visitor with high average spend.</p>
+						<p class="text-text-muted text-[10px] font-bold mt-1 max-w-[200px] leading-tight italic">{{ $t('catalog.clients.profile.kpis.vipStatus') }}</p>
 					</div>
 				</div>
 
 				<!-- 3. Actions -->
 				<div class="flex items-center gap-3">
 					<button @click="$emit('new-booking')" class="btn bg-[#5D5CDE] hover:bg-[#4B4ABF] text-white border-none rounded-xl px-6 font-bold h-12">
-						Nueva Cita
+						{{ $t('nav.agenda') === 'nav.agenda' ? 'Nueva Cita' : $t('nav.agenda') }}
 					</button>
 					<div class="dropdown dropdown-end">
 						<div tabindex="0" role="button" class="btn btn-ghost bg-bg-muted/50 hover:bg-bg-muted h-12 rounded-xl px-6 font-bold">
-							Acciones <ChevronDown class="ml-1 w-4 h-4 opacity-70" />
+							{{ $t('users.table.actions') }} <ChevronDown class="ml-1 w-4 h-4 opacity-70" />
 						</div>
 						<ul tabindex="0" class="dropdown-content menu bg-bg-card border-border-subtle z-50 mt-2 w-56 rounded-2xl border p-2 shadow-xl">
-							<li><a @click="$emit('add-consent')" class="py-3 font-bold"><FileSignature class="text-success mr-2 h-4 w-4" /> Añadir Consentimiento</a></li>
-							<li><a @click="$emit('add-questionnaire')" class="py-3 font-bold"><FileText class="text-info mr-2 h-4 w-4" /> Nuevo Cuestionario</a></li>
-							<li><a @click="$emit('add-revoke')" class="hover:bg-bg-muted text-error py-3 font-bold"><ShieldOff class="mr-2 h-4 w-4" /> Revocar Consentimiento</a></li>
+							<li><a @click="$emit('add-consent')" class="py-3 font-bold"><FileSignature class="text-success mr-2 h-4 w-4" /> {{ $t('catalog.clients.profile.compliance.consents') }}</a></li>
+							<li><a @click="$emit('add-questionnaire')" class="py-3 font-bold"><FileText class="text-info mr-2 h-4 w-4" /> {{ $t('catalog.clients.profile.compliance.questionnaires') }}</a></li>
+							<li><a @click="$emit('add-revoke')" class="hover:bg-bg-muted text-error py-3 font-bold"><ShieldOff class="mr-2 h-4 w-4" /> {{ $t('catalog.clients.profile.compliance.revocations') }}</a></li>
 						</ul>
 					</div>
 				</div>

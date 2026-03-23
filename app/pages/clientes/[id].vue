@@ -4,18 +4,14 @@ import { useRoute } from 'vue-router'
 import {
   ArrowLeft,
   AlertCircle,
-  ExternalLink,
-  FileSignature,
-  FileText,
-  CalendarDays,
   CheckCircle2
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
 import ProfileHeader from '~/components/clients/ProfileHeader.vue'
-import ProfileTabs from '~/components/clients/ProfileTabs.vue'
-import ProfileInfoSidebar from '~/components/clients/ProfileInfoSidebar.vue'
 import ProfileOverview from '~/components/clients/ProfileOverview.vue'
+import ProfileBilling from '~/components/clients/ProfileBilling.vue'
+
 
 import ConsentFormModal from '~/components/clients/ConsentFormModal.vue'
 import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.vue'
@@ -27,7 +23,7 @@ import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 definePageMeta({ layout: 'default' })
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const route = useRoute()
 const clientId = route.params.id as string
 const queryClient = useQueryClient()
@@ -49,7 +45,7 @@ const addToast = (payload: { message: string, type?: 'success' | 'error' } | str
   setTimeout(() => (showToast.value = false), 3000)
 }
 
-const currentTab = ref('overview') // overview, bookings, documents, billing
+
 
 const {
   data: client,
@@ -62,7 +58,7 @@ const {
 
 useHead({
   title: computed(() =>
-    client.value ? `${client.value.name} ${client.value.surname} | Perfil CRM` : 'Cargando Cliente...',
+    client.value ? `${client.value.name} ${client.value.surname} | ${locale.value === 'es' ? 'Perfil CRM' : 'CRM Profile'}` : t('catalog.clients.profile.status.loading'),
   ),
 })
 
@@ -86,12 +82,7 @@ const formatDateTime = (dateStr: string) => {
   }).format(new Date(dateStr))
 }
 
-// Counts for tabs
-const counts = computed(() => ({
-  bookings: client.value?.client_bookings?.length || 0,
-  documents: (client.value?.consents?.length || 0) + (client.value?.questionnaires?.length || 0),
-  debts: client.value?.debts?.length || 0
-}))
+
 
 // Modal States
 const isConsentModalOpen = ref(false)
@@ -117,10 +108,10 @@ const { mutate: updateClient, isPending: isUpdating } = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['client', clientId] })
-    addToast('Perfil actualizado correctamente', 'success')
+    addToast(locale.value === 'es' ? 'Perfil actualizado correctamente' : 'Profile updated successfully', 'success')
   },
   onError: (err: any) => {
-    addToast(err.data?.statusMessage || 'Error al actualizar el perfil', 'error')
+    addToast(err.data?.statusMessage || (locale.value === 'es' ? 'Error al actualizar el perfil' : 'Error updating profile'), 'error')
   }
 })
 
@@ -150,8 +141,8 @@ const handleEditBooking = (b: any) => {
             <ArrowLeft class="text-text-primary h-5 w-5" />
           </NuxtLink>
           <div class="flex flex-col">
-            <h1 class="text-text-primary text-2xl font-bold tracking-tight">Ficha de Cliente</h1>
-            <p class="text-text-muted text-xs font-medium uppercase tracking-widest">Gestión CRM Beils</p>
+            <h1 class="text-text-primary text-2xl font-bold tracking-tight">{{ $t('catalog.clients.profile.title') }}</h1>
+            <p class="text-text-muted text-xs font-medium uppercase tracking-widest">{{ $t('catalog.clients.profile.subtitle') }}</p>
           </div>
         </div>
       </div>
@@ -171,12 +162,12 @@ const handleEditBooking = (b: any) => {
         class="bg-error/10 text-error flex flex-col items-center justify-center rounded-3xl p-20 text-center shadow-inner"
       >
         <AlertCircle class="mb-4 h-16 w-16 opacity-50" />
-        <h2 class="text-2xl font-bold">Error al cargar el perfil</h2>
+        <h2 class="text-2xl font-bold">{{ $t('catalog.clients.profile.status.error') }}</h2>
         <p class="mt-2 text-sm font-medium opacity-80 max-w-md">
-          {{ error.statusMessage || 'No hemos podido conectar con el servidor para obtener los datos del cliente.' }}
+          {{ error.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
         </p>
         <button @click="navigateTo('/clientes')" class="btn btn-error btn-sm mt-8 rounded-xl font-bold">
-          Volver al Listado
+          {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
         </button>
       </div>
 
@@ -194,145 +185,22 @@ const handleEditBooking = (b: any) => {
           @toast="addToast"
         />
 
-        <!-- 2. Main Navigation Tabs sticky -->
-        <div class="sticky top-6 z-20">
-          <div class="bg-bg-card/80 border-border-subtle overflow-hidden rounded-3xl border shadow-lg backdrop-blur-xl">
-            <ProfileTabs v-model="currentTab" :counts="counts" />
-          </div>
-        </div>
 
-        <!-- 3. Two Column Layout -->
-        <div 
-          class="flex flex-col-reverse gap-8 transition-all duration-700"
-          :class="{
-            'xl:grid xl:grid-cols-[340px_1fr] 2xl:grid-cols-[380px_1fr]': currentTab !== 'overview',
-            'w-full': currentTab === 'overview'
-          }"
-        >
-          <!-- Left Sidebar (Only visible if NOT in overview) -->
-          <aside v-if="currentTab !== 'overview'" class="space-y-6">
-            <ProfileInfoSidebar 
-              :client="client" 
-              :is-updating="isUpdating"
-              @update="handleFieldUpdate"
+
+        <!-- 2. Continuous Content (Overview + Billing) -->
+        <div class="space-y-8 lg:space-y-12 pb-20">
+            <!-- Strategic Overview -->
+            <ProfileOverview :client="client" @update="handleFieldUpdate" />
+
+            <!-- Divider -->
+            <div class="border-t border-border-subtle/20 my-8"></div>
+
+            <!-- Billing & Financial History -->
+            <ProfileBilling 
+                :client="client" 
+                @open-debt="debtDetailsModalRef?.open($event)" 
+                @open-purchase="purchaseDetailsModalRef?.open($event)" 
             />
-          </aside>
-
-          <!-- Right Content Area -->
-          <main class="min-h-[600px] w-full min-w-0">
-            <Transition name="page" mode="out-in">
-              <!-- OVERVIEW TAB -->
-              <div v-if="currentTab === 'overview'" key="overview">
-                <ProfileOverview :client="client" @update="handleFieldUpdate" />
-              </div>
-
-
-
-              <!-- BILLING TAB -->
-              <div v-else-if="currentTab === 'billing'" key="billing" class="space-y-6">
-                <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-                  <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-                    <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Deudas Pendientes</h3>
-                  </div>
-                  <div class="p-0 overflow-x-auto">
-                    <table v-if="client.debts?.length > 0" class="table w-full min-w-[500px]">
-                      <thead class="bg-bg-muted/50 text-text-secondary border-b border-border-default h-12">
-                        <tr>
-                          <th class="pl-6 text-xs font-black uppercase">Concepto</th>
-                          <th class="text-xs font-black uppercase">Vencimiento</th>
-                          <th class="text-xs font-black uppercase text-right">Pendiente</th>
-                          <th class="text-xs font-black uppercase text-right pr-6 min-w-[120px]">Acciones</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="debt in client.debts" :key="debt.debt_id" @click="debtDetailsModalRef?.open(debt)" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-[72px] cursor-pointer">
-                          <td class="pl-6">
-                             <div class="flex items-center gap-3">
-                               <div class="w-10 h-10 rounded-xl bg-bg-muted flex items-center justify-center shrink-0">
-                                 <Receipt class="w-5 h-5 text-text-primary" />
-                               </div>
-                               <div class="flex flex-col max-w-[200px]">
-                                 <span class="text-text-primary text-sm font-bold truncate">{{ debt.notes || 'Deuda de cargo' }}</span>
-                                 <span v-if="debt.cart?.items?.length" class="text-text-muted text-[10px] font-bold uppercase">{{ debt.cart.items.length }} Items de compra</span>
-                                 <span v-else class="text-text-muted text-[10px] font-bold uppercase">Deuda manual</span>
-                               </div>
-                             </div>
-                          </td>
-                          <td>
-                             <span class="text-text-muted text-xs font-bold uppercase">{{ debt.due_date ? formatDate(debt.due_date) : 'Sin fecha' }}</span>
-                          </td>
-                          <td class="text-right">
-                            <span class="text-error text-sm font-black tabular-nums">{{ debt.remaining.toFixed(2) }}€</span>
-                            <span v-if="debt.remaining < debt.amount" class="text-text-muted block text-[10px] font-bold uppercase">de {{ debt.amount.toFixed(2) }}€</span>
-                          </td>
-                          <td class="pr-6 text-right">
-                             <button @click="debtDetailsModalRef?.open(debt)" class="btn btn-sm btn-ghost hover:bg-bg-muted rounded-xl text-text-primary">Detalles</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div v-else class="flex flex-col items-center justify-center py-20 text-center">
-                      <div class="bg-success/10 text-success mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                        <CheckCircle2 class="h-8 w-8" />
-                      </div>
-                      <p class="text-text-primary text-lg font-bold">¡Cuenta al día!</p>
-                      <p class="text-text-muted mt-1 text-sm font-medium">Este cliente no tiene deudas pendientes en Beils.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- HISTORIAL DE COMPRAS -->
-                <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
-                  <div class="border-border-subtle bg-bg-muted/30 border-b px-6 py-4">
-                    <h3 class="text-text-primary text-sm font-bold uppercase tracking-wider">Historial de Compras</h3>
-                  </div>
-                  <div class="p-0 overflow-x-auto">
-                    <table v-if="client.carts?.length > 0" class="table w-full min-w-[500px]">
-                      <thead class="bg-bg-muted/50 text-text-secondary border-b border-border-default h-12">
-                        <tr>
-                          <th class="pl-6 text-xs font-black uppercase">Detalle Ticket</th>
-                          <th class="text-xs font-black uppercase">Estado</th>
-                          <th class="text-xs font-black uppercase">Método Pago</th>
-                          <th class="text-xs font-black uppercase text-right pr-6">Total Cobrado</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="cart in client.carts" :key="cart.cart_id" @click="purchaseDetailsModalRef?.open(cart)" class="border-b border-border-subtle hover:bg-bg-muted/30 transition-colors h-[72px] cursor-pointer">
-                          <td class="pl-6">
-                             <div class="flex items-center gap-3">
-                               <div class="w-10 h-10 rounded-xl bg-bg-muted flex items-center justify-center shrink-0">
-                                 <Receipt class="w-5 h-5 text-text-primary" />
-                               </div>
-                               <div class="flex flex-col">
-                                 <span class="text-text-primary text-sm font-bold">{{ formatDate(cart.created_at) }}</span>
-                                 <span class="text-text-muted text-[10px] font-bold uppercase">{{ cart.items?.length || 0 }} Conceptos</span>
-                               </div>
-                             </div>
-                          </td>
-                          <td>
-                             <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-lg" :class="cart.status === 'completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">{{ cart.status }}</span>
-                          </td>
-                          <td>
-                             <span class="text-text-muted text-[10px] font-bold uppercase tracking-wider bg-bg-muted/50 px-2 py-1.5 rounded-md">{{ cart.payment_method || 'N/A' }}</span>
-                          </td>
-                          <td class="text-right pr-6">
-                            <span class="text-text-primary text-sm font-black tabular-nums">{{ cart.total.toFixed(2) }}€</span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div v-else class="flex flex-col items-center justify-center py-20 text-center">
-                      <div class="bg-primary/10 text-primary mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                        <Receipt class="h-8 w-8" />
-                      </div>
-                      <p class="text-text-primary text-lg font-bold">Sin compras recientes</p>
-                      <p class="text-text-muted mt-1 text-sm font-medium">Este cliente todavía no tiene historial de ventas cerradas.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Transition>
-          </main>
         </div>
       </div>
 

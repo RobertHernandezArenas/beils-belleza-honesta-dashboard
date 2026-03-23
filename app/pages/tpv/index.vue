@@ -299,8 +299,8 @@
 						<ShoppingBag class="h-6 w-6" />
 					</div>
 					<div class="flex-1">
-						<h1 class="text-2xl font-bold tracking-tight">{{ $t('Terminal Venta') }}</h1>
-						<p class="text-text-muted text-sm font-medium">{{ $t('TPV / Punto de Venta') }}</p>
+						<h1 class="text-2xl font-bold tracking-tight">{{ $t('catalog.menu.pos') }}</h1>
+						<p class="text-text-muted text-sm font-medium">{{ $t('catalog.tpv.title') }}</p>
 					</div>
 				</div>
 			</div>
@@ -326,7 +326,7 @@
 						"
 						@click="activeTab = 'services'">
 						<Scissors class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						<span>{{ $t('Servicios') }}</span>
+						<span>{{ $t('catalog.menu.services') }}</span>
 					</a>
 					<a
 						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -338,7 +338,7 @@
 						"
 						@click="activeTab = 'products'">
 						<PackageIcon class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						<span v-text="$t('Productos')"></span>
+						<span v-text="$t('catalog.menu.products')"></span>
 					</a>
 					<a
 						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -350,7 +350,7 @@
 						"
 						@click="activeTab = 'packs'">
 						<PackageSearch class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						<span v-text="$t('Packs')"></span>
+						<span v-text="$t('catalog.tpv.packs')"></span>
 					</a>
 					<a
 						class="tab relative z-10 flex h-auto min-h-[56px] flex-1 flex-col items-center justify-center rounded-3xl px-1 py-1.5 text-[9px] font-bold tracking-tight whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs md:tracking-wider"
@@ -362,7 +362,7 @@
 						"
 						@click="activeTab = 'bonuses'">
 						<Ticket class="mb-1 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-						<span v-text="$t('Bonos')"></span>
+						<span v-text="$t('catalog.menu.bonuses')"></span>
 					</a>
 				</div>
 				<div class="relative w-full shrink-0 lg:w-64 xl:w-80">
@@ -370,7 +370,7 @@
 					<input
 						v-model="searchQuery"
 						type="text"
-						:placeholder="$t('Buscar en catálogo...')"
+						:placeholder="$t('catalog.tpv.searchCat')"
 						class="input bg-bg-card focus:border-primary/50 focus:ring-primary/20 h-14 w-full rounded-4xl border-transparent pr-5 pl-14 text-sm font-medium shadow-sm transition-colors focus:ring-4" />
 				</div>
 			</div>
@@ -419,7 +419,7 @@
 						<Search class="text-border-strong mb-3 h-8 w-8 opacity-50" />
 						<p
 							class="text-text-muted text-sm font-bold tracking-wider uppercase"
-							v-text="$t('No se encontraron resultados en esta categoría')"></p>
+							v-text="$t('catalog.tpv.noResults')"></p>
 					</div>
 				</div>
 			</div>
@@ -436,7 +436,7 @@
 						<input
 							v-model="clientSearch"
 							type="text"
-							:placeholder="$t('Buscar cliente por teléfono o nombre...')"
+							:placeholder="$t('catalog.tpv.searchClient')"
 							class="input bg-bg-card border-border-default focus:border-primary focus:ring-primary/20 h-12 w-full rounded-2xl pl-12 text-sm shadow-sm transition-colors focus:shadow-md" />
 
 						<!-- Client Autocomplete Dropdown -->
@@ -478,7 +478,7 @@
 								</span>
 								<span
 									class="text-text-muted text-[10px] font-bold tracking-wider uppercase"
-									v-text="$t('Cliente Seleccionado')"></span>
+									v-text="$t('catalog.tpv.clientSelected')"></span>
 							</div>
 						</div>
 						<button
@@ -499,10 +499,10 @@
 					<ShoppingBag class="text-border-strong mb-4 h-16 w-16" />
 					<p
 						class="text-text-muted text-sm font-bold tracking-wider uppercase"
-						v-text="$t('El carrito está vacío')"></p>
+						v-text="$t('catalog.tpv.emptyCart')"></p>
 					<p
 						class="text-text-muted mt-2 max-w-[200px] text-xs"
-						v-text="$t('Añade productos o servicios desde el catálogo de la izquierda.')"></p>
+						v-text="$t('catalog.tpv.emptyCartSub')"></p>
 				</div>
 
 				<div v-else class="flex flex-col gap-3">
@@ -554,13 +554,13 @@
 				<!-- Totals -->
 				<div class="mb-6 flex flex-col gap-2">
 					<div class="text-text-muted flex items-center justify-between text-sm font-medium">
-						<span>{{ $t('Subtotal') }}</span>
+						<span>{{ $t('catalog.tpv.subtotal') }}</span>
 						<span class="tabular-nums">{{ formatCurrency(cartSubtotal) }}</span>
 					</div>
 					<div class="text-error flex items-center justify-between text-sm font-medium">
 						<span class="flex items-center gap-1.5">
 							<Tag class="h-3.5 w-3.5" />
-							<span v-text="$t('Descuento / Cupón')"></span>
+							<span v-text="$t('catalog.tpv.discount')"></span>
 						</span>
 						<div class="relative w-24">
 							<span class="absolute top-1/2 left-2 -translate-y-1/2 text-xs font-bold">-</span>
@@ -576,7 +576,7 @@
 					<div class="flex items-end justify-between">
 						<span
 							class="text-text-muted text-xs font-black tracking-wider uppercase"
-							v-text="$t('Total a Pagar')"></span>
+							v-text="$t('catalog.tpv.total')"></span>
 						<span class="text-primary text-4xl leading-none font-black tracking-tight tabular-nums">
 							{{ formatCurrency(cartTotal) }}
 						</span>
@@ -594,7 +594,7 @@
 						"
 						@click="paymentMethod = 'card'">
 						<CreditCard class="mb-0.5 h-5 w-5" />
-						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Tarjeta') }}</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('catalog.tpv.card') }}</span>
 					</button>
 					<button
 						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
@@ -605,7 +605,7 @@
 						"
 						@click="paymentMethod = 'cash'">
 						<Banknote class="mb-0.5 h-5 w-5" />
-						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Efectivo') }}</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('catalog.tpv.cash') }}</span>
 					</button>
 					<button
 						class="btn border-border-default flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
@@ -616,7 +616,7 @@
 						"
 						@click="paymentMethod = 'mixed'">
 						<Wallet class="mb-0.5 h-5 w-5" />
-						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Mixto') }}</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('catalog.tpv.mixed') }}</span>
 					</button>
 					<button
 						class="btn border-error/20 flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80"
@@ -629,7 +629,7 @@
 						<span class="mt-1 mb-0.5 text-lg leading-none font-black tabular-nums">
 							{{ formatCurrency(0) }}
 						</span>
-						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('Deuda') }}</span>
+						<span class="text-[10px] font-bold tracking-wider uppercase">{{ $t('catalog.tpv.debt') }}</span>
 					</button>
 					<button
 						class="btn border-border-default col-span-2 flex h-auto flex-col flex-nowrap gap-1 rounded-2xl border py-3 active:scale-95 active:opacity-80 lg:col-span-4"
@@ -641,7 +641,7 @@
 						@click="paymentMethod = 'stripe'">
 						<Split class="mb-0.5 h-5 w-5" />
 						<span class="text-[10px] font-bold tracking-wider uppercase">
-							{{ $t('Stripe — Cuotas (1-3-4-6)') }}
+							{{ $t('catalog.tpv.stripeInstallments') }}
 						</span>
 					</button>
 				</div>
@@ -657,7 +657,7 @@
 							: 'bg-bg-muted text-text-muted opacity-50'
 					">
 					<span v-if="isCheckingOut" class="loading loading-spinner"></span>
-					<span v-else>{{ $t('Procesar Cobro') }}</span>
+					<span v-else>{{ $t('catalog.tpv.process') }}</span>
 				</button>
 			</div>
 		</div>

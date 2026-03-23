@@ -180,42 +180,129 @@
 				"postalCode": "Código Postal",
 				"country": "País",
 				"status": "Estado"
+			},
+			"profile": {
+				"title": "Ficha de Cliente",
+				"subtitle": "Gestión CRM Beils",
+				"status": {
+					"loading": "Cargando Cliente...",
+					"error": "Error al cargar el perfil",
+					"errorMsg": "No hemos podido conectar con el servidor para obtener los datos del cliente.",
+					"updated": "Perfil actualizado correctamente",
+					"updateError": "Error al actualizar el perfil"
+				},
+				"sections": {
+					"insights": "Información Personal",
+					"kpis": "Métricas Clave",
+					"appointments": "Citas y Ventas",
+					"compliance": "Legal y Privacidad",
+					"notes": "Anotaciones Comerciales",
+					"timeline": "Historial y Cronología",
+					"billing": "Facturación y Deudas"
+				},
+				"compliance": {
+					"consents": "Consentimientos",
+					"questionnaires": "Cuestionarios",
+					"revocations": "Revocaciones",
+					"status": {
+						"signed": "Firmado",
+						"pending": "Pendiente",
+						"withdrawn": "Retirado",
+						"withdrawn_phone": "No Contactar"
+					},
+					"items": {
+						"gdpr": "GDPR",
+						"marketing": "Marketing",
+						"photo": "Fotografía",
+						"medical": "Historial Médico",
+						"skin": "Análisis de Piel",
+						"phone": "Contacto Telefónico"
+					}
+				},
+				"kpis": {
+					"engagement": "Nivel de Compromiso",
+					"lastVisit": "Última Visita",
+					"totalSpent": "Gasto Total",
+					"activePacks": "Packs Activos",
+					"loyaltyHigh": "Fidelidad Alta",
+					"vipStatus": "Estado VIP. Visitante frecuente con gasto medio elevado.",
+					"registered": "Registrado",
+					"topItems": "Top Servicios/Productos",
+					"professional": "Profesional",
+					"viewDetails": "Ver Detalles",
+					"verifyId": "Asegúrate de verificar la identidad del cliente antes de realizar tratamientos médicos.",
+					"unspecified": "No especificado"
+				},
+				"appointments": {
+					"status": {
+						"upcoming": "Próxima",
+						"completed": "Completada",
+						"canceled": "Cancelada",
+						"pending": "Pendiente"
+					}
+				},
+				"billing": {
+					"debts": "Deudas Pendientes",
+					"history": "Historial de Compras",
+					"table": {
+						"concept": "Concepto",
+						"due": "Vencimiento",
+						"pending": "Importe Pendiente",
+						"total": "Total Cobrado",
+						"ticket": "Detalle Ticket",
+						"method": "Método Pago",
+						"status": "Estado",
+						"actions": "Acciones"
+					},
+					"empty": {
+						"noDebts": "Sin deudas pendientes",
+						"noDebtsSub": "El cliente está al corriente de pago en Beils",
+						"noSales": "Sin historial de ventas",
+						"noSalesSub": "Este cliente aún no ha realizado compras en el centro"
+					},
+					"manage": "Gestionar",
+					"pending": "PENDIENTE"
+				}
 			}
+		},
+		"menu": {
+			"products": "Productos",
+			"categories": "Categorías",
+			"subcategories": "Subcategorías",
+			"tags": "Etiquetas",
+			"packs": "Packs & Promociones",
+			"bonuses": "Bonos",
+			"coupons": "Cupones",
+			"giftCards": "Tarjetas de Regalo",
+			"services": "Servicios",
+			"sales": "Ventas",
+			"debts": "Deudas y Cobros",
+			"agenda": "Agenda",
+			"consents": "Consentimientos",
+			"questionnaires": "Cuestionarios",
+			"revocations": "Revocaciones",
+			"pos": "Terminal Venta"
+		},
+		"tpv": {
+			"title": "TPV / Punto de Venta",
+			"searchCat": "Buscar en catálogo...",
+			"noResults": "No se encontraron resultados en esta categoría",
+			"searchClient": "Buscar cliente por teléfono o nombre...",
+			"clientSelected": "Cliente Seleccionado",
+			"emptyCart": "El carrito está vacío",
+			"emptyCartSub": "Añade productos o servicios desde el catálogo de la izquierda.",
+			"subtotal": "Subtotal",
+			"discount": "Descuento / Cupón",
+			"total": "Total a Pagar",
+			"card": "Tarjeta",
+			"cash": "Efectivo",
+			"mixed": "Mixto",
+			"debt": "Deuda",
+			"process": "Procesar Cobro",
+			"packs": "Packs",
+			"stripeInstallments": "Stripe — Cuotas (1-3-4-6)"
 		}
 	},
-	"Productos": "Productos",
-	"Categorías": "Categorías",
-	"Subcategorías": "Subcategorías",
-	"Etiquetas": "Etiquetas",
-	"Packs & Promociones": "Packs & Promociones",
-	"Bonos": "Bonos",
-	"Cupones": "Cupones",
-	"Tarjetas de Regalo": "Tarjetas de Regalo",
-	"Servicios": "Servicios",
-	"Ventas": "Ventas",
-	"Deudas y Cobros": "Deudas y Cobros",
-	"Agenda": "Agenda",
-	"Consentimientos": "Consentimientos",
-	"Cuestionarios": "Cuestionarios",
-	"Revocaciones": "Revocaciones",
-	"Terminal Venta": "Terminal Venta",
-	"Stripe — Cuotas (1-3-4-6)": "Stripe — Cuotas (1-3-4-6)",
-	"TPV / Punto de Venta": "TPV / Punto de Venta",
-	"Packs": "Packs",
-	"Buscar en catálogo...": "Buscar en catálogo...",
-	"No se encontraron resultados en esta categoría": "No se encontraron resultados en esta categoría",
-	"Buscar cliente por teléfono o nombre...": "Buscar cliente por teléfono o nombre...",
-	"Cliente Seleccionado": "Cliente Seleccionado",
-	"El carrito está vacío": "El carrito está vacío",
-	"Añade productos o servicios desde el catálogo de la izquierda.": "Añade productos o servicios desde el catálogo de la izquierda.",
-	"Subtotal": "Subtotal",
-	"Descuento / Cupón": "Descuento / Cupón",
-	"Total a Pagar": "Total a Pagar",
-	"Tarjeta": "Tarjeta",
-	"Efectivo": "Efectivo",
-	"Mixto": "Mixto",
-	"Deuda": "Deuda",
-	"Procesar Cobro": "Procesar Cobro",
 	"finances": {
 		"debts": {
 			"title": "Cuentas por Cobrar",
