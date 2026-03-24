@@ -3,8 +3,8 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"build": "nuxt build",
-		"postbuild": "cp -r node_modules/.prisma .output/server/node_modules/",
+		"build": "pnpm prisma:generate && nuxt build",
+		"postbuild": "cp -r node_modules/.prisma .output/server/node_modules/ && cp prisma/schema.prisma .output/server/",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
