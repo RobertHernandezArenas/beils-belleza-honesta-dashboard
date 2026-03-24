@@ -11,6 +11,7 @@
 		"postinstall": "nuxt prepare",
 		"seed": "tsx --env-file=.env ./seeds/seed-db.ts",
 		"seed:admin": "tsx --env-file=.env ./seeds/admin-seed.ts",
+		"db:check": "tsx --env-file=.env ./scripts/check-db.ts",
 		"prisma:init": "pnpx prisma init --datasource-provider mysql --output ./generated",
 		"prisma:pull": "pnpx prisma db pull --schema prisma/schema.prisma",
 		"prisma:generate": "pnpx prisma generate --schema prisma/schema.prisma",
