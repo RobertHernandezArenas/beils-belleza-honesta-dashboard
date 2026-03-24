@@ -73,16 +73,31 @@ async function seedDB() {
 	try {
 		console.log('🧹 Cleaning up existing data...')
 		const tables = [
-			'booking', 'questionnaire', 'consent', 'revoke', 'clientBonus', 'bonus', 'debt',
+			'booking', 'questionnaire', 'consent', 'revoke', 'clientBonus', 'bonus', 'debtPayment', 'debt',
 			'cartItem', 'cart', 'giftcard', 'coupon', 'packItemProduct', 'packItemService',
 			'pack', 'productTag', 'product', 'tag', 'subcategory', 'category', 'service',
 			'sequence', 'user'
 		]
 		
+		// Disable foreign key checks for thorough cleanup
+		await prisma.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0;')
 		for (const table of tables) {
 			const model = (prisma as any)[table]
-			if (model) await model.deleteMany()
+			if (model) {
+				try {
+					await model.deleteMany()
+				} catch (e: any) {
+					if (e.code === 'P2021') {
+						console.warn(`ℹ️ Table for model ${table} does not exist in DB yet, skipping cleanup.`)
+					} else {
+						console.warn(`⚠️ Could not clean up table ${table}:`, e.message)
+					}
+				}
+			} else {
+				console.warn(`⚠️ Model ${table} not found in Prisma client.`)
+			}
 		}
+		await prisma.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1;')
 
 		console.log('📂 Initializing multimedia directory structure...')
 		const multimediaPaths = [
