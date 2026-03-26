@@ -15,7 +15,8 @@
 		"prisma:pull": "pnpx prisma db pull --schema prisma/schema.prisma",
 		"prisma:generate": "pnpx prisma generate --schema prisma/schema.prisma",
 		"prisma:migrate": "pnpx prisma migrate dev --name init --schema prisma/schema.prisma",
-		"prisma:reset": "pnpx prisma migrate reset --schema prisma/schema.prisma"
+		"prisma:reset": "pnpx prisma migrate reset --schema prisma/schema.prisma",
+		"db:reset-empty": "pnpx tsx --env-file=.env ./seeds/empty-db.ts"
 	},
 	"dependencies": {
 		"@nuxt/eslint": "1.15.1",

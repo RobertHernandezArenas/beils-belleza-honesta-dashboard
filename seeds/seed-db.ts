@@ -260,6 +260,45 @@ async function seedDB() {
 		}
 		const allServices = await prisma.service.findMany()
 
+		console.log('📦 Seeding Packs & Bonuses...')
+		// Add a sample Pack
+		const pack = await prisma.pack.create({
+			data: {
+				name: 'Pack Renovación Total',
+				description: 'Combinación de limpieza facial y masaje relajante.',
+				price: 70.00,
+				code: 'PACK-RENOV-01',
+				services: {
+					create: [
+						{ service_id: allServices.find(s => s.name.includes('Limpieza'))?.service_id || allServices[0].service_id, quantity: 1 },
+						{ service_id: allServices.find(s => s.name.includes('Masaje'))?.service_id || allServices[1].service_id, quantity: 1 }
+					]
+				}
+			}
+		})
+
+		// Add some Bonuses
+		for (const s of allServices.slice(0, 2)) {
+			await prisma.bonus.create({
+				data: {
+					name: `Bono 5 sesiones: ${s.name}`,
+					total_sessions: 5,
+					price: s.price * 4, // 5th session free
+					service_id: s.service_id,
+					status: 'activo'
+				}
+			})
+		}
+		const allBonuses = await prisma.bonus.findMany()
+
+		console.log('🔢 Seeding Sequences (Veri*Factu)...')
+		await prisma.sequence.createMany({
+			data: [
+				{ type: 'invoice_2025', prefix: 'BBH', year: 2025, last_value: 0 },
+				{ type: 'invoice_2026', prefix: 'BBH', year: 2026, last_value: 0 }
+			]
+		})
+
 		console.log('🎟️ Seeding Marketing & CRM Data...')
 		await prisma.coupon.createMany({
 			data: [
@@ -329,6 +368,19 @@ async function seedDB() {
 						status: 'pending',
 						due_date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
 						notes: 'Tratamiento pack avanzado pendiente de pago.'
+					}
+				})
+			}
+
+			// Client Bonuses (10% conversion)
+			if (Math.random() > 0.9) {
+				const bonus = getRandomItem(allBonuses)
+				await prisma.clientBonus.create({
+					data: {
+						client_id: client.user_id,
+						bonus_id: bonus.bonus_id,
+						remaining_sessions: bonus.total_sessions - 1,
+						status: 'activo'
 					}
 				})
 			}
