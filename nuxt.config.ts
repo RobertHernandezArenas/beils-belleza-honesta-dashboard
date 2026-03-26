@@ -5,8 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	css: ['~/assets/css/main.css'],
-	devtools: { enabled: true },
+	devtools: { enabled: false },
 	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
+	nitro: {
+		alias: {
+			'@vue/devtools-api': 'vue-devtools-stub',
+		},
+	},
 
 	// ==========================================
 	// View Transitions API + Page/Layout Transitions

@@ -8,10 +8,10 @@ const { PrismaClient } = pkg
 
 // Create a connection pool config for the adapter
 const poolConfig = {
-	host: process.env.DATABASE_HOST || 'localhost',
-	user: process.env.DATABASE_USER || 'root',
-	password: process.env.DATABASE_PASSWORD || '24Enero2011.',
-	database: process.env.DATABASE_NAME || 'beils_belleza_honesta_db',
+	host: process.env.DATABASE_HOST,
+	user: process.env.DATABASE_USER,
+	password: process.env.DATABASE_PASSWORD,
+	database: process.env.DATABASE_NAME,
 	port: parseInt(process.env.DATABASE_PORT || '3306', 10),
 	connectionLimit: 10,
 }

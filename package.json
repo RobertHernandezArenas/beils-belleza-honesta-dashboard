@@ -3,15 +3,14 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"build": "pnpm prisma:generate && nuxt build",
-		"postbuild": "cp -r node_modules/.prisma .output/server/node_modules/ && cp prisma/schema.prisma .output/server/",
+		"build": "pnpm run prisma:generate && nuxt build",
 		"dev": "nuxt dev",
-		"generate": "nuxt generate",
+		"generate": "pnpm run prisma:generate && nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
-		"seed": "tsx --env-file=.env ./seeds/seed-db.ts",
-		"seed:admin": "tsx --env-file=.env ./seeds/admin-seed.ts",
-		"db:check": "tsx --env-file=.env ./scripts/check-db.ts",
+		"seed": "pnpx tsx --env-file=.env ./seeds/seed-db.ts",
+		"seed:admin": "pnpx tsx --env-file=.env ./seeds/admin-seed.ts",
+		"db:check": "pnpx tsx --env-file=.env ./scripts/check-db.ts",
 		"prisma:init": "pnpx prisma init --datasource-provider mysql --output ./generated",
 		"prisma:pull": "pnpx prisma db pull --schema prisma/schema.prisma",
 		"prisma:generate": "pnpx prisma generate --schema prisma/schema.prisma",
@@ -69,6 +68,7 @@
 		"tailwindcss": "4.1",
 		"ts-node": "10.9.2",
 		"tsx": "4.21.0",
-		"vite": "^7.3.1"
+		"vite": "^7.3.1",
+		"vue-devtools-stub": "^0.1.0"
 	}
 }
