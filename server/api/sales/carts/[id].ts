@@ -79,6 +79,7 @@ export default defineEventHandler(async event => {
 				status: body.status,
 				payment_method: body.payment_method,
 				notes: body.notes,
+				user_id: body.user_id,
 				...verifactuData,
 			},
 		})

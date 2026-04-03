@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { useQuery } from '@tanstack/vue-query'
+	import { useQuery, useQueryClient } from '@tanstack/vue-query'
 	import { ShoppingBag, Search, ExternalLink, Calendar, Receipt, CreditCard, Eye, EyeOff } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import QrcodeVue from 'qrcode.vue'
@@ -12,6 +12,7 @@
 	const { t } = useI18n()
 	const searchQuery = ref('')
 	const filterDate = ref('')
+	const queryClient = useQueryClient()
 
 	const purchaseDetailsModalRef = ref<any>(null)
 
@@ -242,7 +243,7 @@
 		</div>
 
 		<!-- Details Modal -->
-		<PurchaseDetailsModal ref="purchaseDetailsModalRef" />
+		<PurchaseDetailsModal ref="purchaseDetailsModalRef" @success="() => queryClient.invalidateQueries({ queryKey: ['sales'] })" />
 	</div>
 </template>
 

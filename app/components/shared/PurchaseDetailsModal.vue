@@ -1,15 +1,36 @@
 <script setup lang="ts">
 
-import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText } from 'lucide-vue-next'
+import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText, UserPlus, Search, ArrowLeft, User, Check, Plus, Edit2, Trash2 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/vue-query'
+import { useDebouncedRef } from '~/composables/useDebouncedRef'
+
+const emit = defineEmits(['success'])
 
 const { locale } = useI18n()
 
 const modalRef = ref<HTMLDialogElement | null>(null)
 const cart = ref<any>(null)
 
+const queryClient = useQueryClient()
+const isSearching = ref(false)
+const searchQuery = useDebouncedRef('', 400)
+const selectedClientToAssign = ref<any | null>(null)
+
+// Fetch clients for search
+const { data: searchResults, isPending: isSearchingClients } = useQuery<any>({
+  queryKey: ['clients-search', searchQuery],
+  queryFn: () => $fetch('/api/clients', { query: { search: searchQuery.value, limit: 10 } }),
+  enabled: computed(() => isSearching.value)
+})
+
+const clients = computed(() => searchResults.value?.data || [])
+
 const open = (cartData: any) => {
   cart.value = cartData
+  isSearching.value = false
+  searchQuery.value = ''
+  selectedClientToAssign.value = null
   modalRef.value?.showModal()
 }
 
@@ -306,6 +327,51 @@ const printInvoice = () => {
   }, 250)
 }
 
+const cancelSearch = () => {
+  isSearching.value = false
+  searchQuery.value = ''
+  selectedClientToAssign.value = null
+}
+
+const selectClient = (client: any) => {
+  selectedClientToAssign.value = client
+}
+
+const { mutate: assignClient, isPending: isSaving } = useMutation({
+  mutationFn: (clientId: string | null) => 
+    $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
+      method: 'PUT',
+      body: { user_id: clientId }
+    }),
+  onSuccess: (updatedCart: any) => {
+    queryClient.invalidateQueries({ queryKey: ['sales'] })
+    cart.value = { 
+      ...cart.value, 
+      user_id: updatedCart.user_id, 
+      user: updatedCart.user_id ? selectedClientToAssign.value : null 
+    }
+    isSearching.value = false
+    emit('success')
+  }
+})
+
+const removeAssignedClient = () => {
+    if (confirm('¿Estás seguro de que deseas quitar este cliente de la venta?')) {
+        assignClient(null)
+    }
+}
+
+const editAssignedClient = () => {
+    selectedClientToAssign.value = cart.value.user
+    isSearching.value = true
+}
+
+const confirmAssignment = () => {
+  if (selectedClientToAssign.value) {
+    assignClient(selectedClientToAssign.value.user_id)
+  }
+}
+
 defineExpose({ open, close })
 </script>
 
@@ -339,7 +405,8 @@ defineExpose({ open, close })
       </div>
 
       <div class="p-6">
-         <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+         <!-- Details View -->
+         <div v-if="!isSearching" class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 animate-slide-up">
             <!-- Left: Breakdown -->
             <div class="space-y-4">
                <h4 class="text-text-primary text-sm font-bold uppercase tracking-wider">Desglose de Conceptos</h4>
@@ -377,10 +444,31 @@ defineExpose({ open, close })
                      </div>
                      
                      <div class="flex flex-col gap-1 border-b border-border-subtle pb-3">
-                        <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Fecha y Registro</label>
-                        <span class="text-text-secondary text-sm font-bold">{{ new Date(cart.created_at).toLocaleString() }}</span>
+                        <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Cliente</label>
+                        <div v-if="cart.user" class="flex items-center justify-between group/client transition-all">
+                           <div class="flex flex-col">
+                              <span class="text-text-secondary text-sm font-bold">{{ cart.user.name }} {{ cart.user.surname }}</span>
+                              <span class="text-text-muted text-[10px] font-medium">{{ cart.user.email || 'Sin email' }}</span>
+                           </div>
+                           <div class="flex gap-1 opacity-0 group-hover/client:opacity-100 transition-opacity">
+                              <button @click="editAssignedClient" class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Cliente">
+                                 <Edit2 class="w-3 h-3" />
+                              </button>
+                              <button @click="removeAssignedClient" class="btn btn-xs btn-circle btn-ghost text-rose-500 hover:bg-rose-500/10" title="Quitar Cliente">
+                                 <Trash2 class="w-3 h-3" />
+                              </button>
+                           </div>
+                        </div>
+                        <div v-else class="mt-1">
+                            <div class="flex flex-col gap-2">
+                                <span class="text-text-muted text-[10px] font-bold italic uppercase tracking-wider">Mostrador / No registrado</span>
+                                <button @click="isSearching = true" class="btn btn-sm btn-ghost bg-primary/10 text-primary hover:bg-primary/20 rounded-xl border-none">
+                                    <UserPlus class="w-4 h-4 mr-1" /> Asignar Cliente
+                                </button>
+                            </div>
+                        </div>
                      </div>
-                     
+
                      <div class="flex flex-col gap-1">
                         <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Método</label>
                         <div class="flex items-center gap-2 mt-1">
@@ -393,6 +481,87 @@ defineExpose({ open, close })
                      </div>
                   </div>
                </div>
+            </div>
+         </div>
+
+         <!-- Search Mode View -->
+         <div v-else class="space-y-6 animate-slide-right min-h-[400px] flex flex-col">
+            <div class="flex items-center gap-4">
+                <button @click="cancelSearch" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
+                    <ArrowLeft class="w-4 h-4" />
+                </button>
+                <div class="flex-1 relative">
+                    <Search class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <input 
+                        v-model="searchQuery"
+                        type="text" 
+                        autofocus
+                        placeholder="Buscar por nombre, teléfono o DNI..." 
+                        class="input w-full bg-bg-card border-border-default rounded-2xl pl-11 focus:border-primary focus:ring-primary/10"
+                    />
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+                <div v-if="isSearchingClients" class="flex flex-col gap-3">
+                    <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"></div>
+                </div>
+                
+                <div v-else-if="clients.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div 
+                        v-for="c in clients" 
+                        :key="c.user_id" 
+                        @click="selectClient(c)"
+                        class="bg-bg-card border-border-subtle hover:border-primary/50 cursor-pointer rounded-2xl border p-4 flex items-center justify-between transition-all group"
+                        :class="{ 'border-primary bg-primary/5 ring-1 ring-primary': selectedClientToAssign?.user_id === c.user_id }"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase overflow-hidden">
+                                <img v-if="c.avatar" :src="c.avatar" class="w-full h-full object-cover" />
+                                <span v-else>{{ c.name.charAt(0) }}{{ c.surname.charAt(0) }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-text-primary text-sm font-bold">{{ c.name }} {{ c.surname }}</span>
+                                <span class="text-text-muted text-xs">{{ c.phone }}</span>
+                            </div>
+                        </div>
+                        <div v-if="selectedClientToAssign?.user_id === c.user_id" class="bg-primary text-white rounded-full p-1">
+                            <Check class="w-4 h-4" />
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else-if="searchQuery" class="flex flex-col items-center justify-center py-12 text-center text-text-muted">
+                    <div class="bg-bg-muted w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <Search class="w-8 h-8 opacity-20" />
+                    </div>
+                    <p class="font-bold text-lg mb-1 italic">Vaya, no hemos encontrado a nadie</p>
+                    <p class="text-sm max-w-xs">Asegúrate de haber escrito bien el nombre o prueba con el teléfono.</p>
+                </div>
+                
+                <div v-else class="flex flex-col items-center justify-center py-12 text-center text-text-muted opacity-60">
+                    <UserPlus class="w-12 h-12 mb-4" />
+                    <p class="text-sm">Empieza a escribir para buscar un cliente...</p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-border-subtle flex items-center justify-between">
+                <p v-if="selectedClientToAssign" class="text-sm font-medium text-text-primary">
+                    Seleccionado: <span class="text-primary font-bold">{{ selectedClientToAssign.name }}</span>
+                </p>
+                <p v-else class="text-sm text-text-muted italic">Selecciona un cliente de la lista</p>
+                
+                <div class="flex gap-3">
+                    <button @click="cancelSearch" class="btn btn-ghost rounded-xl">Cancelar</button>
+                    <button 
+                        @click="confirmAssignment" 
+                        :disabled="!selectedClientToAssign || isSaving" 
+                        class="btn btn-primary rounded-xl px-8 shadow-lg shadow-primary/20"
+                    >
+                        <span v-if="isSaving" class="loading loading-spinner loading-xs"></span>
+                        Asignar Cliente
+                    </button>
+                </div>
             </div>
          </div>
       </div>

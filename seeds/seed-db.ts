@@ -384,6 +384,65 @@ async function seedDB() {
 					}
 				})
 			}
+
+			// Carts (Sales) - 40% conversion
+			if (Math.random() > 0.6) {
+				const total = Number((30 + Math.random() * 100).toFixed(2))
+				const cart = await prisma.cart.create({
+					data: {
+						user_id: client.user_id,
+						status: 'completed',
+						payment_method: getRandomItem(['cash', 'card', 'transfer']),
+						subtotal: total,
+						total: total,
+						invoice_number: `BBH-2025-${getRandomNumber(1000, 9999)}`,
+						invoice_type: 'F2',
+						items: {
+							create: [
+								{
+									item_type: 'service',
+									item_id: getRandomItem(allServices).service_id,
+									name: getRandomItem(serviceBaseNames).name,
+									quantity: 1,
+									unit_price: total,
+									subtotal: total,
+									total: total,
+									tax_rate: 21
+								}
+							]
+						}
+					}
+				})
+			}
+		}
+
+		// --- SEED ANONYMOUS SALES (For "Assign Client" testing) ---
+		console.log('🛒 Seeding Anonymous Sales...')
+		for (let i = 0; i < 5; i++) {
+			const total = Number((20 + Math.random() * 50).toFixed(2))
+			await prisma.cart.create({
+				data: {
+					user_id: null,
+					status: 'completed',
+					payment_method: getRandomItem(['cash', 'card']),
+					subtotal: total,
+					total: total,
+					items: {
+						create: [
+							{
+								item_type: 'product',
+								item_id: 'manual-item',
+								name: 'Venta rápida (Sin Registro)',
+								quantity: 1,
+								unit_price: total,
+								subtotal: total,
+								total: total,
+								tax_rate: 21
+							}
+						]
+					}
+				}
+			})
 		}
 
 		console.log('✅ Database seeded successfully!')
