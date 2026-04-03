@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText, UserPlus, Search, ArrowLeft, User, Check, Plus, Edit2, Trash2 } from 'lucide-vue-next'
+import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText, UserPlus, Search, ArrowLeft, User, Check, Plus, Edit2, Trash2, Scissors, Package, PackageSearch, Ticket, Minus, ShoppingBag } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/vue-query'
 import { useDebouncedRef } from '~/composables/useDebouncedRef'
@@ -14,23 +14,58 @@ const cart = ref<any>(null)
 
 const queryClient = useQueryClient()
 const isSearching = ref(false)
+const isEditingItems = ref(false)
 const searchQuery = useDebouncedRef('', 400)
 const selectedClientToAssign = ref<any | null>(null)
+const tempItems = ref<any[]>([])
 
-// Fetch clients for search
-const { data: searchResults, isPending: isSearchingClients } = useQuery<any>({
+// Fetch clients for search (when not editing items)
+const { data: clientSearchResults, isPending: isSearchingClients } = useQuery<any>({
   queryKey: ['clients-search', searchQuery],
   queryFn: () => $fetch('/api/clients', { query: { search: searchQuery.value, limit: 10 } }),
-  enabled: computed(() => isSearching.value)
+  enabled: computed(() => isSearching.value && !isEditingItems.value)
 })
 
-const clients = computed(() => searchResults.value?.data || [])
+const clients = computed(() => clientSearchResults.value?.data || [])
+
+// Item search results
+const { data: catalogResults, isPending: isSearchingItems } = useQuery<any>({
+  queryKey: ['catalog-search', searchQuery],
+  queryFn: async () => {
+    const [prods, servs, packs, bonuses] = await Promise.all([
+      $fetch<any[]>('/api/catalog/products'),
+      $fetch<any[]>('/api/services'),
+      $fetch<any[]>('/api/catalog/packs'),
+      $fetch<any[]>('/api/marketing/bonuses')
+    ])
+    
+    const q = searchQuery.value.toLowerCase()
+    const all = [
+      ...(prods || []).map(p => ({ ...p, item_type: 'product', item_id: p.product_id })),
+      ...(servs || []).map(s => ({ ...s, item_type: 'service', item_id: s.service_id })),
+      ...(packs || []).map(pk => ({ ...pk, item_type: 'pack', item_id: pk.pack_id })),
+      ...(bonuses || []).map(b => ({ ...b, item_type: 'bonus', item_id: b.bonus_id }))
+    ]
+    
+    if (!q) return all.slice(0, 10)
+    return all.filter(i => i.name.toLowerCase().includes(q) || i.sku?.toLowerCase().includes(q) || i.code?.toLowerCase().includes(q))
+  },
+  enabled: computed(() => isEditingItems.value && isSearching.value)
+})
+
+const catalogItems = computed(() => catalogResults.value || [])
+
+// Live totals for editing
+const tempSubtotal = computed(() => tempItems.value.reduce((acc, item) => acc + (item.unit_price * item.quantity), 0))
+const tempTotal = computed(() => Number((tempSubtotal.value - (cart.value?.discount || 0)).toFixed(2)))
 
 const open = (cartData: any) => {
-  cart.value = cartData
+  cart.value = JSON.parse(JSON.stringify(cartData)) // Deep clone for safety
   isSearching.value = false
+  isEditingItems.value = false
   searchQuery.value = ''
   selectedClientToAssign.value = null
+  tempItems.value = []
   modalRef.value?.showModal()
 }
 
@@ -337,7 +372,7 @@ const selectClient = (client: any) => {
   selectedClientToAssign.value = client
 }
 
-const { mutate: assignClient, isPending: isSaving } = useMutation({
+const { mutate: assignClient, isPending: isAssigningClient } = useMutation({
   mutationFn: (clientId: string | null) => 
     $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
       method: 'PUT',
@@ -370,6 +405,69 @@ const confirmAssignment = () => {
   if (selectedClientToAssign.value) {
     assignClient(selectedClientToAssign.value.user_id)
   }
+}
+
+// Items Editing Logic
+const startEditingItems = () => {
+  tempItems.value = JSON.parse(JSON.stringify(cart.value.items))
+  isEditingItems.value = true
+  isSearching.value = false
+}
+
+const cancelEditingItems = () => {
+  isEditingItems.value = false
+  isSearching.value = false
+  tempItems.value = []
+}
+
+const updateQuantity = (index: number, delta: number) => {
+  const item = tempItems.value[index]
+  if (!item) return
+  const newQty = item.quantity + delta
+  if (newQty > 0) {
+    item.quantity = newQty
+  } else {
+    tempItems.value.splice(index, 1)
+  }
+}
+
+const addNewItem = (item: any) => {
+  const existing = tempItems.value.find(i => i.item_id === item.item_id)
+  if (existing) {
+    existing.quantity++
+  } else {
+    tempItems.value.push({
+      item_id: item.item_id,
+      item_type: item.item_type,
+      name: item.name,
+      unit_price: item.price,
+      tax_rate: item.tax_rate || 21.0,
+      quantity: 1
+    })
+  }
+  isSearching.value = false
+  searchQuery.value = ''
+}
+
+const { mutate: saveItems, isPending: isSavingItems } = useMutation({
+  mutationFn: (items: any[]) => 
+    $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
+      method: 'PUT',
+      body: { items }
+    }),
+  onSuccess: (updatedCart: any) => {
+    queryClient.invalidateQueries({ queryKey: ['sales'] })
+    cart.value = { ...cart.value, ...updatedCart }
+    isEditingItems.value = false
+    emit('success')
+  }
+})
+
+const confirmItemChanges = () => {
+  if (tempItems.value.length === 0) {
+    if (!confirm('¿Seguro que deseas eliminar todos los ítems de esta venta?')) return
+  }
+  saveItems(tempItems.value)
 }
 
 defineExpose({ open, close })
@@ -406,10 +504,18 @@ defineExpose({ open, close })
 
       <div class="p-6">
          <!-- Details View -->
-         <div v-if="!isSearching" class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 animate-slide-up">
+         <div v-if="!isSearching && !isEditingItems" class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 animate-slide-up">
             <!-- Left: Breakdown -->
             <div class="space-y-4">
-               <h4 class="text-text-primary text-sm font-bold uppercase tracking-wider">Desglose de Conceptos</h4>
+               <div class="flex items-center justify-between">
+                  <h4 class="text-text-primary text-sm font-bold uppercase tracking-wider">Desglose de Conceptos</h4>
+                  <button 
+                    @click="startEditingItems" 
+                    class="btn btn-xs btn-ghost text-primary gap-1"
+                  >
+                    <Edit2 class="w-3 h-3" /> Editar Ítems
+                  </button>
+               </div>
                <div v-if="cart.items?.length > 0" class="space-y-3">
                   <div v-for="item in cart.items" :key="item.cart_item_id" class="bg-bg-card border-border-subtle rounded-2xl border p-3 flex justify-between items-center shadow-sm">
                      <div class="flex-1 min-w-0 pr-4">
@@ -484,10 +590,10 @@ defineExpose({ open, close })
             </div>
          </div>
 
-         <!-- Search Mode View -->
-         <div v-else class="space-y-6 animate-slide-right min-h-[400px] flex flex-col">
+         <!-- Search Mode View (Compatible with Clients & Items) -->
+         <div v-else-if="isSearching" class="space-y-6 animate-slide-right min-h-[400px] flex flex-col">
             <div class="flex items-center gap-4">
-                <button @click="cancelSearch" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
+                <button @click="isSearching = false" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
                     <ArrowLeft class="w-4 h-4" />
                 </button>
                 <div class="flex-1 relative">
@@ -496,71 +602,184 @@ defineExpose({ open, close })
                         v-model="searchQuery"
                         type="text" 
                         autofocus
-                        placeholder="Buscar por nombre, teléfono o DNI..." 
+                        :placeholder="isEditingItems ? 'Buscar servicios, productos o packs...' : 'Buscar cliente por nombre o teléfono...'" 
                         class="input w-full bg-bg-card border-border-default rounded-2xl pl-11 focus:border-primary focus:ring-primary/10"
                     />
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
-                <div v-if="isSearchingClients" class="flex flex-col gap-3">
-                    <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"></div>
-                </div>
-                
-                <div v-else-if="clients.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div 
-                        v-for="c in clients" 
-                        :key="c.user_id" 
-                        @click="selectClient(c)"
-                        class="bg-bg-card border-border-subtle hover:border-primary/50 cursor-pointer rounded-2xl border p-4 flex items-center justify-between transition-all group"
-                        :class="{ 'border-primary bg-primary/5 ring-1 ring-primary': selectedClientToAssign?.user_id === c.user_id }"
-                    >
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase overflow-hidden">
-                                <img v-if="c.avatar" :src="c.avatar" class="w-full h-full object-cover" />
-                                <span v-else>{{ c.name.charAt(0) }}{{ c.surname.charAt(0) }}</span>
+            <div class="flex-1 overflow-y-auto max-h-[440px] pr-2 custom-scrollbar">
+                <!-- CLIENT SEARCH RESULTS -->
+                <template v-if="!isEditingItems">
+                    <div v-if="isSearchingClients" class="flex flex-col gap-3">
+                        <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"></div>
+                    </div>
+                    <div v-else-if="clients.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div 
+                            v-for="c in clients" 
+                            :key="c.user_id" 
+                            @click="selectClient(c)"
+                            class="bg-bg-card border-border-subtle hover:border-primary/50 cursor-pointer rounded-2xl border p-4 flex items-center justify-between transition-all group"
+                            :class="{ 'border-primary bg-primary/5 ring-1 ring-primary': selectedClientToAssign?.user_id === c.user_id }"
+                        >
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase overflow-hidden">
+                                    <img v-if="c.avatar" :src="c.avatar" class="w-full h-full object-cover" />
+                                    <span v-else>{{ c.name.charAt(0) }}{{ c.surname.charAt(0) }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-text-primary text-sm font-bold">{{ c.name }} {{ c.surname }}</span>
+                                    <span class="text-text-muted text-xs">{{ c.phone }}</span>
+                                </div>
                             </div>
-                            <div class="flex flex-col">
-                                <span class="text-text-primary text-sm font-bold">{{ c.name }} {{ c.surname }}</span>
-                                <span class="text-text-muted text-xs">{{ c.phone }}</span>
+                            <div v-if="selectedClientToAssign?.user_id === c.user_id" class="bg-primary text-white rounded-full p-1">
+                                <Check class="w-4 h-4" />
                             </div>
-                        </div>
-                        <div v-if="selectedClientToAssign?.user_id === c.user_id" class="bg-primary text-white rounded-full p-1">
-                            <Check class="w-4 h-4" />
                         </div>
                     </div>
-                </div>
+                </template>
 
-                <div v-else-if="searchQuery" class="flex flex-col items-center justify-center py-12 text-center text-text-muted">
+                <!-- ITEM SEARCH RESULTS -->
+                <template v-else>
+                    <div v-if="isSearchingItems" class="flex flex-col gap-3">
+                        <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"></div>
+                    </div>
+                    <div v-else-if="catalogItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div 
+                            v-for="item in catalogItems" 
+                            :key="item.item_id" 
+                            @click="addNewItem(item)"
+                            class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-24 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-3 text-left shadow-xs transition-all hover:shadow-md"
+                        >
+                            <div class="z-10 flex flex-col">
+                                <span class="text-text-primary group-hover:text-primary line-clamp-1 text-sm font-bold transition-colors">{{ item.name }}</span>
+                                <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">{{ item.sku || item.code }}</span>
+                            </div>
+                            <div class="z-10 flex items-end justify-between">
+                                <span class="text-lg font-black tabular-nums">{{ item.price.toFixed(2) }}€</span>
+                                <div class="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-lg p-1.5 transition-colors">
+                                    <Plus class="w-4 h-4" />
+                                </div>
+                            </div>
+                            <!-- Background icon -->
+                            <div class="absolute -right-2 -bottom-2 opacity-5">
+                                <Scissors v-if="item.item_type === 'service'" class="w-16 h-16" />
+                                <Package v-else-if="item.item_type === 'product'" class="w-16 h-16" />
+                                <PackageSearch v-else-if="item.item_type === 'pack'" class="w-16 h-16" />
+                                <Ticket v-else class="w-16 h-16" />
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <div v-if="searchQuery && (!isEditingItems ? clients.length === 0 : catalogItems.length === 0)" class="flex flex-col items-center justify-center py-12 text-center text-text-muted">
                     <div class="bg-bg-muted w-16 h-16 rounded-full flex items-center justify-center mb-4">
                         <Search class="w-8 h-8 opacity-20" />
                     </div>
-                    <p class="font-bold text-lg mb-1 italic">Vaya, no hemos encontrado a nadie</p>
-                    <p class="text-sm max-w-xs">Asegúrate de haber escrito bien el nombre o prueba con el teléfono.</p>
-                </div>
-                
-                <div v-else class="flex flex-col items-center justify-center py-12 text-center text-text-muted opacity-60">
-                    <UserPlus class="w-12 h-12 mb-4" />
-                    <p class="text-sm">Empieza a escribir para buscar un cliente...</p>
+                    <p class="font-bold text-lg mb-1 italic">Vaya, no hemos encontrado nada</p>
+                    <p class="text-sm max-w-xs">Intenta con otros términos o revisa que esté bien escrito.</p>
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-border-subtle flex items-center justify-between">
+            <!-- Footer for Clients -->
+            <div v-if="!isEditingItems" class="pt-4 border-t border-border-subtle flex items-center justify-between">
                 <p v-if="selectedClientToAssign" class="text-sm font-medium text-text-primary">
                     Seleccionado: <span class="text-primary font-bold">{{ selectedClientToAssign.name }}</span>
                 </p>
                 <p v-else class="text-sm text-text-muted italic">Selecciona un cliente de la lista</p>
                 
                 <div class="flex gap-3">
-                    <button @click="cancelSearch" class="btn btn-ghost rounded-xl">Cancelar</button>
+                    <button @click="isSearching = false" class="btn btn-ghost rounded-xl">Cancelar</button>
                     <button 
                         @click="confirmAssignment" 
-                        :disabled="!selectedClientToAssign || isSaving" 
+                        :disabled="!selectedClientToAssign || isAssigningClient" 
                         class="btn btn-primary rounded-xl px-8 shadow-lg shadow-primary/20"
                     >
-                        <span v-if="isSaving" class="loading loading-spinner loading-xs"></span>
+                        <span v-if="isAssigningClient" class="loading loading-spinner loading-xs"></span>
                         Asignar Cliente
                     </button>
+                </div>
+            </div>
+         </div>
+
+         <!-- Items Editing Mode View -->
+         <div v-else-if="isEditingItems" class="space-y-6 animate-slide-right min-h-[450px] flex flex-col">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <button @click="cancelEditingItems" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
+                        <ArrowLeft class="w-4 h-4" />
+                    </button>
+                    <h3 class="text-text-primary font-bold text-lg">Editando Ítems</h3>
+                </div>
+                <button @click="isSearching = true" class="btn btn-sm btn-primary rounded-xl gap-2 font-bold shadow-sm shadow-primary/20">
+                    <Plus class="w-4 h-4" /> Añadir Concepto
+                </button>
+            </div>
+
+            <!-- AEAT Warning if submitted -->
+            <div v-if="cart.aeat_status === 'submitted'" class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 animate-pulse">
+                <div class="bg-amber-100 p-2 rounded-lg text-amber-600">
+                    <ShieldOff class="w-4 h-4" />
+                </div>
+                <div class="flex-1">
+                    <p class="text-amber-800 text-xs font-bold uppercase tracking-wider">Aviso de Cumplimiento Fiscal</p>
+                    <p class="text-amber-700 text-[10px] mt-0.5 leading-relaxed">
+                        Esta venta ya ha sido enviada a la AEAT (Veri*Factu). Modificar los conceptos después de la sumisión puede requerir una factura rectificativa manual. Use esta opción con precaución.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Current Session Cart -->
+            <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+                <div v-if="tempItems.length === 0" class="flex flex-col items-center justify-center py-16 opacity-40">
+                    <ShoppingBag class="w-16 h-16 mb-4" />
+                    <p class="font-bold tracking-widest uppercase text-xs">El carrito está vacío</p>
+                    <p class="text-[10px] mt-1">Añade servicios o productos usando el buscador</p>
+                </div>
+                <div v-else class="space-y-3">
+                    <div v-for="(item, idx) in tempItems" :key="idx" class="bg-bg-card border-border-subtle rounded-2xl border p-4 flex justify-between items-center shadow-sm relative group">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <p class="text-text-primary text-sm font-bold truncate">{{ item.name }}</p>
+                            <p class="text-text-muted text-[10px] font-medium mt-0.5 uppercase tracking-wider">{{ item.item_type }} • {{ item.unit_price.toFixed(2) }}€/ud</p>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 shrink-0">
+                            <div class="flex items-center gap-2 bg-bg-muted/50 rounded-xl p-1">
+                                <button @click="updateQuantity(idx, -1)" class="btn btn-xs btn-circle bg-white border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
+                                    <Minus class="w-3 h-3" />
+                                </button>
+                                <span class="w-6 text-center text-sm font-black tabular-nums">{{ item.quantity }}</span>
+                                <button @click="updateQuantity(idx, 1)" class="btn btn-xs btn-circle bg-white border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
+                                    <Plus class="w-3 h-3" />
+                                </button>
+                            </div>
+                            <span class="text-text-primary font-black tabular-nums min-w-[60px] text-right">{{ (item.unit_price * item.quantity).toFixed(2) }}€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Totals Footer -->
+            <div class="pt-5 border-t border-border-subtle bg-bg-app/50 space-y-4">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex flex-col">
+                        <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">Previsualización de Total</span>
+                        <div class="flex items-end gap-2">
+                            <span class="text-text-primary text-2xl font-black tabular-nums leading-none">{{ tempTotal.toFixed(2) }}€</span>
+                            <span class="text-text-muted text-xs mb-0.5 line-through opacity-50" v-if="tempTotal !== cart.total">{{ cart.total.toFixed(2) }}€</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button @click="cancelEditingItems" class="btn btn-ghost rounded-xl">Descartar</button>
+                        <button 
+                            @click="confirmItemChanges" 
+                            :disabled="isSavingItems" 
+                            class="btn btn-primary rounded-2xl px-10 h-12 font-black tracking-wider uppercase shadow-xl shadow-primary/30"
+                        >
+                            <span v-if="isSavingItems" class="loading loading-spinner loading-xs"></span>
+                            Guardar Cambios
+                        </button>
+                    </div>
                 </div>
             </div>
          </div>

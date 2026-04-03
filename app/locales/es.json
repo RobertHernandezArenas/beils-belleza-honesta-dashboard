@@ -29,6 +29,7 @@
 	"nav": {
 		"dashboard": "Vista General",
 		"users": "Usuarios",
+		"multimedia": "Multimedia",
 		"clients": "Clientes",
 		"drivers": "Conductores",
 		"fleet": "Flota",

@@ -289,7 +289,7 @@
 		{ to: '/catalogo/productos', label: 'catalog.menu.products', icon: Package },
 		{ to: '/catalogo/categorias', label: 'catalog.menu.categories', icon: Layers },
 		{ to: '/catalogo/subcategorias', label: 'catalog.menu.subcategories', icon: ListTree },
-		{ to: '/multimedia', label: 'Multimedia', icon: Image },
+		{ to: '/multimedia', label: 'nav.multimedia', icon: Image },
 		{ to: '/catalogo/etiquetas', label: 'catalog.menu.tags', icon: Hash },
 		{ to: '/servicios', label: 'catalog.menu.services', icon: Scissors },
 		{ to: '/packs', label: 'catalog.menu.packs', icon: PackageSearch },
