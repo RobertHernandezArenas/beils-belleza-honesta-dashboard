@@ -171,7 +171,7 @@
 						class="absolute top-0 bottom-0 left-0 my-3 ml-1.5 w-1 rounded-full"
 						:class="getStatusStrip(booking.status)"></div>
 
-					<div class="flex h-full flex-col justify-between overflow-hidden p-2 pl-5 md:p-3 md:pl-6 leading-tight">
+					<div class="flex h-full flex-col justify-start gap-1 overflow-hidden p-2 pl-5 md:p-3 md:pl-6 leading-tight">
 						<div class="flex items-center justify-between gap-2 overflow-hidden">
 							<div class="flex min-w-0 flex-col gap-1">
 								<h4 class="truncate text-sm md:text-base leading-tight font-black tracking-tighter uppercase mb-0.5">
