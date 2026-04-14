@@ -64,6 +64,14 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 
 		try {
+			// Basic validation
+			if (!body.client_id || body.client_id === '') {
+				throw createError({ statusCode: 400, statusMessage: 'Debes seleccionar un cliente' })
+			}
+			if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
+				throw createError({ statusCode: 400, statusMessage: 'Debes añadir al menos un servicio o producto' })
+			}
+
 			// Auto-assign first ADMIN if staff_id is missing or empty
 			let staffId = body.staff_id
 			if (!staffId || staffId === '') {
@@ -76,16 +84,15 @@ export default defineEventHandler(async event => {
 				}
 			}
 
-			// Validate and normalize Date
+			// Validate and normalize Date (ensure it's just the date part for overlap check)
 			const bookingDate = new Date(body.booking_date)
-			if (bookingDate.toString() === 'Invalid Date') {
+			if (isNaN(bookingDate.getTime())) {
 				throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
 			}
+			bookingDate.setHours(0, 0, 0, 0)
 
 			// Calculate total duration from items
-			const totalDuration = body.items && Array.isArray(body.items)
-				? body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
-				: Number(body.duration || 0)
+			const totalDuration = body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
 
 			// Calculate end_time based on start_time and duration
 			const startTime = body.start_time
@@ -103,9 +110,8 @@ export default defineEventHandler(async event => {
 			const endTime = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
 
 			// --- VALIDATION: OVERLAP CHECK ---
-			// Only check overlap if we have a staff member assigned
-			if (staffId) {
-				const overlapping = await prisma.booking.findFirst({
+			if (staffId && staffId !== '') {
+				const overlappingLabel = await prisma.booking.findFirst({
 					where: {
 						booking_date: bookingDate,
 						status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
@@ -115,10 +121,10 @@ export default defineEventHandler(async event => {
 					}
 				})
 
-				if (overlapping) {
+				if (overlappingLabel) {
 					throw createError({
 						statusCode: 409,
-						statusMessage: `Conflicto de Agenda: El profesional ya tiene una cita de ${overlapping.start_time} a ${overlapping.end_time}`
+						statusMessage: `Conflicto de Agenda: El profesional ya tiene una cita de ${overlappingLabel.start_time} a ${overlappingLabel.end_time}`
 					})
 				}
 			}
@@ -127,20 +133,20 @@ export default defineEventHandler(async event => {
 			const booking = await prisma.booking.create({
 				data: {
 					client_id: body.client_id,
-					staff_id: staffId || null,
+					staff_id: staffId && staffId !== '' ? staffId : null,
 					status: (body.status || 'PENDIENTE').toUpperCase(),
 					booking_date: bookingDate,
 					start_time: startTime,
 					end_time: endTime,
 					duration: totalDuration,
-					notes: body.notes,
+					notes: body.notes || '',
 					booking_items: {
-						create: body.items?.map((item: any) => ({
-							item_type: item.item_type,
-							item_id: item.item_id,
-							name: item.name,
+						create: body.items.map((item: any) => ({
+							item_type: item.item_type || 'SERVICE',
+							item_id: item.item_id || '',
+							name: item.name || 'Servicio',
 							duration: Number(item.duration) || 0,
-						})) || []
+						}))
 					},
 				},
 				include: {
@@ -153,9 +159,28 @@ export default defineEventHandler(async event => {
 			return booking
 		} catch (error: any) {
 			console.error('[BOOKING_CREATE_ERROR]', error)
+			
+			// Temporary debug logging to a file since I cannot see the terminal
+			try {
+				const fs = await import('fs/promises')
+				const path = 'C:/Users/VENOM/.gemini/antigravity/brain/0b975e6a-6ea8-4c06-bbfb-de290b70def2/scratch/api_error.log'
+				await fs.writeFile(path, JSON.stringify({
+					timestamp: new Date().toISOString(),
+					error: error.message,
+					stack: error.stack,
+					body: body,
+					prismaCode: error.code,
+					prismaMeta: error.meta
+				}, null, 2))
+			} catch (e) {
+				console.error('Failed to write debug log', e)
+			}
+
+			// Ensure we return a statusMessage that can be read by the frontend
+			const finalMessage = error.data?.statusMessage || error.statusMessage || error.message || 'Error interno del servidor al crear la cita'
 			throw createError({
 				statusCode: error.statusCode || 500,
-				statusMessage: error.statusMessage || 'Error al procesar la cita en el servidor'
+				statusMessage: finalMessage
 			})
 		}
 	}
