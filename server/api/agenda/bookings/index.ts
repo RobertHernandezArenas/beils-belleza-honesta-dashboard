@@ -63,85 +63,100 @@ export default defineEventHandler(async event => {
 	if (method === 'POST') {
 		const body = await readBody(event)
 
-		// Auto-assign first ADMIN if staff_id is missing
-		if (!body.staff_id) {
-			const firstAdmin = await prisma.user.findFirst({
-				where: { role: 'ADMIN', status: 'ON' },
-				orderBy: { created_at: 'asc' }
-			})
-			if (firstAdmin) {
-				body.staff_id = firstAdmin.user_id
+		try {
+			// Auto-assign first ADMIN if staff_id is missing or empty
+			let staffId = body.staff_id
+			if (!staffId || staffId === '') {
+				const firstAdmin = await prisma.user.findFirst({
+					where: { role: 'ADMIN', status: 'ON' },
+					orderBy: { created_at: 'asc' }
+				})
+				if (firstAdmin) {
+					staffId = firstAdmin.user_id
+				}
 			}
-		}
 
-		// Calculate total duration from items if provided, otherwise use explicit duration
-		let totalDuration = 0
-		if (body.items && Array.isArray(body.items)) {
-			totalDuration = body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
-		} else {
-			totalDuration = Number(body.duration || 0)
-		}
+			// Validate and normalize Date
+			const bookingDate = new Date(body.booking_date)
+			if (bookingDate.toString() === 'Invalid Date') {
+				throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
+			}
 
-		// Calculating end_time based on start_time and duration
-		let endTime = body.end_time
-		if (!endTime && body.start_time) {
-			const [hours, minutes] = body.start_time.split(':').map(Number)
+			// Calculate total duration from items
+			const totalDuration = body.items && Array.isArray(body.items)
+				? body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
+				: Number(body.duration || 0)
+
+			// Calculate end_time based on start_time and duration
+			const startTime = body.start_time
+			if (!startTime) {
+				throw createError({ statusCode: 400, statusMessage: 'La hora de inicio es obligatoria' })
+			}
+
+			const [hours, minutes] = startTime.split(':').map(Number)
+			if (isNaN(hours) || isNaN(minutes)) {
+				throw createError({ statusCode: 400, statusMessage: 'Formato de hora inválido' })
+			}
+
 			const dateObj = new Date()
 			dateObj.setHours(hours, minutes + totalDuration, 0)
-			endTime = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
-		}
+			const endTime = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
 
-		// --- VALIDATION: OVERLAP CHECK ---
-		const bookingDate = new Date(body.booking_date)
-		if (bookingDate.toString() === 'Invalid Date') {
-			throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
-		}
-		const startTime = body.start_time
-		const overlapping = await prisma.booking.findFirst({
-			where: {
-				booking_date: bookingDate,
-				status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
-				staff_id: body.staff_id, // Check overlap per professional
-				// Overlap logic: (s1 < e2) AND (e1 > s2)
-				start_time: { lt: endTime },
-				end_time: { gt: startTime }
+			// --- VALIDATION: OVERLAP CHECK ---
+			// Only check overlap if we have a staff member assigned
+			if (staffId) {
+				const overlapping = await prisma.booking.findFirst({
+					where: {
+						booking_date: bookingDate,
+						status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
+						staff_id: staffId,
+						start_time: { lt: endTime },
+						end_time: { gt: startTime }
+					}
+				})
+
+				if (overlapping) {
+					throw createError({
+						statusCode: 409,
+						statusMessage: `Conflicto de Agenda: El profesional ya tiene una cita de ${overlapping.start_time} a ${overlapping.end_time}`
+					})
+				}
 			}
-		})
 
-		if (overlapping) {
+			// Create the booking
+			const booking = await prisma.booking.create({
+				data: {
+					client_id: body.client_id,
+					staff_id: staffId || null,
+					status: (body.status || 'PENDIENTE').toUpperCase(),
+					booking_date: bookingDate,
+					start_time: startTime,
+					end_time: endTime,
+					duration: totalDuration,
+					notes: body.notes,
+					booking_items: {
+						create: body.items?.map((item: any) => ({
+							item_type: item.item_type,
+							item_id: item.item_id,
+							name: item.name,
+							duration: Number(item.duration) || 0,
+						})) || []
+					},
+				},
+				include: {
+					client: { select: { name: true, surname: true, phone: true, avatar: true } },
+					staff: { select: { name: true, surname: true } },
+					booking_items: true
+				},
+			})
+
+			return booking
+		} catch (error: any) {
+			console.error('[BOOKING_CREATE_ERROR]', error)
 			throw createError({
-				statusCode: 409,
-				statusMessage: `Conflicto: ${overlapping.staff_id === body.staff_id ? 'El profesional' : 'Este horario'} ya tiene una cita (${overlapping.start_time} - ${overlapping.end_time})`
+				statusCode: error.statusCode || 500,
+				statusMessage: error.statusMessage || 'Error al procesar la cita en el servidor'
 			})
 		}
-		// --- END VALIDATION ---
-
-		const booking = await prisma.booking.create({
-			data: {
-				client_id: body.client_id,
-				staff_id: body.staff_id && body.staff_id !== '' ? body.staff_id : null,
-				booking_items: {
-					create: body.items?.map((item: any) => ({
-						item_type: item.item_type,
-						item_id: item.item_id,
-						name: item.name,
-						duration: Number(item.duration) || 0,
-					})) || []
-				},
-				status: (body.status || 'PENDIENTE').toUpperCase(),
-				booking_date: new Date(body.booking_date),
-				start_time: body.start_time,
-				end_time: endTime || '23:59',
-				duration: totalDuration,
-				notes: body.notes,
-			},
-			include: {
-				client: { select: { name: true, surname: true, phone: true, avatar: true } },
-				staff: { select: { name: true, surname: true } },
-				booking_items: true
-			},
-		})
-
-		return booking
 	}
 })
