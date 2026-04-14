@@ -36,11 +36,11 @@
 		const duration = booking.duration || 30
 
 		const top = (h - startHour + m / 60) * hourHeight
-		const height = (duration / 60) * hourHeight
+		// const height = (duration / 60) * hourHeight
 
 		return {
 			top: `${top}px`,
-			height: `${height}px`,
+			/* height: `${height}px`, */
 			minHeight: '80px',
 		}
 	}
