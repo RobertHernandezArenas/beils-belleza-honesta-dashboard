@@ -173,23 +173,24 @@
 
 					<div class="flex h-full flex-col overflow-hidden pl-5 md:pl-6 leading-tight transition-all"
 						:class="[
-							booking.duration <= 30 ? 'justify-center p-1 gap-0' : 'justify-start p-2 md:p-3 gap-1'
+							booking.duration <= 30 ? 'justify-center p-1.5 gap-0' : 'justify-start p-2 md:p-3 gap-1'
 						]">
 						<div class="flex items-center justify-between gap-1 overflow-hidden">
-							<div class="flex min-w-0 flex-col" :class="booking.duration <= 30 ? 'gap-0' : 'gap-1'">
+							<div class="flex min-w-0 flex-col" :class="booking.duration <= 30 ? 'gap-0' : 'gap-0.5'">
 								<h4 class="truncate font-black tracking-tighter uppercase"
 									:class="[
-										booking.duration <= 30 ? 'text-[10px] leading-none mb-0' : 'text-sm md:text-base mb-0.5'
+										booking.duration <= 30 ? 'text-[10px] leading-tight mb-0' : 'text-sm md:text-base mb-0.5'
 									]">
 									{{ booking.client?.name }} {{ booking.client?.surname }}
 								</h4>
 								
-								<!-- Hide items if very short appointment -->
-								<div v-if="booking.duration > 30 && booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
+								<!-- Services list - more compact for short appointments -->
+								<div v-if="booking.booking_items?.length" class="flex flex-wrap gap-1 transition-all"
+									:class="booking.duration <= 30 ? 'mt-0 scale-90 origin-left opacity-70' : 'mt-0.5'">
 									<span v-for="item in booking.booking_items" :key="item.id" 
-										class="text-[9px] font-black tracking-wider uppercase opacity-80 flex items-center gap-1">
+										class="text-[9px] font-black tracking-wider uppercase flex items-center gap-1">
 										<Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2" />
-										<span class="max-w-[150px] truncate">{{ item.name }}</span>
+										<span class="max-w-[150px] truncate leading-none">{{ item.name }}</span>
 										<span v-if="booking.booking_items.indexOf(item) < booking.booking_items.length - 1" class="opacity-30 mx-0.5">•</span>
 									</span>
 								</div>
@@ -234,16 +235,17 @@
 							</div>
 						</div>
 
-						<!-- Hide bottom info if too short -->
-						<div v-if="booking.duration > 30" class="mt-1 flex items-center gap-3 truncate opacity-60">
-							<span class="flex items-center gap-1.5 text-[11px] font-black tracking-widest uppercase">
-								<Clock class="h-3 w-3" />
+						<!-- Bottom Info Row - Smaller and tight for 30min -->
+						<div class="flex items-center gap-2.5 truncate opacity-60 transition-all"
+							:class="booking.duration <= 30 ? 'mt-0.5 scale-90 origin-left' : 'mt-1'">
+							<span class="flex items-center gap-1 text-[10px] md:text-[11px] font-black tracking-widest uppercase">
+								<Clock class="h-2.5 w-2.5" />
 								{{ booking.start_time }}
 							</span>
 							<span
 								v-if="booking.staff"
-								class="flex items-center gap-1.5 text-[11px] font-black tracking-widest uppercase">
-								<UserIcon class="h-3 w-3" />
+								class="flex items-center gap-1 text-[10px] md:text-[11px] font-black tracking-widest uppercase">
+								<UserIcon class="h-2.5 w-2.5" />
 								{{ booking.staff.name }}
 							</span>
 						</div>
