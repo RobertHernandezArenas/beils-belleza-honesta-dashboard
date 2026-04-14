@@ -171,10 +171,10 @@
 						class="absolute top-0 bottom-0 left-0 my-3 ml-1.5 w-1 rounded-full"
 						:class="getStatusStrip(booking.status)"></div>
 
-					<div class="flex h-full flex-col justify-between overflow-hidden p-4 pl-6">
+					<div class="flex h-full flex-col justify-between overflow-hidden p-2 pl-5 md:p-3 md:pl-6 leading-tight">
 						<div class="flex items-center justify-between gap-2 overflow-hidden">
 							<div class="flex min-w-0 flex-col gap-1">
-								<h4 class="truncate text-base leading-none font-black tracking-tighter uppercase">
+								<h4 class="truncate text-sm md:text-base leading-tight font-black tracking-tighter uppercase mb-0.5">
 									{{ booking.client?.name }} {{ booking.client?.surname }}
 								</h4>
 								<div v-if="booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
