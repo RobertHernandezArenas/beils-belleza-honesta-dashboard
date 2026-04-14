@@ -16,6 +16,8 @@
 		"prisma:generate": "pnpx prisma generate --schema prisma/schema.prisma",
 		"prisma:migrate": "pnpx prisma migrate dev --name init --schema prisma/schema.prisma",
 		"prisma:reset": "pnpx prisma migrate reset --schema prisma/schema.prisma",
+		"db:push": "pnpx prisma db push",
+		"db:fix": "pnpx tsx --env-file=.env ./scripts/fix-db-tables.ts",
 		"db:reset-empty": "pnpx tsx --env-file=.env ./seeds/empty-db.ts"
 	},
 	"dependencies": {
