@@ -31,6 +31,7 @@
 	import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
 	import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
 	import BookingDetailsModal from '~/components/agenda/BookingDetailsModal.vue'
+	import GenericDeleteModal from '~/components/shared/GenericDeleteModal.vue'
 	import gsap from 'gsap'
 
 	definePageMeta({ layout: 'default' })
@@ -48,6 +49,10 @@
 	const selectedDate = ref(new Date())
 	const viewMode = ref<'day' | 'week' | 'month' | 'year' | 'agenda' | '4days'>('day')
 	const searchQuery = useDebouncedRef('', 500)
+
+	// Delete Modal State
+	const deleteModalOpen = ref(false)
+	const bookingToDelete = ref<any>(null)
 
 	// Compute start and end of current view for API query
 	const queryParams = computed(() => {
@@ -115,11 +120,13 @@
 		},
 	})
 
-	const { mutate: deleteBooking } = useMutation({
+	const { mutate: deleteBooking, isPending: isDeletingBooking } = useMutation({
 		mutationFn: (id: string) => $fetch(`/api/agenda/bookings/${id}`, { method: 'DELETE' }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			displayToast('Cita cancelada y eliminada', 'success')
+			deleteModalOpen.value = false
+			bookingToDelete.value = null
 		},
 		onError: (error: any) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar', 'error')
@@ -187,8 +194,14 @@
 	}
 
 	const confirmDelete = (id: string) => {
-		if (confirm('¿Eliminar definitivamente esta cita de la agenda?')) {
-			deleteBooking(id)
+		const b = bookings.value?.find((b: any) => b.booking_id === id)
+		bookingToDelete.value = b || { booking_id: id }
+		deleteModalOpen.value = true
+	}
+
+	const handleActualDelete = () => {
+		if (bookingToDelete.value?.booking_id) {
+			deleteBooking(bookingToDelete.value.booking_id)
 		}
 	}
 
@@ -400,6 +413,17 @@
 		<!-- Details Modal -->
 		<BookingDetailsModal
 			ref="detailsModalRef"
-			@edit="openEditModal" />
+			@edit="openEditModal"
+			@delete="id => { detailsModalRef?.close(); confirmDelete(id) }" />
+
+		<!-- Confirm Delete Modal -->
+		<GenericDeleteModal
+			:is-open="deleteModalOpen"
+			:item-name="bookingToDelete?.client ? `${bookingToDelete.client.name} ${bookingToDelete.client.surname}` : 'esta cita'"
+			:is-deleting="isDeletingBooking"
+			custom-title="Eliminar Cita"
+			custom-message="¿Estás seguro de que deseas eliminar definitivamente esta cita de la agenda?"
+			@close="deleteModalOpen = false"
+			@confirm="handleActualDelete" />
 	</div>
 </template>

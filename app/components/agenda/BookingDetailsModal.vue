@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { X, Calendar, Clock, User, Scissors, Package, FileText, Edit, Ticket, Gift } from 'lucide-vue-next'
+import { X, Calendar, Clock, User, Scissors, Package, FileText, Edit, Ticket, Gift, Trash2 } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 
 const modalRef = ref<HTMLDialogElement | null>(null)
 const booking = ref<any | null>(null)
 
-const emit = defineEmits(['edit'])
+const emit = defineEmits(['edit', 'delete'])
 
 // Fetch Data for mapping names over IDs
 const { data: staff } = useQuery({
@@ -44,6 +44,11 @@ const handleEdit = () => {
     setTimeout(() => {
         emit('edit', booking.value)
     }, 150)
+}
+
+const handleDelete = () => {
+    if (!booking.value) return
+    emit('delete', booking.value.booking_id)
 }
 
 const getStatusClass = (status: string) => {
@@ -159,6 +164,10 @@ defineExpose({ open, close })
 
             <!-- Footer Actions -->
             <div class="bg-bg-muted/30 border-border-default border-t px-8 py-5 flex items-center justify-end gap-3 rounded-b-4xl">
+                <button @click="handleDelete" class="btn btn-ghost text-error hover:bg-error/10 hover:border-error/20 rounded-xl font-bold gap-2 mr-auto px-4">
+                    <Trash2 class="w-4 h-4" />
+                    Eliminar Cita
+                </button>
                 <button @click="close" class="btn btn-ghost rounded-xl font-bold">Cerrar Detalle</button>
                 <button @click="handleEdit" class="btn btn-primary rounded-xl font-bold border-none shadow-lg shadow-primary/20 gap-2">
                     <Edit class="w-4 h-4" />
