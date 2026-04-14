@@ -41,7 +41,7 @@
 		return {
 			top: `${top}px`,
 			height: `${height}px`,
-			minHeight: '2rem',
+			minHeight: '80px',
 		}
 	}
 
@@ -171,48 +171,19 @@
 						class="absolute top-0 bottom-0 left-0 my-3 ml-1.5 w-1 rounded-full"
 						:class="getStatusStrip(booking.status)"></div>
 
-					<div class="flex h-full flex-col overflow-hidden pl-5 md:pl-6 leading-none transition-all"
+					<div class="flex h-full flex-col overflow-hidden pl-5 md:pl-6 transition-all"
 						:class="[
-							booking.duration <= 15 ? 'justify-start p-0.5' : 
-							booking.duration <= 30 ? 'justify-center p-1' : 'justify-start p-2 md:p-3 gap-1'
+							booking.duration <= 30 ? 'justify-start p-1.5' : 'justify-start p-2 md:p-3'
 						]">
-						<div class="flex items-center justify-between gap-1 overflow-hidden">
-							<div class="flex min-w-0 flex-col" :class="booking.duration <= 30 ? 'gap-0' : 'gap-0.5'">
-								<h4 class="truncate font-black tracking-tighter uppercase mb-0 leading-none"
-									:class="[
-										booking.duration <= 30 ? 'text-[9px]' : 'text-sm md:text-base mb-0.5'
-									]">
-									{{ booking.client?.name }} {{ booking.client?.surname }}
-								</h4>
-								
-								<!-- COMPACT ROW: Combined Info for short appointments -->
-								<div v-if="booking.duration <= 30" class="flex items-center gap-1.5 truncate opacity-70 scale-[0.85] origin-left mt-0.5 leading-none">
-									<span class="flex items-center gap-0.5 text-[8.5px] font-black tracking-widest uppercase shrink-0">
-										<Clock class="h-1.5 w-1.5" />
-										{{ booking.start_time }}
-									</span>
-									<span v-if="booking.staff" class="flex items-center gap-0.5 text-[8.5px] font-black tracking-widest uppercase shrink-0">
-										<UserIcon class="h-1.5 w-1.5" />
-										{{ booking.staff.name }}
-									</span>
-									<span v-if="booking.booking_items?.length" class="flex items-center gap-0.5 text-[8.5px] font-black tracking-widest uppercase truncate border-l border-white/20 pl-1.5 ml-0.5">
-										<Scissors class="h-1.5 w-1.5 shrink-0" />
-										<span class="truncate">{{ (booking.booking_items as any[]).map((i: any) => i.name).join(', ') }}</span>
-									</span>
-								</div>
+						<div class="flex items-center justify-between gap-1 overflow-hidden shrink-0">
+							<h4 class="truncate font-black tracking-tighter uppercase mb-0 leading-tight"
+								:class="[
+									booking.duration <= 30 ? 'text-[10px]' : 'text-sm md:text-base'
+								]">
+								{{ booking.client?.name }} {{ booking.client?.surname }}
+							</h4>
 
-								<!-- FULL ROW: Services list for normal appointments -->
-								<div v-if="booking.duration > 30 && booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
-									<span v-for="item in booking.booking_items" :key="item.id" 
-										class="text-[9px] font-black tracking-wider uppercase flex items-center gap-1">
-										<Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2" />
-										<span class="max-w-[150px] truncate leading-none">{{ item.name }}</span>
-										<span v-if="booking.booking_items.indexOf(item) < booking.booking_items.length - 1" class="opacity-30 mx-0.5">•</span>
-									</span>
-								</div>
-							</div>
-
-							<!-- Action Dropdown - Position adjust for compact -->
+							<!-- Action Dropdown -->
 							<div class="dropdown dropdown-end" :class="{ 'scale-75 origin-right': booking.duration <= 30 }">
 								<button
 									tabindex="0"
@@ -251,18 +222,40 @@
 							</div>
 						</div>
 
-						<!-- FULL INFO ROW: Only for normal appointments -->
-						<div v-if="booking.duration > 30" class="flex items-center gap-2.5 truncate opacity-60 mt-1">
-							<span class="flex items-center gap-1 text-[10px] md:text-[11px] font-black tracking-widest uppercase">
-								<Clock class="h-2.5 w-2.5" />
-								{{ booking.start_time }}
-							</span>
-							<span
-								v-if="booking.staff"
-								class="flex items-center gap-1 text-[10px] md:text-[11px] font-black tracking-widest uppercase">
-								<UserIcon class="h-2.5 w-2.5" />
-								{{ booking.staff.name }}
-							</span>
+						<!-- SECONDARY INFO ROW: Adaptive layout -->
+						<div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 overflow-hidden transition-all"
+							:class="booking.duration <= 30 ? 'opacity-80' : 'opacity-60'">
+							
+							<!-- Time and Staff (Always prioritized) -->
+							<div class="flex items-center gap-2 shrink-0">
+								<span class="flex items-center gap-1 text-[9px] font-black tracking-widest uppercase">
+									<Clock class="h-2 w-2" />
+									{{ booking.start_time }}
+								</span>
+								<span v-if="booking.staff" class="flex items-center gap-1 text-[9px] font-black tracking-widest uppercase">
+									<UserIcon class="h-2 w-2" />
+									{{ booking.staff.name }}
+								</span>
+							</div>
+
+							<!-- Services: Horizontal for small cards, Block for large cards -->
+							<div v-if="booking.booking_items?.length" 
+								:class="booking.duration <= 30 ? 'flex items-center gap-1 pl-1 border-l border-white/20 ml-1' : 'w-full flex flex-wrap gap-1 mt-1'">
+								
+								<div v-if="booking.duration <= 30" class="flex items-center gap-1 text-[9px] font-black tracking-wider uppercase truncate">
+									<Scissors class="h-1.5 w-1.5 shrink-0 opacity-50" />
+									<span class="truncate max-w-[150px]">{{ (booking.booking_items as any[]).map((i: any) => i.name).join(', ') }}</span>
+								</div>
+
+								<template v-else>
+									<span v-for="item in booking.booking_items" :key="item.id" 
+										class="text-[9px] font-black tracking-wider uppercase flex items-center gap-1">
+										<Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2" />
+										<span class="max-w-[150px] truncate leading-none">{{ item.name }}</span>
+										<span v-if="booking.booking_items.indexOf(item) < booking.booking_items.length - 1" class="opacity-30 mx-0.5">•</span>
+									</span>
+								</template>
+							</div>
 						</div>
 					</div>
 				</div>
