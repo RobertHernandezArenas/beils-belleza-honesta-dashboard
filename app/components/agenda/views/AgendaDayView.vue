@@ -171,13 +171,21 @@
 						class="absolute top-0 bottom-0 left-0 my-3 ml-1.5 w-1 rounded-full"
 						:class="getStatusStrip(booking.status)"></div>
 
-					<div class="flex h-full flex-col justify-start gap-1 overflow-hidden p-2 pl-5 md:p-3 md:pl-6 leading-tight">
-						<div class="flex items-center justify-between gap-2 overflow-hidden">
-							<div class="flex min-w-0 flex-col gap-1">
-								<h4 class="truncate text-sm md:text-base leading-tight font-black tracking-tighter uppercase mb-0.5">
+					<div class="flex h-full flex-col overflow-hidden pl-5 md:pl-6 leading-tight transition-all"
+						:class="[
+							booking.duration <= 30 ? 'justify-center p-1 gap-0' : 'justify-start p-2 md:p-3 gap-1'
+						]">
+						<div class="flex items-center justify-between gap-1 overflow-hidden">
+							<div class="flex min-w-0 flex-col" :class="booking.duration <= 30 ? 'gap-0' : 'gap-1'">
+								<h4 class="truncate font-black tracking-tighter uppercase"
+									:class="[
+										booking.duration <= 30 ? 'text-[10px] leading-none mb-0' : 'text-sm md:text-base mb-0.5'
+									]">
 									{{ booking.client?.name }} {{ booking.client?.surname }}
 								</h4>
-								<div v-if="booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
+								
+								<!-- Hide items if very short appointment -->
+								<div v-if="booking.duration > 30 && booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
 									<span v-for="item in booking.booking_items" :key="item.id" 
 										class="text-[9px] font-black tracking-wider uppercase opacity-80 flex items-center gap-1">
 										<Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2" />
@@ -187,8 +195,8 @@
 								</div>
 							</div>
 
-							<!-- Action Dropdown for Day View -->
-							<div class="dropdown dropdown-end">
+							<!-- Action Dropdown - Position adjust for compact -->
+							<div class="dropdown dropdown-end" :class="{ 'scale-75 origin-right': booking.duration <= 30 }">
 								<button
 									tabindex="0"
 									class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100">
@@ -226,7 +234,8 @@
 							</div>
 						</div>
 
-						<div class="mt-1 flex items-center gap-3 truncate opacity-60">
+						<!-- Hide bottom info if too short -->
+						<div v-if="booking.duration > 30" class="mt-1 flex items-center gap-3 truncate opacity-60">
 							<span class="flex items-center gap-1.5 text-[11px] font-black tracking-widest uppercase">
 								<Clock class="h-3 w-3" />
 								{{ booking.start_time }}
