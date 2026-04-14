@@ -208,25 +208,27 @@
 	}
 
 	const getStatusColor = (status: string) => {
+		const s = (status || 'PENDIENTE').toUpperCase()
 		const map: Record<string, string> = {
-			pending: 'bg-warning/20 text-yellow-800 border-warning/50',
-			confirmed: 'bg-info/20 text-info border-info/50',
-			completed: 'bg-success/20 text-success border-success/50',
-			cancelled: 'bg-error/10 text-error border-error/50',
-			no_show: 'bg-bg-muted text-text-muted border-border-strong',
+			PENDIENTE: 'bg-warning/20 text-yellow-800 border-warning/50',
+			CONFIRMADA: 'bg-primary/20 text-primary border-primary/50',
+			CANCELADA: 'bg-error/10 text-error border-error/50',
+			COMPLETADA: 'bg-success/20 text-success border-success/50',
+			AUSENTE: 'bg-gray-500/20 text-gray-500 border-gray-400/50',
 		}
-		return map[status] || map['pending']
+		return map[s] || map['PENDIENTE']
 	}
 
 	const getStatusLabel = (status: string) => {
+		const s = (status || 'PENDIENTE').toUpperCase()
 		const map: Record<string, string> = {
-			pending: 'Pendiente',
-			confirmed: 'Confirmada',
-			completed: 'Finalizada',
-			cancelled: 'Cancelada',
-			no_show: 'No asiste',
+			PENDIENTE: 'Pendiente',
+			CONFIRMADA: 'Confirmada',
+			CANCELADA: 'Cancelada',
+			COMPLETADA: 'Finalizada',
+			AUSENTE: 'No asiste',
 		}
-		return map[status] || status
+		return map[s] || s
 	}
 
 	// GSAP Animations

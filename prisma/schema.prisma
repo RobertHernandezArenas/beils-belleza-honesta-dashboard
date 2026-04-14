@@ -516,19 +516,21 @@ model Booking {
   staff_id      String?   @db.Char(100)
   staff         User?     @relation("StaffBookings", fields: [staff_id], references: [user_id])
   
-  // Service or Pack booked
-  item_type     String    @db.VarChar(50) // 'service', 'pack'
-  item_id       String    @db.Char(100)
+  // DEPRECATED: Use booking_items instead
+  item_type     String?   @db.VarChar(50) // 'service', 'pack'
+  item_id       String?   @db.Char(100)
   
-  status        String    @default("pending") @db.VarChar(20) // pending, confirmed, completed, cancelled, no_show
+  status        String    @default("PENDIENTE") @db.VarChar(20) // PENDIENTE, CONFIRMADA, CANCELADA, COMPLETADA, AUSENTE
   
   booking_date  DateTime
   start_time    String    @db.VarChar(10) // HH:mm
   end_time      String    @db.VarChar(10) // HH:mm
-  duration      Int       // stored in minutes for easy calculation
+  duration      Int       @default(0)     // stored in minutes for easy calculation
   
   notes         String?   @db.Text
   
+  booking_items BookingItem[]
+
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
@@ -537,4 +539,20 @@ model Booking {
   @@index([staff_id])
   @@index([booking_date])
   @@index([status])
+}
+
+model BookingItem {
+  booking_item_id String  @id @default(uuid()) @db.Char(100)
+  booking_id      String  @db.Char(100)
+  booking         Booking @relation(fields: [booking_id], references: [booking_id], onDelete: Cascade)
+  
+  item_type       String  @db.VarChar(50) // 'service', 'pack', 'bonus', 'giftcard'
+  item_id         String  @db.Char(100)
+  name            String  @db.VarChar(150)
+  duration        Int     @default(0) // in minutes
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("booking_items")
 }

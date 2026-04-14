@@ -1,6 +1,5 @@
 <script setup lang="ts">
-
-import { X, Calendar, Clock, User, Scissors, Package, FileText, Edit } from 'lucide-vue-next'
+import { X, Calendar, Clock, User, Scissors, Package, FileText, Edit, Ticket, Gift } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 
 const modalRef = ref<HTMLDialogElement | null>(null)
@@ -16,32 +15,16 @@ const { data: staff } = useQuery({
     }),
 })
 
-const { data: services } = useQuery({
-    queryKey: ['services-agenda'],
-    queryFn: () => $fetch<any[]>('/api/services'),
-})
-
-const { data: packs } = useQuery({
-    queryKey: ['packs-agenda'],
-    queryFn: () => $fetch<any[]>('/api/catalog/packs'),
-})
-
 const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A'
     return new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' }).format(new Date(dateString))
 }
 
-const getItemDetails = computed(() => {
-    if (!booking.value) return null
-    if (booking.value.item_type === 'service' && services.value) {
-        return services.value.find(s => s.service_id === booking.value.item_id)
-    } else if (booking.value.item_type === 'pack' && packs.value) {
-        return packs.value.find(p => p.pack_id === booking.value.item_id)
-    }
-    return null
-})
-
 const getStaffDetails = computed(() => {
+    // Priority 1: Data already included in the booking object
+    if (booking.value?.staff) return booking.value.staff
+    
+    // Priority 2: Lookup in the global staff list if not provided in the object
     if (!booking.value?.staff_id || !staff.value) return null
     return staff.value.find((s: any) => s.user_id === booking.value.staff_id)
 })
@@ -61,6 +44,28 @@ const handleEdit = () => {
     setTimeout(() => {
         emit('edit', booking.value)
     }, 150)
+}
+
+const getStatusClass = (status: string) => {
+    const s = (status || 'PENDIENTE').toUpperCase()
+    if (s === 'PENDIENTE') return 'bg-warning/10 text-warning ring-warning/20'
+    if (s === 'CONFIRMADA') return 'bg-primary/10 text-primary ring-primary/20'
+    if (s === 'CANCELADA') return 'bg-error/10 text-error ring-error/20'
+    if (s === 'COMPLETADA') return 'bg-success/10 text-success ring-success/20'
+    if (s === 'AUSENTE') return 'bg-gray-500/10 text-gray-500 ring-gray-500/20'
+    return 'bg-bg-muted text-text-muted ring-border-default'
+}
+
+const getStatusLabel = (status: string) => {
+    const s = (status || 'PENDIENTE').toUpperCase()
+    const map: any = {
+        'PENDIENTE': 'Pendiente',
+        'CONFIRMADA': 'Confirmada',
+        'CANCELADA': 'Cancelada',
+        'COMPLETADA': 'Finalizada',
+        'AUSENTE': 'No asiste'
+    }
+    return map[s] || s
 }
 
 defineExpose({ open, close })
@@ -88,16 +93,13 @@ defineExpose({ open, close })
             </div>
 
             <!-- Content -->
-            <div class="p-8 space-y-6 flex-1 overflow-y-auto">
+            <div class="p-8 space-y-6 flex-1 overflow-y-auto max-h-[60vh] custom-scrollbar">
                 <div class="flex items-center justify-between p-4 bg-bg-muted/30 rounded-2xl border border-border-subtle group hover:border-primary/20 transition-all">
                     <div>
                         <p class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-1">Estado Actual</p>
-                        <span class="badge badge-lg font-bold uppercase ring-1 ring-inset" :class="{
-                              'bg-warning/10 text-warning ring-warning/20': booking.status === 'pending',
-                              'bg-success/10 text-success ring-success/20': booking.status === 'completed',
-                              'bg-primary/10 text-primary ring-primary/20': booking.status === 'confirmed',
-                              'bg-error/10 text-error ring-error/20': booking.status === 'cancelled' || booking.status === 'no_show',
-                            }">{{ booking.status === 'no_show' ? 'Ausente' : booking.status }}</span>
+                        <span class="badge badge-lg font-bold uppercase ring-1 ring-inset" :class="getStatusClass(booking.status)">
+                            {{ getStatusLabel(booking.status) }}
+                        </span>
                     </div>
                     <div class="text-right">
                         <p class="text-text-muted text-[10px] font-black uppercase tracking-widest mb-1">Fecha Programada</p>
@@ -125,17 +127,24 @@ defineExpose({ open, close })
                     </div>
                 </div>
 
-                <div class="p-5 bg-primary/5 rounded-2xl border border-primary/20 relative overflow-hidden group">
-                    <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
-                        <component :is="booking.item_type === 'pack' ? Package : Scissors" class="w-32 h-32" />
-                    </div>
-                    <div class="relative z-10">
-                        <div class="flex items-center gap-2 mb-2 text-primary">
-                            <component :is="booking.item_type === 'pack' ? Package : Scissors" class="w-4 h-4" />
-                            <span class="text-[10px] font-black uppercase tracking-widest">{{ booking.item_type === 'pack' ? 'Bono Seleccionado' : 'Servicio Reservado' }}</span>
+                <!-- Items List -->
+                <div class="space-y-3">
+                    <p class="text-text-muted text-[10px] font-black uppercase tracking-widest px-1">Servicios Agendados</p>
+                    <div v-for="(it, idx) in booking.booking_items" :key="idx" 
+                        class="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center gap-4 relative overflow-hidden group">
+                        <div class="bg-primary/20 text-primary w-10 h-10 flex items-center justify-center rounded-xl shrink-0 transition-transform group-hover:scale-110">
+                            <Scissors v-if="it.item_type === 'SERVICE'" class="w-5 h-5" />
+                            <Ticket v-else-if="it.item_type === 'BONUS'" class="w-5 h-5" />
+                            <Package v-else-if="it.item_type === 'PACK'" class="w-5 h-5" />
+                            <Gift v-else class="w-5 h-5" />
                         </div>
-                        <p class="text-text-primary text-lg font-bold">{{ getItemDetails?.name || 'Recuperando catálogo...' }}</p>
-                        <p class="text-text-muted text-xs font-bold uppercase mt-1">{{ booking.item_type }} ID: {{ booking.item_id.split('-')[0] }}</p>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-text-primary text-sm font-bold truncate">{{ it.name }}</p>
+                            <p class="text-text-muted text-[10px] font-bold uppercase tracking-wider">{{ it.item_type }} • {{ it.duration }} mins</p>
+                        </div>
+                    </div>
+                    <div v-if="!booking.booking_items || booking.booking_items.length === 0" class="text-center py-4 bg-bg-muted/30 rounded-2xl border border-dashed border-border-subtle">
+                        <p class="text-text-muted text-xs italic font-medium">No hay servicios detallados</p>
                     </div>
                 </div>
 
@@ -149,7 +158,7 @@ defineExpose({ open, close })
             </div>
 
             <!-- Footer Actions -->
-            <div class="bg-bg-muted/30 border-border-default border-t px-8 py-5 flex items-center justify-end gap-3">
+            <div class="bg-bg-muted/30 border-border-default border-t px-8 py-5 flex items-center justify-end gap-3 rounded-b-4xl">
                 <button @click="close" class="btn btn-ghost rounded-xl font-bold">Cerrar Detalle</button>
                 <button @click="handleEdit" class="btn btn-primary rounded-xl font-bold border-none shadow-lg shadow-primary/20 gap-2">
                     <Edit class="w-4 h-4" />
@@ -160,3 +169,4 @@ defineExpose({ open, close })
     </div>
 </dialog>
 </template>
+

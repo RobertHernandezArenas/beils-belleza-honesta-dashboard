@@ -180,6 +180,9 @@
 								<div class="truncate text-[9px] font-black tracking-tight uppercase">
 									{{ booking.client?.name }}
 								</div>
+								<div v-if="booking.booking_items?.length" class="truncate text-[8px] font-bold opacity-60 mt-0.5 uppercase">
+									{{ booking.booking_items.map((i: { name: any; }) => i.name).join(', ') }}
+								</div>
 								<div class="text-[8px] font-black opacity-40 mt-0.5">
 									{{ booking.start_time }}
 								</div>

@@ -173,10 +173,18 @@
 
 					<div class="flex h-full flex-col justify-between overflow-hidden p-4 pl-6">
 						<div class="flex items-center justify-between gap-2 overflow-hidden">
-							<div class="flex min-w-0 items-center gap-1.5">
+							<div class="flex min-w-0 flex-col gap-1">
 								<h4 class="truncate text-base leading-none font-black tracking-tighter uppercase">
 									{{ booking.client?.name }} {{ booking.client?.surname }}
 								</h4>
+								<div v-if="booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
+									<span v-for="item in booking.booking_items" :key="item.id" 
+										class="text-[9px] font-black tracking-wider uppercase opacity-80 flex items-center gap-1">
+										<Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2" />
+										<span class="max-w-[150px] truncate">{{ item.name }}</span>
+										<span v-if="booking.booking_items.indexOf(item) < booking.booking_items.length - 1" class="opacity-30 mx-0.5">•</span>
+									</span>
+								</div>
 							</div>
 
 							<!-- Action Dropdown for Day View -->

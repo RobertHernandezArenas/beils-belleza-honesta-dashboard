@@ -122,8 +122,13 @@
 								{{ booking.status }}
 							</span>
 						</div>
-						<div class="mt-2 text-sm font-black tracking-tight uppercase md:text-base">
-							{{ booking.client?.name }}
+						<div class="mt-2 text-sm font-black tracking-tight uppercase md:text-base flex flex-col gap-0.5">
+							<span>{{ booking.client?.name }}</span>
+							<div v-if="booking.booking_items?.length" class="flex flex-wrap gap-1 mt-0.5">
+								<span v-for="item in booking.booking_items" :key="item.id" class="text-[9px] font-bold text-primary px-1.5 py-0.5 bg-primary/5 rounded border border-primary/10">
+									{{ item.name }}
+								</span>
+							</div>
 						</div>
 						<div class="border-border-subtle mt-2 flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-3">

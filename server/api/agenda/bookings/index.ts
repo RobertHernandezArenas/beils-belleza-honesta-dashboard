@@ -40,8 +40,14 @@ export default defineEventHandler(async event => {
 				start_time: true,
 				end_time: true,
 				status: true,
-				item_type: true,
-				item_id: true,
+				booking_items: {
+					select: {
+						item_type: true,
+						item_id: true,
+						name: true,
+						duration: true,
+					}
+				},
 				duration: true,
 				notes: true,
 				client_id: true,
@@ -57,25 +63,45 @@ export default defineEventHandler(async event => {
 	if (method === 'POST') {
 		const body = await readBody(event)
 
-		// In a real scenario, you'd fetch the item (service/pack) to get its duration automatically
-		// Here we assume duration is passed, or we default to 60 min if missing for simplicity
-		// Calculating end_time based on start_time and duration
+		// Auto-assign first ADMIN if staff_id is missing
+		if (!body.staff_id) {
+			const firstAdmin = await prisma.user.findFirst({
+				where: { role: 'ADMIN', status: 'ON' },
+				orderBy: { created_at: 'asc' }
+			})
+			if (firstAdmin) {
+				body.staff_id = firstAdmin.user_id
+			}
+		}
 
+		// Calculate total duration from items if provided, otherwise use explicit duration
+		let totalDuration = 0
+		if (body.items && Array.isArray(body.items)) {
+			totalDuration = body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
+		} else {
+			totalDuration = Number(body.duration || 0)
+		}
+
+		// Calculating end_time based on start_time and duration
 		let endTime = body.end_time
-		if (!endTime && body.start_time && body.duration) {
+		if (!endTime && body.start_time) {
 			const [hours, minutes] = body.start_time.split(':').map(Number)
 			const dateObj = new Date()
-			dateObj.setHours(hours, minutes + Number(body.duration), 0)
+			dateObj.setHours(hours, minutes + totalDuration, 0)
 			endTime = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
 		}
 
 		// --- VALIDATION: OVERLAP CHECK ---
 		const bookingDate = new Date(body.booking_date)
+		if (bookingDate.toString() === 'Invalid Date') {
+			throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
+		}
 		const startTime = body.start_time
 		const overlapping = await prisma.booking.findFirst({
 			where: {
 				booking_date: bookingDate,
-				status: { notIn: ['cancelled', 'no_show'] },
+				status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
+				staff_id: body.staff_id, // Check overlap per professional
 				// Overlap logic: (s1 < e2) AND (e1 > s2)
 				start_time: { lt: endTime },
 				end_time: { gt: startTime }
@@ -85,7 +111,7 @@ export default defineEventHandler(async event => {
 		if (overlapping) {
 			throw createError({
 				statusCode: 409,
-				statusMessage: `Ya existe una cita programada en este horario (${overlapping.start_time} - ${overlapping.end_time})`
+				statusMessage: `Conflicto: ${overlapping.staff_id === body.staff_id ? 'El profesional' : 'Este horario'} ya tiene una cita (${overlapping.start_time} - ${overlapping.end_time})`
 			})
 		}
 		// --- END VALIDATION ---
@@ -93,19 +119,26 @@ export default defineEventHandler(async event => {
 		const booking = await prisma.booking.create({
 			data: {
 				client_id: body.client_id,
-				staff_id: body.staff_id || null, // Optional assignment
-				item_type: body.item_type,
-				item_id: body.item_id,
-				status: body.status || 'pending',
+				staff_id: body.staff_id && body.staff_id !== '' ? body.staff_id : null,
+				booking_items: {
+					create: body.items?.map((item: any) => ({
+						item_type: item.item_type,
+						item_id: item.item_id,
+						name: item.name,
+						duration: Number(item.duration) || 0,
+					})) || []
+				},
+				status: (body.status || 'PENDIENTE').toUpperCase(),
 				booking_date: new Date(body.booking_date),
 				start_time: body.start_time,
 				end_time: endTime || '23:59',
-				duration: Number(body.duration) || 60,
+				duration: totalDuration,
 				notes: body.notes,
 			},
 			include: {
 				client: { select: { name: true, surname: true, phone: true, avatar: true } },
 				staff: { select: { name: true, surname: true } },
+				booking_items: true
 			},
 		})
 

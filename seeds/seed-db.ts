@@ -341,18 +341,27 @@ async function seedDB() {
 				const date = new Date()
 				date.setDate(date.getDate() + (isPast ? -15 : 15) * (i + 1))
 				const hour = 9 + Math.floor(Math.random() * 10)
+				const service = getRandomItem(allServices)
 
 				await prisma.booking.create({
 					data: {
 						client_id: client.user_id,
 						staff_id: getRandomItem(staffMembers).user_id,
-						item_type: 'service',
-						item_id: getRandomItem(allServices).service_id,
-						status: isPast ? 'completed' : 'pending',
+						status: isPast ? 'COMPLETADA' : 'PENDIENTE',
 						booking_date: date,
 						start_time: `${hour.toString().padStart(2, '0')}:00`,
 						end_time: `${(hour + 1).toString().padStart(2, '0')}:00`,
-						duration: 60
+						duration: service.duration || 60,
+						booking_items: {
+							create: [
+								{
+									item_type: 'SERVICE',
+									item_id: service.service_id,
+									name: service.name,
+									duration: service.duration || 60
+								}
+							]
+						}
 					}
 				})
 			}
