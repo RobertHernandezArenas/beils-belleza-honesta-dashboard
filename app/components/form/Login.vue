@@ -143,7 +143,7 @@
 	<div class="mx-auto w-full max-w-md">
 		<div
 			ref="loginCard"
-			class="bg-bg-card relative space-y-8 rounded-4xl border border-transparent p-8 sm:p-12 lg:shadow-xl lg:backdrop-blur-md">
+			class="bg-bg-card relative space-y-8 rounded-4xl border border-transparent p-8 sm:p-12 ">
 			<!-- Glow sutil dentro de la tarjeta -->
 			<div
 				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-4xl bg-linear-to-b to-transparent"></div>
@@ -152,10 +152,9 @@
 				<!-- Loading Screen -->
 				<div v-if="isPending" class="flex h-full w-full flex-col items-center justify-center gap-5 py-10">
 					<div class="relative">
-						<div class="bg-bg-app absolute inset-0 rounded-full blur-2xl"></div>
-						<LogoTPLoader class="relative h-20 w-20" />
+						<img src="~/assets/images/loader.gif" width="75" height="75" alt="" />
 					</div>
-					<p class="text-text-secondary animate-pulse text-xl font-bold tracking-wide">
+					<p class="animate-pulse text-xl font-bold tracking-wide">
 						Iniciando sesión...
 					</p>
 				</div>
