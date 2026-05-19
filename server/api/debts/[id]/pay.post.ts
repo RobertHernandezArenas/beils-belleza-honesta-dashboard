@@ -73,6 +73,7 @@ export default defineEventHandler(async event => {
 						data: {
 							status: 'completed',
 							payment_method: payment_method || currentCart.payment_method,
+							created_at: new Date(),
 						},
 					})
 				}

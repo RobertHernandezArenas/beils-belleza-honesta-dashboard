@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText, UserPlus, Search, ArrowLeft, User, Check, Plus, Edit2, Trash2, Scissors, Package, PackageSearch, Ticket, Minus, ShoppingBag } from 'lucide-vue-next'
+import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer, FileText, UserPlus, Search, ArrowLeft, User, Check, Plus, Edit2, Trash2, Scissors, Package, PackageSearch, Ticket, Minus, ShoppingBag, ShieldOff } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/vue-query'
 import { useDebouncedRef } from '~/composables/useDebouncedRef'

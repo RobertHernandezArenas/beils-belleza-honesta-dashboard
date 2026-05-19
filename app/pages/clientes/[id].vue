@@ -225,7 +225,7 @@ const handleEditBooking = (b: any) => {
       <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
       <BookingDetailsModal ref="bookingDetailsModalRef" @edit="handleEditBooking" />
       <BookingFormModal ref="bookingModalRef" @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
-      <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
+      <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="() => { queryClient.invalidateQueries({ queryKey: ['client', clientId] }); queryClient.invalidateQueries({ queryKey: ['sales'] }); }" @toast="addToast" />
       <PurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
       <!-- Toast -->

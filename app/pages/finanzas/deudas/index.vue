@@ -13,6 +13,7 @@
 	const showToast = ref(false)
 	const selectedDebt = ref<any | null>(null)
 	const paymentAmount = ref<number | null>(null)
+	const paymentMethod = ref<'card' | 'cash' | 'transfer'>('card')
 	const paymentModalRef = ref<HTMLDialogElement | null>(null)
 
 	const queryParams = computed(() => {
@@ -38,13 +39,14 @@
 	})
 
 	const { mutate: updateDebt } = useMutation({
-		mutationFn: (payload: { id: string; remaining: number; status: string }) =>
-			$fetch(`/api/sales/debts/${payload.id}`, {
-				method: 'PUT',
-				body: { remaining: payload.remaining, status: payload.status },
+		mutationFn: (payload: { id: string; amount: number; payment_method: string }) =>
+			$fetch(`/api/debts/${payload.id}/pay`, {
+				method: 'POST',
+				body: { amount: payload.amount, payment_method: payload.payment_method },
 			}),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['debts'] })
+			queryClient.invalidateQueries({ queryKey: ['sales'] })
 			displayToast(t('finances.debts.messages.success'), 'success')
 			closePaymentModal()
 		},
@@ -64,6 +66,7 @@
 		setTimeout(() => {
 			selectedDebt.value = null
 			paymentAmount.value = null
+			paymentMethod.value = 'card'
 		}, 300)
 	}
 
@@ -76,13 +79,10 @@
 			return
 		}
 
-		const newRemaining = selectedDebt.value.remaining - amount
-		const newStatus = newRemaining <= 0 ? 'paid' : 'partial'
-
 		updateDebt({
 			id: selectedDebt.value.debt_id,
-			remaining: newRemaining,
-			status: newStatus,
+			amount: amount,
+			payment_method: paymentMethod.value,
 		})
 	}
 
@@ -287,7 +287,13 @@
 							step="0.01"
 							min="0.01"
 							:max="selectedDebt.remaining"
-							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none mb-3" />
+							
+						<select v-model="paymentMethod" class="select bg-bg-muted border-border-default focus:border-primary text-text-primary h-12 w-full rounded-2xl shadow-sm">
+							<option value="card">Tarjeta</option>
+							<option value="cash">Efectivo</option>
+							<option value="transfer">Transferencia</option>
+						</select>
 					</div>
 
 					<div class="text-text-muted mt-2 px-4 text-center text-xs font-bold tracking-wider uppercase">
