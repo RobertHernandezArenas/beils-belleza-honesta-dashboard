@@ -18,7 +18,8 @@
 		"prisma:reset": "pnpx prisma migrate reset --schema prisma/schema.prisma",
 		"db:push": "pnpx prisma db push",
 		"db:fix": "pnpx tsx --env-file=.env ./scripts/fix-db-tables.ts",
-		"db:reset-empty": "pnpx tsx --env-file=.env ./seeds/empty-db.ts"
+		"db:reset-empty": "pnpx tsx --env-file=.env ./seeds/empty-db.ts",
+		"plesk-install": "npx pnpm install"
 	},
 	"dependencies": {
 		"@nuxt/eslint": "1.15.1",
