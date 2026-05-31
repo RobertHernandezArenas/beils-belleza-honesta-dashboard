@@ -26,7 +26,7 @@ async function generateNextServiceCode(): Promise<string> {
 	for (const s of services) {
 		if (s.code) {
 			const match = s.code.match(/^SVC-(\d+)$/)
-			if (match) {
+			if (match && match[1]) {
 				const num = parseInt(match[1], 10)
 				if (num > maxNumber) {
 					maxNumber = num
