@@ -10,6 +10,36 @@ const serviceSchema = z.object({
 	status: z.enum(['activo', 'inactivo']).default('activo'),
 })
 
+async function generateNextServiceCode(): Promise<string> {
+	const services = await prisma.service.findMany({
+		where: {
+			code: {
+				startsWith: 'SVC-',
+			},
+		},
+		select: {
+			code: true,
+		},
+	})
+
+	let maxNumber = 0
+	for (const s of services) {
+		if (s.code) {
+			const match = s.code.match(/^SVC-(\d+)$/)
+			if (match) {
+				const num = parseInt(match[1], 10)
+				if (num > maxNumber) {
+					maxNumber = num
+				}
+			}
+		}
+	}
+
+	const nextNumber = maxNumber + 1
+	const paddedNumber = String(nextNumber).padStart(2, '0')
+	return `SVC-${paddedNumber}`
+}
+
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
 
@@ -47,6 +77,10 @@ export default defineEventHandler(async event => {
 		try {
 			const body = await readBody(event)
 			const parsedData = serviceSchema.parse(body)
+
+			if (!parsedData.code || parsedData.code.trim() === '') {
+				parsedData.code = await generateNextServiceCode()
+			}
 
 			const service = await prisma.service.create({
 				data: parsedData,

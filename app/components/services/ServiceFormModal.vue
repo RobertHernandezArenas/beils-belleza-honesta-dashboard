@@ -126,34 +126,18 @@
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 gap-5 md:grid-cols-3">
-						<div class="form-control md:col-span-2">
-							<label class="label pb-1" for="svc-name">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									Nombre del Servicio *
-								</span>
-							</label>
-							<input
-								id="svc-name"
-								v-model="form.name"
-								type="text"
-								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" />
-						</div>
-
-						<div class="form-control">
-							<label class="label pb-1" for="svc-code">
-								<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
-									Código Interno
-								</span>
-							</label>
-							<input
-								id="svc-code"
-								v-model="form.code"
-								type="text"
-								placeholder="SVC-01"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm focus:shadow-md focus:outline-none" />
-						</div>
+					<div class="form-control">
+						<label class="label pb-1" for="svc-name">
+							<span class="label-text text-text-muted text-xs font-bold tracking-wider uppercase">
+								Nombre del Servicio *
+							</span>
+						</label>
+						<input
+							id="svc-name"
+							v-model="form.name"
+							type="text"
+							required
+							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" />
 					</div>
 
 					<div class="form-control">
