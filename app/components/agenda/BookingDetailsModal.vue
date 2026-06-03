@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X, Calendar, Clock, User, Scissors, Package, FileText, Edit, Ticket, Gift, Trash2 } from 'lucide-vue-next'
+import { X, Calendar, Clock, User, Scissors, Package, FileText, Edit, Ticket, Gift, Trash2, ShoppingBag } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 
 const modalRef = ref<HTMLDialogElement | null>(null)
@@ -49,6 +49,15 @@ const handleEdit = () => {
 const handleDelete = () => {
     if (!booking.value) return
     emit('delete', booking.value.booking_id)
+}
+
+const handleLoadToTPV = () => {
+    if (!booking.value) return
+    close()
+    navigateTo({
+        path: '/tpv',
+        query: { booking_id: booking.value.booking_id }
+    })
 }
 
 const getStatusClass = (status: string) => {
@@ -168,7 +177,11 @@ defineExpose({ open, close })
                     <Trash2 class="w-4 h-4" />
                     Eliminar Cita
                 </button>
-                <button @click="close" class="btn btn-ghost rounded-xl font-bold">Cerrar Detalle</button>
+                <button @click="handleLoadToTPV" class="btn btn-outline border-border-default hover:bg-bg-hover text-text-secondary rounded-xl font-bold gap-2 px-4">
+                    <ShoppingBag class="w-4 h-4" />
+                    Cobrar en TPV
+                </button>
+                <button @click="close" class="btn btn-ghost rounded-xl font-bold">Cerrar</button>
                 <button @click="handleEdit" class="btn btn-primary rounded-xl font-bold border-none shadow-lg shadow-primary/20 gap-2">
                     <Edit class="w-4 h-4" />
                     Modificar Cita
