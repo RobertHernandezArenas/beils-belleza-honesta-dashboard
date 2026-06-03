@@ -51,8 +51,8 @@
 				width: offsetWidth,
 				height: offsetHeight,
 				opacity: 1,
-				duration: 0.45,
-				ease: 'power3.inOut',
+				duration: 0.25,
+				ease: 'power2.out',
 			})
 		}
 	}

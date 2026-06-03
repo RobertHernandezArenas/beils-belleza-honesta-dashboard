@@ -250,8 +250,8 @@
 	watch(viewMode, () => {
 		if (viewContainer.value) {
 			gsap.fromTo(viewContainer.value, 
-				{ opacity: 0, scale: 0.98, filter: 'blur(10px)' },
-				{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.4, ease: 'power4.out' }
+				{ opacity: 0, y: 6 },
+				{ opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }
 			)
 		}
 	})
@@ -261,10 +261,10 @@
 		else prevPeriod()
 
 		if (viewContainer.value) {
-			const xMove = direction === 'next' ? 30 : -30
+			const xMove = direction === 'next' ? 12 : -12
 			gsap.fromTo(viewContainer.value,
-				{ x: xMove, opacity: 0, scale: 0.99 },
-				{ x: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }
+				{ x: xMove, opacity: 0 },
+				{ x: 0, opacity: 1, duration: 0.28, ease: 'power2.out' }
 			)
 		}
 	}

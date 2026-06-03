@@ -108,20 +108,20 @@ textarea {
 .page-enter-active,
 .page-leave-active {
 	transition-property: opacity, transform;
-	transition-duration: 0.3s;
+	transition-duration: 0.15s;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	will-change: transform, opacity;
 }
 
 .page-enter-from {
 	opacity: 0;
-	transform: translate3d(0, 12px, 0);
+	transform: translate3d(0, 4px, 0);
 	backface-visibility: hidden;
 }
 
 .page-leave-to {
 	opacity: 0;
-	transform: translate3d(0, -8px, 0);
+	transform: translate3d(0, -4px, 0);
 	backface-visibility: hidden;
 }
 
@@ -131,7 +131,7 @@ textarea {
 .layout-enter-active,
 .layout-leave-active {
 	transition-property: opacity;
-	transition-duration: 0.25s;
+	transition-duration: 0.15s;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
