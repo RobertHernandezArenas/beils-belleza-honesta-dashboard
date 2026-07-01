@@ -313,6 +313,7 @@
 		selectedClient.value = null
 		discountAmount.value = 0
 		paymentMethod.value = 'card'
+		processedBookingId.value = null
 	}
 
 	const selectClient = (client: any) => {
@@ -351,6 +352,7 @@
 			payment_method: paymentMethod.value,
 			discount: discountAmount.value,
 			items: cartItems.value,
+			booking_id: processedBookingId.value || undefined,
 		})
 	}
 
@@ -364,6 +366,7 @@
 			stripe_installments: data.installments,
 			stripe_payment_intent_id: data.paymentIntentId,
 			stripe_status: 'succeeded',
+			booking_id: processedBookingId.value || undefined,
 		})
 	}
 

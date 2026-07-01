@@ -6,6 +6,9 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	css: ['~/assets/css/main.css'],
 	devtools: { enabled: false },
+	eslint: {
+		checker: false,
+	},
 	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
 	nitro: {
 		alias: {
