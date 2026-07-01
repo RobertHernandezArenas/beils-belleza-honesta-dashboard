@@ -51,8 +51,8 @@
 				width: offsetWidth,
 				height: offsetHeight,
 				opacity: 1,
-				duration: 0.45,
-				ease: 'power3.inOut',
+				duration: 0.25,
+				ease: 'power2.out',
 			})
 		}
 	}
@@ -116,6 +116,87 @@
 	})
 
 	const { emitSync } = useSync()
+
+	const route = useRoute()
+	const router = useRouter()
+	const processedBookingId = ref<string | null>(null)
+
+	watch([
+		() => route.query.booking_id,
+		() => services.value,
+		() => packs.value,
+		() => bonuses.value,
+		() => products.value,
+		() => clients.value
+	], async ([bookingId, svcs, pks, bns, prds, cls]) => {
+		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
+		if (!svcs || !cls) return // Wait for crucial catalogs to load
+
+		processedBookingId.value = bookingId
+
+		try {
+			// Fetch booking details
+			const bookingData: any = await $fetch(`/api/agenda/bookings/${bookingId}`)
+			if (!bookingData) return
+
+			// Find and select client
+			const client = cls.find((c: any) => c.user_id === bookingData.client_id)
+			if (client) {
+				selectedClient.value = client
+			}
+
+			// Load items
+			const itemsToAdd: any[] = []
+			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
+				for (const it of bookingData.booking_items) {
+					let foundItem: any = null
+					const type = it.item_type.toLowerCase() // service, pack, bonus, product
+					
+					if (type === 'service') {
+						foundItem = svcs.find((s: any) => s.service_id === it.item_id)
+					} else if (type === 'pack') {
+						foundItem = pks?.find((p: any) => p.pack_id === it.item_id)
+					} else if (type === 'bonus') {
+						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
+					} else if (type === 'product') {
+						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
+					}
+
+					if (foundItem) {
+						itemsToAdd.push({
+							item_id: foundItem.product_id || foundItem.service_id || foundItem.pack_id || foundItem.bonus_id,
+							item_type: type,
+							name: foundItem.name,
+							unit_price: foundItem.price,
+							tax_rate: foundItem.tax_rate || 21.0,
+							quantity: 1,
+						})
+					} else {
+						// Fallback if item is not currently in fetched catalog lists
+						itemsToAdd.push({
+							item_id: it.item_id,
+							item_type: type,
+							name: it.name,
+							unit_price: 0,
+							tax_rate: 21.0,
+							quantity: 1,
+						})
+					}
+				}
+			}
+
+			if (itemsToAdd.length > 0) {
+				cartItems.value = itemsToAdd
+			}
+
+			// Clear query parameter
+			router.replace({ query: { ...route.query, booking_id: undefined } })
+			displayToast('Cita cargada correctamente en el TPV', 'success')
+		} catch (error) {
+			console.error('Error al cargar la cita en el TPV:', error)
+			displayToast('Error al cargar la cita en el TPV', 'error')
+		}
+	}, { immediate: true })
 
 	// Process checkout mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
@@ -232,6 +313,7 @@
 		selectedClient.value = null
 		discountAmount.value = 0
 		paymentMethod.value = 'card'
+		processedBookingId.value = null
 	}
 
 	const selectClient = (client: any) => {
@@ -270,6 +352,7 @@
 			payment_method: paymentMethod.value,
 			discount: discountAmount.value,
 			items: cartItems.value,
+			booking_id: processedBookingId.value || undefined,
 		})
 	}
 
@@ -283,6 +366,7 @@
 			stripe_installments: data.installments,
 			stripe_payment_intent_id: data.paymentIntentId,
 			stripe_status: 'succeeded',
+			booking_id: processedBookingId.value || undefined,
 		})
 	}
 

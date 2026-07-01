@@ -248,13 +248,15 @@ async function seedDB() {
 			})
 		}
 
+		let serviceIndex = 1
 		for (const s of serviceBaseNames) {
 			await prisma.service.create({
 				data: {
 					name: s.name,
 					description: s.desc,
 					price: s.price,
-					duration: s.duration
+					duration: s.duration,
+					code: `SVC-${String(serviceIndex++).padStart(2, '0')}`
 				}
 			})
 		}

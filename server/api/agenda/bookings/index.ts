@@ -140,6 +140,8 @@ export default defineEventHandler(async event => {
 					end_time: endTime,
 					duration: totalDuration,
 					notes: body.notes || '',
+					item_type: body.items[0]?.item_type || 'SERVICE',
+					item_id: body.items[0]?.item_id || '',
 					booking_items: {
 						create: body.items.map((item: any) => ({
 							item_type: item.item_type || 'SERVICE',

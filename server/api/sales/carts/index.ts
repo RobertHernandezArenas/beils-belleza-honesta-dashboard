@@ -29,10 +29,16 @@ export default defineEventHandler(async event => {
 
 	if (method === 'POST') {
 		const body = await readBody(event)
-		const { user_id, items, ...cartData } = body
+		const { user_id, items, booking_id, ...cartData } = body
 
 		// Wrap in transaction to ensure consistency
 		const cart = await prisma.$transaction(async tx => {
+			if (booking_id) {
+				await tx.booking.update({
+					where: { booking_id },
+					data: { status: 'COMPLETADA' },
+				})
+			}
 			// Calculate totals from items to prevent client tampering
 			let subtotal = 0
 			let discount = cartData.discount || 0

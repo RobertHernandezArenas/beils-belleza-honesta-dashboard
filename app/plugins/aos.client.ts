@@ -17,7 +17,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           debounceDelay: 100, 
           throttleDelay: 150, 
           offset: 120, 
-          duration: 600,
+          duration: 300,
           easing: 'ease-out-cubic',
           once: true,
           mirror: false,

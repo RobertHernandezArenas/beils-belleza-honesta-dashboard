@@ -56,16 +56,6 @@
 		queryFn: () => $fetch<any[]>('/api/marketing/bonuses'),
 	})
 
-	// Watch for staff loading to auto-assign if still empty (for new bookings or unassigned ones)
-	watch(staff, (newStaff) => {
-		if (newStaff && !form.staff_id) {
-			const firstAdmin = newStaff.find(s => s.role === 'ADMIN')
-			if (firstAdmin) {
-				form.staff_id = firstAdmin.user_id
-			}
-		}
-	}, { immediate: true })
-
 	const { data: giftcards } = useQuery({
 		queryKey: ['giftcards-agenda'],
 		queryFn: () => $fetch<any[]>('/api/marketing/giftcards'),
@@ -103,6 +93,16 @@
 		duration: 0,
 		notes: '',
 	})
+
+	// Watch for staff loading to auto-assign if still empty (for new bookings or unassigned ones)
+	watch(staff, (newStaff) => {
+		if (newStaff && !form.staff_id) {
+			const firstAdmin = newStaff.find(s => s.role === 'ADMIN')
+			if (firstAdmin) {
+				form.staff_id = firstAdmin.user_id
+			}
+		}
+	}, { immediate: true })
 
 	// Filtering for items based on tab and search
 	const filteredItems = computed(() => {

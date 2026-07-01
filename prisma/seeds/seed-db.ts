@@ -229,7 +229,7 @@ async function seedDB() {
 				description: 'Limpieza profunda con extracción.',
 				price: 60.0,
 				duration: 60,
-				code: 'HF-01'
+				code: 'SVC-01'
 			}
 		})
 
