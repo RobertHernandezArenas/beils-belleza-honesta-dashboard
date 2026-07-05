@@ -28,7 +28,7 @@ export async function generateInvoiceNumber(
 			type: seqType,
 			prefix: PREFIX,
 			year: year,
-			last_value: 1,
+			last_value: 0,
 		},
 	})
 
