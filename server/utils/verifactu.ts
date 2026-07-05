@@ -15,14 +15,15 @@ export async function generateInvoiceNumber(
 	type: 'F1' | 'I' = 'F1', // F1: Full, I: Simplified
 	year: number = new Date().getFullYear(),
 ): Promise<string> {
-	const seqType = `invoice_${year}`
+	const now = new Date()
+	const month = (now.getMonth() + 1).toString().padStart(2, '0')
+	// Sequence key includes month and year to reset each month
+	const seqType = `invoice_${year}_${month}`
 
-	// UPSERT: Create if not exists, otherwise increment last_value by 1
+	// UPSERT: create if not exists, otherwise increment last_value by 1
 	const sequence = await prisma.sequence.upsert({
 		where: { type: seqType },
-		update: {
-			last_value: { increment: 1 },
-		},
+		update: { last_value: { increment: 1 } },
 		create: {
 			type: seqType,
 			prefix: PREFIX,
@@ -32,7 +33,7 @@ export async function generateInvoiceNumber(
 	})
 
 	const paddedValue = sequence.last_value.toString().padStart(4, '0')
-	return `${PREFIX}-${year}-${paddedValue}`
+	return `${PREFIX}-${month}-${year}-${paddedValue}`
 }
 
 /**
