@@ -50,7 +50,6 @@
 		"prisma": "7.4.1",
 		"qrcode.vue": "^3.8.0",
 		"soap": "^1.8.0",
-		"stripe": "^20.4.1",
 		"vue": "3.5.28",
 		"vue-advanced-cropper": "^2.8.9",
 		"vue-echarts": "^8.0.1",

@@ -4,7 +4,6 @@
 		Package,
 		Plus,
 		Search,
-		Filter,
 		MoreVertical,
 		Edit2,
 		Trash2,
@@ -19,18 +18,15 @@
 	const queryClient = useQueryClient()
 
 	const searchQuery = useDebouncedRef('', 500)
-	const selectedCategory = ref('')
 
 	const resetFilters = () => {
 		searchQuery.value = ''
-		selectedCategory.value = ''
 	}
 
 	// Configuración de filtro dependiente (query params)
 	const queryParams = computed(() => {
 		const params: Record<string, string> = {}
 		if (searchQuery.value) params.search = searchQuery.value
-		if (selectedCategory.value) params.category_id = selectedCategory.value
 		return params
 	})
 
@@ -39,17 +35,12 @@
 		queryFn: () => $fetch('/api/catalog/products', { query: queryParams.value }),
 	})
 
-	const { data: categories } = useQuery<{ category_id: string; name: string }[]>({
-		queryKey: ['categories'],
-		queryFn: () => $fetch('/api/catalog/categories'),
-	})
-
 	const modalRef = ref<InstanceType<typeof ProductFormModal> | null>(null)
 	const toastMessage = ref('')
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
 
-	const { mutate: deleteProduct, isPending: isDeleting } = useMutation({
+	const { mutate: deleteProduct } = useMutation({
 		mutationFn: (id: string) => $fetch(`/api/catalog/products/${id}`, { method: 'DELETE' }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['products'] })
@@ -111,7 +102,7 @@
 			<!-- Filters -->
 			<div
 				class="bg-bg-card border-border-default mb-8 flex flex-col gap-4 rounded-3xl border p-4 sm:flex-row sm:items-center">
-				<div class="relative w-full sm:w-3/4">
+				<div class="relative flex-1">
 					<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
 					<input
 						v-model="searchQuery"
@@ -120,21 +111,9 @@
 						class="input bg-bg-muted border-border-default focus:border-border-strong focus:ring-border-subtle hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl pl-10 text-sm font-medium shadow-sm transition-[background-color,border-color,box-shadow]" />
 				</div>
 
-				<div class="w-full sm:w-1/4">
-					<select
-						v-model="selectedCategory"
-						class="select bg-bg-muted border-border-default hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl text-sm font-medium">
-						<option value="">Todas las Categorías</option>
-						<option v-for="cat in categories" :key="cat.category_id" :value="cat.category_id">
-							{{ cat.name }}
-						</option>
-					</select>
-				</div>
-
 				<!-- Reset Filters -->
-				<div class="w-full sm:w-auto">
+				<div class="w-full sm:w-auto" v-if="searchQuery">
 					<button
-						v-if="searchQuery || selectedCategory"
 						@click="resetFilters"
 						class="btn btn-ghost text-text-muted hover:bg-bg-hover w-full rounded-xl sm:w-auto">
 						Limpiar
@@ -160,7 +139,6 @@
 							<tr
 								class="border-border-default text-text-muted border-b pb-4 text-[10px] font-black tracking-widest uppercase">
 								<th class="py-5 pl-6">Producto</th>
-								<th class="py-5">Categoría</th>
 								<th class="text-right py-5 tabular-nums">Stock / Precio</th>
 								<th class="text-center py-5">Estado</th>
 								<th class="w-16 pr-6 py-5"></th>
@@ -193,20 +171,6 @@
 												<span v-if="product.barcode">EAN: {{ product.barcode }}</span>
 											</div>
 										</div>
-									</div>
-								</td>
-
-								<td class="py-4">
-									<div class="flex flex-col gap-1.5">
-										<span
-											v-if="product.category"
-											class="bg-primary/10 text-primary border-primary/20 w-fit rounded-lg border px-2.5 py-1 text-[10px] font-black tracking-widest uppercase">
-											{{ product.category.name }}
-											<span v-if="product.subcategory" class="opacity-60">
-												/ {{ product.subcategory.name }}
-											</span>
-										</span>
-										<span v-else class="text-text-muted/50 text-[10px] font-bold italic tracking-wide">Sin categoría</span>
 									</div>
 								</td>
 

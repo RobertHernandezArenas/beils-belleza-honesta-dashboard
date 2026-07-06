@@ -1,0 +1,323 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+
+export function useTpv() {
+	const queryClient = useQueryClient()
+	const { emitSync } = useSync()
+	const route = useRoute()
+	const router = useRouter()
+
+	// Tab control
+	const activeTab = ref<'products' | 'services' | 'packs' | 'bonuses'>('services')
+	const searchQuery = ref('')
+	const clientSearch = ref('')
+
+	// Cart State
+	const cartItems = ref<any[]>([])
+	const selectedClient = ref<any | null>(null)
+	const discountAmount = ref<number>(0)
+	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('card')
+
+	// Toast State
+	const toastMessage = ref('')
+	const toastType = ref<'success' | 'error'>('success')
+	const showToast = ref(false)
+
+	// Manejo de errores de avatar
+	const avatarError = ref(false)
+	const handleAvatarError = () => {
+		avatarError.value = true
+	}
+
+	watch(selectedClient, () => {
+		avatarError.value = false
+	})
+
+	// Fetch Data
+	const { data: clientsResponse } = useQuery<any>({
+		queryKey: ['clients-tpv'],
+		queryFn: () => $fetch('/api/clients', { query: { limit: 500 } }),
+	})
+
+	const clients = computed(() => clientsResponse.value?.data || [])
+
+	const { data: products } = useQuery<any[]>({
+		queryKey: ['products-tpv'],
+		queryFn: () => $fetch('/api/catalog/products'),
+	})
+
+	const { data: services } = useQuery<any[]>({
+		queryKey: ['services-tpv'],
+		queryFn: () => $fetch('/api/services'),
+	})
+
+	const { data: packs } = useQuery<any[]>({
+		queryKey: ['packs-tpv'],
+		queryFn: () => $fetch('/api/catalog/packs'),
+	})
+
+	const { data: bonuses } = useQuery<any[]>({
+		queryKey: ['bonuses-tpv'],
+		queryFn: () => $fetch('/api/marketing/bonuses'),
+	})
+
+	const processedBookingId = ref<string | null>(null)
+
+	// Watcher for booking param from URL
+	watch([
+		() => route.query.booking_id,
+		() => services.value,
+		() => packs.value,
+		() => bonuses.value,
+		() => products.value,
+		() => clients.value
+	], async ([bookingId, svcs, pks, bns, prds, cls]) => {
+		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
+		if (!svcs || !cls) return // Wait for crucial catalogs to load
+
+		processedBookingId.value = bookingId
+
+		try {
+			const bookingData: any = await $fetch(`/api/agenda/bookings/${bookingId}`)
+			if (!bookingData) return
+
+			const client = cls.find((c: any) => c.user_id === bookingData.client_id)
+			if (client) {
+				selectedClient.value = client
+			}
+
+			const itemsToAdd: any[] = []
+			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
+				for (const it of bookingData.booking_items) {
+					let foundItem: any = null
+					const type = it.item_type.toLowerCase()
+					
+					if (type === 'service') {
+						foundItem = svcs.find((s: any) => s.service_id === it.item_id)
+					} else if (type === 'pack') {
+						foundItem = pks?.find((p: any) => p.pack_id === it.item_id)
+					} else if (type === 'bonus') {
+						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
+					} else if (type === 'product') {
+						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
+					}
+
+					if (foundItem) {
+						itemsToAdd.push({
+							item_id: foundItem.product_id || foundItem.service_id || foundItem.pack_id || foundItem.bonus_id,
+							item_type: type,
+							name: foundItem.name,
+							unit_price: foundItem.price,
+							tax_rate: foundItem.tax_rate || 21.0,
+							quantity: 1,
+						})
+					} else {
+						itemsToAdd.push({
+							item_id: it.item_id,
+							item_type: type,
+							name: it.name,
+							unit_price: 0,
+							tax_rate: 21.0,
+							quantity: 1,
+						})
+					}
+				}
+			}
+
+			if (itemsToAdd.length > 0) {
+				cartItems.value = itemsToAdd
+			}
+
+			router.replace({ query: { ...route.query, booking_id: undefined } })
+			displayToast('Cita cargada correctamente en el TPV', 'success')
+		} catch (error) {
+			console.error('Error al cargar la cita en el TPV:', error)
+			displayToast('Error al cargar la cita en el TPV', 'error')
+		}
+	}, { immediate: true })
+
+	// Process checkout mutation
+	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
+		mutationFn: async (payload: any) => {
+			const res: any = await $fetch('/api/sales/carts', {
+				method: 'POST',
+				body: payload,
+			})
+
+			if (paymentMethod.value === 'debt' && selectedClient.value) {
+				await $fetch('/api/sales/debts', {
+					method: 'POST',
+					body: {
+						user_id: selectedClient.value.user_id,
+						cart_id: res.cart_id,
+						amount: res.total,
+						status: 'pending',
+					},
+				})
+			}
+
+			return res
+		},
+		onSuccess: () => {
+			displayToast('Venta registrada con éxito', 'success')
+			
+			if (selectedClient.value?.user_id) {
+				emitSync({ 
+					type: 'REFRESH_CLIENT', 
+					clientId: selectedClient.value.user_id 
+				})
+			}
+			
+			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
+			queryClient.invalidateQueries({ queryKey: ['debts'] })
+			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
+			clearCart()
+		},
+		onError: (error: any) => {
+			displayToast(error.data?.statusMessage || 'Error al procesar la venta', 'error')
+		},
+	})
+
+	// Filtered Lists
+	const filteredCatalog = computed(() => {
+		const q = searchQuery.value.toLowerCase()
+
+		if (activeTab.value === 'products' && products.value) {
+			return products.value.filter(
+				(p: any) => p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q),
+			)
+		}
+		if (activeTab.value === 'services' && services.value) {
+			return services.value.filter(
+				(s: any) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
+			)
+		}
+		if (activeTab.value === 'packs' && packs.value) {
+			return packs.value.filter(
+				(p: any) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
+			)
+		}
+		if (activeTab.value === 'bonuses' && bonuses.value) {
+			return bonuses.value.filter((b: any) => b.name.toLowerCase().includes(q))
+		}
+		return []
+	})
+
+	const filteredClients = computed(() => {
+		if (!clients.value.length || !clientSearch.value) return []
+		const q = clientSearch.value.toLowerCase()
+		return clients.value
+			.filter(
+				(c: any) =>
+					c.name.toLowerCase().includes(q) ||
+					c.surname.toLowerCase().includes(q) ||
+					c.phone?.includes(q) ||
+					c.document_number?.toLowerCase().includes(q),
+			)
+			.slice(0, 5)
+	})
+
+	// Cart Operations
+	const addToCart = (item: any, type: string) => {
+		const existing = cartItems.value.find(
+			i => i.item_id === (item.product_id || item.service_id || item.pack_id || item.bonus_id),
+		)
+
+		if (existing) {
+			existing.quantity++
+		} else {
+			cartItems.value.push({
+				item_id: item.product_id || item.service_id || item.pack_id || item.bonus_id,
+				item_type: type,
+				name: item.name,
+				unit_price: item.price,
+				tax_rate: item.tax_rate || 21.0,
+				quantity: 1,
+			})
+		}
+		searchQuery.value = ''
+	}
+
+	const removeFromCart = (index: number) => {
+		cartItems.value.splice(index, 1)
+	}
+
+	const clearCart = () => {
+		cartItems.value = []
+		selectedClient.value = null
+		discountAmount.value = 0
+		paymentMethod.value = 'card'
+		processedBookingId.value = null
+	}
+
+	const selectClient = (client: any) => {
+		selectedClient.value = client
+		clientSearch.value = ''
+	}
+
+	// Computed Totals
+	const cartSubtotal = computed(() => {
+		return cartItems.value.reduce((acc, item) => acc + item.unit_price * item.quantity, 0)
+	})
+
+	const cartTotal = computed(() => {
+		const total = cartSubtotal.value - discountAmount.value
+		return total > 0 ? total : 0
+	})
+
+	// Perform Checkout
+	const handleCheckout = () => {
+		if (cartItems.value.length === 0) return
+
+		if (paymentMethod.value === 'debt' && !selectedClient.value) {
+			displayToast('Selecciona un cliente para dejar a deber.', 'error')
+			return
+		}
+
+		processSale({
+			user_id: selectedClient.value?.user_id,
+			status: paymentMethod.value === 'debt' ? 'pending' : 'completed',
+			payment_method: paymentMethod.value,
+			discount: discountAmount.value,
+			items: cartItems.value,
+			booking_id: processedBookingId.value || undefined,
+		})
+	}
+
+	const displayToast = (message: string, type: 'success' | 'error') => {
+		toastMessage.value = message
+		toastType.value = type
+		showToast.value = true
+		setTimeout(() => (showToast.value = false), 3000)
+	}
+
+	const formatCurrency = (val: number) => {
+		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
+	}
+
+	return {
+		activeTab,
+		searchQuery,
+		clientSearch,
+		cartItems,
+		selectedClient,
+		discountAmount,
+		paymentMethod,
+		toastMessage,
+		toastType,
+		showToast,
+		avatarError,
+		filteredCatalog,
+		filteredClients,
+		cartSubtotal,
+		cartTotal,
+		isCheckingOut,
+		addToCart,
+		removeFromCart,
+		clearCart,
+		selectClient,
+		handleCheckout,
+		handleAvatarError,
+		formatCurrency,
+		displayToast,
+	}
+}

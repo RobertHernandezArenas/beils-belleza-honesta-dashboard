@@ -5,14 +5,9 @@ export default defineEventHandler(async event => {
 
 	if (method === 'GET') {
 		const query = getQuery(event)
-		const category_id = query.category_id as string | undefined
-		const subcategory_id = query.subcategory_id as string | undefined
 		const search = query.search as string | undefined
 
 		const whereClause: any = {}
-
-		if (category_id) whereClause.category_id = category_id
-		if (subcategory_id) whereClause.subcategory_id = subcategory_id
 
 		if (search) {
 			whereClause.OR = [
@@ -35,48 +30,17 @@ export default defineEventHandler(async event => {
 				stock: true,
 				min_stock: true,
 				status: true,
-				category: { select: { name: true } },
-				subcategory: { select: { name: true } },
-				tags: {
-					include: {
-						tag: { select: { name: true } },
-					},
-				},
 			},
 			orderBy: { created_at: 'desc' },
 		})
 
-		return products.map(p => ({
-			...p,
-			tags: p.tags.map(t => ({ tag_id: t.tag.name, name: t.tag.name })), // flatten for front-end
-		}))
+		return products
 	}
 
 	if (method === 'POST') {
 		const body = await readBody(event)
-		const { tags, ...productData } = body
-
-		// Remove auto-generated empty fields if they come empty from frontend
-		if (productData.category_id === '') delete productData.category_id
-		if (productData.subcategory_id === '') delete productData.subcategory_id
-
 		const product = await prisma.product.create({
-			data: {
-				...productData,
-				tags:
-					tags && tags.length > 0
-						? {
-								create: tags.map((tagId: string) => ({
-									tag: { connect: { tag_id: tagId } },
-								})),
-							}
-						: undefined,
-			},
-			include: {
-				category: { select: { name: true } },
-				subcategory: { select: { name: true } },
-				tags: { include: { tag: true } },
-			},
+			data: body,
 		})
 
 		return product

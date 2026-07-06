@@ -52,15 +52,6 @@ export default defineNuxtConfig({
 		aeatP12CertPath: process.env.AEAT_P12_CERT_PATH,
 		aeatP12Password: process.env.AEAT_P12_PASSWORD,
 
-		// ==========================================
-		// STRIPE API KEYS — Pago Fraccionado / Cuotas
-		// ==========================================
-		// ⚠️  stripeSecretKey: SOLO disponible en el servidor (server/)
-		stripeSecretKey: process.env.STRIPE_SECRET_KEY || '', // ← SECRET KEY aquí
-		public: {
-			// 🌐 stripePublicKey: Disponible en el navegador (app/)
-			stripePublicKey: process.env.STRIPE_PUBLIC_KEY || '', // ← PUBLIC KEY aquí
-		},
 	},
 
 	googleFonts: {

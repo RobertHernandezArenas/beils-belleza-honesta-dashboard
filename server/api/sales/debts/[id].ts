@@ -44,13 +44,7 @@ export default defineEventHandler(async event => {
 			include: { cart: true }
 		})
 
-		// Si se ha pagado totalmente y viene de un pago a plazos de Stripe
-		if (updatedDebt.status === 'paid' && updatedDebt.cart_id && updatedDebt.cart?.status === 'pending_installments') {
-			await prisma.cart.update({
-				where: { cart_id: updatedDebt.cart_id },
-				data: { status: 'completed' }
-			})
-		}
+
 
 		return updatedDebt
 	}

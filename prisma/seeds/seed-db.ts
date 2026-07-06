@@ -49,11 +49,7 @@ async function seedDB() {
 		await prisma.packItemProduct.deleteMany()
 		await prisma.packItemService.deleteMany()
 		await prisma.pack.deleteMany()
-		await prisma.productTag.deleteMany()
-		await prisma.tag.deleteMany()
 		await prisma.product.deleteMany()
-		await prisma.subcategory.deleteMany()
-		await prisma.category.deleteMany()
 		await prisma.service.deleteMany()
 		await prisma.user.deleteMany()
 
@@ -194,22 +190,7 @@ async function seedDB() {
 		if (questionnairesToCreate.length > 0) await prisma.questionnaire.createMany({ data: questionnairesToCreate })
 		if (revokesToCreate.length > 0) await prisma.revoke.createMany({ data: revokesToCreate })
 		
-		console.log('📦 Seeding Catalog (Categories, Products, Services)...')
-		
-		const category = await prisma.category.create({
-			data: {
-				name: 'Cuidado Facial',
-				description: 'Tratamientos y productos para la piel del rostro.',
-				subcategories: {
-					create: [
-						{ name: 'Limpieza', description: 'Leches, geles y tónicos.' },
-						{ name: 'Hidratación', description: 'Cremas y serums hidratantes.' }
-					]
-				}
-			}
-		})
-
-		const subcategories = await prisma.subcategory.findMany({ where: { category_id: category.category_id } })
+		console.log('📦 Seeding Catalog (Products & Services)...')
 
 		await prisma.product.create({
 			data: {
@@ -217,8 +198,6 @@ async function seedDB() {
 				description: 'Crema con ácido hialurónico.',
 				price: 45.0,
 				stock: 20,
-				category_id: category.category_id,
-				subcategory_id: subcategories[1].subcategory_id,
 				image_url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400'
 			}
 		})

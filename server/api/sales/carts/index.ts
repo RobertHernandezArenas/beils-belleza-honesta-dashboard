@@ -87,29 +87,8 @@ export default defineEventHandler(async event => {
 				data: { 
 					subtotal, 
 					total, 
-					stripe_installments: cartData.stripe_installments ? Number(cartData.stripe_installments) : null,
-					stripe_payment_intent_id: cartData.stripe_payment_intent_id || null,
-					stripe_status: cartData.stripe_status || null,
 				}
 			})
-
-			// Create the associated Debt if it is a Stripe Installment Plan
-			if (updatedCart.payment_method === 'stripe' && updatedCart.stripe_installments && updatedCart.stripe_installments > 1 && updatedCart.user_id) {
-				const installmentsCount = updatedCart.stripe_installments;
-				const firstPayment = Number((updatedCart.total / installmentsCount).toFixed(2));
-				const remainingAmount = Number((updatedCart.total - firstPayment).toFixed(2));
-
-				await tx.debt.create({
-					data: {
-						user_id: updatedCart.user_id,
-						cart_id: updatedCart.cart_id,
-						amount: updatedCart.total,
-						remaining: remainingAmount,
-						status: 'partial',
-						notes: `Pago Fraccionado Stripe (${installmentsCount} cuotas)`,
-					}
-				});
-			}
 
 			return updatedCart;
 		})

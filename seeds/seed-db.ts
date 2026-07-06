@@ -75,8 +75,7 @@ async function seedDB() {
 		const tables = [
 			'booking', 'questionnaire', 'consent', 'revoke', 'clientBonus', 'bonus', 'debtPayment', 'debt',
 			'cartItem', 'cart', 'giftcard', 'coupon', 'packItemProduct', 'packItemService',
-			'pack', 'productTag', 'product', 'tag', 'subcategory', 'category', 'service',
-			'sequence', 'user'
+			'pack', 'product', 'service', 'sequence', 'user'
 		]
 		
 		// Disable foreign key checks for thorough cleanup
@@ -192,47 +191,8 @@ async function seedDB() {
 		const allUsers = await prisma.user.findMany()
 		const staffMembers = allUsers.filter(u => u.role === 'STAFF' || u.role === 'ADMIN')
 
-		console.log('🏷️ Seeding Catalog...')
-		const categoriesData = [
-			{ name: 'Facial', desc: 'Tratamientos específicos para el rejuvenecimiento y cuidado del rostro.' },
-			{ name: 'Corporal', desc: 'Programas de remodelación, hidratación y bienestar físico.' },
-			{ name: 'Capilar', desc: 'Salud capilar y estética avanzada para el cabello.' },
-			{ name: 'Bienestar', desc: 'Rituales holísticos y masajes para el equilibrio mental y físico.' }
-		]
-
-		for (const cat of categoriesData) {
-			await prisma.category.create({
-				data: {
-					name: cat.name,
-					description: cat.desc,
-					subcategories: {
-						create: [
-							{ name: `${cat.name} Avanzado`, description: `Tecnología de punta aplicada a ${cat.name}` },
-							{ name: `${cat.name} Esencial`, description: `Cuidados diarios y básicos de ${cat.name}` },
-							{ name: `${cat.name} Premium`, description: `Experiencia de lujo en ${cat.name}` },
-							{ name: `${cat.name} Express`, description: `Sesiones rápidas de ${cat.name}` },
-							{ name: `${cat.name} Ecológico`, description: `Tratamientos 100% naturales para ${cat.name}` }
-						]
-					}
-				}
-			})
-		}
-
-		const allSubcategories = await prisma.subcategory.findMany()
-		await prisma.tag.createMany({
-			data: [
-				{ name: 'Vegano', color: '#10b981' },
-				{ name: 'Bestseller', color: '#f59e0b' },
-				{ name: 'Novedad', color: '#3b82f6' },
-				{ name: 'Oferta', color: '#ef4444' },
-				{ name: 'Orgánico', color: '#84cc16' },
-				{ name: 'Sin Parabenos', color: '#06b6d4' }
-			]
-		})
-		const allTags = await prisma.tag.findMany()
-
+		console.log('🏷️ Seeding Catalog (Products only)...')
 		for (let i = 0; i < 25; i++) {
-			const sub = getRandomItem(allSubcategories)
 			await prisma.product.create({
 				data: {
 					name: getRandomItem(productBaseNames) + ' ' + (i + 1),
@@ -240,10 +200,7 @@ async function seedDB() {
 					price: Number((20 + Math.random() * 80).toFixed(2)),
 					stock: 10 + Math.floor(Math.random() * 40),
 					min_stock: 5,
-					category_id: sub.category_id,
-					subcategory_id: sub.subcategory_id,
 					status: 'activo',
-					tags: { create: [{ tag_id: getRandomItem(allTags).tag_id }] }
 				}
 			})
 		}

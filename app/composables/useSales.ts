@@ -319,6 +319,7 @@ export function useSales() {
 			mixed: { label: 'MIXTO', class: 'bg-purple-100 text-purple-800' },
 			transfer: { label: 'TRANSFERENCIA', class: 'bg-orange-100 text-orange-800' },
 			stripe: { label: 'STRIPE', class: 'bg-indigo-100 text-indigo-800' },
+			bizum: { label: 'BIZUM', class: 'bg-sky-100 text-sky-800' },
 		}
 		return methods[method] || { label: method.toUpperCase(), class: 'bg-neutral text-neutral-content' }
 	}
