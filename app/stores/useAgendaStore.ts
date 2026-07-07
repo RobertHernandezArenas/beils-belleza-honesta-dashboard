@@ -14,6 +14,7 @@ export const useAgendaStore = defineStore('agenda', () => {
     const selectedBooking = ref<any | null>(null)
     const prefillDate = ref<Date | null>(null)
     const prefillTime = ref<string | null>(null)
+    const prefillClientId = ref<string | null>(null)
 
     // Layout flags
     const showSidebar = ref(true)
@@ -27,10 +28,11 @@ export const useAgendaStore = defineStore('agenda', () => {
         viewMode.value = mode
     }
 
-    function openBookingDrawer(booking: any = null, defaultDate: Date | null = null, defaultTime: string | null = null) {
+    function openBookingDrawer(booking: any = null, defaultDate: Date | null = null, defaultTime: string | null = null, defaultClientId: string | null = null) {
         selectedBooking.value = booking
         prefillDate.value = defaultDate
         prefillTime.value = defaultTime
+        prefillClientId.value = defaultClientId
         isBookingDrawerOpen.value = true
     }
 
@@ -40,6 +42,7 @@ export const useAgendaStore = defineStore('agenda', () => {
             selectedBooking.value = null
             prefillDate.value = null
             prefillTime.value = null
+            prefillClientId.value = null
         }, 300) // Clear after animation
     }
 
@@ -67,6 +70,7 @@ export const useAgendaStore = defineStore('agenda', () => {
         selectedBooking,
         prefillDate,
         prefillTime,
+        prefillClientId,
         showSidebar,
 
         // Actions

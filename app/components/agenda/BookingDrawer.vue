@@ -27,7 +27,7 @@ interface BookingItemData {
 }
 
 const store = useAgendaStore()
-const { isBookingDrawerOpen, selectedBooking, prefillDate, prefillTime } = storeToRefs(store)
+const { isBookingDrawerOpen, selectedBooking, prefillDate, prefillTime, prefillClientId } = storeToRefs(store)
 
 const emit = defineEmits(['refresh', 'toast', 'delete'])
 
@@ -228,7 +228,7 @@ watch(isBookingDrawerOpen, (isOpen) => {
                 form.items = []
             }
         } else {
-            form.client_id = ''
+            form.client_id = prefillClientId.value || ''
             form.items = []
             form.status = 'PENDIENTE'
             form.booking_date = getLocalDateString(prefillDate.value || new Date())
