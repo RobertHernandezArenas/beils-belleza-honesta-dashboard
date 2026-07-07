@@ -15,18 +15,19 @@ import ProfileBilling from '~/components/clients/ProfileBilling.vue'
 
 import ConsentFormModal from '~/components/clients/ConsentFormModal.vue'
 import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.vue'
-import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
-import BookingDetailsModal from '~/components/agenda/BookingDetailsModal.vue'
+import BookingDrawer from '~/components/agenda/BookingDrawer.vue'
 import RevokeFormModal from '~/components/clients/RevokeFormModal.vue'
 import DebtDetailsModal from '~/components/clients/DebtDetailsModal.vue'
 import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useAgendaStore } from '~/stores/useAgendaStore'
 
 definePageMeta({ layout: 'default' })
 const { locale, t } = useI18n()
 const route = useRoute()
 const clientId = route.params.id as string
 const queryClient = useQueryClient()
+const agendaStore = useAgendaStore()
 
 // Toast State
 const toastMessage = ref('')
@@ -97,8 +98,6 @@ const formatDateTime = (dateStr: string) => {
 const isConsentModalOpen = ref(false)
 const isQuestionnaireModalOpen = ref(false)
 const isRevokeModalOpen = ref(false)
-const bookingModalRef = ref<any>(null)
-const bookingDetailsModalRef = ref<any>(null)
 const debtDetailsModalRef = ref<any>(null)
 const purchaseDetailsModalRef = ref<any>(null)
 
@@ -129,11 +128,11 @@ const handleFieldUpdate = (field: string, value: any) => {
 }
 
 const handleNewBooking = () => {
-  bookingModalRef.value?.showModal(null, new Date(), clientId)
+  agendaStore.openBookingDrawer(null, new Date(), null, clientId)
 }
 
 const handleEditBooking = (b: any) => {
-  bookingModalRef.value?.showModal(b, new Date(b.booking_date), clientId)
+  agendaStore.openBookingDrawer(b)
 }
 </script>
 
@@ -202,7 +201,7 @@ const handleEditBooking = (b: any) => {
             <ProfileOverview 
                 :client="client" 
                 @update="handleFieldUpdate" 
-                @open-booking="bookingDetailsModalRef?.open($event)"
+                @open-booking="handleEditBooking"
                 @open-purchase="purchaseDetailsModalRef?.open($event)"
                 @open-debt="debtDetailsModalRef?.open($event)"
             />
@@ -223,8 +222,7 @@ const handleEditBooking = (b: any) => {
       <ConsentFormModal v-model="isConsentModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
       <QuestionnaireFormModal v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
       <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
-      <BookingDetailsModal ref="bookingDetailsModalRef" @edit="handleEditBooking" />
-      <BookingFormModal ref="bookingModalRef" @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
+      <BookingDrawer @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
       <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="() => { queryClient.invalidateQueries({ queryKey: ['client', clientId] }); queryClient.invalidateQueries({ queryKey: ['sales'] }); }" @toast="addToast" />
       <PurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
