@@ -115,7 +115,18 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                 </button>
             </div>
             
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- Navigation Arrows -->
+                <div class="flex items-center bg-bg-muted/30 rounded-xl p-0.5 border border-border-subtle">
+                    <button @click="handleDateChange('prev')" class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary">
+                        <ChevronLeft class="h-4 w-4" />
+                    </button>
+                    <button @click="handleDateChange('next')" class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary">
+                        <ChevronRight class="h-4 w-4" />
+                    </button>
+                </div>
+
+                <!-- Current Date Display -->
                 <div class="text-right hidden sm:block">
                     <ClientOnly>
                         <p class="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-0.5">{{ selectedDate.getFullYear() }}</p>
