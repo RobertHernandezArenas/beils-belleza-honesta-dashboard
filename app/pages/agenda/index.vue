@@ -87,7 +87,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
             <div class="flex items-center gap-4">
                 <button 
                     @click="store.showSidebar = !store.showSidebar"
-                    class="p-2 hover:bg-bg-muted rounded-xl transition-colors text-text-secondary">
+                    class="p-2 hover:bg-bg-muted rounded-xl transition-colors text-text-secondary hidden lg:block">
                     <PanelLeftClose v-if="store.showSidebar" class="h-5 w-5" />
                     <PanelLeftOpen v-else class="h-5 w-5" />
                 </button>
