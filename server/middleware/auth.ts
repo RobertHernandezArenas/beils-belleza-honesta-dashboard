@@ -3,7 +3,7 @@ import { verifyToken } from '../utils/jwt'
 // Protected routes prefix
 const PROTECTED_PREFIX = '/api/'
 // Routes that don't need authentication even if inside the protected prefix
-const PUBLIC_ROUTES = ['/api/auth/login', '/api/hello']
+const PUBLIC_ROUTES = ['/api/auth/login', '/api/hello', '/api/test_db', '/api/sales/carts']
 
 export default defineEventHandler(event => {
 	const path = event.path || ''

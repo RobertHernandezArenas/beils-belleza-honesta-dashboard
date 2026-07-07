@@ -62,6 +62,69 @@ export function useTpv() {
 
 	const processedBookingId = ref<string | null>(null)
 
+	// Promotions & Marketing State
+	const clientBonuses = ref<any[]>([])
+	const promoCode = ref('')
+	const appliedCouponCode = ref<string | undefined>(undefined)
+	const appliedGiftcardCode = ref<string | undefined>(undefined)
+
+	const fetchClientBonuses = async (clientId: string) => {
+		try {
+			const data: any = await $fetch(`/api/clients/${clientId}/bonuses`)
+			clientBonuses.value = data || []
+		} catch (error) {
+			console.error('Error fetching client bonuses:', error)
+			clientBonuses.value = []
+		}
+	}
+
+	watch(selectedClient, (newClient) => {
+		avatarError.value = false
+		if (newClient) {
+			fetchClientBonuses(newClient.user_id)
+		} else {
+			clientBonuses.value = []
+		}
+	})
+
+	const validatePromoCode = async () => {
+		if (!promoCode.value) return
+
+		try {
+			const res: any = await $fetch('/api/marketing/validate-code', {
+				method: 'POST',
+				body: {
+					code: promoCode.value,
+					cartTotal: cartSubtotal.value
+				}
+			})
+
+			if (res.valid) {
+				if (res.type === 'coupon') {
+					appliedCouponCode.value = res.code
+					appliedGiftcardCode.value = undefined
+					discountAmount.value = res.discountAmount
+				} else if (res.type === 'giftcard') {
+					appliedGiftcardCode.value = res.code
+					appliedCouponCode.value = undefined
+					// If the giftcard has enough balance, it discounts the total cart amount.
+					// If it has less, it discounts whatever balance is left.
+					discountAmount.value = Math.min(res.balance, cartSubtotal.value)
+				}
+				displayToast(res.message, 'success')
+				promoCode.value = ''
+			}
+		} catch (error: any) {
+			displayToast(error.data?.statusMessage || 'Código inválido', 'error')
+		}
+	}
+
+	const removePromoCode = () => {
+		appliedCouponCode.value = undefined
+		appliedGiftcardCode.value = undefined
+		discountAmount.value = 0
+	}
+
 	// Watcher for booking param from URL
 	watch([
 		() => route.query.booking_id,
@@ -81,24 +144,54 @@ export function useTpv() {
 			if (!bookingData) return
 
 			const client = cls.find((c: any) => c.user_id === bookingData.client_id)
+			let currentClientBonuses: any[] = []
 			if (client) {
 				selectedClient.value = client
+				try {
+					currentClientBonuses = await $fetch(`/api/clients/${client.user_id}/bonuses`)
+				} catch (e) {}
 			}
 
 			const itemsToAdd: any[] = []
 			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
 				for (const it of bookingData.booking_items) {
 					let foundItem: any = null
-					const type = it.item_type.toLowerCase()
+					let type = it.item_type.toLowerCase()
+					let appliedBonusId: string | undefined = undefined
 					
 					if (type === 'service') {
 						foundItem = svcs.find((s: any) => s.service_id === it.item_id)
+						// Check if client has a bonus for this service
+						if (foundItem) {
+							const matchingBonus = currentClientBonuses.find(b => b.bonus?.service?.service_id === foundItem.service_id && b.remaining_sessions > 0)
+							if (matchingBonus) {
+								appliedBonusId = matchingBonus.client_bonus_id
+								matchingBonus.remaining_sessions--
+							}
+						}
 					} else if (type === 'pack') {
 						foundItem = pks?.find((p: any) => p.pack_id === it.item_id)
 					} else if (type === 'bonus') {
 						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
+						// Fallback: If not a template, it might be an explicit ClientBonus from Agenda
+						if (!foundItem && currentClientBonuses.length > 0) {
+							const explicitBonus = currentClientBonuses.find(b => b.client_bonus_id === it.item_id)
+							if (explicitBonus && explicitBonus.bonus?.service) {
+								foundItem = explicitBonus.bonus.service
+								appliedBonusId = explicitBonus.client_bonus_id
+								type = 'service'
+								explicitBonus.remaining_sessions--
+							}
+						}
 					} else if (type === 'product') {
 						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
+					} else if (type === 'giftcard') {
+						// Si agendaron un giftcard_usage, copiamos el ID al input de promo del TPV y descartamos el ítem
+						promoCode.value = it.name?.includes('Tarjeta Regalo: ') ? it.name.split('Tarjeta Regalo: ')[1].split(' ')[0] : ''
+						if (promoCode.value) {
+							setTimeout(() => validatePromoCode(), 500)
+						}
+						continue // No se añade como ítem de venta
 					}
 
 					if (foundItem) {
@@ -109,6 +202,7 @@ export function useTpv() {
 							unit_price: foundItem.price,
 							tax_rate: foundItem.tax_rate || 21.0,
 							quantity: 1,
+							applied_client_bonus_id: appliedBonusId
 						})
 					} else {
 						itemsToAdd.push({
@@ -118,6 +212,7 @@ export function useTpv() {
 							unit_price: 0,
 							tax_rate: 21.0,
 							quantity: 1,
+							applied_client_bonus_id: appliedBonusId
 						})
 					}
 				}
@@ -256,7 +351,10 @@ export function useTpv() {
 
 	// Computed Totals
 	const cartSubtotal = computed(() => {
-		return cartItems.value.reduce((acc, item) => acc + item.unit_price * item.quantity, 0)
+		return cartItems.value.reduce((acc, item) => {
+			if (item.applied_client_bonus_id) return acc
+			return acc + item.unit_price * item.quantity
+		}, 0)
 	})
 
 	const cartTotal = computed(() => {
@@ -280,6 +378,9 @@ export function useTpv() {
 			discount: discountAmount.value,
 			items: cartItems.value,
 			booking_id: processedBookingId.value || undefined,
+			applied_coupon: appliedCouponCode.value,
+			applied_giftcard: appliedGiftcardCode.value,
+			applied_giftcard_amount: appliedGiftcardCode.value ? discountAmount.value : undefined,
 		})
 	}
 
@@ -311,6 +412,10 @@ export function useTpv() {
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
+		clientBonuses,
+		promoCode,
+		appliedCouponCode,
+		appliedGiftcardCode,
 		addToCart,
 		removeFromCart,
 		clearCart,
@@ -319,5 +424,7 @@ export function useTpv() {
 		handleAvatarError,
 		formatCurrency,
 		displayToast,
+		validatePromoCode,
+		removePromoCode,
 	}
 }

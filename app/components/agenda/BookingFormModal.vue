@@ -104,6 +104,35 @@
 		}
 	}, { immediate: true })
 
+	// Client Wallet State (Bonuses & Giftcards)
+	const clientWallet = reactive({
+		bonuses: [] as any[],
+		giftcards: [] as any[],
+		isLoading: false
+	})
+
+	watch(() => form.client_id, async (newClientId) => {
+		if (!newClientId) {
+			clientWallet.bonuses = []
+			clientWallet.giftcards = []
+			return
+		}
+		
+		clientWallet.isLoading = true
+		try {
+			const [b, g] = await Promise.all([
+				$fetch(`/api/clients/${newClientId}/bonuses`),
+				$fetch(`/api/clients/${newClientId}/giftcards`)
+			])
+			clientWallet.bonuses = (b as any[]) || []
+			clientWallet.giftcards = (g as any[]) || []
+		} catch (error) {
+			console.error('Error fetching client wallet:', error)
+		} finally {
+			clientWallet.isLoading = false
+		}
+	})
+
 	// Filtering for items based on tab and search
 	const filteredItems = computed(() => {
 		const q = itemSearch.value.toLowerCase().trim()
@@ -111,8 +140,23 @@
 		
 		if (activeTab.value === 'SERVICE') source = services.value || []
 		else if (activeTab.value === 'PACK') source = packs.value || []
-		else if (activeTab.value === 'BONUS') source = bonuses.value || []
-		else if (activeTab.value === 'GIFTCARD') source = giftcards.value || []
+		else if (activeTab.value === 'BONUS') {
+			source = clientWallet.bonuses.map(cb => ({
+				bonus_id: cb.client_bonus_id, // Usamos el ID del client_bonus para identificarlo
+				name: `Bono: ${cb.bonus?.name} (Quedan ${cb.remaining_sessions})`,
+				duration: cb.bonus?.service?.duration || 0,
+				is_client_bonus: true
+			}))
+		}
+		else if (activeTab.value === 'GIFTCARD') {
+			source = clientWallet.giftcards.map(g => ({
+				giftcard_id: g.giftcard_id,
+				name: `Tarjeta Regalo: ${g.code} (Saldo: ${g.current_balance}€)`,
+				duration: 0,
+				is_giftcard_usage: true,
+				code: g.code
+			}))
+		}
 		
 		if (!q) return source.slice(0, 10)
 		
@@ -344,6 +388,21 @@
 								<option value="">-- Sin asignar --</option>
 								<option v-for="user in staff?.filter(s => s.role === 'ADMIN' || s.user_id === form.staff_id)" :key="user.user_id" :value="user.user_id">{{ user.name }} {{ user.surname }}</option>
 							</select>
+						</div>
+					</div>
+
+					<!-- Client Wallet (Bonos y Tarjetas Regalo Disponibles) -->
+					<div v-if="form.client_id && (!clientWallet.isLoading) && (clientWallet.bonuses.length > 0 || clientWallet.giftcards.length > 0)" class="col-span-full mt-2 rounded-xl border border-primary/20 bg-primary/5 p-4">
+						<h4 class="mb-3 text-xs font-bold uppercase tracking-wider text-primary">Disponibles del Cliente</h4>
+						<div class="flex flex-wrap gap-2">
+							<div v-for="b in clientWallet.bonuses.filter(b => b.remaining_sessions > 0)" :key="b.client_bonus_id" class="badge badge-primary gap-1 py-3 text-xs font-semibold shadow-sm">
+								<Ticket class="h-3 w-3" />
+								{{ b.bonus?.name || 'Bono' }} (Quedan: {{ b.remaining_sessions }})
+							</div>
+							<div v-for="g in clientWallet.giftcards" :key="g.giftcard_id" class="badge badge-secondary gap-1 py-3 text-xs font-semibold shadow-sm">
+								<PackageIcon class="h-3 w-3" />
+								Tarjeta: {{ g.code }} (Saldo: {{ formatCurrency(g.current_balance) }})
+							</div>
 						</div>
 					</div>
 
