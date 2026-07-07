@@ -1,16 +1,25 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/vue-query'
-import { useDebouncedRef } from '~/composables/useDebouncedRef'
+import { storeToRefs } from 'pinia'
+import { useAgendaStore } from '~/stores/useAgendaStore'
 
 export function useAgenda() {
 	const queryClient = useQueryClient()
+	const store = useAgendaStore()
 
-	// State
-	const currentDate = ref(new Date())
-	const selectedDate = ref(new Date())
-	const viewMode = ref<'day' | 'week' | 'month' | 'year' | 'agenda' | '4days'>('day')
-	const searchQuery = useDebouncedRef('', 500)
+	// Extract state from store
+	const { 
+		selectedDate, 
+		viewMode, 
+		searchQuery, 
+		isBookingDrawerOpen, 
+		isBookingDetailsOpen, 
+		selectedBooking,
+		prefillDate,
+		prefillTime,
+		showSidebar
+	} = storeToRefs(store)
 
-	// Delete Modal State
+	// Additional local state for modals that are not in store
 	const deleteModalOpen = ref(false)
 	const bookingToDelete = ref<any>(null)
 
@@ -24,38 +33,18 @@ export function useAgenda() {
 		const start = new Date(selectedDate.value)
 		const end = new Date(selectedDate.value)
 
-		if (viewMode.value === 'day') {
-			start.setHours(0, 0, 0, 0)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === '4days') {
-			start.setHours(0, 0, 0, 0)
-			end.setDate(end.getDate() + 3)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'week') {
-			const day = start.getDay()
-			const diff = start.getDate() - day + (day === 0 ? -6 : 1)
-			start.setDate(diff)
-			start.setHours(0, 0, 0, 0)
-			
-			end.setTime(start.getTime())
-			end.setDate(end.getDate() + 6)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'month') {
-			start.setDate(1)
-			start.setHours(0, 0, 0, 0)
-			end.setMonth(end.getMonth() + 1)
-			end.setDate(0)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'year') {
-			start.setMonth(0, 1)
-			start.setHours(0, 0, 0, 0)
-			end.setMonth(11, 31)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'agenda') {
-			start.setHours(0, 0, 0, 0)
-			end.setDate(end.getDate() + 30)
-			end.setHours(23, 59, 59, 999)
-		}
+		// To prevent data flickering/disappearing when switching between Day/Week/Month tabs,
+		// we ALWAYS fetch the entire month (plus a 7-day padding for cross-month weeks) 
+		// regardless of the current viewMode. The individual view components will filter 
+		// the data they need.
+		start.setDate(1)
+		start.setHours(0, 0, 0, 0)
+		start.setDate(start.getDate() - 7) // 7 days padding for week view overlap
+
+		end.setMonth(end.getMonth() + 1)
+		end.setDate(0)
+		end.setHours(23, 59, 59, 999)
+		end.setDate(end.getDate() + 14) // 14 days padding for month view overlap
 
 		return {
 			start: start.toISOString(),
@@ -66,7 +55,7 @@ export function useAgenda() {
 
 	// Fetch bookings
 	const { data: bookings, isPending } = useQuery({
-		queryKey: ['bookings', queryParams, viewMode],
+		queryKey: ['bookings', queryParams], // Removed viewMode to prevent refetching when switching tabs
 		queryFn: () => $fetch<Array<any>>('/api/agenda/bookings', { query: queryParams.value }),
 		placeholderData: keepPreviousData,
 	})
@@ -109,7 +98,7 @@ export function useAgenda() {
 		else if (viewMode.value === 'month') newDate.setMonth(newDate.getMonth() - 1)
 		else if (viewMode.value === 'year') newDate.setFullYear(newDate.getFullYear() - 1)
 		else if (viewMode.value === 'agenda') newDate.setDate(newDate.getDate() - 30)
-		selectedDate.value = newDate
+		store.setDate(newDate)
 	}
 
 	const nextPeriod = () => {
@@ -120,11 +109,11 @@ export function useAgenda() {
 		else if (viewMode.value === 'month') newDate.setMonth(newDate.getMonth() + 1)
 		else if (viewMode.value === 'year') newDate.setFullYear(newDate.getFullYear() + 1)
 		else if (viewMode.value === 'agenda') newDate.setDate(newDate.getDate() + 30)
-		selectedDate.value = newDate
+		store.setDate(newDate)
 	}
 
 	const setToday = () => {
-		selectedDate.value = new Date()
+		store.setDate(new Date())
 	}
 
 	// Filtered list
@@ -199,7 +188,7 @@ export function useAgenda() {
 	}
 
 	return {
-		currentDate,
+		store,
 		selectedDate,
 		viewMode,
 		searchQuery,

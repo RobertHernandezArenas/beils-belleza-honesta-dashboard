@@ -1,206 +1,292 @@
 <script setup lang="ts">
-	import gsap from 'gsap'
+import { computed } from 'vue'
+import { Clock, Scissors, User as UserIcon } from 'lucide-vue-next'
 
-	const props = defineProps<{
-		bookings: any[]
-		selectedDate: Date
-		daysCount?: number
-	}>()
+const props = defineProps<{
+    bookings: any[]
+    selectedDate: Date
+    daysCount?: number
+}>()
 
-	const emit = defineEmits<{
-		(e: 'edit', booking: any): void
-		(e: 'delete', id: string): void
-		(e: 'status', id: string, status: string): void
-	}>()
+const emit = defineEmits<{
+    (e: 'edit', booking: any): void
+    (e: 'delete', id: string): void
+    (e: 'status', id: string, status: string): void
+    (e: 'create', defaultDate: Date, defaultTime: string): void
+}>()
 
-	const hourHeight = 96 // pixels per hour (exactly matches Tailwind's h-24: 24 * 4px)
-	const startHour = 8 
-	const endHour = 22 
-	const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i)
+const hourHeight = 96 // pixels per hour
+const startHour = 8 
+const endHour = 22 
+const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i)
 
-	const daysToDisplay = computed(() => {
-		const count = props.daysCount || 7
-		const days = []
-		
-		if (count === 7) {
-			// standard week (Mon-Sun)
-			const start = new Date(props.selectedDate)
-			const day = start.getDay()
-			const diff = start.getDate() - day + (day === 0 ? -6 : 1)
-			start.setDate(diff)
-			
-			for (let i = 0; i < 7; i++) {
-				const d = new Date(start)
-				d.setDate(start.getDate() + i)
-				days.push(d)
-			}
-		} else {
-			// 4 days starting from selected
-			for (let i = 0; i < count; i++) {
-				const d = new Date(props.selectedDate)
-				d.setDate(props.selectedDate.getDate() + i)
-				days.push(d)
-			}
-		}
-		return days
-	})
+const daysToDisplay = computed(() => {
+    const count = props.daysCount || 7
+    const days = []
+    
+    if (count === 7) {
+        // standard week (Mon-Sun)
+        const start = new Date(props.selectedDate)
+        const day = start.getDay()
+        const diff = start.getDate() - day + (day === 0 ? -6 : 1)
+        start.setDate(diff)
+        
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(start)
+            d.setDate(start.getDate() + i)
+            days.push(d)
+        }
+    } else {
+        // 4 days starting from selected
+        for (let i = 0; i < count; i++) {
+            const d = new Date(props.selectedDate)
+            d.setDate(props.selectedDate.getDate() + i)
+            days.push(d)
+        }
+    }
+    return days
+})
 
-	const formatHour = (hour: number) => {
-		return `${hour.toString().padStart(2, '0')}:00`
-	}
+const formatHour = (hour: number) => {
+    return `${hour.toString().padStart(2, '0')}:00`
+}
 
-	const getBookingStyle = (booking: any) => {
-		const [h, m] = booking.start_time.split(':').map(Number)
-		const duration = booking.duration || 30
-		
-		const top = (h - startHour + m / 60) * hourHeight
-		const height = (duration / 60) * hourHeight
-		
-		return {
-			top: `${top}px`,
-			height: `${height}px`,
-			minHeight: '1.5rem'
-		}
-	}
+const timeToMinutes = (timeStr: string) => {
+    if (!timeStr) return 0
+    const [h, m] = timeStr.split(':').map(Number)
+    return h * 60 + (m || 0)
+}
 
-	const getBookingsForDay = (date: Date) => {
-		const offset1 = date.getTimezoneOffset() * 60000;
-		const dateStr = new Date(date.getTime() - offset1).toISOString().split('T')[0]
-		
-		return props.bookings.filter(b => {
-			const bObj = new Date(b.booking_date)
-			const offset2 = bObj.getTimezoneOffset() * 60000;
-			const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
-			return bDate === dateStr
-		})
-	}
+// ----------------------------------------------------
+// Core Overlap / Bin-Packing Algorithm per Day
+// ----------------------------------------------------
+const processedDays = computed(() => {
+    if (!props.bookings) return daysToDisplay.value.map(d => ({ date: d, bookings: [] }))
 
-	const getDayBookings = (date: Date, hour: number) => {
-		const dateStr = date.toISOString().split('T')[0];
-		return props.bookings.filter(b => {
-			const bDate = new Date(b.booking_date).toISOString().split('T')[0];
-			const [bookingHour] = b.start_time.split(':').map(Number);
-			return bDate === dateStr && bookingHour === hour;
-		});
-	};
+    return daysToDisplay.value.map(date => {
+        const offset1 = date.getTimezoneOffset() * 60000;
+        const dateStr = new Date(date.getTime() - offset1).toISOString().split('T')[0]
+        
+        let dayBookings = props.bookings.filter(b => {
+            const bObj = new Date(b.booking_date)
+            const offset2 = bObj.getTimezoneOffset() * 60000;
+            const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
+            return bDate === dateStr
+        }).map(b => {
+            const startMin = timeToMinutes(b.start_time)
+            const duration = b.duration || 30
+            return {
+                ...b,
+                startMin,
+                endMin: startMin + duration,
+                column: 0,
+                maxColumns: 1
+            }
+        })
 
-	const getStatusColor = (status: string) => {
-		const key = (status || 'pending').toLowerCase()
-		const map: Record<string, string> = {
-			pending: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
-			pendiente: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
-			confirmed: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
-			confirmada: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
-			completed: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
-			completada: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
-			cancelled: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
-			cancelada: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
-		}
-		return map[key] || 'bg-bg-muted text-text-muted border border-border-default'
-	}
+        // Sort
+        dayBookings.sort((a, b) => {
+            if (a.startMin !== b.startMin) return a.startMin - b.startMin
+            return b.duration - a.duration
+        })
 
-	const getStatusStrip = (status: string) => {
-		const key = (status || 'pending').toLowerCase()
-		const map: Record<string, string> = {
-			pending: 'bg-orange-500/40',
-			pendiente: 'bg-orange-500/40',
-			confirmed: 'bg-primary/40',
-			confirmada: 'bg-primary/40',
-			completed: 'bg-emerald-500/40',
-			completada: 'bg-emerald-500/40',
-			cancelled: 'bg-stone-500/40',
-			cancelada: 'bg-stone-500/40',
-			no_show: 'bg-stone-500/20',
-		}
-		return map[key] || map['pending']
-	}
+        // Bin Packing
+        const columns: any[][] = []
+        for (const b of dayBookings) {
+            let placed = false
+            for (let colIndex = 0; colIndex < columns.length; colIndex++) {
+                const col = columns[colIndex]
+                const lastInCol = col[col.length - 1]
+                if (lastInCol.endMin <= b.startMin) {
+                    b.column = colIndex
+                    col.push(b)
+                    placed = true
+                    break
+                }
+            }
+            if (!placed) {
+                b.column = columns.length
+                columns.push([b])
+            }
+        }
 
-	const isToday = (date: Date) => {
-		return date.toDateString() === new Date().toDateString()
-	}
+        const blocks: any[][] = []
+        let currentBlock: any[] = []
+        let blockEnd = -1
 
-	onMounted(() => {
-		gsap.from('.grid-booking-card', {
-			opacity: 0,
-			scale: 0.8,
-			y: 10,
-			duration: 0.4,
-			stagger: 0.02,
-			ease: 'expo.out',
-			clearProps: 'all'
-		})
-	})
+        for (const b of dayBookings) {
+            if (b.startMin >= blockEnd && currentBlock.length > 0) {
+                blocks.push([...currentBlock])
+                currentBlock = []
+                blockEnd = -1
+            }
+            currentBlock.push(b)
+            if (b.endMin > blockEnd) {
+                blockEnd = b.endMin
+            }
+        }
+        if (currentBlock.length > 0) {
+            blocks.push([...currentBlock])
+        }
+
+        for (const block of blocks) {
+            const maxCol = Math.max(...block.map(b => b.column)) + 1
+            block.forEach(b => {
+                b.maxColumns = maxCol
+            })
+        }
+
+        return { date, bookings: dayBookings }
+    })
+})
+
+const getBookingStyle = (booking: any) => {
+    let startMin = booking.startMin || (startHour * 60)
+    // Clamp to visible hours to prevent disappearing
+    startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
+    
+    const top = ((startMin - (startHour * 60)) / 60) * hourHeight
+    const height = (booking.duration / 60) * hourHeight
+    const width = 100 / booking.maxColumns
+    const left = booking.column * width
+
+    return {
+        top: `${top}px`,
+        height: `${Math.max(height, 24)}px`, // Grid view might need smaller min-height
+        width: `calc(${width}% - 2px)`, // 2px margin
+        left: `${left}%`,
+        zIndex: booking.column + 10
+    }
+}
+
+const getStatusColor = (status: string) => {
+    const key = (status || 'pending').toLowerCase()
+    const map: Record<string, string> = {
+        pending: 'bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500/20',
+        pendiente: 'bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500/20',
+        confirmed: 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20',
+        confirmada: 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20',
+        completed: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20',
+        completada: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20',
+        cancelled: 'bg-stone-500/10 text-stone-500 border-stone-500/30 opacity-60',
+        cancelada: 'bg-stone-500/10 text-stone-500 border-stone-500/30 opacity-60',
+    }
+    return map[key] || 'bg-bg-muted text-text-muted border-border-default'
+}
+
+const getStatusStrip = (status: string) => {
+    const key = (status || 'pending').toLowerCase()
+    const map: Record<string, string> = {
+        pending: 'bg-orange-500',
+        pendiente: 'bg-orange-500',
+        confirmed: 'bg-primary',
+        confirmada: 'bg-primary',
+        completed: 'bg-emerald-500',
+        completada: 'bg-emerald-500',
+        cancelled: 'bg-stone-500',
+        cancelada: 'bg-stone-500',
+    }
+    return map[key] || 'bg-border-default'
+}
+
+const isToday = (date: Date) => {
+    return date.toDateString() === new Date().toDateString()
+}
+
+const handleGridClick = (e: MouseEvent, day: Date) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const y = e.clientY - rect.top
+    const clickedHour = startHour + Math.floor(y / hourHeight)
+    
+    const minutesFraction = (y % hourHeight) / hourHeight
+    const clickedMinutes = minutesFraction > 0.5 ? '30' : '00'
+    
+    const timeString = `${clickedHour.toString().padStart(2, '0')}:${clickedMinutes}`
+    
+    emit('create', day, timeString)
+}
+
+
 </script>
 
 <template>
-	<div class="custom-scrollbar flex-1 overflow-y-auto">
-		<div class="flex min-w-[800px] flex-col min-h-full">
-			<!-- Header Row -->
-			<div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/80 backdrop-blur-xl">
-				<div class="border-border-subtle w-16 shrink-0 border-r"></div>
-				<div 
-					v-for="day in daysToDisplay" 
-					:key="day.toISOString()"
-					class="border-border-subtle flex flex-1 flex-col items-center py-3 border-r last:border-r-0"
-					:class="{ 'bg-primary/5': isToday(day) }">
-					<div class="text-text-muted text-[10px] font-black tracking-widest uppercase opacity-60">
-						{{ day.toLocaleDateString('es-ES', { weekday: 'short' }) }}
-					</div>
-					<div 
-						class="mt-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-black transition-all"
-						:class="isToday(day) ? 'bg-primary text-white shadow-lg' : 'text-text-primary'">
-						{{ day.getDate() }}
-					</div>
-				</div>
-			</div>
+    <div class="custom-scrollbar flex-1 overflow-y-auto bg-bg-app">
+        <div class="flex min-w-[800px] flex-col min-h-full">
+            <!-- Header Row -->
+            <div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/90 backdrop-blur-md">
+                <div class="border-border-subtle w-16 shrink-0 border-r"></div>
+                <div 
+                    v-for="dayObj in processedDays" 
+                    :key="dayObj.date.toISOString()"
+                    class="border-border-subtle flex flex-1 flex-col items-center py-3 border-r last:border-r-0"
+                    :class="{ 'bg-primary/5': isToday(dayObj.date) }">
+                    <div class="text-text-muted text-[10px] font-black tracking-widest uppercase opacity-60">
+                        {{ dayObj.date.toLocaleDateString('es-ES', { weekday: 'short' }) }}
+                    </div>
+                    <div 
+                        class="mt-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-black transition-all"
+                        :class="isToday(dayObj.date) ? 'bg-primary text-white shadow-lg' : 'text-text-primary'">
+                        {{ dayObj.date.getDate() }}
+                    </div>
+                </div>
+            </div>
 
-			<!-- Grid Body -->
-			<div class="relative flex flex-1">
-				<!-- Hours Column -->
-				<div class="border-border-subtle sticky left-0 z-20 w-16 border-r bg-bg-card/80 backdrop-blur-xl">
-					<div 
-						v-for="hour in hours" 
-						:key="hour" 
-						class="border-border-subtle flex h-24 items-start justify-end border-b pr-3 pt-2">
-						<span class="text-text-muted text-[10px] font-black tracking-tighter tabular-nums opacity-60">
-							{{ hour }}:00
-						</span>
-					</div>
-				</div>
+            <!-- Grid Body -->
+            <div class="relative flex flex-1">
+                <!-- Hours Column -->
+                <div class="border-border-subtle sticky left-0 z-30 w-16 shrink-0 border-r bg-bg-card/90 backdrop-blur-md">
+                    <div 
+                        v-for="hour in hours" 
+                        :key="hour" 
+                        class="border-border-subtle relative flex h-24 items-start justify-end border-b pr-3">
+                        <span class="text-text-muted absolute -top-2.5 bg-bg-card/80 px-1 text-[10px] font-bold tabular-nums">
+                            {{ formatHour(hour) }}
+                        </span>
+                    </div>
+                </div>
 
-				<!-- Days Columns -->
-				<div class="flex flex-1">
-					<div 
-						v-for="day in daysToDisplay" 
-						:key="day.toISOString()" 
-						class="relative flex-1 border-r border-border-subtle last:border-r-0">
-						
-						<!-- Grid Lines -->
-						<div v-for="hour in hours" :key="hour" class="border-border-subtle h-24 border-b border-solid"></div>
+                <!-- Days Columns -->
+                <div class="flex flex-1">
+                    <div 
+                        v-for="dayObj in processedDays" 
+                        :key="dayObj.date.toISOString()" 
+                        class="relative flex-1 border-r border-border-subtle last:border-r-0"
+                        @click="(e) => handleGridClick(e, dayObj.date)">
+                        
+                        <!-- Grid Lines -->
+                        <div v-for="hour in hours" :key="hour" class="border-border-subtle h-24 border-b border-dashed opacity-50"></div>
 
-						<!-- Bookings -->
-						<button
-							v-for="booking in getBookingsForDay(day)"
-							:key="booking.booking_id"
-							@click="emit('edit', booking)"
-							class="grid-booking-card group absolute right-0.5 left-0.5 z-10 overflow-hidden rounded-xl border-none p-0 shadow-sm transition-all hover:z-40 hover:scale-[1.02] hover:shadow-lg active:scale-95"
-							:class="getStatusColor(booking.status)"
-							:style="getBookingStyle(booking)">
-							<div class="flex h-full flex-col p-2 text-left">
-								<div class="truncate text-[9px] font-black tracking-tight uppercase">
-									{{ booking.client?.name }}
-								</div>
-								<div v-if="booking.booking_items?.length" class="truncate text-[8px] font-bold opacity-60 mt-0.5 uppercase">
-									{{ booking.booking_items.map((i: { name: any; }) => i.name).join(', ') }}
-								</div>
-								<div class="text-[8px] font-black opacity-40 mt-0.5">
-									{{ booking.start_time }}
-								</div>
-							</div>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <!-- Empty State Indicator for Debugging -->
+                        <div v-if="dayObj.bookings.length === 0" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                            <span class="text-xs font-bold uppercase tracking-widest text-text-muted rotate-[-90deg] whitespace-nowrap">Sin citas</span>
+                        </div>
+
+                        <!-- Bookings -->
+                        <button
+                            v-for="booking in dayObj.bookings"
+                            :key="booking.booking_id"
+                            @click.stop="emit('edit', booking)"
+                            class="grid-booking-card group absolute ml-0.5 cursor-pointer overflow-hidden rounded-lg border p-1.5 transition-all hover:z-50 hover:shadow-md"
+                            :class="getStatusColor(booking.status)"
+                            :style="getBookingStyle(booking)">
+                            
+                            <!-- Left Status Strip -->
+                            <div
+                                class="absolute top-0 bottom-0 left-0 w-1 opacity-80"
+                                :class="getStatusStrip(booking.status)"></div>
+
+                            <div class="flex h-full flex-col text-left pl-1.5">
+                                <div class="truncate text-[10px] font-bold tracking-tight leading-tight">
+                                    {{ booking.client?.name }} {{ booking.client?.surname?.charAt(0) }}.
+                                </div>
+                                <div v-if="booking.duration > 30" class="text-[8px] font-semibold opacity-70 mt-0.5 truncate flex items-center gap-1">
+                                    <Clock class="h-2 w-2 shrink-0" /> {{ booking.start_time }}
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

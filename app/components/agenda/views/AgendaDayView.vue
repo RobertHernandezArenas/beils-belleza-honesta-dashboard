@@ -1,294 +1,362 @@
 <script setup lang="ts">
-	import {
-		Clock,
-		User as UserIcon,
-		Scissors,
-		MoreVertical,
-		CheckCircle2,
-		XCircle,
-		Pencil,
-		Trash2,
-	} from 'lucide-vue-next'
-	import gsap from 'gsap'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import {
+    Clock,
+    User as UserIcon,
+    Scissors,
+    MoreVertical,
+    CheckCircle2,
+    Pencil,
+    Trash2,
+} from 'lucide-vue-next'
+import { useAgendaStore } from '~/stores/useAgendaStore'
 
-	const props = defineProps<{
-		bookings: any[]
-		selectedDate: Date
-	}>()
+const props = defineProps<{
+    bookings: any[]
+    selectedDate: Date
+}>()
 
-	const emit = defineEmits<{
-		(e: 'edit', booking: any): void
-		(e: 'delete', id: string): void
-		(e: 'status', id: string, status: string): void
-	}>()
+const emit = defineEmits<{
+    (e: 'edit', booking: any): void
+    (e: 'delete', id: string): void
+    (e: 'status', id: string, status: string): void
+    (e: 'create', defaultDate: Date, defaultTime: string): void
+}>()
 
-	const hourHeight = 96 // pixels per hour (exactly matches Tailwind's h-24)
-	const startHour = 8 // start at 8 AM
-	const endHour = 22 // end at 10 PM
-	const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i)
+const store = useAgendaStore()
 
-	const formatHour = (hour: number) => {
-		return `${hour.toString().padStart(2, '0')}:00`
-	}
+const hourHeight = 96 // pixels per hour (matches h-24)
+const startHour = 8
+const endHour = 22
+const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i)
 
-	const getBookingStyle = (booking: any) => {
-		const [h, m] = booking.start_time.split(':').map(Number)
-		const duration = booking.duration || 30
+const formatHour = (hour: number) => `${hour.toString().padStart(2, '0')}:00`
 
-		const top = (h - startHour + m / 60) * hourHeight
-		// const height = (duration / 60) * hourHeight
+const timeToMinutes = (timeStr: string) => {
+    if (!timeStr) return 0
+    const [h, m] = timeStr.split(':').map(Number)
+    return h * 60 + (m || 0)
+}
 
-		return {
-			top: `${top}px`,
-			/* height: `${height}px`, */
-			minHeight: '80px',
-		}
-	}
+// ----------------------------------------------------
+// Core Overlap / Bin-Packing Algorithm
+// ----------------------------------------------------
+const processedBookings = computed(() => {
+    if (!props.bookings) return []
 
-	const getStatusColor = (status: string) => {
-		const key = (status || 'pending').toLowerCase()
-		const map: Record<string, string> = {
-			pending: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
-			pendiente: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
-			confirmed: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
-			confirmada: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
-			completed: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
-			completada: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
-			cancelled: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
-			cancelada: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
-		}
-		return map[key] || 'bg-bg-muted text-text-muted border border-border-default'
-	}
+    // 1. Filter for the selected day only
+    const offset1 = props.selectedDate.getTimezoneOffset() * 60000
+    const dateStr = new Date(props.selectedDate.getTime() - offset1).toISOString().split('T')[0]
 
-	const getStatusStrip = (status: string) => {
-		const key = (status || 'pending').toLowerCase()
-		const map: Record<string, string> = {
-			pending: 'bg-orange-500/40',
-			pendiente: 'bg-orange-500/40',
-			confirmed: 'bg-primary/40',
-			confirmada: 'bg-primary/40',
-			completed: 'bg-emerald-500/40',
-			completada: 'bg-emerald-500/40',
-			cancelled: 'bg-stone-500/40',
-			cancelada: 'bg-stone-500/40',
-			no_show: 'bg-stone-500/20',
-		}
-		return map[key] || map['pending']
-	}
+    const dayBookings = props.bookings.filter(b => {
+        const bObj = new Date(b.booking_date)
+        const offset2 = bObj.getTimezoneOffset() * 60000
+        const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
+        return bDate === dateStr
+    }).map(b => {
+        const startMin = timeToMinutes(b.start_time)
+        const duration = b.duration || 30
+        return {
+            ...b,
+            startMin,
+            endMin: startMin + duration,
+            column: 0,
+            maxColumns: 1
+        }
+    })
 
-	const getStatusLabel = (status: string) => {
-		const key = (status || 'pending').toLowerCase()
-		const map: Record<string, string> = {
-			pending: 'Pendiente',
-			pendiente: 'Pendiente',
-			confirmed: 'Confirmada',
-			confirmada: 'Confirmada',
-			completed: 'Finalizada',
-			completada: 'Finalizada',
-			cancelled: 'Cancelada',
-			cancelada: 'Cancelada',
-			no_show: 'No asiste',
-		}
-		return map[key] || status
-	}
+    // 2. Sort by start time ascending, then by duration descending
+    dayBookings.sort((a, b) => {
+        if (a.startMin !== b.startMin) return a.startMin - b.startMin
+        return b.duration - a.duration
+    })
 
-	const filteredBookings = computed(() => {
-		if (!props.bookings) return []
-		const offset1 = props.selectedDate.getTimezoneOffset() * 60000
-		const dateStr = new Date(props.selectedDate.getTime() - offset1).toISOString().split('T')[0]
-		
-		return props.bookings.filter(b => {
-			const bObj = new Date(b.booking_date)
-			const offset2 = bObj.getTimezoneOffset() * 60000
-			const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
-			return bDate === dateStr
-		})
-	})
+    // 3. Assign columns (Bin Packing)
+    const columns: any[][] = []
+    
+    for (const b of dayBookings) {
+        let placed = false
+        for (let colIndex = 0; colIndex < columns.length; colIndex++) {
+            const col = columns[colIndex]
+            // Check if b overlaps with the last item in this column
+            const lastInCol = col[col.length - 1]
+            if (lastInCol.endMin <= b.startMin) {
+                // Doesn't overlap, can be placed here
+                b.column = colIndex
+                col.push(b)
+                placed = true
+                break
+            }
+        }
+        if (!placed) {
+            // Must create a new column
+            b.column = columns.length
+            columns.push([b])
+        }
+    }
 
-	const currentTimePosition = ref(0)
-	const updateTimeIndicator = () => {
-		const now = new Date()
-		if (now.toDateString() === props.selectedDate.toDateString()) {
-			const h = now.getHours()
-			const m = now.getMinutes()
-			if (h >= startHour && h <= endHour) {
-				currentTimePosition.value = (h - startHour + m / 60) * hourHeight
-			} else {
-				currentTimePosition.value = -1
-			}
-		} else {
-			currentTimePosition.value = -1
-		}
-	}
+    // 4. Determine max overlapping columns for each block to compute widths
+    // A block is a group of connected overlapping events
+    const blocks: any[][] = []
+    let currentBlock: any[] = []
+    let blockEnd = -1
 
-	onMounted(() => {
-		updateTimeIndicator()
-		setInterval(updateTimeIndicator, 60000)
+    for (const b of dayBookings) {
+        if (b.startMin >= blockEnd && currentBlock.length > 0) {
+            // End of block
+            blocks.push([...currentBlock])
+            currentBlock = []
+            blockEnd = -1
+        }
+        currentBlock.push(b)
+        if (b.endMin > blockEnd) {
+            blockEnd = b.endMin
+        }
+    }
+    if (currentBlock.length > 0) {
+        blocks.push([...currentBlock])
+    }
 
-		// Staggered entry animation
-		gsap.from('.booking-card', {
-			opacity: 0,
-			scale: 0.8,
-			y: 30,
-			duration: 0.5,
-			stagger: 0.04,
-			ease: 'expo.out',
-			clearProps: 'all',
-		})
-	})
+    // For each block, all members share the max width
+    for (const block of blocks) {
+        // Find max column index in this block
+        const maxCol = Math.max(...block.map(b => b.column)) + 1
+        block.forEach(b => {
+            b.maxColumns = maxCol
+        })
+    }
+
+    return dayBookings
+})
+
+const getBookingStyle = (booking: any) => {
+    let startMin = booking.startMin || (startHour * 60)
+    // Clamp to visible hours to prevent disappearing
+    startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
+    
+    const top = ((startMin - (startHour * 60)) / 60) * hourHeight
+    const height = (booking.duration / 60) * hourHeight
+    const width = 100 / booking.maxColumns
+    const left = booking.column * width
+
+    return {
+        top: `${top}px`,
+        height: `${Math.max(height, 40)}px`, // Ensure at least 40px height to be clickable
+        width: `calc(${width}% - 4px)`, // 4px margin between columns
+        left: `${left}%`,
+        zIndex: booking.column + 10 // Layer overlapping correctly
+    }
+}
+
+// ----------------------------------------------------
+// UI Helpers
+// ----------------------------------------------------
+const getStatusColor = (status: string) => {
+    const key = (status || 'pending').toLowerCase()
+    const map: Record<string, string> = {
+        pending: 'bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500/20',
+        pendiente: 'bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500/20',
+        confirmed: 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20',
+        confirmada: 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20',
+        completed: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20',
+        completada: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20',
+        cancelled: 'bg-stone-500/10 text-stone-500 border-stone-500/30 opacity-60',
+        cancelada: 'bg-stone-500/10 text-stone-500 border-stone-500/30 opacity-60',
+    }
+    return map[key] || 'bg-bg-muted text-text-muted border-border-default'
+}
+
+const getStatusStrip = (status: string) => {
+    const key = (status || 'pending').toLowerCase()
+    const map: Record<string, string> = {
+        pending: 'bg-orange-500',
+        pendiente: 'bg-orange-500',
+        confirmed: 'bg-primary',
+        confirmada: 'bg-primary',
+        completed: 'bg-emerald-500',
+        completada: 'bg-emerald-500',
+        cancelled: 'bg-stone-500',
+        cancelada: 'bg-stone-500',
+    }
+    return map[key] || 'bg-border-default'
+}
+
+// ----------------------------------------------------
+// Time Indicator
+// ----------------------------------------------------
+const currentTimePosition = ref(-1)
+let timeInterval: any
+
+const updateTimeIndicator = () => {
+    const now = new Date()
+    if (now.toDateString() === props.selectedDate.toDateString()) {
+        const h = now.getHours()
+        const m = now.getMinutes()
+        if (h >= startHour && h <= endHour) {
+            currentTimePosition.value = (h - startHour + m / 60) * hourHeight
+        } else {
+            currentTimePosition.value = -1
+        }
+    } else {
+        currentTimePosition.value = -1
+    }
+}
+
+// ----------------------------------------------------
+// Interaction
+// ----------------------------------------------------
+const handleGridClick = (e: MouseEvent) => {
+    // Determine which hour slot was clicked based on Y coordinate
+    // The grid wrapper is relative.
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const y = e.clientY - rect.top
+    const clickedHour = startHour + Math.floor(y / hourHeight)
+    
+    // We can also determine the half-hour if needed, but let's stick to hour or 30-min marks
+    const minutesFraction = (y % hourHeight) / hourHeight
+    const clickedMinutes = minutesFraction > 0.5 ? '30' : '00'
+    
+    const timeString = `${clickedHour.toString().padStart(2, '0')}:${clickedMinutes}`
+    
+    // Don't trigger if clicked on an actual event (event propagation stop should handle this)
+    emit('create', props.selectedDate, timeString)
+}
+
+onMounted(() => {
+    updateTimeIndicator()
+    timeInterval = setInterval(updateTimeIndicator, 60000)
+})
+
+onUnmounted(() => {
+    clearInterval(timeInterval)
+})
 </script>
 
 <template>
-	<div class="custom-scrollbar relative flex-1 overflow-y-auto">
-		<div class="flex flex-col min-h-full">
-			<!-- Top Header -->
-			<div
-				class="border-border-subtle bg-bg-card/80 sticky top-0 z-40 flex border-b backdrop-blur-xl transition-all duration-300">
-				<div class="border-border-subtle w-12 shrink-0 border-r p-2 md:w-16"></div>
-				<div class="flex-1 py-3 text-center md:py-4">
-					<div class="text-text-muted text-[8px] font-black tracking-[0.2em] uppercase md:text-[10px]">
-						{{ selectedDate.toLocaleDateString('es-ES', { weekday: 'long' }) }}
-					</div>
-					<div class="text-text-primary mt-0.5 text-2xl font-black tracking-tighter md:mt-1 md:text-4xl">
-						{{ selectedDate.getDate() }}
-					</div>
-				</div>
-			</div>
+    <div class="custom-scrollbar relative flex-1 overflow-y-auto overflow-x-hidden bg-bg-app">
+        <div class="flex flex-col min-h-full">
+            <!-- Top Header -->
+            <div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/90 backdrop-blur-md">
+                <div class="border-border-subtle w-16 shrink-0 border-r p-2"></div>
+                <div class="flex-1 py-3 px-4 flex items-center gap-4">
+                    <div class="text-text-primary text-4xl font-black tracking-tighter tabular-nums">
+                        {{ selectedDate.getDate() }}
+                    </div>
+                    <div>
+                        <div class="text-text-muted text-[10px] font-bold uppercase tracking-widest">
+                            {{ selectedDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) }}
+                        </div>
+                        <div class="text-text-primary text-sm font-semibold capitalize">
+                            {{ selectedDate.toLocaleDateString('es-ES', { weekday: 'long' }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-			<!-- Timeline Grid -->
-			<div class="relative flex flex-1">
-				<!-- Hours Column (Eje Y Y lateral) -->
-				<div class="border-border-subtle sticky left-0 z-20 w-12 shrink-0 border-r bg-bg-card/80 backdrop-blur-xl md:w-16">
-					<div 
-						v-for="hour in hours" 
-						:key="'label-'+hour" 
-						class="border-border-subtle flex h-24 items-start justify-end border-b pr-2 pt-2 md:pr-3">
-						<span class="text-text-muted text-[9px] font-black tracking-tighter tabular-nums opacity-60 md:text-[10px]">
-							{{ formatHour(hour) }}
-						</span>
-					</div>
-				</div>
+            <!-- Timeline Grid -->
+            <div class="relative flex flex-1">
+                <!-- Hours Column (Y axis) -->
+                <div class="border-border-subtle sticky left-0 z-30 w-16 shrink-0 border-r bg-bg-card/90 backdrop-blur-md">
+                    <div 
+                        v-for="hour in hours" 
+                        :key="'label-'+hour" 
+                        class="border-border-subtle relative flex h-24 items-start justify-end border-b pr-3">
+                        <span class="text-text-muted absolute -top-2.5 bg-bg-card/80 px-1 text-[10px] font-bold tabular-nums">
+                            {{ formatHour(hour) }}
+                        </span>
+                    </div>
+                </div>
 
-				<div class="relative flex-1">
-					<!-- Grid Lines -->
-					<div
-						v-for="hour in hours"
-						:key="'grid-'+hour"
-						class="border-border-subtle h-24 border-b border-solid w-full"></div>
+                <!-- Bookings Area -->
+                <div class="relative flex-1" @click="handleGridClick">
+                    <!-- Grid Lines -->
+                    <div
+                        v-for="hour in hours"
+                        :key="'grid-'+hour"
+                        class="border-border-subtle h-24 border-b border-dashed w-full opacity-50"></div>
 
-				<!-- Current Time Indicator -->
-				<div
-					v-if="currentTimePosition >= 0"
-					:style="{ top: `${currentTimePosition}px` }"
-					class="pointer-events-none absolute right-0 left-0 z-30 flex items-center px-2">
-					<div
-						class="bg-primary h-3 w-3 animate-pulse rounded-full shadow-[0_0_20px_rgba(var(--color-primary),1)]"></div>
-					<div class="bg-primary/30 ml-1 h-0.5 flex-1"></div>
-				</div>
+                    <!-- Current Time Indicator -->
+                    <div
+                        v-if="currentTimePosition >= 0"
+                        :style="{ top: `${currentTimePosition}px` }"
+                        class="pointer-events-none absolute right-0 left-0 z-20 flex items-center">
+                        <div class="bg-error h-2.5 w-2.5 -ml-1.5 animate-pulse rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
+                        <div class="bg-error/50 h-px flex-1 shadow-[0_0_4px_rgba(239,68,68,0.5)]"></div>
+                    </div>
 
-				<!-- Bookings -->
-				<div
-					v-for="booking in filteredBookings"
-					:key="booking.booking_id"
-					class="booking-card group absolute right-2 left-3 z-10 cursor-pointer overflow-hidden rounded-2xl p-0 transition-all hover:z-40 hover:scale-[1.01] hover:shadow-xl"
-					:class="getStatusColor(booking.status)"
-					:style="getBookingStyle(booking)"
-					@click="emit('edit', booking)">
-					<!-- Status Strip -->
-					<div
-						class="absolute top-0 bottom-0 left-0 my-3 ml-1.5 w-1 rounded-full"
-						:class="getStatusStrip(booking.status)"></div>
+                    <!-- Empty State Indicator for Debugging -->
+                    <div v-if="processedBookings.length === 0" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                        <span class="text-xs font-bold uppercase tracking-widest text-text-muted">No hay citas para este día</span>
+                    </div>
 
-					<div class="flex h-full flex-col overflow-hidden pl-5 md:pl-6 transition-all"
-						:class="[
-							booking.duration <= 30 ? 'justify-start p-1.5' : 'justify-start p-2 md:p-3'
-						]">
-						<div class="flex items-center justify-between gap-1 overflow-hidden shrink-0">
-							<h4 class="truncate font-black tracking-tighter uppercase mb-0 leading-tight"
-								:class="[
-									booking.duration <= 30 ? 'text-[10px]' : 'text-sm md:text-base'
-								]">
-								{{ booking.client?.name }} {{ booking.client?.surname }}
-							</h4>
+                    <!-- Bookings -->
+                    <button
+                        v-for="booking in processedBookings"
+                        :key="booking.booking_id"
+                        class="booking-card group absolute ml-1 cursor-pointer overflow-hidden rounded-xl border p-2 transition-all hover:z-50 hover:shadow-md"
+                        :class="getStatusColor(booking.status)"
+                        :style="getBookingStyle(booking)"
+                        @click.stop="emit('edit', booking)">
+                        
+                        <!-- Left Status Strip -->
+                        <div
+                            class="absolute top-0 bottom-0 left-0 w-1 opacity-80"
+                            :class="getStatusStrip(booking.status)"></div>
 
-							<!-- Action Dropdown -->
-							<div class="dropdown dropdown-end" :class="{ 'scale-75 origin-right': booking.duration <= 30 }">
-								<button
-									tabindex="0"
-									class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100">
-									<MoreVertical class="h-3 w-3" />
-								</button>
-								<ul
-									tabindex="0"
-									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-40 rounded-xl border p-1 shadow-xl">
-									<li>
-										<a class="text-xs" @click="emit('status', booking.booking_id, 'confirmed')">
-											<CheckCircle2 class="text-info h-3.5 w-3.5" />
-											Confirmar
-										</a>
-									</li>
-									<li>
-										<a class="text-xs" @click="emit('status', booking.booking_id, 'completed')">
-											<CheckCircle2 class="text-success h-3.5 w-3.5" />
-											Finalizar
-										</a>
-									</li>
-									<div class="divider my-0.5 opacity-30"></div>
-									<li>
-										<a class="text-xs" @click="emit('edit', booking)">
-											<Pencil class="h-3.5 w-3.5" />
-											Editar
-										</a>
-									</li>
-									<li>
-										<a class="text-error text-xs" @click="emit('delete', booking.booking_id)">
-											<Trash2 class="h-3.5 w-3.5" />
-											Eliminar
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div>
+                        <!-- Content Layout -->
+                        <div class="flex h-full flex-col overflow-hidden pl-2">
+                            <!-- Header Row -->
+                            <div class="flex items-start justify-between gap-1 shrink-0">
+                                <h4 class="truncate font-bold tracking-tight text-xs leading-tight">
+                                    {{ booking.client?.name }} {{ booking.client?.surname }}
+                                </h4>
 
-						<!-- SECONDARY INFO ROW: Adaptive layout -->
-						<div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 overflow-hidden transition-all"
-							:class="booking.duration <= 30 ? 'opacity-80' : 'opacity-60'">
-							
-							<!-- Time and Staff (Always prioritized) -->
-							<div class="flex items-center gap-2 shrink-0">
-								<span class="flex items-center gap-1 text-[9px] font-black tracking-widest uppercase">
-									<Clock class="h-2 w-2" />
-									{{ booking.start_time }}
-								</span>
-								<span v-if="booking.staff" class="flex items-center gap-1 text-[9px] font-black tracking-widest uppercase">
-									<UserIcon class="h-2 w-2" />
-									{{ booking.staff.name }}
-								</span>
-							</div>
+                                <!-- Action Dropdown -->
+                                <div class="dropdown dropdown-end" @click.stop>
+                                    <button
+                                        tabindex="0"
+                                        class="btn btn-ghost btn-xs btn-circle h-5 w-5 min-h-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <MoreVertical class="h-3 w-3" />
+                                    </button>
+                                    <ul
+                                        tabindex="0"
+                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[100] mt-1 w-36 rounded-xl border p-1 shadow-xl">
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info h-3 w-3" /> Confirmar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success h-3 w-3" /> Finalizar</a></li>
+                                        <div class="divider my-0 opacity-30 h-1"></div>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('edit', booking)"><Pencil class="h-3 w-3" /> Editar</a></li>
+                                        <li><a class="text-error text-[11px] py-1.5" @click.stop="emit('delete', booking.booking_id)"><Trash2 class="h-3 w-3" /> Eliminar</a></li>
+                                    </ul>
+                                </div>
+                            </div>
 
-							<!-- Services: Horizontal for small cards, Block for large cards -->
-							<div v-if="booking.booking_items?.length" 
-								:class="booking.duration <= 30 ? 'flex items-center gap-1 pl-1 border-l border-white/20 ml-1' : 'w-full flex flex-wrap gap-1 mt-1'">
-								
-								<div v-if="booking.duration <= 30" class="flex items-center gap-1 text-[9px] font-black tracking-wider uppercase truncate">
-									<Scissors class="h-1.5 w-1.5 shrink-0 opacity-50" />
-									<span class="truncate max-w-[150px]">{{ (booking.booking_items as any[]).map((i: any) => i.name).join(', ') }}</span>
-								</div>
+                            <!-- Meta Info (Time & Staff) -->
+                            <div class="flex items-center gap-2 mt-0.5 shrink-0 opacity-80">
+                                <span class="flex items-center gap-1 text-[9px] font-bold tabular-nums">
+                                    <Clock class="h-2.5 w-2.5" />
+                                    {{ booking.start_time }}
+                                </span>
+                                <span v-if="booking.staff" class="flex items-center gap-1 text-[9px] font-semibold truncate">
+                                    <UserIcon class="h-2.5 w-2.5" />
+                                    <span class="truncate max-w-[60px]">{{ booking.staff.name }}</span>
+                                </span>
+                            </div>
 
-								<template v-else>
-									<span v-for="item in booking.booking_items" :key="item.id" 
-										class="text-[9px] font-black tracking-wider uppercase flex items-center gap-1">
-										<Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2" />
-										<span class="max-w-[150px] truncate leading-none">{{ item.name }}</span>
-										<span v-if="booking.booking_items.indexOf(item) < booking.booking_items.length - 1" class="opacity-30 mx-0.5">•</span>
-									</span>
-								</template>
-							</div>
-						</div>
-					</div>
-				</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                            <!-- Services Info (Only if tall enough) -->
+                            <div v-if="booking.duration > 30 && booking.booking_items?.length" class="mt-1.5 overflow-hidden">
+                                <div v-for="item in booking.booking_items.slice(0, 2)" :key="item.id" 
+                                    class="text-[9px] opacity-70 flex items-center gap-1 truncate mt-0.5">
+                                    <Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2 shrink-0" />
+                                    <span class="truncate">{{ item.name }}</span>
+                                </div>
+                                <div v-if="booking.booking_items.length > 2" class="text-[9px] opacity-50 mt-0.5 italic">
+                                    +{{ booking.booking_items.length - 2 }} más
+                                </div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
