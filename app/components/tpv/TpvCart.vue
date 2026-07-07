@@ -22,9 +22,12 @@
 		isCheckingOut: boolean
 		avatarError: boolean
 		formatCurrency: (val: number) => string
+		clientBonuses: any[]
+		appliedCouponCode: string | undefined
+		appliedGiftcardCode: string | undefined
 	}
 
-	defineProps<Props>()
+	const props = defineProps<Props>()
 
 	const emit = defineEmits<{
 		(e: 'select-client', client: any): void
@@ -34,11 +37,47 @@
 		(e: 'increase-item-qty', index: number): void
 		(e: 'checkout'): void
 		(e: 'avatar-error'): void
+		(e: 'validate-promo'): void
+		(e: 'remove-promo'): void
 	}>()
 
 	const clientSearch = defineModel<string>('clientSearch', { required: true })
 	const discountAmount = defineModel<number>('discountAmount', { required: true })
 	const paymentMethod = defineModel<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('paymentMethod', { required: true })
+	const promoCode = defineModel<string>('promoCode', { required: true })
+	const isPromoOpen = ref(false)
+	const isConfirmingLastSession = ref(false)
+
+	const handleAttemptCheckout = () => {
+		let hasLastSession = false
+		const appliedCounts: Record<string, number> = {}
+		
+		for (const item of props.cartItems) {
+			if (item.applied_client_bonus_id) {
+				appliedCounts[item.applied_client_bonus_id] = (appliedCounts[item.applied_client_bonus_id] || 0) + item.quantity
+			}
+		}
+		
+		for (const [bonusId, count] of Object.entries(appliedCounts)) {
+			const cb = props.clientBonuses.find(b => b.client_bonus_id === bonusId)
+			// Cuando el bono tenía X sesiones originalmente, y en el carrito se consumen X sesiones exactas (dejando 0 disponibles localmente), es la última.
+			if (cb && cb.remaining_sessions === 0) {
+				hasLastSession = true
+				break
+			}
+		}
+		
+		if (hasLastSession) {
+			isConfirmingLastSession.value = true
+		} else {
+			emit('checkout')
+		}
+	}
+
+	const confirmLastSession = () => {
+		isConfirmingLastSession.value = false
+		emit('checkout')
+	}
 </script>
 
 <template>
@@ -131,26 +170,31 @@
 								<Trash2 class="h-3.5 w-3.5" />
 							</button>
 						</div>
-						<div class="flex items-center justify-between">
+						<div class="flex items-center justify-between mt-2">
 							<div class="flex items-center gap-1.5">
 								<button
+									v-if="!item.applied_client_bonus_id"
 									@click="item.quantity > 1 ? emit('decrease-item-qty', index) : emit('remove-item', index)"
 									aria-label="Decrease Quantity"
 									class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
 									-
 								</button>
-								<span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
+								<span v-if="!item.applied_client_bonus_id" class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
 									{{ item.quantity }}
 								</span>
 								<button
+									v-if="!item.applied_client_bonus_id"
 									@click="emit('increase-item-qty', index)"
 									aria-label="Increase Quantity"
 									class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
 									+
 								</button>
+								<div v-else class="bg-success/15 text-success border border-success/30 px-2 py-0.5 rounded-md text-[9px] font-black tracking-widest uppercase flex items-center gap-1">
+									<Check class="w-3 h-3" /> Bono Aplicado
+								</div>
 							</div>
 							<span class="text-xs font-black tabular-nums text-text-primary">
-								{{ formatCurrency(item.unit_price * item.quantity) }}
+								{{ formatCurrency(item.applied_client_bonus_id ? 0 : item.unit_price * item.quantity) }}
 							</span>
 						</div>
 					</div>
@@ -166,6 +210,7 @@
 					<span>Subtotal</span>
 					<span class="tabular-nums font-bold text-text-primary">{{ formatCurrency(cartSubtotal) }}</span>
 				</div>
+
 				<div class="text-error flex items-center justify-between text-xs font-semibold uppercase">
 					<span class="flex items-center gap-1">
 						<Tag class="h-3 w-3" />
@@ -178,9 +223,55 @@
 							type="number"
 							min="0"
 							:max="cartSubtotal"
-							class="input input-xs bg-error/10 text-error h-7 w-full rounded-md border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" />
+							:disabled="!!appliedCouponCode || !!appliedGiftcardCode"
+							class="input input-xs bg-error/10 text-error h-7 w-full rounded-md border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" 
+							:class="{'opacity-70': !!appliedCouponCode || !!appliedGiftcardCode}" />
 					</div>
 				</div>
+
+				<!-- Promo Code Section -->
+				<div class="flex flex-col gap-2 mt-1">
+					<button 
+						v-if="!isPromoOpen && !appliedCouponCode && !appliedGiftcardCode" 
+						@click="isPromoOpen = true"
+						class="text-left text-[10px] font-bold text-text-muted hover:text-text-primary transition-colors flex items-center gap-1">
+						<Tag class="w-3 h-3" />
+						Añadir código promocional
+					</button>
+
+					<div v-else-if="appliedCouponCode || appliedGiftcardCode" class="bg-success/10 border border-success/20 rounded-lg p-2.5 flex items-center justify-between">
+						<div class="flex items-center gap-2">
+							<div class="bg-success/20 p-1 rounded">
+								<Check class="w-3 h-3 text-success" />
+							</div>
+							<div class="flex flex-col">
+								<span class="text-[9px] font-black uppercase text-success tracking-widest">{{ appliedCouponCode ? 'Cupón' : 'Tarjeta Regalo' }}</span>
+								<span class="text-xs font-bold text-text-primary">{{ appliedCouponCode || appliedGiftcardCode }}</span>
+							</div>
+						</div>
+						<button @click="emit('remove-promo')" class="btn btn-ghost btn-xs btn-circle text-text-muted hover:text-error hover:bg-error/10">
+							<Trash2 class="w-3.5 h-3.5" />
+						</button>
+					</div>
+
+					<div v-else-if="isPromoOpen" class="flex gap-2">
+						<input 
+							v-model="promoCode" 
+							type="text" 
+							placeholder="Código..." 
+							class="input input-sm flex-1 bg-bg-muted/50 border-border-default/60 focus:bg-bg-card font-semibold text-xs" />
+						<button 
+							@click="emit('validate-promo')" 
+							class="btn btn-sm btn-primary px-3 text-xs font-bold"
+							:disabled="!promoCode">
+							Aplicar
+						</button>
+						<button @click="isPromoOpen = false" class="btn btn-sm btn-ghost px-2 text-text-muted">
+							<Trash2 class="w-4 h-4" />
+						</button>
+					</div>
+				</div>
+
 				<div class="divider my-0.5 opacity-40"></div>
 				<div class="flex items-end justify-between">
 					<span class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Total a Pagar</span>
@@ -269,13 +360,39 @@
 
 			<!-- Action -->
 			<button
-				@click="emit('checkout')"
+				@click="handleAttemptCheckout"
 				:disabled="cartItems.length === 0 || isCheckingOut"
 				class="btn h-14 w-full rounded-2xl border-none text-sm font-black tracking-widest uppercase shadow-md active:scale-[0.97] transition-all"
 				:class="cartItems.length > 0 ? 'bg-text-primary hover:bg-text-primary/95 text-bg-card' : 'bg-bg-muted text-text-muted/60 opacity-50 cursor-not-allowed'">
 				<span v-if="isCheckingOut" class="loading loading-spinner loading-sm"></span>
 				<span v-else>Confirmar y Cobrar</span>
 			</button>
+		</div>
+	</div>
+
+	<!-- Last Session Confirmation Modal -->
+	<div v-if="isConfirmingLastSession" class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-0">
+		<div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="isConfirmingLastSession = false"></div>
+
+		<div class="bg-bg-card shadow-3xl relative w-full max-w-sm transform overflow-hidden rounded-3xl p-6 transition-all sm:w-[400px]">
+			<div class="mb-5 flex flex-col items-center text-center">
+				<div class="bg-warning/20 text-warning mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+					<Tag class="h-8 w-8" />
+				</div>
+				<h3 class="text-text-primary text-xl font-black tracking-tight">Última Sesión</h3>
+				<p class="text-text-muted mt-2 text-sm font-medium">
+					Estás a punto de consumir la <strong class="text-text-primary">última sesión</strong> de uno de los bonos aplicados en este cobro. ¿Deseas continuar?
+				</p>
+			</div>
+
+			<div class="flex gap-3">
+				<button @click="isConfirmingLastSession = false" class="btn bg-bg-muted text-text-primary hover:bg-bg-muted/80 flex-1 rounded-xl border-none font-bold">
+					Cancelar
+				</button>
+				<button @click="confirmLastSession" class="btn btn-warning text-warning-content hover:bg-warning/90 flex-1 rounded-xl border-none font-bold shadow-lg">
+					Sí, Cobrar
+				</button>
+			</div>
 		</div>
 	</div>
 </template>

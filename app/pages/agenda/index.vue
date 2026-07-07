@@ -1,429 +1,219 @@
 <script setup lang="ts">
-	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-	import {
-		MoreVertical,
-		Trash2,
-		Calendar,
-		CalendarDays,
-		CalendarRange,
-		LayoutDashboard,
-		ListTodo,
-		ChevronDown,
-		History,
-		Search,
-		Plus,
-		ChevronLeft,
-		ChevronRight,
-		Clock,
-		User as UserIcon,
-		Scissors,
-		CheckCircle2,
-		XCircle,
-		Pencil,
-	} from 'lucide-vue-next'
-	import BookingFormModal from '~/components/agenda/BookingFormModal.vue'
-	import { useDebouncedRef } from '~/composables/useDebouncedRef'
+import { useQueryClient } from '@tanstack/vue-query'
+import {
+    CalendarDays,
+    Search,
+    ChevronLeft,
+    ChevronRight,
+    PanelLeftClose,
+    PanelLeftOpen
+} from 'lucide-vue-next'
+import BookingDrawer from '~/components/agenda/BookingDrawer.vue'
+import DaySummaryModal from '~/components/agenda/DaySummaryModal.vue'
+import GenericDeleteModal from '~/components/shared/GenericDeleteModal.vue'
 
-	// Import Agenda Views
-	import AgendaDayView from '~/components/agenda/views/AgendaDayView.vue'
-	import AgendaGridView from '~/components/agenda/views/AgendaGridView.vue'
-	import AgendaMonthView from '~/components/agenda/views/AgendaMonthView.vue'
-	import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
-	import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
-	import BookingDetailsModal from '~/components/agenda/BookingDetailsModal.vue'
-	import GenericDeleteModal from '~/components/shared/GenericDeleteModal.vue'
-	import gsap from 'gsap'
+// Import Agenda Views
+import AgendaDayView from '~/components/agenda/views/AgendaDayView.vue'
+import AgendaGridView from '~/components/agenda/views/AgendaGridView.vue'
+import AgendaMonthView from '~/components/agenda/views/AgendaMonthView.vue'
+import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
+import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
+import AgendaSidebar from '~/components/agenda/AgendaSidebar.vue'
 
-	definePageMeta({ layout: 'default' })
-	useHead({ title: 'Agenda y Reservas' })
+import { useAgenda } from '~/composables/useAgenda'
+import gsap from 'gsap'
 
-	const queryClient = useQueryClient()
-	const modalRef = ref<InstanceType<typeof BookingFormModal> | null>(null)
-	const toastMessage = ref('')
-	const toastType = ref<'success' | 'error'>('success')
-	const showToast = ref(false)
-	const detailsModalRef = ref<InstanceType<typeof BookingDetailsModal> | null>(null)
+definePageMeta({ layout: 'default' })
+useHead({ title: 'Agenda y Reservas | Beils' })
 
-	// Calendar State
-	const currentDate = ref(new Date())
-	const selectedDate = ref(new Date())
-	const viewMode = ref<'day' | 'week' | 'month' | 'year' | 'agenda' | '4days'>('day')
-	const searchQuery = useDebouncedRef('', 500)
+const queryClient = useQueryClient()
 
-	// Delete Modal State
-	const deleteModalOpen = ref(false)
-	const bookingToDelete = ref<any>(null)
+const {
+    store,
+    selectedDate,
+    viewMode,
+    searchQuery,
+    deleteModalOpen,
+    bookingToDelete,
+    toastMessage,
+    toastType,
+    showToast,
+    isPending,
+    isDeletingBooking,
+    prevPeriod,
+    nextPeriod,
+    setToday,
+    displayBookings,
+    confirmDelete,
+    handleActualDelete,
+    setBookingStatus,
+    displayToast,
+    formatDayDate,
+} = useAgenda()
 
-	// Compute start and end of current view for API query
-	const queryParams = computed(() => {
-		const start = new Date(selectedDate.value)
-		const end = new Date(selectedDate.value)
+const daySummaryModalRef = ref<InstanceType<typeof DaySummaryModal> | null>(null)
 
-		if (viewMode.value === 'day') {
-			start.setHours(0, 0, 0, 0)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === '4days') {
-			start.setHours(0, 0, 0, 0)
-			end.setDate(end.getDate() + 3)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'week') {
-			// Start of week (Monday)
-			const day = start.getDay()
-			const diff = start.getDate() - day + (day === 0 ? -6 : 1)
-			start.setDate(diff)
-			start.setHours(0, 0, 0, 0)
-			
-			end.setTime(start.getTime())
-			end.setDate(end.getDate() + 6)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'month') {
-			start.setDate(1)
-			start.setHours(0, 0, 0, 0)
-			end.setMonth(end.getMonth() + 1)
-			end.setDate(0)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'year') {
-			start.setMonth(0, 1)
-			start.setHours(0, 0, 0, 0)
-			end.setMonth(11, 31)
-			end.setHours(23, 59, 59, 999)
-		} else if (viewMode.value === 'agenda') {
-			start.setHours(0, 0, 0, 0)
-			end.setDate(end.getDate() + 30) // Agenda shows 30 days by default
-			end.setHours(23, 59, 59, 999)
-		}
+// GSAP Animations
+const viewContainer = ref(null)
 
-		return {
-			start: start.toISOString(),
-			end: end.toISOString(),
-			search: searchQuery.value || undefined
-		}
-	})
+watch(viewMode, () => {
+    if (viewContainer.value) {
+        gsap.fromTo(viewContainer.value, 
+            { opacity: 0, y: 6 },
+            { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }
+        )
+    }
+})
 
-	const { data: bookings, isPending } = useQuery({
-		queryKey: ['bookings', queryParams, viewMode],
-		queryFn: () => $fetch<Array<any>>('/api/agenda/bookings', { query: queryParams.value }),
-	})
+const handleDateChange = (direction: 'next' | 'prev') => {
+    if (direction === 'next') nextPeriod()
+    else prevPeriod()
 
-	const { mutate: updateStatus } = useMutation({
-		mutationFn: (payload: { id: string; status: string }) =>
-			$fetch(`/api/agenda/bookings/${payload.id}`, {
-				method: 'PUT',
-				body: { status: payload.status },
-			}),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['bookings'] })
-			displayToast('Estado de la cita actualizado', 'success')
-		},
-		onError: (error: any) => {
-			displayToast(error.data?.statusMessage || 'Error al actualizar', 'error')
-		},
-	})
-
-	const { mutate: deleteBooking, isPending: isDeletingBooking } = useMutation({
-		mutationFn: (id: string) => $fetch(`/api/agenda/bookings/${id}`, { method: 'DELETE' }),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['bookings'] })
-			displayToast('Cita cancelada y eliminada', 'success')
-			deleteModalOpen.value = false
-			bookingToDelete.value = null
-		},
-		onError: (error: any) => {
-			displayToast(error.data?.statusMessage || 'Error al eliminar', 'error')
-		},
-	})
-
-	// Navigation
-	const prevPeriod = () => {
-		const newDate = new Date(selectedDate.value)
-		if (viewMode.value === 'day') newDate.setDate(newDate.getDate() - 1)
-		else if (viewMode.value === '4days') newDate.setDate(newDate.getDate() - 4)
-		else if (viewMode.value === 'week') newDate.setDate(newDate.getDate() - 7)
-		else if (viewMode.value === 'month') newDate.setMonth(newDate.getMonth() - 1)
-		else if (viewMode.value === 'year') newDate.setFullYear(newDate.getFullYear() - 1)
-		else if (viewMode.value === 'agenda') newDate.setDate(newDate.getDate() - 30)
-		selectedDate.value = newDate
-	}
-
-	const nextPeriod = () => {
-		const newDate = new Date(selectedDate.value)
-		if (viewMode.value === 'day') newDate.setDate(newDate.getDate() + 1)
-		else if (viewMode.value === '4days') newDate.setDate(newDate.getDate() + 4)
-		else if (viewMode.value === 'week') newDate.setDate(newDate.getDate() + 7)
-		else if (viewMode.value === 'month') newDate.setMonth(newDate.getMonth() + 1)
-		else if (viewMode.value === 'year') newDate.setFullYear(newDate.getFullYear() + 1)
-		else if (viewMode.value === 'agenda') newDate.setDate(newDate.getDate() + 30)
-		selectedDate.value = newDate
-	}
-
-	const setToday = () => {
-		selectedDate.value = new Date()
-	}
-
-	// Filtered Bookings for the View
-	const displayBookings = computed(() => {
-		if (!bookings.value || !Array.isArray(bookings.value)) return []
-		let filtered = bookings.value as Array<any>
-
-		if (searchQuery.value) {
-			const q = searchQuery.value.toLowerCase()
-			filtered = filtered.filter(
-				(b: any) =>
-					b.client?.name?.toLowerCase().includes(q) ||
-					b.client?.surname?.toLowerCase().includes(q) ||
-					b.client?.phone?.includes(q) ||
-					b.staff?.name?.toLowerCase().includes(q) ||
-					b.notes?.toLowerCase().includes(q),
-			)
-		}
-
-		return filtered
-	})
-
-	const openCreateModal = () => {
-		// Pass selectedDate as default for new booking
-		modalRef.value?.showModal(null, selectedDate.value)
-	}
-
-	const openEditModal = (booking: any) => {
-		modalRef.value?.showModal(booking, selectedDate.value)
-	}
-
-	const openDetailsModal = (booking: any) => {
-		detailsModalRef.value?.open(booking)
-	}
-
-	const confirmDelete = (id: string) => {
-		const b = bookings.value?.find((b: any) => b.booking_id === id)
-		bookingToDelete.value = b || { booking_id: id }
-		deleteModalOpen.value = true
-	}
-
-	const handleActualDelete = () => {
-		if (bookingToDelete.value?.booking_id) {
-			deleteBooking(bookingToDelete.value.booking_id)
-		}
-	}
-
-	const setBookingStatus = (id: string, status: string) => {
-		updateStatus({ id, status })
-	}
-
-	const displayToast = (message: string, type: 'success' | 'error') => {
-		toastMessage.value = message
-		toastType.value = type
-		showToast.value = true
-		setTimeout(() => (showToast.value = false), 3000)
-	}
-
-	const formatDayDate = (date: Date) => {
-		return new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).format(date)
-	}
-
-	const getStatusColor = (status: string) => {
-		const s = (status || 'PENDIENTE').toUpperCase()
-		const map: Record<string, string> = {
-			PENDIENTE: 'bg-warning/20 text-yellow-800 border-warning/50',
-			CONFIRMADA: 'bg-primary/20 text-primary border-primary/50',
-			CANCELADA: 'bg-error/10 text-error border-error/50',
-			COMPLETADA: 'bg-success/20 text-success border-success/50',
-			AUSENTE: 'bg-gray-500/20 text-gray-500 border-gray-400/50',
-		}
-		return map[s] || map['PENDIENTE']
-	}
-
-	const getStatusLabel = (status: string) => {
-		const s = (status || 'PENDIENTE').toUpperCase()
-		const map: Record<string, string> = {
-			PENDIENTE: 'Pendiente',
-			CONFIRMADA: 'Confirmada',
-			CANCELADA: 'Cancelada',
-			COMPLETADA: 'Finalizada',
-			AUSENTE: 'No asiste',
-		}
-		return map[s] || s
-	}
-
-	// GSAP Animations
-	const viewContainer = ref(null)
-
-	watch(viewMode, () => {
-		if (viewContainer.value) {
-			gsap.fromTo(viewContainer.value, 
-				{ opacity: 0, y: 6 },
-				{ opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }
-			)
-		}
-	})
-
-	const handleDateChange = (direction: 'next' | 'prev') => {
-		if (direction === 'next') nextPeriod()
-		else prevPeriod()
-
-		if (viewContainer.value) {
-			const xMove = direction === 'next' ? 12 : -12
-			gsap.fromTo(viewContainer.value,
-				{ x: xMove, opacity: 0 },
-				{ x: 0, opacity: 1, duration: 0.28, ease: 'power2.out' }
-			)
-		}
-	}
+    if (viewContainer.value) {
+        const xMove = direction === 'next' ? 12 : -12
+        gsap.fromTo(viewContainer.value,
+            { x: xMove, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.28, ease: 'power2.out' }
+        )
+    }
+}
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-primary relative flex h-screen min-h-screen w-full flex-col overflow-hidden p-4 lg:p-8 transition-colors duration-700">
-		<!-- Background Glows (Subtler for light mode) -->
-		<div class="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
-		<div class="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]"></div>
+    <div class="bg-bg-app text-text-primary flex h-screen min-h-screen w-full flex-col overflow-hidden p-0 transition-colors duration-700">
+        
+        <!-- Header Strip -->
+        <div class="h-16 shrink-0 border-b border-border-subtle bg-bg-card/90 backdrop-blur-md px-6 flex items-center justify-between z-20 relative">
+            <div class="flex items-center gap-4">
+                <button 
+                    @click="store.showSidebar = !store.showSidebar"
+                    class="p-2 hover:bg-bg-muted rounded-xl transition-colors text-text-secondary">
+                    <PanelLeftClose v-if="store.showSidebar" class="h-5 w-5" />
+                    <PanelLeftOpen v-else class="h-5 w-5" />
+                </button>
+                <div class="flex items-center gap-3">
+                    <div class="bg-text-primary text-bg-app flex h-8 w-8 items-center justify-center rounded-lg shadow-sm">
+                        <CalendarDays class="h-4 w-4" />
+                    </div>
+                    <h1 class="text-lg font-black tracking-wider uppercase m-0">Agenda</h1>
+                </div>
+            </div>
 
-		<!-- Header -->
-		<div class="relative z-10 mb-8 flex shrink-0 flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
-			<div class="flex items-center gap-4">
-				<div 
-					class="bg-text-primary text-bg-app flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg">
-					<CalendarDays class="h-6 w-6" />
-				</div>
-				<div>
-					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">
-						Agenda
-					</h1>
-					<p class="text-text-muted text-sm font-medium">{{ formatDate(selectedDate) }}</p>
-				</div>
-			</div>
+            <!-- View Switcher -->
+            <div class="flex items-center bg-bg-muted/50 p-1 rounded-xl border border-border-subtle hidden md:flex">
+                <button
+                    v-for="mode in ['day', 'week', 'month']" 
+                    :key="mode"
+                    @click="store.setViewMode(mode as any)"
+                    class="h-8 px-4 rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-all"
+                    :class="[
+                        viewMode === mode 
+                            ? 'bg-bg-card text-text-primary shadow-sm' 
+                            : 'text-text-muted hover:text-text-primary hover:bg-black/5'
+                    ]">
+                    {{ mode === 'day' ? 'Día' : mode === 'week' ? 'Semana' : 'Mes' }}
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <ClientOnly>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-0.5">{{ selectedDate.getFullYear() }}</p>
+                        <p class="text-xs font-black uppercase text-text-primary">{{ formatDayDate(selectedDate) }}</p>
+                    </ClientOnly>
+                </div>
+            </div>
+        </div>
 
-			<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
-				<!-- Search -->
-				<div class="relative w-full sm:w-3/4 lg:w-64">
-					<Search class="text-text-muted absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2" />
-					<input
-						v-model="searchQuery"
-						type="text"
-						placeholder="Buscar cita o cliente..."
-						class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4" />
-				</div>
-				<!-- Add -->
-				<button
-					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
-					@click="openCreateModal">
-					<Plus class="h-5 w-5" />
-					<span class="font-bold">Nueva Cita</span>
-				</button>
-			</div>
-		</div>
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden relative">
+            
+            <!-- Sidebar -->
+            <ClientOnly>
+                <AgendaSidebar v-show="store.showSidebar" />
+            </ClientOnly>
 
-		<!-- Toolbar -->
-		<div
-			class="relative z-10 mb-6 flex shrink-0 flex-col items-center justify-between gap-4 sm:flex-row">
-			<div class="flex w-full flex-col items-center gap-3 lg:flex-row lg:justify-between">
-				<!-- Date Navigation -->
-				<div class="bg-bg-muted border-border-default flex w-full items-center justify-between gap-1 rounded-full border p-1 shadow-sm md:w-auto">
-					<button 
-						class="text-text-primary hover:bg-bg-hover flex h-8 items-center gap-2 rounded-full px-4 text-[10px] font-black transition-all active:scale-95 md:h-9 md:text-xs"
-						@click="setToday">
-						<History class="h-3.5 w-3.5" />
-						Hoy
-					</button>
-					<div class="bg-border-default h-4 w-px"></div>
-					<div class="flex items-center gap-1">
-						<button
-							class="text-text-muted hover:bg-bg-hover hover:text-text-primary btn btn-square btn-ghost btn-sm h-8 w-8 rounded-full transition-all active:scale-90 md:h-9 md:w-9"
-							@click="handleDateChange('prev')">
-							<ChevronLeft class="h-5 w-5" />
-						</button>
-						<button
-							class="text-text-muted hover:bg-bg-hover hover:text-text-primary btn btn-square btn-ghost btn-sm h-8 w-8 rounded-full transition-all active:scale-90 md:h-9 md:w-9"
-							@click="handleDateChange('next')">
-							<ChevronRight class="h-5 w-5" />
-						</button>
-					</div>
-				</div>
+            <!-- Agenda Viewport -->
+            <div 
+                ref="viewContainer" 
+                class="flex-1 overflow-hidden flex flex-col relative bg-bg-card/40">
+                
+                <!-- Overlay Loader when initially pending -->
+                <div v-if="isPending && (!displayBookings || displayBookings.length === 0)" class="absolute inset-0 z-50 flex items-center justify-center bg-bg-card/40 backdrop-blur-sm">
+                    <div class="loading loading-spinner text-primary loading-lg"></div>
+                </div>
 
-				<!-- View Switcher (Responsive Switcher) -->
-				<div class="bg-bg-muted border-border-default custom-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-full border p-1 shadow-sm no-scrollbar md:w-auto">
-					<button
-						v-for="mode in ['day', 'week', 'month', 'year', 'agenda']" 
-						:key="mode"
-						@click="viewMode = mode as any"
-						class="h-8 shrink-0 rounded-full px-4 text-[9px] font-black tracking-widest uppercase transition-all duration-300 active:scale-95 md:h-9 md:px-5 md:text-[10px]"
-						:class="[
-							viewMode === mode 
-								? 'bg-text-primary text-bg-card shadow-lg' 
-								: 'text-text-muted hover:text-text-primary hover:bg-bg-hover'
-						]">
-						{{ 
-							mode === 'day' ? 'Día' : 
-							mode === 'week' ? 'Semana' : 
-							mode === 'month' ? 'Mes' : 
-							mode === 'year' ? 'Año' : 
-							'Agenda' 
-						}}
-					</button>
-				</div>
-			</div>
-		</div>
+                <!-- Dynamic View Component -->
+                <div class="flex-1 overflow-hidden flex flex-col relative" :class="{ 'opacity-50 pointer-events-none': isPending && displayBookings && displayBookings.length > 0 }">
+                    <ClientOnly>
+                        <component 
+                            :is="viewMode === 'day' ? AgendaDayView :
+                                viewMode === 'week' ? AgendaGridView :
+                                viewMode === '4days' ? AgendaGridView :
+                                viewMode === 'month' ? AgendaMonthView :
+                                viewMode === 'year' ? AgendaYearView :
+                                AgendaListView"
+                            :bookings="displayBookings"
+                            :selectedDate="selectedDate"
+                            :isPending="isPending"
+                            :daysCount="viewMode === '4days' ? 4 : 7"
+                            @edit="(booking) => store.openBookingDrawer(booking)"
+                            @delete="confirmDelete"
+                            @status="setBookingStatus"
+                            @create="(d: Date, t: string) => store.openBookingDrawer(null, d, t)"
+                            @selectDate="(d: Date) => { store.setDate(d); store.setViewMode('day') }"
+                            @viewDayDetails="(d: Date, bs: any[]) => daySummaryModalRef?.openModal(d, bs)"
+                        />
+                    </ClientOnly>
+                </div>
+            </div>
+        </div>
 
-		<!-- Agenda Viewport -->
-		<div 
-			ref="viewContainer" 
-			class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl premium-shadow">
-			
-			<div v-if="isPending" class="flex flex-1 items-center justify-center bg-bg-card">
-				<div class="loading loading-spinner text-text-primary loading-lg"></div>
-			</div>
+        <!-- Toast Provider -->
+        <div v-if="showToast" class="toast toast-end toast-bottom z-[9999]">
+            <div
+                :class="[
+                    'alert rounded-2xl border-none text-white shadow-xl',
+                    toastType === 'success' ? 'bg-success' : 'bg-error',
+                ]">
+                <span class="font-medium text-sm">{{ toastMessage }}</span>
+            </div>
+        </div>
 
-			<!-- Dynamic View Component -->
-			<div ref="viewContainer" class="flex-1 overflow-hidden flex flex-col">
-				<component 
-					:is="viewMode === 'day' ? AgendaDayView :
-						viewMode === 'week' ? AgendaGridView :
-						viewMode === '4days' ? AgendaGridView :
-						viewMode === 'month' ? AgendaMonthView :
-						viewMode === 'year' ? AgendaYearView :
-						AgendaListView"
-					:bookings="displayBookings"
-					:selectedDate="selectedDate"
-					:isPending="isPending"
-					:daysCount="viewMode === '4days' ? 4 : 7"
-					@edit="openDetailsModal"
-					@delete="confirmDelete"
-					@status="setBookingStatus"
-					@create="openCreateModal"
-					@selectDate="(d: Date) => { selectedDate = d; viewMode = 'day' }"
-				/>
-			</div>
-		</div>
+        <!-- Booking Drawer (Replaces BookingFormModal and BookingDetailsModal) -->
+        <BookingDrawer
+            @refresh="queryClient.invalidateQueries({ queryKey: ['bookings'] })"
+            @toast="displayToast" 
+            @delete="confirmDelete" />
 
-		<!-- Toast Provider -->
-		<div v-if="showToast" class="toast toast-end toast-bottom z-200">
-			<div
-				:class="[
-					'alert rounded-2xl border-none text-white shadow-lg',
-					toastType === 'success' ? 'bg-success' : 'bg-error',
-				]">
-				<span class="font-medium">{{ toastMessage }}</span>
-			</div>
-		</div>
+        <!-- Day Summary Modal -->
+        <DaySummaryModal 
+            ref="daySummaryModalRef"
+            @edit="(booking) => store.openBookingDrawer(booking)"
+            @create="(d: Date, t: string) => store.openBookingDrawer(null, d, t)" />
 
-		<!-- Form Modal -->
-		<BookingFormModal
-			ref="modalRef"
-			@refresh="queryClient.invalidateQueries({ queryKey: ['bookings'] })"
-			@toast="displayToast" />
-
-		<!-- Details Modal -->
-		<BookingDetailsModal
-			ref="detailsModalRef"
-			@edit="openEditModal"
-			@delete="id => { detailsModalRef?.close(); confirmDelete(id) }" />
-
-		<!-- Confirm Delete Modal -->
-		<GenericDeleteModal
-			:is-open="deleteModalOpen"
-			:item-name="bookingToDelete?.client ? `${bookingToDelete.client.name} ${bookingToDelete.client.surname}` : 'esta cita'"
-			:is-deleting="isDeletingBooking"
-			custom-title="Eliminar Cita"
-			custom-message="¿Estás seguro de que deseas eliminar definitivamente esta cita de la agenda?"
-			@close="deleteModalOpen = false"
-			@confirm="handleActualDelete" />
-	</div>
+        <!-- Confirm Delete Modal -->
+        <GenericDeleteModal
+            :is-open="deleteModalOpen"
+            :item-name="bookingToDelete?.client ? `${bookingToDelete.client.name} ${bookingToDelete.client.surname}` : 'esta cita'"
+            :is-deleting="isDeletingBooking"
+            custom-title="Eliminar Cita"
+            custom-message="¿Estás seguro de que deseas eliminar definitivamente esta cita de la agenda?"
+            @close="deleteModalOpen = false"
+            @confirm="handleActualDelete" />
+    </div>
 </template>
+
+<style scoped>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 99px;
+    }
+</style>
