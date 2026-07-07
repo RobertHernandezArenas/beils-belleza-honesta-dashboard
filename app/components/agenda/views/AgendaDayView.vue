@@ -46,36 +46,64 @@
 	}
 
 	const getStatusColor = (status: string) => {
+		const key = (status || 'pending').toLowerCase()
 		const map: Record<string, string> = {
 			pending: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
+			pendiente: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
 			confirmed: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
+			confirmada: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
 			completed: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
+			completada: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
 			cancelled: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
+			cancelada: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
 		}
-		return map[status] || 'bg-bg-muted text-text-muted border border-border-default'
+		return map[key] || 'bg-bg-muted text-text-muted border border-border-default'
 	}
 
 	const getStatusStrip = (status: string) => {
+		const key = (status || 'pending').toLowerCase()
 		const map: Record<string, string> = {
 			pending: 'bg-orange-500/40',
+			pendiente: 'bg-orange-500/40',
 			confirmed: 'bg-primary/40',
+			confirmada: 'bg-primary/40',
 			completed: 'bg-emerald-500/40',
+			completada: 'bg-emerald-500/40',
 			cancelled: 'bg-stone-500/40',
+			cancelada: 'bg-stone-500/40',
 			no_show: 'bg-stone-500/20',
 		}
-		return map[status] || map['pending']
+		return map[key] || map['pending']
 	}
 
 	const getStatusLabel = (status: string) => {
+		const key = (status || 'pending').toLowerCase()
 		const map: Record<string, string> = {
 			pending: 'Pendiente',
+			pendiente: 'Pendiente',
 			confirmed: 'Confirmada',
+			confirmada: 'Confirmada',
 			completed: 'Finalizada',
+			completada: 'Finalizada',
 			cancelled: 'Cancelada',
+			cancelada: 'Cancelada',
 			no_show: 'No asiste',
 		}
-		return map[status] || status
+		return map[key] || status
 	}
+
+	const filteredBookings = computed(() => {
+		if (!props.bookings) return []
+		const offset1 = props.selectedDate.getTimezoneOffset() * 60000
+		const dateStr = new Date(props.selectedDate.getTime() - offset1).toISOString().split('T')[0]
+		
+		return props.bookings.filter(b => {
+			const bObj = new Date(b.booking_date)
+			const offset2 = bObj.getTimezoneOffset() * 60000
+			const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
+			return bDate === dateStr
+		})
+	})
 
 	const currentTimePosition = ref(0)
 	const updateTimeIndicator = () => {
@@ -160,7 +188,7 @@
 
 				<!-- Bookings -->
 				<div
-					v-for="booking in bookings"
+					v-for="booking in filteredBookings"
 					:key="booking.booking_id"
 					class="booking-card group absolute right-2 left-3 z-10 cursor-pointer overflow-hidden rounded-2xl p-0 transition-all hover:z-40 hover:scale-[1.01] hover:shadow-xl"
 					:class="getStatusColor(booking.status)"

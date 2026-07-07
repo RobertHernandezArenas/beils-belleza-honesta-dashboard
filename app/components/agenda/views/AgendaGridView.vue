@@ -85,24 +85,34 @@
 	};
 
 	const getStatusColor = (status: string) => {
+		const key = (status || 'pending').toLowerCase()
 		const map: Record<string, string> = {
 			pending: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
+			pendiente: 'bg-orange-500/5 text-orange-700 border border-orange-500/10 shadow-sm',
 			confirmed: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
+			confirmada: 'bg-primary/10 text-primary border border-primary/20 shadow-md',
 			completed: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
+			completada: 'bg-emerald-500/5 text-emerald-700 border border-emerald-500/10 shadow-sm',
 			cancelled: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
+			cancelada: 'bg-stone-500/5 text-stone-500 border border-stone-500/10 opacity-70 shadow-sm',
 		}
-		return map[status] || 'bg-bg-muted text-text-muted border border-border-default'
+		return map[key] || 'bg-bg-muted text-text-muted border border-border-default'
 	}
 
 	const getStatusStrip = (status: string) => {
+		const key = (status || 'pending').toLowerCase()
 		const map: Record<string, string> = {
 			pending: 'bg-orange-500/40',
+			pendiente: 'bg-orange-500/40',
 			confirmed: 'bg-primary/40',
+			confirmada: 'bg-primary/40',
 			completed: 'bg-emerald-500/40',
+			completada: 'bg-emerald-500/40',
 			cancelled: 'bg-stone-500/40',
+			cancelada: 'bg-stone-500/40',
 			no_show: 'bg-stone-500/20',
 		}
-		return map[status] || map['pending']
+		return map[key] || map['pending']
 	}
 
 	const isToday = (date: Date) => {

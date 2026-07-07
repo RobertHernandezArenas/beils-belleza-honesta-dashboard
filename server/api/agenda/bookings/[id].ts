@@ -44,7 +44,7 @@ export default defineEventHandler(async event => {
 			if (finalDateRaw.toString() === 'Invalid Date') {
 				throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
 			}
-			const finalDate = finalDateRaw
+			const finalDate = new Date(Date.UTC(finalDateRaw.getUTCFullYear(), finalDateRaw.getUTCMonth(), finalDateRaw.getUTCDate(), 0, 0, 0, 0))
 			const finalStart = payload.start_time || current.start_time
 			
 			// If items are provided, recalculate duration

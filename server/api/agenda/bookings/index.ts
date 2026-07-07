@@ -84,12 +84,12 @@ export default defineEventHandler(async event => {
 				}
 			}
 
-			// Validate and normalize Date (ensure it's just the date part for overlap check)
-			const bookingDate = new Date(body.booking_date)
-			if (isNaN(bookingDate.getTime())) {
+			// Parse as UTC date to avoid timezone offset shifts
+			const parsedDate = new Date(body.booking_date)
+			if (isNaN(parsedDate.getTime())) {
 				throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
 			}
-			bookingDate.setHours(0, 0, 0, 0)
+			const bookingDate = new Date(Date.UTC(parsedDate.getUTCFullYear(), parsedDate.getUTCMonth(), parsedDate.getUTCDate(), 0, 0, 0, 0))
 
 			// Calculate total duration from items
 			const totalDuration = body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
