@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import gsap from 'gsap'
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<{
     bookings: any[]
@@ -108,20 +107,7 @@ const getStatusColorClip = (status: string) => {
     return map[key] || 'bg-bg-muted text-text-muted'
 }
 
-onMounted(() => {
-    gsap.from('.month-day-cell', {
-        opacity: 0,
-        scale: 0.95,
-        duration: 0.5,
-        stagger: {
-            each: 0.01,
-            grid: [6, 7],
-            from: 'center'
-        },
-        ease: 'power2.out',
-        clearProps: 'all'
-    })
-})
+
 </script>
 
 <template>
