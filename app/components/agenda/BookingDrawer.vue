@@ -493,7 +493,7 @@ const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="flex items-center gap-1">
-                                        <button type="button" @click="removeItem(group.indices[group.indices.length - 1])" aria-label="Decrease Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
+                                        <button type="button" @click="removeItem(group.indices[group.indices.length - 1]!)" aria-label="Decrease Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
                                             -
                                         </button>
                                         <span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
