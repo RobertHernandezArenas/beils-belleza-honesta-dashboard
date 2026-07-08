@@ -35,7 +35,7 @@ const formatHour = (hour: number) => `${hour.toString().padStart(2, '0')}:00`
 const timeToMinutes = (timeStr: string) => {
     if (!timeStr) return 0
     const [h, m] = timeStr.split(':').map(Number)
-    return h * 60 + (m || 0)
+    return (h || 0) * 60 + (m || 0)
 }
 
 // ----------------------------------------------------
@@ -78,8 +78,12 @@ const processedBookings = computed(() => {
         let placed = false
         for (let colIndex = 0; colIndex < columns.length; colIndex++) {
             const col = columns[colIndex]
+            if (!col) continue
+            
             // Check if b overlaps with the last item in this column
             const lastInCol = col[col.length - 1]
+            if (!lastInCol) continue
+
             if (lastInCol.endMin <= b.startMin) {
                 // Doesn't overlap, can be placed here
                 b.column = colIndex
@@ -320,7 +324,7 @@ onUnmounted(() => {
                                     </button>
                                     <ul
                                         tabindex="0"
-                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[100] mt-1 w-36 rounded-xl border p-1 shadow-xl">
+                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-xl">
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info h-3 w-3" /> Confirmar</a></li>
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success h-3 w-3" /> Finalizar</a></li>
                                         <div class="divider my-0 opacity-30 h-1"></div>

@@ -54,7 +54,7 @@ const formatHour = (hour: number) => {
 const timeToMinutes = (timeStr: string) => {
     if (!timeStr) return 0
     const [h, m] = timeStr.split(':').map(Number)
-    return h * 60 + (m || 0)
+    return (h || 0) * 60 + (m || 0)
 }
 
 // ----------------------------------------------------
@@ -96,8 +96,9 @@ const processedDays = computed(() => {
             let placed = false
             for (let colIndex = 0; colIndex < columns.length; colIndex++) {
                 const col = columns[colIndex]
+                if (!col) continue
                 const lastInCol = col[col.length - 1]
-                if (lastInCol.endMin <= b.startMin) {
+                if (lastInCol?.endMin <= b.startMin) {
                     b.column = colIndex
                     col.push(b)
                     placed = true
@@ -258,7 +259,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
 
                         <!-- Empty State Indicator for Debugging -->
                         <div v-if="dayObj.bookings.length === 0" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-                            <span class="text-xs font-bold uppercase tracking-widest text-text-muted rotate-[-90deg] whitespace-nowrap">Sin citas</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-text-muted -rotate-90 whitespace-nowrap">Sin citas</span>
                         </div>
 
                         <!-- Bookings -->

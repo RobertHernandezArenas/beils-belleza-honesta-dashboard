@@ -100,7 +100,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
             </div>
 
             <!-- View Switcher -->
-            <div class="flex items-center bg-bg-muted/50 p-1 rounded-xl border border-border-subtle hidden md:flex">
+            <div class="hidden md:flex items-center bg-bg-muted/50 p-1 rounded-xl border border-border-subtle">
                 <button
                     v-for="mode in ['day', 'week', 'month']" 
                     :key="mode"
@@ -168,7 +168,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                             :selectedDate="selectedDate"
                             :isPending="isPending"
                             :daysCount="viewMode === '4days' ? 4 : 7"
-                            @edit="(booking) => store.openBookingDrawer(booking)"
+                            @edit="(booking: any) => store.openBookingDrawer(booking)"
                             @delete="confirmDelete"
                             @status="setBookingStatus"
                             @create="(d: Date, t: string) => store.openBookingDrawer(null, d, t)"
@@ -181,7 +181,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
         </div>
 
         <!-- Toast Provider -->
-        <div v-if="showToast" class="toast toast-end toast-bottom z-[9999]">
+        <div v-if="showToast" class="toast toast-end toast-bottom z-9999">
             <div
                 :class="[
                     'alert rounded-2xl border-none text-white shadow-xl',

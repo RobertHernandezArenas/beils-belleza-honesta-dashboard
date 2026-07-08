@@ -135,7 +135,7 @@ defineProps<Props>()
 			<div class="relative z-10 flex flex-col h-full justify-between">
 				<div class="text-left">
 					<span 
-						class="text-[9px] font-bold text-neutral-400 tracking-wider uppercase block tooltip tooltip-bottom tooltip-last cursor-help text-left inline-block"
+						class="text-[9px] font-bold text-neutral-400 tracking-wider uppercase tooltip tooltip-bottom tooltip-last cursor-help text-left inline-block"
 						data-tip="¿Qué es? Estimación de ventas al finalizar el mes en curso. &#xa;¿Para qué sirve? Evalúa la proyección de metas y objetivos mensuales. &#xa;¿Cómo se calcula? Multiplicando el promedio diario del mes por los días totales del mes.">
 						PROYECCIÓN<br/>MENSUAL
 					</span>

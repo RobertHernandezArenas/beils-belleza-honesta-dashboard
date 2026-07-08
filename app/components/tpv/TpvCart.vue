@@ -371,7 +371,7 @@
 	</div>
 
 	<!-- Last Session Confirmation Modal -->
-	<div v-if="isConfirmingLastSession" class="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-0">
+	<div v-if="isConfirmingLastSession" class="fixed inset-0 z-200 flex items-center justify-center p-4 sm:p-0">
 		<div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="isConfirmingLastSession = false"></div>
 
 		<div class="bg-bg-card shadow-3xl relative w-full max-w-sm transform overflow-hidden rounded-3xl p-6 transition-all sm:w-[400px]">

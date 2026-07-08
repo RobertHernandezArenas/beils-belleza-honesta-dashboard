@@ -303,7 +303,7 @@ const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 
         leave-active-class="transition-opacity ease-linear duration-300"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="isBookingDrawerOpen" class="fixed inset-0 z-[100] bg-text-secondary/20 backdrop-blur-sm" @click="store.closeBookingDrawer()"></div>
+        <div v-if="isBookingDrawerOpen" class="fixed inset-0 z-100 bg-text-secondary/20 backdrop-blur-sm" @click="store.closeBookingDrawer()"></div>
     </Transition>
 
     <!-- Drawer -->
@@ -314,7 +314,7 @@ const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 
         leave-active-class="transform transition ease-in duration-300"
         leave-from-class="translate-x-0"
         leave-to-class="translate-x-full">
-        <div v-if="isBookingDrawerOpen" class="fixed inset-y-0 right-0 z-[110] w-full max-w-md bg-bg-app shadow-2xl flex flex-col border-l border-border-subtle" @click="closeDropdowns">
+        <div v-if="isBookingDrawerOpen" class="fixed inset-y-0 right-0 z-110 w-full max-w-md bg-bg-app shadow-2xl flex flex-col border-l border-border-subtle" @click="closeDropdowns">
             
             <!-- Header -->
             <div class="border-border-subtle shrink-0 border-b bg-bg-card/90 px-6 py-5 flex items-center justify-between backdrop-blur-md">
