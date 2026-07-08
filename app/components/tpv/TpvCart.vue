@@ -173,23 +173,21 @@
 						<div class="flex items-center justify-between mt-2">
 							<div class="flex items-center gap-1.5">
 								<button
-									v-if="!item.applied_client_bonus_id"
 									@click="item.quantity > 1 ? emit('decrease-item-qty', index) : emit('remove-item', index)"
 									aria-label="Decrease Quantity"
 									class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
 									-
 								</button>
-								<span v-if="!item.applied_client_bonus_id" class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
+								<span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
 									{{ item.quantity }}
 								</span>
 								<button
-									v-if="!item.applied_client_bonus_id"
 									@click="emit('increase-item-qty', index)"
 									aria-label="Increase Quantity"
 									class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
 									+
 								</button>
-								<div v-else class="bg-success/15 text-success border border-success/30 px-2 py-0.5 rounded-md text-[9px] font-black tracking-widest uppercase flex items-center gap-1">
+								<div v-if="item.applied_client_bonus_id" class="bg-success/15 text-success border border-success/30 px-2 py-0.5 rounded-md text-[9px] font-black tracking-widest uppercase flex items-center gap-1">
 									<Check class="w-3 h-3" /> Bono Aplicado
 								</div>
 							</div>

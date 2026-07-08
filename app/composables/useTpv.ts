@@ -176,8 +176,13 @@ export function useTpv() {
 						// Fallback: If not a template, it might be an explicit ClientBonus from Agenda
 						if (!foundItem && currentClientBonuses.length > 0) {
 							const explicitBonus = currentClientBonuses.find(b => b.client_bonus_id === it.item_id)
-							if (explicitBonus && explicitBonus.bonus?.service) {
-								foundItem = explicitBonus.bonus.service
+							if (explicitBonus) {
+								foundItem = explicitBonus.bonus?.service || {
+									service_id: explicitBonus.client_bonus_id, // Fallback ID
+									name: explicitBonus.bonus?.name || it.name,
+									price: 0,
+									tax_rate: 21.0
+								}
 								appliedBonusId = explicitBonus.client_bonus_id
 								type = 'service'
 								explicitBonus.remaining_sessions--
@@ -195,25 +200,37 @@ export function useTpv() {
 					}
 
 					if (foundItem) {
-						itemsToAdd.push({
-							item_id: foundItem.product_id || foundItem.service_id || foundItem.pack_id || foundItem.bonus_id,
-							item_type: type,
-							name: foundItem.name,
-							unit_price: foundItem.price,
-							tax_rate: foundItem.tax_rate || 21.0,
-							quantity: 1,
-							applied_client_bonus_id: appliedBonusId
-						})
+						const matchingId = foundItem.product_id || foundItem.service_id || foundItem.pack_id || foundItem.bonus_id || foundItem.giftcard_id || it.item_id
+						const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId && i.applied_client_bonus_id === appliedBonusId)
+						
+						if (existingCartItem) {
+							existingCartItem.quantity++
+						} else {
+							itemsToAdd.push({
+								item_id: matchingId,
+								item_type: type,
+								name: foundItem.name || it.name,
+								unit_price: foundItem.price,
+								tax_rate: foundItem.tax_rate || 21.0,
+								quantity: 1,
+								applied_client_bonus_id: appliedBonusId
+							})
+						}
 					} else {
-						itemsToAdd.push({
-							item_id: it.item_id,
-							item_type: type,
-							name: it.name,
-							unit_price: 0,
-							tax_rate: 21.0,
-							quantity: 1,
-							applied_client_bonus_id: appliedBonusId
-						})
+						const existingCartItem = itemsToAdd.find(i => i.item_id === it.item_id && i.applied_client_bonus_id === appliedBonusId)
+						if (existingCartItem) {
+							existingCartItem.quantity++
+						} else {
+							itemsToAdd.push({
+								item_id: it.item_id,
+								item_type: type,
+								name: it.name,
+								unit_price: 0,
+								tax_rate: 21.0,
+								quantity: 1,
+								applied_client_bonus_id: appliedBonusId
+							})
+						}
 					}
 				}
 			}
@@ -314,15 +331,23 @@ export function useTpv() {
 
 	// Cart Operations
 	const addToCart = (item: any, type: string) => {
+		let itemId = ''
+		if (type === 'bonus') itemId = item.bonus_id
+		else if (type === 'pack') itemId = item.pack_id
+		else if (type === 'service') itemId = item.service_id
+		else if (type === 'product') itemId = item.product_id
+		else if (type === 'giftcard') itemId = item.giftcard_id
+		else itemId = item.product_id || item.service_id || item.pack_id || item.bonus_id || item.giftcard_id
+
 		const existing = cartItems.value.find(
-			i => i.item_id === (item.product_id || item.service_id || item.pack_id || item.bonus_id),
+			i => i.item_id === itemId,
 		)
 
 		if (existing) {
 			existing.quantity++
 		} else {
 			cartItems.value.push({
-				item_id: item.product_id || item.service_id || item.pack_id || item.bonus_id,
+				item_id: itemId,
 				item_type: type,
 				name: item.name,
 				unit_price: item.price,

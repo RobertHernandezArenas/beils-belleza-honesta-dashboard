@@ -114,14 +114,14 @@ export default defineEventHandler(async event => {
 				}
 
 				// 3. Generar nuevo Bono (ClientBonus) si se está comprando
-				if ((item.item_type === 'bonus' || item.item_type === 'BONUS') && !item.applied_client_bonus_id && cartData.user_id) {
+				if ((item.item_type === 'bonus' || item.item_type === 'BONUS') && !item.applied_client_bonus_id && user_id) {
 					const bonusTemplate = await tx.bonus.findUnique({ where: { bonus_id: item.item_id } });
 					if (bonusTemplate) {
 						// Si compra cantidad > 1, creamos múltiples bonos
 						for (let i = 0; i < item.quantity; i++) {
 							await tx.clientBonus.create({
 								data: {
-									client_id: cartData.user_id,
+									client_id: user_id,
 									bonus_id: item.item_id,
 									remaining_sessions: bonusTemplate.total_sessions,
 									status: 'activo'
@@ -132,7 +132,7 @@ export default defineEventHandler(async event => {
 				}
 
 				// 4. Generar nueva Tarjeta Regalo (Giftcard) si se está comprando
-				if ((item.item_type === 'giftcard' || item.item_type === 'GIFTCARD') && cartData.user_id) {
+				if ((item.item_type === 'giftcard' || item.item_type === 'GIFTCARD') && user_id) {
 					// Generar código aleatorio 
 					const codeStr = 'GC' + Math.random().toString(36).substring(2, 8).toUpperCase();
 					await tx.giftcard.create({
@@ -140,7 +140,7 @@ export default defineEventHandler(async event => {
 							code: codeStr,
 							initial_balance: item.unit_price,
 							current_balance: item.unit_price,
-							client_id: cartData.user_id,
+							client_id: user_id,
 							status: 'active'
 						}
 					});
