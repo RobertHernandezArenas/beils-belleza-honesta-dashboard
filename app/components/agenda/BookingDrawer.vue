@@ -488,7 +488,7 @@ const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 
             <!-- Footer -->
             <div class="border-border-subtle shrink-0 border-t bg-bg-card/90 px-6 py-5 backdrop-blur-md space-y-3">
                 <NuxtLink 
-                    v-if="selectedBooking && selectedBooking.booking_id" 
+                    v-if="selectedBooking && selectedBooking.booking_id && form.status !== 'COMPLETADA'" 
                     :to="`/tpv?booking_id=${selectedBooking.booking_id}`" 
                     class="btn btn-primary btn-outline w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-sm"
                     @click="store.closeBookingDrawer()">

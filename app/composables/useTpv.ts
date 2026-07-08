@@ -265,6 +265,7 @@ export function useTpv() {
 			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
 			queryClient.invalidateQueries({ queryKey: ['debts'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
+			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			clearCart()
 		},
 		onError: (error: any) => {
