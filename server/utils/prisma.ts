@@ -3,7 +3,6 @@ import 'dotenv/config'
 import pkg from '@prisma/client'
 import type { PrismaClient as PrismaClientType } from '@prisma/client'
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
-import * as mariadb from 'mariadb'
 const { PrismaClient } = pkg
 
 // Create a connection pool config for the adapter
@@ -16,15 +15,14 @@ const poolConfig = {
 	connectionLimit: 10,
 }
 
-// Initialize the Prisma MariaDB adapter
-const adapter = new PrismaMariaDb(poolConfig)
-
-const localGlobal = global as unknown as { prisma: PrismaClientType }
+const localGlobal = global as unknown as { 
+    prisma: PrismaClientType
+}
 
 export const prisma =
 	localGlobal.prisma ||
 	new PrismaClient({
-		adapter,
+		adapter: new PrismaMariaDb(poolConfig),
 		log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 	})
 

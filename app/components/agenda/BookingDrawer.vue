@@ -1,324 +1,54 @@
 <script setup lang="ts">
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { Search, ShieldCheck, Clock, Scissors, Package, CheckCircle2, History, Plus, Trash2, Ticket, Gift, Package as PackageIcon, X } from 'lucide-vue-next'
+import { Trash2, X } from 'lucide-vue-next'
 import { useAgendaStore } from '~/stores/useAgendaStore'
-
-interface ClientItem {
-    user_id: string
-    name: string
-    surname: string
-    phone: string
-    [key: string]: any
-}
-
-interface StaffItem {
-    user_id: string
-    name: string
-    surname: string
-    [key: string]: any
-}
-
-interface BookingItemData {
-    item_type: string
-    item_id: string
-    name: string
-    duration: number
-}
+import { useBookingForm } from '~/composables/useBookingForm'
+import BookingClientSelector from './BookingClientSelector.vue'
+import BookingItemSelector from './BookingItemSelector.vue'
+import BookingSelectedItems from './BookingSelectedItems.vue'
 
 const store = useAgendaStore()
-const { isBookingDrawerOpen, selectedBooking, prefillDate, prefillTime, prefillClientId } = storeToRefs(store)
+const { isBookingDrawerOpen, selectedBooking } = storeToRefs(store)
 
 const emit = defineEmits(['refresh', 'toast', 'delete'])
 
-// Fetch Data for Dropdowns
-const { data: clients } = useQuery({
-    queryKey: ['clients-agenda'],
-    queryFn: async () => {
-        const res = await $fetch<any>('/api/clients', { query: { limit: 500 } })
-        return res?.data || []
-    },
-})
+const {
+    form,
+    clients,
+    staff,
+    services,
+    packs,
+    bonuses,
+    giftcards,
+    clientWallet,
+    isSaving,
+    saveBooking,
+    resetForm,
+    localError,
+    showLocalError,
+    updateDuration
+} = useBookingForm(emit as any)
 
-const { data: staff } = useQuery({
-    queryKey: ['staff-agenda'],
-    queryFn: () => $fetch<StaffItem[]>('/api/users', {
-        query: { roles: 'ADMIN,STAFF' }
-    }),
-})
-
-const { data: services } = useQuery({
-    queryKey: ['services-agenda'],
-    queryFn: () => $fetch<any[]>('/api/services'),
-})
-
-const { data: packs } = useQuery({
-    queryKey: ['packs-agenda'],
-    queryFn: () => $fetch<any[]>('/api/catalog/packs'),
-})
-
-const { data: bonuses } = useQuery({
-    queryKey: ['bonuses-agenda'],
-    queryFn: () => $fetch<any[]>('/api/marketing/bonuses'),
-})
-
-const { data: giftcards } = useQuery({
-    queryKey: ['giftcards-agenda'],
-    queryFn: () => $fetch<any[]>('/api/marketing/giftcards'),
-})
-
-const queryClient = useQueryClient()
-const activeTab = ref<'SERVICE' | 'PACK' | 'BONUS' | 'GIFTCARD'>('SERVICE')
-const localError = ref('')
-const showLocalError = ref(false)
-
-// Search and selection states
-const clientSearch = ref('')
-const isClientDropdownOpen = ref(false)
-
-const itemSearch = ref('')
-const isItemDropdownOpen = ref(false)
-
-const getLocalDateString = (d: Date) => {
-    const offset = d.getTimezoneOffset() * 60000;
-    return new Date(d.getTime() - offset).toISOString().slice(0, 10);
-}
-
-const form = reactive({
-    client_id: '',
-    staff_id: '',
-    items: [] as BookingItemData[],
-    status: 'PENDIENTE',
-    booking_date: getLocalDateString(new Date()),
-    start_time: '10:00',
-    duration: 0,
-    notes: '',
-})
-
-// Auto-fill staff
-watch(staff, (newStaff) => {
-    if (newStaff && !form.staff_id) {
-        const firstAdmin = newStaff.find(s => s.role === 'ADMIN')
-        if (firstAdmin) {
-            form.staff_id = firstAdmin.user_id
-        }
-    }
-}, { immediate: true })
-
-// Client Wallet State
-const clientWallet = reactive({
-    bonuses: [] as any[],
-    giftcards: [] as any[],
-    isLoading: false
-})
-
-watch(() => form.client_id, async (newClientId) => {
-    if (!newClientId) {
-        clientWallet.bonuses = []
-        clientWallet.giftcards = []
-        return
-    }
-    
-    clientWallet.isLoading = true
-    try {
-        const [b, g] = await Promise.all([
-            $fetch(`/api/clients/${newClientId}/bonuses`),
-            $fetch(`/api/clients/${newClientId}/giftcards`)
-        ])
-        clientWallet.bonuses = (b as any[]) || []
-        clientWallet.giftcards = (g as any[]) || []
-    } catch (error) {
-        console.error('Error fetching client wallet:', error)
-    } finally {
-        clientWallet.isLoading = false
-    }
-})
-
-const filteredItems = computed(() => {
-    const q = itemSearch.value.toLowerCase().trim()
-    let source: any[] = []
-    
-    if (activeTab.value === 'SERVICE') source = services.value || []
-    else if (activeTab.value === 'PACK') source = packs.value || []
-    else if (activeTab.value === 'BONUS') {
-        source = clientWallet.bonuses.map(cb => ({
-            bonus_id: cb.client_bonus_id,
-            name: `Bono: ${cb.bonus?.name} (Quedan ${cb.remaining_sessions})`,
-            duration: cb.bonus?.service?.duration || 0,
-            is_client_bonus: true
-        }))
-    }
-    else if (activeTab.value === 'GIFTCARD') {
-        source = clientWallet.giftcards.map(g => ({
-            giftcard_id: g.giftcard_id,
-            name: `Tarjeta Regalo: ${g.code} (Saldo: ${g.current_balance}€)`,
-            duration: 0,
-            is_giftcard_usage: true,
-            code: g.code
-        }))
-    }
-    
-    if (!q) return source.slice(0, 10)
-    
-    return source.filter(item => 
-        item.name?.toLowerCase().includes(q) || 
-        item.code?.toLowerCase().includes(q)
-    ).slice(0, 15)
-})
-
-const filteredClients = computed(() => {
-    if (!clients.value) return []
-    const q = clientSearch.value.toLowerCase().trim()
-    if (!q) return (clients.value as any[]).slice(0, 10)
-    return (clients.value as any[]).filter((c) => {
-        const fullName = `${c.name} ${c.surname || ''}`.toLowerCase()
-        return fullName.includes(q) || c.phone?.includes(q)
-    })
-})
-
-const addItem = (item: any) => {
-    const id = item.service_id || item.pack_id || item.bonus_id || item.giftcard_id
-    form.items.push({
-        item_type: activeTab.value,
-        item_id: id,
-        name: item.name,
-        duration: Number(item.duration || 0)
-    })
-    itemSearch.value = ''
-    isItemDropdownOpen.value = false
-    updateDuration()
-}
-
-const removeItem = (index: number) => {
-    form.items.splice(index, 1)
-    updateDuration()
-}
-
-const addGroupItem = (item: BookingItemData) => {
-    form.items.push({...item})
-    updateDuration()
-}
-
-const groupedItems = computed(() => {
-    const groups: { item: BookingItemData, indices: number[], count: number }[] = []
-    form.items.forEach((item, index) => {
-        const existing = groups.find(g => g.item.item_type === item.item_type && g.item.item_id === item.item_id)
-        if (existing) {
-            existing.indices.push(index)
-            existing.count++
-        } else {
-            groups.push({ item, indices: [index], count: 1 })
-        }
-    })
-    return groups
-})
-
-const removeGroup = (indices: number[]) => {
-    const sorted = [...indices].sort((a, b) => b - a)
-    sorted.forEach(idx => {
-        form.items.splice(idx, 1)
-    })
-    updateDuration()
-}
-
-const updateDuration = () => {
-    form.duration = form.items.reduce((acc, item) => acc + item.duration, 0)
-}
-
-const selectClient = (client: ClientItem) => {
-    form.client_id = client.user_id
-    clientSearch.value = `${client.name} ${client.surname || ''}`.trim()
-    isClientDropdownOpen.value = false
-}
+const clientSelectorRef = ref<InstanceType<typeof BookingClientSelector> | null>(null)
+const itemSelectorRef = ref<InstanceType<typeof BookingItemSelector> | null>(null)
 
 // Watch pinia state to reset form
 watch(isBookingDrawerOpen, (isOpen) => {
     if (isOpen) {
-        if (selectedBooking.value) {
-            const b = selectedBooking.value
-            form.client_id = b.client_id || ''
-            form.staff_id = b.staff_id || ''
-            form.status = (b.status || 'PENDIENTE').toUpperCase()
-            form.booking_date = getLocalDateString(new Date(b.booking_date))
-            form.start_time = b.start_time || '10:00'
-            form.duration = b.duration || 0
-            form.notes = b.notes || ''
-            
-            if (b.booking_items) {
-                form.items = b.booking_items.map((it: any) => ({
-                    item_type: it.item_type,
-                    item_id: it.item_id,
-                    name: it.name,
-                    duration: it.duration
-                }))
-            } else {
-                form.items = []
-            }
-        } else {
-            form.client_id = prefillClientId.value || ''
-            form.items = []
-            form.status = 'PENDIENTE'
-            form.booking_date = getLocalDateString(prefillDate.value || new Date())
-            form.start_time = prefillTime.value || '10:00'
-            form.duration = 0
-            form.notes = ''
-        }
-        
-        if (form.client_id && clients.value) {
-            const c = clients.value.find((x: any) => x.user_id === form.client_id)
-            if (c) clientSearch.value = `${c.name} ${c.surname || ''}`.trim()
-        } else {
-            clientSearch.value = ''
-        }
+        resetForm()
     }
 })
 
-const { mutate: performSave, isPending: isSaving } = useMutation({
-    mutationFn: async (payload: any) => {
-        if (selectedBooking.value) {
-            return await $fetch(`/api/agenda/bookings/${selectedBooking.value.booking_id}`, {
-                method: 'PUT',
-                body: payload,
-            })
-        } else {
-            return await $fetch(`/api/agenda/bookings`, {
-                method: 'POST',
-                body: payload,
-            })
-        }
-    },
-    onSuccess: () => {
-        const msg = selectedBooking.value ? 'Cita actualizada' : 'Cita programada'
-        emit('toast', msg, 'success')
-        queryClient.invalidateQueries({ queryKey: ['bookings'] })
-        emit('refresh')
-        store.closeBookingDrawer()
-    },
-    onError: (error: any) => {
-        const serverMsg = error.data?.statusMessage || error.message
-        localError.value = serverMsg || 'Error al guardar la cita'
-        showLocalError.value = true
-        setTimeout(() => { showLocalError.value = false }, 5000)
-        emit('toast', localError.value, 'error')
-    },
-})
-
-const saveBooking = () => {
-    if (!form.client_id) return emit('toast', 'Selecciona un cliente', 'error')
-    if (form.items.length === 0) return emit('toast', 'Añade al menos un servicio', 'error')
-    
-    performSave({
-        ...form,
-        duration: Number(form.duration),
-    })
+const handleAddItem = (item: any) => {
+    form.items.push(item)
+    updateDuration()
 }
 
 const closeDropdowns = () => {
-    isClientDropdownOpen.value = false
-    isItemDropdownOpen.value = false
+    clientSelectorRef.value?.closeDropdown()
+    itemSelectorRef.value?.closeDropdown()
 }
-
-const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 </script>
 
 <template>
@@ -389,41 +119,12 @@ const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 
                     </div>
 
                     <!-- Client Selection -->
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text text-primary text-[10px] font-bold uppercase tracking-widest">Cliente *</span></label>
-                        <div class="relative">
-                            <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                            <input v-model="clientSearch" type="text" required placeholder="Buscar cliente..." autocomplete="off"
-                                class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none"
-                                @focus="isClientDropdownOpen = true" 
-                                @keydown.esc="isClientDropdownOpen = false" />
-                            
-                            <!-- Dropdown -->
-                            <div v-show="isClientDropdownOpen" class="bg-bg-card border-border-default absolute z-50 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                                <button v-for="c in filteredClients" :key="c.user_id"
-                                    type="button" class="hover:bg-bg-muted flex w-full flex-col px-4 py-3 text-left transition-colors border-b border-border-subtle last:border-none"
-                                    @mousedown="selectClient(c)">
-                                    <span class="text-xs font-bold text-text-primary">{{ c.name }} {{ c.surname }}</span>
-                                    <span class="text-text-muted text-[10px]">{{ c.phone }}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Client Wallet Indicator -->
-                    <div v-if="form.client_id && (!clientWallet.isLoading) && (clientWallet.bonuses.length > 0 || clientWallet.giftcards.length > 0)" class="rounded-xl border border-primary/20 bg-primary/5 p-4 mt-[-10px]">
-                        <h4 class="mb-3 text-[10px] font-bold uppercase tracking-widest text-primary">Disponibles del Cliente</h4>
-                        <div class="flex flex-col gap-2">
-                            <div v-for="b in clientWallet.bonuses.filter(b => b.remaining_sessions > 0)" :key="b.client_bonus_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-primary/10">
-                                <Ticket class="h-3 w-3 text-primary" />
-                                <span>{{ b.bonus?.name || 'Bono' }} (Quedan {{ b.remaining_sessions }})</span>
-                            </div>
-                            <div v-for="g in clientWallet.giftcards" :key="g.giftcard_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-secondary/10">
-                                <PackageIcon class="h-3 w-3 text-secondary" />
-                                <span>Tarjeta {{ g.code }} ({{ formatCurrency(g.current_balance) }})</span>
-                            </div>
-                        </div>
-                    </div>
+                    <BookingClientSelector 
+                        ref="clientSelectorRef"
+                        v-model="form.client_id" 
+                        :clients="clients" 
+                        :client-wallet="clientWallet" 
+                    />
 
                     <!-- Professional -->
                     <div class="form-control">
@@ -443,75 +144,22 @@ const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 
                             <span class="text-text-muted text-[10px] font-bold tabular-nums">{{ form.duration }} min total</span>
                         </div>
                         
-                        <!-- Categories Tabs -->
-                        <div class="flex w-full bg-bg-muted/50 p-1 rounded-lg border border-border-subtle">
-                            <button v-for="t in ['SERVICE', 'BONUS', 'PACK', 'GIFTCARD']" :key="t" 
-                                type="button"
-                                class="flex-1 py-1.5 text-[9px] font-black uppercase rounded-md transition-all"
-                                :class="activeTab === t ? 'bg-bg-card text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'"
-                                @click="activeTab = t as any">
-                                {{ t === 'SERVICE' ? 'SERV.' : t === 'BONUS' ? 'BONOS' : t === 'PACK' ? 'PACKS' : 'TARJ.' }}
-                            </button>
-                        </div>
-
-                        <!-- Item Search -->
-                        <div class="relative z-40">
-                            <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                            <input v-model="itemSearch" type="text" placeholder="Añadir..." 
-                                class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none"
-                                @focus="isItemDropdownOpen = true" 
-                                @keydown.esc="isItemDropdownOpen = false" />
-                            
-                            <div v-show="isItemDropdownOpen" class="bg-bg-card border-border-default absolute z-50 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                                <button v-for="it in filteredItems" :key="it.service_id || it.pack_id || it.bonus_id || it.giftcard_id"
-                                    type="button" class="hover:bg-bg-muted flex w-full items-center justify-between px-4 py-3 text-left border-b border-border-subtle last:border-none"
-                                    @mousedown="addItem(it)">
-                                    <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-text-primary">{{ it.name }}</span>
-                                        <span class="text-text-muted text-[10px] uppercase font-bold mt-0.5">{{ it.duration || 0 }} min</span>
-                                    </div>
-                                    <Plus class="h-4 w-4 text-primary" />
-                                </button>
-                                <div v-if="filteredItems.length === 0" class="px-4 py-4 text-center text-xs text-text-muted italic">No hay resultados</div>
-                            </div>
-                        </div>
+                        <!-- Item Selector Component -->
+                        <BookingItemSelector 
+                            ref="itemSelectorRef"
+                            :services="services"
+                            :packs="packs"
+                            :bonuses="bonuses"
+                            :giftcards="giftcards"
+                            :client-wallet="clientWallet"
+                            @add="handleAddItem"
+                        />
 
                         <!-- Selected Items List -->
-                        <div class="flex flex-col gap-2 mt-2">
-                            <div v-for="(group, idx) in groupedItems" :key="idx" 
-                                class="bg-bg-card border border-border-default p-3 rounded-xl flex items-center justify-between group shadow-sm transition-all hover:border-primary/30">
-                                <div class="flex items-center gap-3">
-                                    <Scissors v-if="group.item.item_type === 'SERVICE'" class="h-4 w-4 text-primary" />
-                                    <Ticket v-else-if="group.item.item_type === 'BONUS'" class="h-4 w-4 text-info" />
-                                    <Package v-else-if="group.item.item_type === 'PACK'" class="h-4 w-4 text-success" />
-                                    <Gift v-else class="h-4 w-4 text-warning" />
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-text-primary uppercase tracking-tight">{{ group.item.name }}</span>
-                                        <span class="text-[10px] text-text-muted font-bold tabular-nums">{{ group.item.duration }} min c/u</span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" @click="removeItem(group.indices[group.indices.length - 1]!)" aria-label="Decrease Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
-                                            -
-                                        </button>
-                                        <span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
-                                            {{ group.count }}
-                                        </span>
-                                        <button type="button" @click="addGroupItem(group.item)" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
-                                            +
-                                        </button>
-                                    </div>
-                                    <button type="button" @click="removeGroup(group.indices)" class="text-text-muted hover:text-error transition-colors p-1 opacity-50 group-hover:opacity-100">
-                                        <Trash2 class="h-4 w-4" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div v-if="form.items.length === 0" class="text-xs text-text-muted italic p-2 opacity-60 border border-dashed border-border-subtle rounded-xl text-center py-6">
-                                Ningún servicio seleccionado
-                            </div>
-                        </div>
+                        <BookingSelectedItems 
+                            v-model:items="form.items"
+                            @update:items="updateDuration"
+                        />
                     </div>
 
                     <div class="divider my-0 opacity-50"></div>
