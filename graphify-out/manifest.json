@@ -95,8 +95,8 @@
     "semantic_hash": "52cbca79096919003a6bfd49aec33a10"
   },
   "app/components/agenda/BookingDrawer.vue": {
-    "mtime": 1784302309.1646082,
-    "ast_hash": "479abaf57abca83caedc79a6a861e293",
+    "mtime": 1784318979.206369,
+    "ast_hash": "dd5f0b023010219b12d4ed43a968c37e",
     "semantic_hash": ""
   },
   "app/components/agenda/DaySummaryModal.vue": {
@@ -245,14 +245,14 @@
     "semantic_hash": ""
   },
   "app/components/tpv/TpvCart.vue": {
-    "mtime": 1783551556.678145,
-    "ast_hash": "9420fe563360ae53600b307dd4d0c868",
-    "semantic_hash": "9420fe563360ae53600b307dd4d0c868"
+    "mtime": 1784320039.754915,
+    "ast_hash": "3c49175b10423c37c69842ab93044cf5",
+    "semantic_hash": ""
   },
   "app/components/tpv/TpvCatalog.vue": {
-    "mtime": 1783380986.65634,
-    "ast_hash": "0447152f46c786c6dfaf3bf5e8cca521",
-    "semantic_hash": "0447152f46c786c6dfaf3bf5e8cca521"
+    "mtime": 1784318926.25435,
+    "ast_hash": "b5492f19c9ea60e92fbb137ddca4a470",
+    "semantic_hash": ""
   },
   "app/components/ui/AppBreadcrumbs.vue": {
     "mtime": 1773700158.7446542,
@@ -350,9 +350,9 @@
     "semantic_hash": "91088cc7df1e03bb86076b6733d3723e"
   },
   "app/composables/useTpv.ts": {
-    "mtime": 1783551379.751844,
-    "ast_hash": "5019d663a037c124a94125113c8a5bc2",
-    "semantic_hash": "5019d663a037c124a94125113c8a5bc2"
+    "mtime": 1784318908.8738515,
+    "ast_hash": "aed0549010722f8cdd170a7d5192d20a",
+    "semantic_hash": ""
   },
   "app/error.vue": {
     "mtime": 1773092213.9505792,
@@ -365,9 +365,9 @@
     "semantic_hash": "cd51d9168e7b0da00b8975d731198c73"
   },
   "app/layouts/default.vue": {
-    "mtime": 1783380986.6634588,
-    "ast_hash": "0b9c851f91c2a4b806f16f9e5cb04318",
-    "semantic_hash": "0b9c851f91c2a4b806f16f9e5cb04318"
+    "mtime": 1784318830.324353,
+    "ast_hash": "4dbbd9bf0b17370be3311e10261b999e",
+    "semantic_hash": ""
   },
   "app/locales/en.json": {
     "mtime": 1774225970.045988,
@@ -459,11 +459,6 @@
     "ast_hash": "5093a2694e018525ae295ca25a6ee020",
     "semantic_hash": "5093a2694e018525ae295ca25a6ee020"
   },
-  "app/pages/marketing/giftcards/index.vue": {
-    "mtime": 1773700158.7654953,
-    "ast_hash": "d0da0fb785ed9da42b146394143fb6ec",
-    "semantic_hash": "d0da0fb785ed9da42b146394143fb6ec"
-  },
   "app/pages/multimedia/index.vue": {
     "mtime": 1773700173.8189037,
     "ast_hash": "1baec050eac60a0a4eaf47513b333d3c",
@@ -473,11 +468,6 @@
     "mtime": 1773837314.1862266,
     "ast_hash": "dcd32a98a72d722f03d44933dcec2f06",
     "semantic_hash": "dcd32a98a72d722f03d44933dcec2f06"
-  },
-  "app/pages/packs/index.vue": {
-    "mtime": 1773700158.7675016,
-    "ast_hash": "d9447a940c24f56088f7cf78dbf5c36b",
-    "semantic_hash": "d9447a940c24f56088f7cf78dbf5c36b"
   },
   "app/pages/reportes/index.vue": {
     "mtime": 1773700158.7680755,
@@ -490,9 +480,9 @@
     "semantic_hash": "7ff7649baca2667a76e82c2c0895e8ba"
   },
   "app/pages/tpv/index.vue": {
-    "mtime": 1783439790.3420744,
-    "ast_hash": "c613dd004fa917c6edd9bd5f70a02a45",
-    "semantic_hash": "c613dd004fa917c6edd9bd5f70a02a45"
+    "mtime": 1784318956.765988,
+    "ast_hash": "c61b068c307db9530d19c8c56ce8ad07",
+    "semantic_hash": ""
   },
   "app/pages/usuarios/index.vue": {
     "mtime": 1773700158.7717402,
@@ -649,16 +639,6 @@
     "ast_hash": "c62785fa607ce2c26d5f931b91d26e05",
     "semantic_hash": "c62785fa607ce2c26d5f931b91d26e05"
   },
-  "server/api/catalog/packs/[id].ts": {
-    "mtime": 1773092213.9856045,
-    "ast_hash": "5b4f1644c82fc71e4ed6797e5e29ebf8",
-    "semantic_hash": "5b4f1644c82fc71e4ed6797e5e29ebf8"
-  },
-  "server/api/catalog/packs/index.ts": {
-    "mtime": 1776157848.3371334,
-    "ast_hash": "eb27477b8b67d9313f27091336cb094b",
-    "semantic_hash": "eb27477b8b67d9313f27091336cb094b"
-  },
   "server/api/catalog/products/[id].ts": {
     "mtime": 1783380986.6791482,
     "ast_hash": "da99b1ee79fa14e5187ce1e153753d48",
@@ -789,31 +769,6 @@
     "ast_hash": "8c0a5969e7b3cdb39093f2134e1b2726",
     "semantic_hash": "8c0a5969e7b3cdb39093f2134e1b2726"
   },
-  "server/api/marketing/coupons/[id].ts": {
-    "mtime": 1773092213.9942312,
-    "ast_hash": "7bb6cac2cb5b22bdcba599217b3d5c5c",
-    "semantic_hash": "7bb6cac2cb5b22bdcba599217b3d5c5c"
-  },
-  "server/api/marketing/coupons/index.ts": {
-    "mtime": 1773536458.5900126,
-    "ast_hash": "22e15ebc9721d2560dfc2e2f7f8e3500",
-    "semantic_hash": "22e15ebc9721d2560dfc2e2f7f8e3500"
-  },
-  "server/api/marketing/giftcards/[id].ts": {
-    "mtime": 1773092213.9952304,
-    "ast_hash": "88aa3c8d4316ab9149d4787f0276c664",
-    "semantic_hash": "88aa3c8d4316ab9149d4787f0276c664"
-  },
-  "server/api/marketing/giftcards/index.ts": {
-    "mtime": 1773536458.6085174,
-    "ast_hash": "106d19c8960bd43287f60b61cb608464",
-    "semantic_hash": "106d19c8960bd43287f60b61cb608464"
-  },
-  "server/api/marketing/validate-code.post.ts": {
-    "mtime": 1783439790.3501544,
-    "ast_hash": "8b18349a69d8b483425b68dd7c134bf5",
-    "semantic_hash": "8b18349a69d8b483425b68dd7c134bf5"
-  },
   "server/api/multimedia/list.get.ts": {
     "mtime": 1773700173.857335,
     "ast_hash": "92c28c98672b704d154cf4dbbe7dd9e0",
@@ -835,9 +790,9 @@
     "semantic_hash": "391ba392deb479e80ebc5c1ef621b111"
   },
   "server/api/sales/carts/index.ts": {
-    "mtime": 1783550238.175414,
-    "ast_hash": "a35718ffc7335bf171ba6608afc932ef",
-    "semantic_hash": "a35718ffc7335bf171ba6608afc932ef"
+    "mtime": 1784318793.4927354,
+    "ast_hash": "f18d45c39f8754b8388051df9246019a",
+    "semantic_hash": ""
   },
   "server/api/sales/debts/[id].ts": {
     "mtime": 1783380986.6837435,
@@ -960,18 +915,18 @@
     "semantic_hash": "cf81f393c46c783ae6995bccdcebb5a6"
   },
   "app/components/agenda/BookingClientSelector.vue": {
-    "mtime": 1784302254.3037095,
-    "ast_hash": "a7d93bc59b8ecbb7a7f8aaa4162680e8",
+    "mtime": 1784318994.1880677,
+    "ast_hash": "a2ad81333964f319c611b54af853ac89",
     "semantic_hash": ""
   },
   "app/components/agenda/BookingItemSelector.vue": {
-    "mtime": 1784302271.4068055,
-    "ast_hash": "bea76c64e07b1378f220c66965c870ce",
+    "mtime": 1784320037.6575966,
+    "ast_hash": "fc1cf75b89b7769eafc9a1abdb7471dd",
     "semantic_hash": ""
   },
   "app/components/agenda/BookingSelectedItems.vue": {
-    "mtime": 1784302288.0263183,
-    "ast_hash": "69ddf3b116c0872b3af505945fc7b50b",
+    "mtime": 1784319030.615642,
+    "ast_hash": "11ecd54f5666f69b6cda3ff76ab6d3e6",
     "semantic_hash": ""
   },
   "app/components/shared/PurchaseModalEdit.vue": {
@@ -995,8 +950,8 @@
     "semantic_hash": ""
   },
   "app/composables/useBookingForm.ts": {
-    "mtime": 1784302237.0492704,
-    "ast_hash": "ab9b10d775b94dd36dcce898278f8b18",
+    "mtime": 1784319065.1171403,
+    "ast_hash": "635b975736fc81cff7958d0f98b54a01",
     "semantic_hash": ""
   },
   "app/composables/usePurchaseModal.ts": {

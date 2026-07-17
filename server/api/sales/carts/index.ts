@@ -29,7 +29,7 @@ export default defineEventHandler(async event => {
 
 	if (method === 'POST') {
 		const body = await readBody(event)
-		const { user_id, items, booking_id, applied_giftcard_amount, ...cartData } = body
+		const { user_id, items, booking_id, ...cartData } = body
 
 		// Wrap in transaction to ensure consistency
 		const cart = await prisma.$transaction(async tx => {
@@ -50,9 +50,7 @@ export default defineEventHandler(async event => {
 					status: cartData.status || 'pending',
 					payment_method: cartData.payment_method || 'cash',
 					notes: cartData.notes,
-					applied_coupon: cartData.applied_coupon,
-					applied_giftcard: cartData.applied_giftcard,
-					subtotal: 0, 
+					subtotal: 0,  
 					discount: discount,
 					total: 0, 
 					items: {
@@ -97,21 +95,7 @@ export default defineEventHandler(async event => {
 					}
 				}
 
-				// 2. Deduct Product Stock for Packs
-				if (item.item_type === 'pack' || item.item_type === 'PACK') {
-					const packItems = await tx.packItemProduct.findMany({
-						where: { pack_id: item.item_id }
-					});
-					for (const pItem of packItems) {
-						const qtyToDeduct = pItem.quantity * item.quantity;
-						await tx.product.update({
-							where: { product_id: pItem.product_id },
-							data: {
-								stock: { decrement: qtyToDeduct }
-							}
-						});
-					}
-				}
+
 
 				// 3. Generar nuevo Bono (ClientBonus) si se está comprando
 				if ((item.item_type === 'bonus' || item.item_type === 'BONUS') && !item.applied_client_bonus_id && user_id) {
@@ -131,40 +115,6 @@ export default defineEventHandler(async event => {
 					}
 				}
 
-				// 4. Generar nueva Tarjeta Regalo (Giftcard) si se está comprando
-				if ((item.item_type === 'giftcard' || item.item_type === 'GIFTCARD') && user_id) {
-					// Generar código aleatorio 
-					const codeStr = 'GC' + Math.random().toString(36).substring(2, 8).toUpperCase();
-					await tx.giftcard.create({
-						data: {
-							code: codeStr,
-							initial_balance: item.unit_price,
-							current_balance: item.unit_price,
-							client_id: user_id,
-							status: 'active'
-						}
-					});
-				}
-			}
-
-			// 3. Process Coupon Usage
-			if (cartData.applied_coupon) {
-				await tx.coupon.update({
-					where: { code: cartData.applied_coupon },
-					data: { current_uses: { increment: 1 } }
-				}).catch(() => {}); // ignore if it doesn't exist
-			}
-
-			// 4. Process Giftcard Usage
-			if (cartData.applied_giftcard && applied_giftcard_amount) {
-				const gc = await tx.giftcard.findUnique({ where: { code: cartData.applied_giftcard } });
-				if (gc && gc.current_balance >= applied_giftcard_amount) {
-					await tx.giftcard.update({
-						where: { code: cartData.applied_giftcard },
-						data: { current_balance: { decrement: applied_giftcard_amount } }
-					});
-					discount = Number((discount + applied_giftcard_amount).toFixed(2));
-				}
 			}
 
 			total = Number((total - discount).toFixed(2))

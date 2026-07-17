@@ -4,21 +4,19 @@ import { Search, Plus } from 'lucide-vue-next'
 
 const props = defineProps<{
     services: any[] | undefined
-    packs: any[] | undefined
-    bonuses: any[] | undefined
-    giftcards: any[] | undefined
     clientWallet: {
         bonuses: any[]
-        giftcards: any[]
         isLoading: boolean
     }
+    availableBonuses: any[]
+    disabled?: boolean
 }>()
 
 const emit = defineEmits<{
     (e: 'add', item: any): void
 }>()
 
-const activeTab = ref<'SERVICE' | 'PACK' | 'BONUS' | 'GIFTCARD'>('SERVICE')
+const activeTab = ref<'SERVICE' | 'BONUS'>('SERVICE')
 const itemSearch = ref('')
 const isItemDropdownOpen = ref(false)
 
@@ -27,24 +25,16 @@ const filteredItems = computed(() => {
     let source: any[] = []
     
     if (activeTab.value === 'SERVICE') source = props.services || []
-    else if (activeTab.value === 'PACK') source = props.packs || []
     else if (activeTab.value === 'BONUS') {
-        source = props.clientWallet.bonuses.map(cb => ({
-            bonus_id: cb.client_bonus_id,
-            name: `Bono: ${cb.bonus?.name} (Quedan ${cb.remaining_sessions})`,
-            duration: cb.bonus?.service?.duration || 0,
-            is_client_bonus: true,
-            remaining_sessions: cb.remaining_sessions
-        }))
-    }
-    else if (activeTab.value === 'GIFTCARD') {
-        source = props.clientWallet.giftcards.map(g => ({
-            giftcard_id: g.giftcard_id,
-            name: `Tarjeta Regalo: ${g.code} (Saldo: ${g.current_balance}€)`,
-            duration: 0,
-            is_giftcard_usage: true,
-            code: g.code
-        }))
+        source = (props.availableBonuses || [])
+            .filter((cb: any) => cb.current_remaining > 0)
+            .map((cb: any) => ({
+                bonus_id: cb.client_bonus_id,
+                name: `Bono: ${cb.bonus?.name} (Quedan ${cb.current_remaining})`,
+                duration: cb.bonus?.service?.duration || 0,
+                is_client_bonus: true,
+                remaining_sessions: cb.remaining_sessions // We keep the absolute total max here for limits
+            }))
     }
     
     if (!q) return source.slice(0, 10)
@@ -56,7 +46,7 @@ const filteredItems = computed(() => {
 })
 
 const addItem = (item: any) => {
-    const id = item.service_id || item.pack_id || item.bonus_id || item.giftcard_id
+    const id = item.service_id || item.bonus_id
     emit('add', {
         item_type: activeTab.value,
         item_id: id,
@@ -81,25 +71,26 @@ defineExpose({
     <div class="flex flex-col gap-3">
         <!-- Categories Tabs -->
         <div class="flex w-full bg-bg-muted/50 p-1 rounded-lg border border-border-subtle">
-            <button v-for="t in ['SERVICE', 'BONUS', 'PACK', 'GIFTCARD']" :key="t" 
+            <button v-for="t in ['SERVICE', 'BONUS']" :key="t" 
                 type="button"
-                class="flex-1 py-1.5 text-[9px] font-black uppercase rounded-md transition-all"
+                :disabled="disabled"
+                class="flex-1 py-1.5 text-[9px] font-black uppercase rounded-md transition-all disabled:opacity-60"
                 :class="activeTab === t ? 'bg-bg-card text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'"
                 @click="activeTab = t as any">
-                {{ t === 'SERVICE' ? 'SERV.' : t === 'BONUS' ? 'BONOS' : t === 'PACK' ? 'PACKS' : 'TARJ.' }}
+                {{ t === 'SERVICE' ? 'SERV.' : 'BONOS' }}
             </button>
         </div>
 
         <!-- Item Search -->
         <div class="relative z-40">
             <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <input v-model="itemSearch" type="text" placeholder="Añadir..." 
-                class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none"
-                @focus="isItemDropdownOpen = true" 
+            <input v-model="itemSearch" type="text" placeholder="Añadir..." :disabled="disabled"
+                class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
+                @focus="!disabled && (isItemDropdownOpen = true)" 
                 @keydown.esc="isItemDropdownOpen = false" />
             
             <div v-show="isItemDropdownOpen" class="bg-bg-card border-border-default absolute z-50 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                <button v-for="it in filteredItems" :key="it.service_id || it.pack_id || it.bonus_id || it.giftcard_id"
+                <button v-for="it in filteredItems" :key="it.service_id || it.bonus_id"
                     type="button" class="hover:bg-bg-muted flex w-full items-center justify-between px-4 py-3 text-left border-b border-border-subtle last:border-none"
                     @mousedown="addItem(it)">
                     <div class="flex flex-col">

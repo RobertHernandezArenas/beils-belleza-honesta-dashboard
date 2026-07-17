@@ -36,9 +36,12 @@
 		"settings": "Settings",
 		"menu": "Main Menu",
 		"logout": "Logout",
-		"reports": "Reports"
+		"reports": "Reports",
+		"agenda": "Calendar",
+		"sales": "Sales / POS"
 	},
 	"users": {
+		"avatar": "Profile Photo",
 		"header": {
 			"search": "Search users...",
 			"filters": "Filters",

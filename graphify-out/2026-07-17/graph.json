@@ -505,8 +505,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_hex_to_ansi",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "hex_to_ansi()"
     },
     {
@@ -516,8 +516,8 @@
       "source_location": "L347",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_ansi_ljust",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "ansi_ljust()"
     },
     {
@@ -527,8 +527,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_section_header",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "section_header()"
     },
     {
@@ -538,8 +538,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_format_ascii_box",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "format_ascii_box()"
     },
     {
@@ -604,8 +604,8 @@
       "source_location": "L1176",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_generate_intelligent_overrides",
-      "community": 119,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "_generate_intelligent_overrides()"
     },
     {
@@ -615,8 +615,8 @@
       "source_location": "L1282",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_detect_page_type",
-      "community": 119,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "_detect_page_type()"
     },
     {
@@ -725,8 +725,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_334",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "convert hex color to ansi true color swatch (\u2588\u2588) with fallback."
     },
     {
@@ -736,8 +736,8 @@
       "source_location": "L348",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_348",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "like str.ljust but accounts for zero-width ansi escape sequences."
     },
     {
@@ -747,8 +747,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_356",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "create a unicode section separator: \u251c\u2500\u2500\u2500 name \u2500\u2500\u2500...\u2524"
     },
     {
@@ -758,8 +758,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_363",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 119,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "format design system as unicode box with ansi color swatches."
     },
     {
@@ -824,8 +824,8 @@
       "source_location": "L1177",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_1177",
-      "community": 119,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "generate intelligent overrides based on page type using layered search."
     },
     {
@@ -835,8 +835,8 @@
       "source_location": "L1283",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_1283",
-      "community": 119,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "detect page type from context and search results."
     },
     {
@@ -2798,10 +2798,21 @@
       "norm_label": "daysofweek"
     },
     {
-      "label": "calendarDays",
+      "label": "weeksNeeded",
       "file_type": "code",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
       "source_location": "L17",
+      "_origin": "ast",
+      "id": "app_components_agenda_views_agendamonthview_weeksneeded",
+      "community": 55,
+      "community_name": "AgendaMonthView.vue",
+      "norm_label": "weeksneeded"
+    },
+    {
+      "label": "calendarDays",
+      "file_type": "code",
+      "source_file": "app/components/agenda/views/AgendaMonthView.vue",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "app_components_agenda_views_agendamonthview_calendardays",
       "community": 55,
@@ -2812,7 +2823,7 @@
       "label": "getBookingsForDay()",
       "file_type": "code",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L59",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "app_components_agenda_views_agendamonthview_getbookingsforday",
       "community": 55,
@@ -2823,7 +2834,7 @@
       "label": "isToday()",
       "file_type": "code",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L79",
+      "source_location": "L91",
       "_origin": "ast",
       "id": "app_components_agenda_views_agendamonthview_istoday",
       "community": 55,
@@ -2834,7 +2845,7 @@
       "label": "isSelected()",
       "file_type": "code",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L83",
+      "source_location": "L95",
       "_origin": "ast",
       "id": "app_components_agenda_views_agendamonthview_isselected",
       "community": 55,
@@ -2845,7 +2856,7 @@
       "label": "handleDayClick()",
       "file_type": "code",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L87",
+      "source_location": "L99",
       "_origin": "ast",
       "id": "app_components_agenda_views_agendamonthview_handledayclick",
       "community": 55,
@@ -2856,7 +2867,7 @@
       "label": "getStatusColorClip()",
       "file_type": "code",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L95",
+      "source_location": "L107",
       "_origin": "ast",
       "id": "app_components_agenda_views_agendamonthview_getstatuscolorclip",
       "community": 55,
@@ -12616,8 +12627,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "package_devdependencies_nuxtjs_google_fonts",
-      "community": 31,
-      "community_name": "devDependencies",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "@nuxtjs/google-fonts"
     },
     {
@@ -12627,8 +12638,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "nuxtjs_google_fonts",
-      "community": 31,
-      "community_name": "devDependencies",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "@nuxtjs/google-fonts"
     },
     {
@@ -12638,8 +12649,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "package_devdependencies_types_jsonwebtoken",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 31,
+      "community_name": "devDependencies",
       "norm_label": "@types/jsonwebtoken"
     },
     {
@@ -12649,8 +12660,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "types_jsonwebtoken",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 31,
+      "community_name": "devDependencies",
       "norm_label": "@types/jsonwebtoken"
     },
     {
@@ -13111,8 +13122,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_test_booking",
-      "community": 249,
-      "community_name": "format_ascii_box",
+      "community": 2,
+      "community_name": "prisma.ts",
       "norm_label": "test-booking.ts"
     },
     {
@@ -13122,8 +13133,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "scripts_test_booking_test",
-      "community": 249,
-      "community_name": "format_ascii_box",
+      "community": 2,
+      "community_name": "prisma.ts",
       "norm_label": "test()"
     },
     {
@@ -13320,8 +13331,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "seeds_verify_admin",
-      "community": 2,
-      "community_name": "prisma.ts",
+      "community": 249,
+      "community_name": "format_ascii_box",
       "norm_label": "verify-admin.ts"
     },
     {
@@ -13331,8 +13342,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "seeds_verify_admin_checkadmin",
-      "community": 2,
-      "community_name": "prisma.ts",
+      "community": 249,
+      "community_name": "format_ascii_box",
       "norm_label": "checkadmin()"
     },
     {
@@ -13551,8 +13562,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_api_clients_consents_index_post",
-      "community": 2,
-      "community_name": "prisma.ts",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "index.post.ts"
     },
     {
@@ -13562,8 +13573,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "server_api_clients_consents_index_post_consentschema",
-      "community": 2,
-      "community_name": "prisma.ts",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "consentschema"
     },
     {
@@ -13617,8 +13628,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_api_clients_questionnaires_id_put",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 2,
+      "community_name": "prisma.ts",
       "norm_label": "[id].put.ts"
     },
     {
@@ -13628,8 +13639,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "server_api_clients_questionnaires_id_put_questionnaireupdateschema",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 2,
+      "community_name": "prisma.ts",
       "norm_label": "questionnaireupdateschema"
     },
     {
@@ -23209,8 +23220,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_skill",
-      "community": 198,
-      "community_name": "SKILL.md",
+      "community": 299,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "skill.md"
     },
     {
@@ -23693,8 +23704,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_component_data_flow",
-      "community": 227,
-      "community_name": "Component Data Flow Best Practices",
+      "community": 299,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "component-data-flow.md"
     },
     {
@@ -32849,7 +32860,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L17",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview",
@@ -32882,7 +32893,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L59",
+      "source_location": "L71",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview",
@@ -32893,7 +32904,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L95",
+      "source_location": "L107",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview",
@@ -32904,7 +32915,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L87",
+      "source_location": "L99",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview",
@@ -32915,7 +32926,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L83",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview",
@@ -32926,7 +32937,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L79",
+      "source_location": "L91",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview",
@@ -32945,11 +32956,22 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/agenda/views/AgendaMonthView.vue",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_agenda_views_agendamonthview",
+      "target": "app_components_agenda_views_agendamonthview_weeksneeded",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/components/agenda/views/AgendaMonthView.vue",
-      "source_location": "L89",
+      "source_location": "L101",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_agenda_views_agendamonthview_handledayclick",
@@ -58107,5 +58129,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "fedd44a19b6e2360494c3308a165899339814d98"
+  "built_at_commit": "a5106f84320c645bd6272a31f39ed592cb012614"
 }

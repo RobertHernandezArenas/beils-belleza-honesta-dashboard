@@ -23,8 +23,6 @@
 		avatarError: boolean
 		formatCurrency: (val: number) => string
 		clientBonuses: any[]
-		appliedCouponCode: string | undefined
-		appliedGiftcardCode: string | undefined
 	}
 
 	const props = defineProps<Props>()
@@ -37,15 +35,12 @@
 		(e: 'increase-item-qty', index: number): void
 		(e: 'checkout'): void
 		(e: 'avatar-error'): void
-		(e: 'validate-promo'): void
-		(e: 'remove-promo'): void
 	}>()
 
 	const clientSearch = defineModel<string>('clientSearch', { required: true })
 	const discountAmount = defineModel<number>('discountAmount', { required: true })
 	const paymentMethod = defineModel<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('paymentMethod', { required: true })
-	const promoCode = defineModel<string>('promoCode', { required: true })
-	const isPromoOpen = ref(false)
+
 	const isConfirmingLastSession = ref(false)
 
 	const handleAttemptCheckout = () => {
@@ -221,54 +216,11 @@
 							type="number"
 							min="0"
 							:max="cartSubtotal"
-							:disabled="!!appliedCouponCode || !!appliedGiftcardCode"
-							class="input input-xs bg-error/10 text-error h-7 w-full rounded-md border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" 
-							:class="{'opacity-70': !!appliedCouponCode || !!appliedGiftcardCode}" />
+							class="input input-xs bg-error/10 text-error h-7 w-full rounded-md border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" />
 					</div>
 				</div>
 
-				<!-- Promo Code Section -->
-				<div class="flex flex-col gap-2 mt-1">
-					<button 
-						v-if="!isPromoOpen && !appliedCouponCode && !appliedGiftcardCode" 
-						@click="isPromoOpen = true"
-						class="text-left text-[10px] font-bold text-text-muted hover:text-text-primary transition-colors flex items-center gap-1">
-						<Tag class="w-3 h-3" />
-						Añadir código promocional
-					</button>
 
-					<div v-else-if="appliedCouponCode || appliedGiftcardCode" class="bg-success/10 border border-success/20 rounded-lg p-2.5 flex items-center justify-between">
-						<div class="flex items-center gap-2">
-							<div class="bg-success/20 p-1 rounded">
-								<Check class="w-3 h-3 text-success" />
-							</div>
-							<div class="flex flex-col">
-								<span class="text-[9px] font-black uppercase text-success tracking-widest">{{ appliedCouponCode ? 'Cupón' : 'Tarjeta Regalo' }}</span>
-								<span class="text-xs font-bold text-text-primary">{{ appliedCouponCode || appliedGiftcardCode }}</span>
-							</div>
-						</div>
-						<button @click="emit('remove-promo')" class="btn btn-ghost btn-xs btn-circle text-text-muted hover:text-error hover:bg-error/10">
-							<Trash2 class="w-3.5 h-3.5" />
-						</button>
-					</div>
-
-					<div v-else-if="isPromoOpen" class="flex gap-2">
-						<input 
-							v-model="promoCode" 
-							type="text" 
-							placeholder="Código..." 
-							class="input input-sm flex-1 bg-bg-muted/50 border-border-default/60 focus:bg-bg-card font-semibold text-xs" />
-						<button 
-							@click="emit('validate-promo')" 
-							class="btn btn-sm btn-primary px-3 text-xs font-bold"
-							:disabled="!promoCode">
-							Aplicar
-						</button>
-						<button @click="isPromoOpen = false" class="btn btn-sm btn-ghost px-2 text-text-muted">
-							<Trash2 class="w-4 h-4" />
-						</button>
-					</div>
-				</div>
 
 				<div class="divider my-0.5 opacity-40"></div>
 				<div class="flex items-end justify-between">

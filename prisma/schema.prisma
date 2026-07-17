@@ -87,99 +87,38 @@ model Revoke {
 }
 
 model Product {
-  product_id  String            @id @default(uuid()) @db.Char(100)
-  name        String            @db.VarChar(150)
-  description String?           @db.Text
-  sku         String?           @unique @db.VarChar(50)
-  barcode     String?           @unique @db.VarChar(50)
+  product_id  String   @id @default(uuid()) @db.Char(100)
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  sku         String?  @unique @db.VarChar(50)
+  barcode     String?  @unique @db.VarChar(50)
   price       Float
-  tax_rate    Float             @default(21)
-  stock       Int               @default(0)
-  min_stock   Int               @default(0)
-  image_url   String?           @db.VarChar(255)
-  status      String            @default("activo") @db.VarChar(20)
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
-  packItems   PackItemProduct[]
+  tax_rate    Float    @default(21)
+  stock       Int      @default(0)
+  min_stock   Int      @default(0)
+  image_url   String?  @db.VarChar(255)
+  status      String   @default("activo") @db.VarChar(20)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@index([status])
   @@map("products")
 }
 
 model Service {
-  service_id  String            @id @default(uuid()) @db.Char(100)
-  name        String            @db.VarChar(150)
-  description String?           @db.Text
-  code        String?           @unique @db.VarChar(50)
+  service_id  String   @id @default(uuid()) @db.Char(100)
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  code        String?  @unique @db.VarChar(50)
   price       Float
-  tax_rate    Float             @default(21)
-  duration    Int               @default(30)
-  status      String            @default("activo") @db.VarChar(20)
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
+  tax_rate    Float    @default(21)
+  duration    Int      @default(30)
+  status      String   @default("activo") @db.VarChar(20)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
   bonuses     Bonus[]
-  packItems   PackItemService[]
 
   @@map("services")
-}
-
-model Pack {
-  pack_id     String            @id @default(uuid()) @db.Char(100)
-  name        String            @db.VarChar(150)
-  description String?           @db.Text
-  code        String?           @unique @db.VarChar(50)
-  price       Float
-  tax_rate    Float             @default(21)
-  status      String            @default("activo") @db.VarChar(20)
-  image_url   String?           @db.VarChar(255)
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
-  products    PackItemProduct[]
-  services    PackItemService[]
-
-  @@map("packs")
-}
-
-model PackItemProduct {
-  pack_id    String  @db.Char(100)
-  product_id String  @db.Char(100)
-  quantity   Int     @default(1)
-  pack       Pack    @relation(fields: [pack_id], references: [pack_id], onDelete: Cascade)
-  product    Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-
-  @@id([pack_id, product_id])
-  @@index([product_id], map: "pack_item_products_product_id_fkey")
-  @@map("pack_item_products")
-}
-
-model PackItemService {
-  pack_id    String  @db.Char(100)
-  service_id String  @db.Char(100)
-  quantity   Int     @default(1)
-  pack       Pack    @relation(fields: [pack_id], references: [pack_id], onDelete: Cascade)
-  service    Service @relation(fields: [service_id], references: [service_id], onDelete: Cascade)
-
-  @@id([pack_id, service_id])
-  @@index([service_id], map: "pack_item_services_service_id_fkey")
-  @@map("pack_item_services")
-}
-
-model Coupon {
-  coupon_id      String    @id @default(uuid()) @db.Char(100)
-  code           String    @unique @db.VarChar(50)
-  description    String?   @db.Text
-  discount_type  String    @db.VarChar(50)
-  discount_value Float
-  min_purchase   Float?
-  max_uses       Int?
-  current_uses   Int       @default(0)
-  valid_from     DateTime?
-  valid_until    DateTime?
-  status         String    @default("activo") @db.VarChar(20)
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-
-  @@map("coupons")
 }
 
 model Bonus {
@@ -215,36 +154,6 @@ model ClientBonus {
   @@map("client_bonuses")
 }
 
-model Giftcard {
-  giftcard_id     String         @id @default(uuid()) @db.Char(100)
-  code            String         @unique @db.VarChar(50)
-  initial_balance Float
-  current_balance Float
-  issue_date      DateTime       @default(now())
-  expiration_date DateTime?
-  status          String         @default("active") @db.VarChar(20)
-  client_id       String?        @db.Char(100)
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
-  items           GiftcardItem[]
-
-  @@map("giftcards")
-}
-
-model GiftcardItem {
-  giftcard_item_id String   @id @default(uuid()) @db.Char(100)
-  giftcard_id      String   @db.Char(100)
-  item_type        String   @db.VarChar(50)
-  item_id          String   @db.Char(100)
-  name             String   @db.VarChar(150)
-  quantity         Int      @default(1)
-  used             Int      @default(0)
-  giftcard         Giftcard @relation(fields: [giftcard_id], references: [giftcard_id], onDelete: Cascade)
-
-  @@index([giftcard_id], map: "giftcard_items_giftcard_id_fkey")
-  @@map("giftcard_items")
-}
-
 model Sequence {
   id         String   @id @default(uuid())
   type       String   @unique
@@ -257,27 +166,25 @@ model Sequence {
 }
 
 model Cart {
-  cart_id          String     @id @default(uuid()) @db.Char(100)
-  user_id          String?    @db.Char(100)
-  status           String     @default("pending") @db.VarChar(20)
-  subtotal         Float      @default(0)
-  discount         Float      @default(0)
-  total            Float      @default(0)
-  payment_method   String?    @db.VarChar(50)
-  notes            String?    @db.Text
-  applied_coupon   String?    @db.VarChar(50)
-  applied_giftcard String?    @db.VarChar(50)
-  invoice_number   String?    @unique @db.VarChar(50)
-  invoice_type     String?    @db.VarChar(4)
-  qr_content       String?    @db.Text
-  aeat_status      String     @default("pending_submission") @db.VarChar(50)
-  hash             String?    @db.VarChar(100)
-  previous_hash    String?    @db.VarChar(100)
-  created_at       DateTime   @default(now())
-  updated_at       DateTime   @updatedAt
-  items            CartItem[]
-  user             User?      @relation(fields: [user_id], references: [user_id])
-  debts            Debt[]
+  cart_id        String     @id @default(uuid()) @db.Char(100)
+  user_id        String?    @db.Char(100)
+  status         String     @default("pending") @db.VarChar(20)
+  subtotal       Float      @default(0)
+  discount       Float      @default(0)
+  total          Float      @default(0)
+  payment_method String?    @db.VarChar(50)
+  notes          String?    @db.Text
+  invoice_number String?    @unique @db.VarChar(50)
+  invoice_type   String?    @db.VarChar(4)
+  qr_content     String?    @db.Text
+  aeat_status    String     @default("pending_submission") @db.VarChar(50)
+  hash           String?    @db.VarChar(100)
+  previous_hash  String?    @db.VarChar(100)
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+  items          CartItem[]
+  user           User?      @relation(fields: [user_id], references: [user_id])
+  debts          Debt[]
 
   @@index([user_id])
   @@index([status])

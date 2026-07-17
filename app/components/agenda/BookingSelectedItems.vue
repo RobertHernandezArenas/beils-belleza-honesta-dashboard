@@ -5,6 +5,7 @@ import type { BookingItemData } from '~/composables/useBookingForm'
 
 const props = defineProps<{
     items: BookingItemData[]
+    disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -52,9 +53,7 @@ const removeGroup = (indices: number[]) => {
             class="bg-bg-card border border-border-default p-3 rounded-xl flex items-center justify-between group shadow-sm transition-all hover:border-primary/30">
             <div class="flex items-center gap-3">
                 <Scissors v-if="group.item.item_type === 'SERVICE'" class="h-4 w-4 text-primary" />
-                <Ticket v-else-if="group.item.item_type === 'BONUS'" class="h-4 w-4 text-info" />
-                <Package v-else-if="group.item.item_type === 'PACK'" class="h-4 w-4 text-success" />
-                <Gift v-else class="h-4 w-4 text-warning" />
+                <Ticket v-else class="h-4 w-4 text-info" />
                 
                 <div class="flex flex-col">
                     <span class="text-xs font-bold text-text-primary uppercase tracking-tight">{{ group.item.name }}</span>
@@ -63,17 +62,17 @@ const removeGroup = (indices: number[]) => {
             </div>
             <div class="flex items-center gap-2">
                 <div class="flex items-center gap-1">
-                    <button type="button" @click="removeItem(group.indices[group.indices.length - 1]!)" aria-label="Decrease Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
+                    <button type="button" @click="removeItem(group.indices[group.indices.length - 1]!)" aria-label="Decrease Quantity" :disabled="disabled" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
                         -
                     </button>
                     <span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
                         {{ group.count }}
                     </span>
-                    <button type="button" @click="addGroupItem(group.item)" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
+                    <button type="button" @click="addGroupItem(group.item)" :disabled="disabled || (group.item.item_type === 'BONUS' && group.count >= group.item.remaining_sessions)" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
                         +
                     </button>
                 </div>
-                <button type="button" @click="removeGroup(group.indices)" class="text-text-muted hover:text-error transition-colors p-1 opacity-50 group-hover:opacity-100">
+                <button type="button" @click="removeGroup(group.indices)" :disabled="disabled" class="text-text-muted hover:text-error transition-colors p-1 opacity-50 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed">
                     <Trash2 class="h-4 w-4" />
                 </button>
             </div>

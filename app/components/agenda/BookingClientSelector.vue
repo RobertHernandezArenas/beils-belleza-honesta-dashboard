@@ -8,9 +8,10 @@ const props = defineProps<{
     clients: ClientItem[] | undefined
     clientWallet: {
         bonuses: any[]
-        giftcards: any[]
         isLoading: boolean
     }
+    availableBonuses: any[]
+    disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -63,9 +64,9 @@ defineExpose({
             <label class="label pb-1"><span class="label-text text-primary text-[10px] font-bold uppercase tracking-widest">Cliente *</span></label>
             <div class="relative">
                 <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                <input v-model="clientSearch" type="text" required placeholder="Buscar cliente..." autocomplete="off"
-                    class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none"
-                    @focus="isClientDropdownOpen = true" 
+                <input v-model="clientSearch" type="text" required placeholder="Buscar cliente..." autocomplete="off" :disabled="disabled"
+                    class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
+                    @focus="!disabled && (isClientDropdownOpen = true)" 
                     @keydown.esc="isClientDropdownOpen = false" />
                 
                 <!-- Dropdown -->
@@ -81,16 +82,12 @@ defineExpose({
         </div>
 
         <!-- Client Wallet Indicator -->
-        <div v-if="props.modelValue && (!clientWallet.isLoading) && (clientWallet.bonuses.length > 0 || clientWallet.giftcards.length > 0)" class="rounded-xl border border-primary/20 bg-primary/5 p-4 mt-2">
+        <div v-if="props.modelValue && (!clientWallet.isLoading) && (clientWallet.bonuses.length > 0)" class="rounded-xl border border-primary/20 bg-primary/5 p-4 mt-2">
             <h4 class="mb-3 text-[10px] font-bold uppercase tracking-widest text-primary">Disponibles del Cliente</h4>
             <div class="flex flex-col gap-2">
-                <div v-for="b in clientWallet.bonuses.filter(b => b.remaining_sessions > 0)" :key="b.client_bonus_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-primary/10">
+                <div v-for="b in availableBonuses" :key="b.client_bonus_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-primary/10">
                     <Ticket class="h-3 w-3 text-primary" />
-                    <span>{{ b.bonus?.name || 'Bono' }} (Quedan {{ b.remaining_sessions }})</span>
-                </div>
-                <div v-for="g in clientWallet.giftcards" :key="g.giftcard_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-secondary/10">
-                    <PackageIcon class="h-3 w-3 text-secondary" />
-                    <span>Tarjeta {{ g.code }} ({{ formatCurrency(g.current_balance) }})</span>
+                    <span>{{ b.bonus?.name || 'Bono' }} (Quedan {{ b.current_remaining }})</span>
                 </div>
             </div>
         </div>

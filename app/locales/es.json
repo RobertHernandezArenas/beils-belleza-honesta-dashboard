@@ -37,9 +37,12 @@
 		"settings": "Configuración",
 		"menu": "Menú Principal",
 		"logout": "Cerrar Sesión",
-		"reports": "Reportes"
+		"reports": "Reportes",
+		"agenda": "Agenda",
+		"sales": "Ventas / TPV"
 	},
 	"users": {
+		"avatar": "Foto de Perfil",
 		"header": {
 			"search": "Buscar usuarios...",
 			"filters": "Filtros",

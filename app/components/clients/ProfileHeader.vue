@@ -14,6 +14,7 @@
 		FileText,
 		ShieldOff,
 		ImageUp,
+		AlertCircle
 	} from 'lucide-vue-next'
 	import EditableField from '~/components/shared/EditableField.vue'
 	import { useI18n } from 'vue-i18n'

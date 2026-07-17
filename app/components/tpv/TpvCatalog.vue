@@ -4,7 +4,6 @@
 		Plus,
 		Package as PackageIcon,
 		Scissors,
-		PackageSearch,
 		Ticket,
 	} from 'lucide-vue-next'
 	import gsap from 'gsap'
@@ -20,7 +19,7 @@
 		(e: 'add-to-cart', item: any, type: string): void
 	}>()
 
-	const activeTab = defineModel<'products' | 'services' | 'packs' | 'bonuses'>('activeTab', { required: true })
+	const activeTab = defineModel<'products' | 'services' | 'bonuses'>('activeTab', { required: true })
 	const searchQuery = defineModel<string>('searchQuery', { required: true })
 
 	// GSAP Tab Animation
@@ -102,14 +101,7 @@
 					<PackageIcon class="mb-0.5 h-4 w-4 shrink-0" />
 					<span>Productos</span>
 				</a>
-				<a
-					class="tab relative z-10 flex h-auto min-h-[48px] flex-1 flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-[9px] font-extrabold tracking-wider whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs"
-					:ref="setTabRef('packs')"
-					:class="activeTab === 'packs' ? 'text-bg-card scale-100' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/20 scale-95 hover:scale-100'"
-					@click="activeTab = 'packs'">
-					<PackageSearch class="mb-0.5 h-4 w-4 shrink-0" />
-					<span>Packs</span>
-				</a>
+
 				<a
 					class="tab relative z-10 flex h-auto min-h-[48px] flex-1 flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-[9px] font-extrabold tracking-wider whitespace-nowrap uppercase transition-colors duration-300 active:scale-[0.97] sm:px-2 sm:text-[10px] md:text-xs"
 					:ref="setTabRef('bonuses')"
@@ -134,7 +126,7 @@
 			<div class="grid grid-cols-2 gap-3.5 border-transparent p-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 				<button
 					v-for="item in filteredCatalog"
-					:key="item.product_id || item.service_id || item.pack_id || item.bonus_id"
+					:key="item.product_id || item.service_id || item.bonus_id"
 					@click="emit('add-to-cart', item, activeTab === 'bonuses' ? 'bonus' : activeTab.slice(0, -1))"
 					class="group bg-bg-card border-border-default hover:border-text-primary/30 relative flex h-32 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-4 text-left shadow-[0_1px_2px_rgba(0,0,0,0.015)] transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.02)] active:scale-[0.97]">
 					<div class="z-10 flex flex-col w-full">
@@ -160,7 +152,7 @@
 					<div class="absolute -right-3 -bottom-3 opacity-[0.03] transition-opacity group-hover:opacity-[0.06] pointer-events-none">
 						<PackageIcon v-if="activeTab === 'products'" class="h-16 w-16" />
 						<Scissors v-else-if="activeTab === 'services'" class="h-16 w-16" />
-						<PackageSearch v-else-if="activeTab === 'packs'" class="h-16 w-16" />
+
 						<Ticket v-else class="h-16 w-16" />
 					</div>
 				</button>

@@ -1,16 +1,16 @@
 # Graph Report - beils-belleza-honesta-dashboard  (2026-07-17)
 
 ## Corpus Check
-- 348 files · ~358,744 words
+- 339 files · ~355,143 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2648 nodes · 2609 edges · 351 communities (264 shown, 87 thin omitted)
+- 2610 nodes · 2579 edges · 346 communities (258 shown, 88 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a5106f84`
+- Built from commit: `ee277f09`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -149,7 +149,6 @@
 - zod
 - prettier
 - tsx
-- @types/jsonwebtoken
 - vite
 - @vite-pwa/nuxt
 - prettier-plugin-tailwindcss
@@ -158,6 +157,7 @@
 - [id].put.ts
 - index.post.ts
 - [id].put.ts
+- [id].ts
 - React Composition Patterns
 - @json-render/vue
 - React Composition Patterns
@@ -345,7 +345,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (351 total, 87 thin omitted)
+## Communities (346 total, 88 thin omitted)
 
 ### Community 0 - "BookingDrawer.vue"
 Cohesion: 0.07
@@ -356,8 +356,8 @@ Cohesion: 0.05
 Nodes (26): amountToPay, close(), debt, emit, getRemainingAfterPayment(), isProcessing, isValidPayment, { locale } (+18 more)
 
 ### Community 2 - "prisma.ts"
-Cohesion: 0.05
-Nodes (8): consentUpdateSchema, questionnaireUpdateSchema, questionnaireSchema, revokeUpdateSchema, revokeSchema, userSchema, localGlobal, poolConfig
+Cohesion: 0.06
+Nodes (7): questionnaireUpdateSchema, questionnaireSchema, revokeUpdateSchema, revokeSchema, userSchema, localGlobal, poolConfig
 
 ### Community 3 - "ClientFormModal.vue"
 Cohesion: 0.07
@@ -405,8 +405,8 @@ Cohesion: 0.11
 Nodes (17): { data: debts, isPending }, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, paymentAmount, paymentMethod, paymentModalRef (+9 more)
 
 ### Community 11 - "design_system.py"
-Cohesion: 0.19
-Nodes (14): _detect_page_type(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides(), persist_design_system(), Format a page-specific override file with intelligent AI-generated content. (+6 more)
+Cohesion: 0.15
+Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
 
 ### Community 12 - "DesignSystemGenerator"
 Cohesion: 0.14
@@ -418,11 +418,11 @@ Nodes (18): emit, formatDate(), gdprStatus, getConsentStatus(), isSavingNotes, k
 
 ### Community 14 - "design_system.py"
 Cohesion: 0.15
-Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
+Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), generate_design_system(), hex_to_ansi(), persist_design_system(), Convert hex color to ANSI True Color swatch (██) with fallback. (+10 more)
 
 ### Community 15 - "DesignSystemGenerator"
-Cohesion: 0.14
-Nodes (11): DesignSystemGenerator, Find matching reasoning rule for a category., Apply reasoning rules to search results., Select best matching result based on priority keywords., Extract results list from search result dict., Generate complete design system recommendation.          variance/motion/densi, Bucket a 1-10 dial value into its tier config. Returns None if value is None., Generates design system recommendations from aggregated searches. (+3 more)
+Cohesion: 0.16
+Nodes (9): DesignSystemGenerator, Find matching reasoning rule for a category., Apply reasoning rules to search results., Select best matching result based on priority keywords., Extract results list from search result dict., Generate complete design system recommendation.          variance/motion/densi, Generates design system recommendations from aggregated searches., Load reasoning rules from CSV. (+1 more)
 
 ### Community 16 - "ConsentFormModal.vue"
 Cohesion: 0.11
@@ -485,8 +485,8 @@ Cohesion: 0.13
 Nodes (9): { data: coupons, isPending }, modalRef, { mutate: deleteCoupon }, queryClient, queryParams, searchQuery, showToast, toastMessage (+1 more)
 
 ### Community 29 - "index.vue"
-Cohesion: 0.13
-Nodes (9): { data: packs, isPending }, modalRef, { mutate: deletePack }, queryClient, queryParams, searchQuery, showToast, toastMessage (+1 more)
+Cohesion: 0.40
+Nodes (5): Best practices for `computed`, Keep computed getters pure (no side effects) and put side effects in watchers instead, Keep filtered/sorted derivations out of templates, Prefer `computed` over watcher-assigned derived refs, Use `computed` for reusable class/style logic
 
 ### Community 30 - "index.vue"
 Cohesion: 0.13
@@ -494,7 +494,7 @@ Nodes (9): { data: services, isPending }, modalRef, { mutate: deleteService }, q
 
 ### Community 31 - "devDependencies"
 Cohesion: 0.13
-Nodes (15): daisyui, h3, devDependencies, daisyui, h3, sharp, tailwindcss, ts-node (+7 more)
+Nodes (15): daisyui, h3, @nuxtjs/google-fonts, devDependencies, daisyui, h3, @nuxtjs/google-fonts, sharp (+7 more)
 
 ### Community 32 - "_sync_all.py"
 Cohesion: 0.29
@@ -529,8 +529,8 @@ Cohesion: 0.14
 Nodes (9): { data: bonuses, isPending }, modalRef, { mutate: deleteBonus }, queryClient, queryParams, searchQuery, showToast, toastMessage (+1 more)
 
 ### Community 39 - "index.vue"
-Cohesion: 0.14
-Nodes (9): { data: giftcards, isPending }, modalRef, { mutate: deleteGiftcard }, queryClient, queryParams, searchQuery, showToast, toastMessage (+1 more)
+Cohesion: 0.50
+Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
 
 ### Community 40 - "_sync_all.py"
 Cohesion: 0.29
@@ -566,15 +566,15 @@ Nodes (10): detect_domain(), _load_csv(), Load CSV and return list of dicts, Cor
 
 ### Community 48 - "dependencies"
 Cohesion: 0.18
-Nodes (11): aos, bcryptjs, dependencies, aos, bcryptjs, prisma, @prisma/adapter-mariadb, xadesjs (+3 more)
+Nodes (11): aos, dependencies, aos, @peculiar/webcrypto, prisma, @prisma/adapter-mariadb, xadesjs, @peculiar/webcrypto (+3 more)
 
 ### Community 49 - "AgendaYearView.vue"
 Cohesion: 0.18
 Nodes (5): currentYear, emit, monthNames, months, props
 
 ### Community 50 - "TpvCart.vue"
-Cohesion: 0.22
-Nodes (10): clientSearch, confirmLastSession(), discountAmount, emit, handleAttemptCheckout(), isConfirmingLastSession, isPromoOpen, paymentMethod (+2 more)
+Cohesion: 0.28
+Nodes (8): clientSearch, confirmLastSession(), discountAmount, emit, handleAttemptCheckout(), isConfirmingLastSession, paymentMethod, Props
 
 ### Community 51 - "AppPagination.vue"
 Cohesion: 0.18
@@ -778,10 +778,6 @@ Nodes (3): exportVentasPdf(), jspdf, jspdf
 Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
-### Community 119 - "@nuxtjs/google-fonts"
-Cohesion: 0.25
-Nodes (8): ansi_ljust(), format_ascii_box(), hex_to_ansi(), Convert hex color to ANSI True Color swatch (██) with fallback., Like str.ljust but accounts for zero-width ANSI escape sequences., Create a Unicode section separator: ├─── NAME ───...┤, Format design system as Unicode box with ANSI color swatches., section_header()
-
 ### Community 145 - "empty-db.ts"
 Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
@@ -831,8 +827,8 @@ Cohesion: 0.13
 Nodes (14): Access DOM / component refs with `useTemplateRef()`, Always provide a stable `:key`, Avoid `v-if` and `v-for` on the same element, Best practices for `<style>` block in SFCs, Choose `v-if` vs `v-show` by toggle behavior, Colocate template, script, and styles, Never render untrusted HTML with `v-html`, Prefer component-scoped styles (+6 more)
 
 ### Community 198 - "SKILL.md"
-Cohesion: 0.12
-Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
+Cohesion: 0.15
+Nodes (11): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly, Reactivity Core Patterns (ref, reactive, shallowRef, computed, watch) (+3 more)
 
 ### Community 199 - "Directive Best Practices"
 Cohesion: 0.17
@@ -947,7 +943,7 @@ Cohesion: 0.20
 Nodes (9): Basic Pattern, Bounce Attention, Common Animation Patterns, Composable for Reusable Animations, Highlight on Change, Pulse on Success, Task List, Use Class-based Animations for Non-Enter/Leave Effects (+1 more)
 
 ### Community 227 - "Component Data Flow Best Practices"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (9): Component Data Flow Best Practices, Emits: Explicit Events Up, Prefer props/emit over component refs, Props: One-Way Data Down, Provide/Inject: Shared Context Without Prop Drilling, Task List, Type component refs when imperative access is required, Use TypeScript Contracts for Public Component APIs (+1 more)
 
 ### Community 228 - "Component Fallthrough Attributes Best Practices"
@@ -1227,7 +1223,7 @@ Cohesion: 0.40
 Nodes (5): Example Workflow, Step 1: Analyze Requirements, Step 2: Generate Design System (REQUIRED), Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines
 
 ### Community 299 - "Avoid Expensive Operations in Updated Hook"
-Cohesion: 0.29
+Cohesion: 0.40
 Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
 
 ### Community 300 - "Alternative Solutions"
@@ -1271,8 +1267,8 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ### Community 310 - "_generate_intelligent_overrides"
-Cohesion: 0.50
-Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
+Cohesion: 0.33
+Nodes (6): _detect_page_type(), format_page_override_md(), _generate_intelligent_overrides(), Format a page-specific override file with intelligent AI-generated content., Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
 
 ### Community 311 - "Tips for Better Results"
 Cohesion: 0.50
@@ -1295,24 +1291,24 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ## Knowledge Gaps
-- **1578 isolated node(s):** `containerRef`, `ready`, `store`, `{ selectedDate, searchQuery }`, `currentMonth` (+1573 more)
+- **1558 isolated node(s):** `containerRef`, `ready`, `store`, `{ selectedDate, searchQuery }`, `currentMonth` (+1553 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **88 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `vue-i18n`, `vue-router`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `verify-admin.ts`, `package.json`, `dotenv`, `dexie`, `bcryptjs`, `echarts`, `gsap`, `html2pdf.js`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@peculiar/webcrypto`, `pinia`, `@pinia/nuxt`, `@prisma/client`, `qrcode.vue`, `soap`, `@tailwindcss/vite`, `@tanstack/vue-query`?**
+- **Why does `dependencies` connect `dependencies` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `vue-i18n`, `vue-router`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `verify-admin.ts`, `package.json`, `dotenv`, `dexie`, `bcryptjs`, `echarts`, `gsap`, `html2pdf.js`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `@prisma/client`, `qrcode.vue`, `soap`, `@tailwindcss/vite`, `@tanstack/vue-query`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `prettier`, `tsx`, `vite`, `@vite-pwa/nuxt`, `prettier-plugin-tailwindcss`, `package.json`, `index.post.ts`, `@peculiar/webcrypto`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **What connects `containerRef`, `ready`, `store` to the rest of the system?**
-  _1578 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1558 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `BookingDrawer.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.0677361853832442 - nodes in this community are weakly interconnected._
 - **Should `PurchaseDetailsModal.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.04521276595744681 - nodes in this community are weakly interconnected._
 - **Should `prisma.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06060606060606061 - nodes in this community are weakly interconnected._
 - **Should `ClientFormModal.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._
-- **Should `[id].vue` be split into smaller, more focused modules?**
-  _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._

@@ -2,7 +2,7 @@
 	import {
 		Calendar, FileSignature, FileText, ArrowRight, Clock,
 		CheckCircle2, XCircle, AlertCircle, ShoppingBag, Sparkles, TrendingUp, Wallet, ArrowUpRight,
-		CalendarClock, History, MapPin, Eye, EyeOff, User, Plus, Search, Filter, ChevronRight, ShieldOff
+		CalendarClock, History, MapPin, Eye, EyeOff, User, Plus, Search, Filter, ChevronRight, ShieldOff, UserCircle
 	} from 'lucide-vue-next'
 
 

@@ -24,9 +24,7 @@
 		cartTotal,
 		isCheckingOut,
 		clientBonuses,
-		promoCode,
-		appliedCouponCode,
-		appliedGiftcardCode,
+
 		addToCart,
 		removeFromCart,
 		clearCart,
@@ -35,8 +33,7 @@
 		handleAvatarError,
 		formatCurrency,
 		displayToast,
-		validatePromoCode,
-		removePromoCode,
+
 	} = useTpv()
 </script>
 
@@ -56,7 +53,7 @@
 			v-model:client-search="clientSearch"
 			v-model:discount-amount="discountAmount"
 			v-model:payment-method="paymentMethod"
-			v-model:promo-code="promoCode"
+
 			:cart-items="cartItems"
 			:selected-client="selectedClient"
 			:filtered-clients="filteredClients"
@@ -66,8 +63,7 @@
 			:avatar-error="avatarError"
 			:format-currency="formatCurrency"
 			:client-bonuses="clientBonuses"
-			:applied-coupon-code="appliedCouponCode"
-			:applied-giftcard-code="appliedGiftcardCode"
+
 			@select-client="selectClient"
 			@remove-client="selectedClient = null"
 			@remove-item="removeFromCart"
@@ -75,8 +71,7 @@
 			@increase-item-qty="(idx) => cartItems[idx].quantity++"
 			@checkout="handleCheckout"
 			@avatar-error="handleAvatarError"
-			@validate-promo="validatePromoCode"
-			@remove-promo="removePromoCode"
+
 		/>
 
 		<!-- Toast -->

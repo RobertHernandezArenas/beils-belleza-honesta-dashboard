@@ -20,12 +20,12 @@ const {
     services,
     packs,
     bonuses,
-    giftcards,
     clientWallet,
     isSaving,
     saveBooking,
     proceedSaveBooking,
-    showLastSessionWarning,
+    bonusWarningType,
+    availableClientBonuses,
     resetForm,
     localError,
     showLocalError,
@@ -99,7 +99,8 @@ const closeDropdowns = () => {
                         <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Estado</span></label>
                         <select
                             v-model="form.status"
-                            class="select bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl shadow-sm text-xs font-bold">
+                            :disabled="form.status === 'COMPLETADA'"
+                            class="select bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl shadow-sm text-xs font-bold disabled:opacity-60">
                             <option value="PENDIENTE">PENDIENTE</option>
                             <option value="CONFIRMADA">CONFIRMADA</option>
                             <option value="CANCELADA">CANCELADA</option>
@@ -112,11 +113,11 @@ const closeDropdowns = () => {
                     <div class="grid grid-cols-2 gap-4">
                         <div class="form-control">
                             <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Fecha *</span></label>
-                            <input v-model="form.booking_date" type="date" required class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none" />
+                            <input v-model="form.booking_date" type="date" required :disabled="form.status === 'COMPLETADA'" class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none disabled:opacity-60" />
                         </div>
                         <div class="form-control">
                             <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Hora *</span></label>
-                            <input v-model="form.start_time" type="time" required class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none" />
+                            <input v-model="form.start_time" type="time" required :disabled="form.status === 'COMPLETADA'" class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none disabled:opacity-60" />
                         </div>
                     </div>
 
@@ -126,6 +127,8 @@ const closeDropdowns = () => {
                         v-model="form.client_id" 
                         :clients="clients" 
                         :client-wallet="clientWallet" 
+                        :available-bonuses="availableClientBonuses"
+                        :disabled="form.status === 'COMPLETADA'"
                     />
 
                     <!-- Professional field removed (auto-assigned in background) -->
@@ -143,16 +146,17 @@ const closeDropdowns = () => {
                         <BookingItemSelector 
                             ref="itemSelectorRef"
                             :services="services"
-                            :packs="packs"
                             :bonuses="bonuses"
-                            :giftcards="giftcards"
+                            :available-bonuses="availableClientBonuses"
                             :client-wallet="clientWallet"
+                            :disabled="form.status === 'COMPLETADA'"
                             @add="handleAddItem"
                         />
 
                         <!-- Selected Items List -->
                         <BookingSelectedItems 
                             v-model:items="form.items"
+                            :disabled="form.status === 'COMPLETADA'"
                             @update:items="updateDuration"
                         />
                     </div>
@@ -162,8 +166,8 @@ const closeDropdowns = () => {
                     <!-- Notes -->
                     <div class="form-control pb-8">
                         <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Notas (Opcional)</span></label>
-                        <textarea v-model="form.notes" rows="2" placeholder="Detalles de la reserva..."
-                            class="textarea bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl px-4 py-3 text-xs font-medium shadow-sm outline-none"></textarea>
+                        <textarea v-model="form.notes" rows="2" placeholder="Detalles de la reserva..." :disabled="form.status === 'COMPLETADA'"
+                            class="textarea bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl px-4 py-3 text-xs font-medium shadow-sm outline-none disabled:opacity-60"></textarea>
                     </div>
                 </form>
             </div>
@@ -177,7 +181,7 @@ const closeDropdowns = () => {
                     @click="store.closeBookingDrawer()">
                     Cobrar en TPV
                 </NuxtLink>
-                <button type="submit" form="drawerBookingForm" class="btn text-bg-card hover:bg-text-secondary/90 bg-text-secondary w-full h-12 rounded-xl border-none font-black uppercase tracking-widest shadow-lg" :disabled="isSaving">
+                <button v-if="form.status !== 'COMPLETADA'" type="submit" form="drawerBookingForm" class="btn text-bg-card hover:bg-text-secondary/90 bg-text-secondary w-full h-12 rounded-xl border-none font-black uppercase tracking-widest shadow-lg" :disabled="isSaving">
                     <span v-if="isSaving" class="loading loading-spinner"></span>
                     <span v-else>{{ selectedBooking ? 'Guardar Cambios' : 'Confirmar Reserva' }}</span>
                 </button>
@@ -189,14 +193,21 @@ const closeDropdowns = () => {
     </Transition>
 
     <!-- Last Session Warning Modal -->
-    <div class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': showLastSessionWarning }">
+    <div class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': bonusWarningType !== 'NONE' }">
         <div class="modal-box bg-bg-app border border-border-subtle shadow-2xl">
-            <h3 class="font-black uppercase tracking-wider text-lg text-primary">¡Última Sesión de Bono!</h3>
+            <h3 class="font-black uppercase tracking-wider text-lg text-primary">
+                {{ bonusWarningType === 'FINISHED' ? '¡Bono Finalizado!' : '¡Última Sesión de Bono!' }}
+            </h3>
             <p class="py-4 text-text-primary text-sm font-medium">
-                Has seleccionado un bono que se encuentra en su <strong>última sesión</strong>. Por favor, <strong>informa al cliente</strong> de que este bono se agotará con esta cita.
+                <span v-if="bonusWarningType === 'FINISHED'">
+                    Al confirmar esta cita, <strong>no le quedarán sesiones disponibles</strong> al cliente y el bono finalizará. Por favor, <strong>informa al cliente</strong> de esta situación.
+                </span>
+                <span v-else>
+                    Has seleccionado un bono que se encuentra en su <strong>última sesión restante</strong>. Por favor, <strong>informa al cliente</strong> de que este bono se agotará próximamente.
+                </span>
             </p>
             <div class="modal-action">
-                <button type="button" class="btn btn-ghost hover:bg-bg-muted text-text-muted" @click="showLastSessionWarning = false">Cancelar</button>
+                <button type="button" class="btn btn-ghost hover:bg-bg-muted text-text-muted" @click="bonusWarningType = 'NONE'">Cancelar</button>
                 <button type="button" class="btn bg-primary text-white hover:bg-primary/90 font-black uppercase tracking-widest border-none" @click="proceedSaveBooking()">Entendido, Confirmar Cita</button>
             </div>
         </div>

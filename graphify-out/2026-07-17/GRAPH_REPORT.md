@@ -1,16 +1,16 @@
 # Graph Report - beils-belleza-honesta-dashboard  (2026-07-17)
 
 ## Corpus Check
-- 348 files · ~358,672 words
+- 348 files · ~358,744 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2647 nodes · 2608 edges · 351 communities (264 shown, 87 thin omitted)
+- 2648 nodes · 2609 edges · 351 communities (264 shown, 87 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fedd44a1`
+- Built from commit: `a5106f84`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -357,7 +357,7 @@ Nodes (26): amountToPay, close(), debt, emit, getRemainingAfterPayment(), isProc
 
 ### Community 2 - "prisma.ts"
 Cohesion: 0.05
-Nodes (8): consentUpdateSchema, consentSchema, questionnaireSchema, revokeUpdateSchema, revokeSchema, userSchema, localGlobal, poolConfig
+Nodes (8): consentUpdateSchema, questionnaireUpdateSchema, questionnaireSchema, revokeUpdateSchema, revokeSchema, userSchema, localGlobal, poolConfig
 
 ### Community 3 - "ClientFormModal.vue"
 Cohesion: 0.07
@@ -405,8 +405,8 @@ Cohesion: 0.11
 Nodes (17): { data: debts, isPending }, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, paymentAmount, paymentMethod, paymentModalRef (+9 more)
 
 ### Community 11 - "design_system.py"
-Cohesion: 0.15
-Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
+Cohesion: 0.19
+Nodes (14): _detect_page_type(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides(), persist_design_system(), Format a page-specific override file with intelligent AI-generated content. (+6 more)
 
 ### Community 12 - "DesignSystemGenerator"
 Cohesion: 0.14
@@ -494,7 +494,7 @@ Nodes (9): { data: services, isPending }, modalRef, { mutate: deleteService }, q
 
 ### Community 31 - "devDependencies"
 Cohesion: 0.13
-Nodes (15): daisyui, h3, @nuxtjs/google-fonts, devDependencies, daisyui, h3, @nuxtjs/google-fonts, sharp (+7 more)
+Nodes (15): daisyui, h3, devDependencies, daisyui, h3, sharp, tailwindcss, ts-node (+7 more)
 
 ### Community 32 - "_sync_all.py"
 Cohesion: 0.29
@@ -593,8 +593,8 @@ Cohesion: 0.25
 Nodes (7): loginSchema, PUBLIC_ROUTES, h3, H3EventContext, JwtPayload, signToken(), verifyToken()
 
 ### Community 55 - "AgendaMonthView.vue"
-Cohesion: 0.22
-Nodes (5): calendarDays, daysOfWeek, emit, handleDayClick(), props
+Cohesion: 0.20
+Nodes (6): calendarDays, daysOfWeek, emit, handleDayClick(), props, weeksNeeded
 
 ### Community 56 - "LanguageSelector.vue"
 Cohesion: 0.20
@@ -779,8 +779,8 @@ Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
 ### Community 119 - "@nuxtjs/google-fonts"
-Cohesion: 0.50
-Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
+Cohesion: 0.25
+Nodes (8): ansi_ljust(), format_ascii_box(), hex_to_ansi(), Convert hex color to ANSI True Color swatch (██) with fallback., Like str.ljust but accounts for zero-width ANSI escape sequences., Create a Unicode section separator: ├─── NAME ───...┤, Format design system as Unicode box with ANSI color swatches., section_header()
 
 ### Community 145 - "empty-db.ts"
 Cohesion: 0.08
@@ -831,7 +831,7 @@ Cohesion: 0.13
 Nodes (14): Access DOM / component refs with `useTemplateRef()`, Always provide a stable `:key`, Avoid `v-if` and `v-for` on the same element, Best practices for `<style>` block in SFCs, Choose `v-if` vs `v-show` by toggle behavior, Colocate template, script, and styles, Never render untrusted HTML with `v-html`, Prefer component-scoped styles (+6 more)
 
 ### Community 198 - "SKILL.md"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 199 - "Directive Best Practices"
@@ -947,7 +947,7 @@ Cohesion: 0.20
 Nodes (9): Basic Pattern, Bounce Attention, Common Animation Patterns, Composable for Reusable Animations, Highlight on Change, Pulse on Success, Task List, Use Class-based Animations for Non-Enter/Leave Effects (+1 more)
 
 ### Community 227 - "Component Data Flow Best Practices"
-Cohesion: 0.20
+Cohesion: 0.22
 Nodes (9): Component Data Flow Best Practices, Emits: Explicit Events Up, Prefer props/emit over component refs, Props: One-Way Data Down, Provide/Inject: Shared Context Without Prop Drilling, Task List, Type component refs when imperative access is required, Use TypeScript Contracts for Public Component APIs (+1 more)
 
 ### Community 228 - "Component Fallthrough Attributes Best Practices"
@@ -1227,7 +1227,7 @@ Cohesion: 0.40
 Nodes (5): Example Workflow, Step 1: Analyze Requirements, Step 2: Generate Design System (REQUIRED), Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines
 
 ### Community 299 - "Avoid Expensive Operations in Updated Hook"
-Cohesion: 0.40
+Cohesion: 0.29
 Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
 
 ### Community 300 - "Alternative Solutions"
@@ -1295,7 +1295,7 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ## Knowledge Gaps
-- **1577 isolated node(s):** `containerRef`, `ready`, `store`, `{ selectedDate, searchQuery }`, `currentMonth` (+1572 more)
+- **1578 isolated node(s):** `containerRef`, `ready`, `store`, `{ selectedDate, searchQuery }`, `currentMonth` (+1573 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1305,7 +1305,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `dependencies` connect `dependencies` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `vue-i18n`, `vue-router`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `verify-admin.ts`, `package.json`, `dotenv`, `dexie`, `bcryptjs`, `echarts`, `gsap`, `html2pdf.js`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@peculiar/webcrypto`, `pinia`, `@pinia/nuxt`, `@prisma/client`, `qrcode.vue`, `soap`, `@tailwindcss/vite`, `@tanstack/vue-query`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **What connects `containerRef`, `ready`, `store` to the rest of the system?**
-  _1577 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1578 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `BookingDrawer.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.0677361853832442 - nodes in this community are weakly interconnected._
 - **Should `PurchaseDetailsModal.vue` be split into smaller, more focused modules?**
