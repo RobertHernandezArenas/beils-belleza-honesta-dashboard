@@ -8,20 +8,9 @@ import {
     PanelLeftClose,
     PanelLeftOpen
 } from 'lucide-vue-next'
-import BookingDrawer from '~/components/agenda/BookingDrawer.vue'
-import DaySummaryModal from '~/components/agenda/DaySummaryModal.vue'
-import GenericDeleteModal from '~/components/shared/GenericDeleteModal.vue'
-
-// Import Agenda Views
-import AgendaDayView from '~/components/agenda/views/AgendaDayView.vue'
-import AgendaGridView from '~/components/agenda/views/AgendaGridView.vue'
-import AgendaMonthView from '~/components/agenda/views/AgendaMonthView.vue'
-import AgendaYearView from '~/components/agenda/views/AgendaYearView.vue'
-import AgendaListView from '~/components/agenda/views/AgendaListView.vue'
-import AgendaSidebar from '~/components/agenda/AgendaSidebar.vue'
-
 import { useAgenda } from '~/composables/useAgenda'
 import gsap from 'gsap'
+import { computed, resolveComponent } from 'vue'
 
 definePageMeta({ layout: 'default' })
 useHead({ title: 'Agenda y Reservas | Beils' })
@@ -51,7 +40,18 @@ const {
     formatDayDate,
 } = useAgenda()
 
-const daySummaryModalRef = ref<InstanceType<typeof DaySummaryModal> | null>(null)
+const daySummaryModalRef = ref<any>(null)
+
+const viewComponent = computed(() => {
+    switch (viewMode.value) {
+        case 'day': return resolveComponent('LazyAgendaViewsAgendaDayView')
+        case 'week':
+        case '4days': return resolveComponent('LazyAgendaViewsAgendaGridView')
+        case 'month': return resolveComponent('LazyAgendaViewsAgendaMonthView')
+        case 'year': return resolveComponent('LazyAgendaViewsAgendaYearView')
+        default: return resolveComponent('LazyAgendaViewsAgendaListView')
+    }
+})
 
 // GSAP Animations
 const viewContainer = ref(null)
@@ -141,7 +141,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
             
             <!-- Sidebar -->
             <ClientOnly>
-                <AgendaSidebar v-show="store.showSidebar" />
+                <LazyAgendaSidebar v-show="store.showSidebar" />
             </ClientOnly>
 
             <!-- Agenda Viewport -->
@@ -158,12 +158,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                 <div class="flex-1 overflow-hidden flex flex-col relative" :class="{ 'opacity-50 pointer-events-none': isPending && displayBookings && displayBookings.length > 0 }">
                     <ClientOnly>
                         <component 
-                            :is="viewMode === 'day' ? AgendaDayView :
-                                viewMode === 'week' ? AgendaGridView :
-                                viewMode === '4days' ? AgendaGridView :
-                                viewMode === 'month' ? AgendaMonthView :
-                                viewMode === 'year' ? AgendaYearView :
-                                AgendaListView"
+                            :is="viewComponent"
                             :bookings="displayBookings"
                             :selectedDate="selectedDate"
                             :isPending="isPending"
@@ -192,19 +187,19 @@ const handleDateChange = (direction: 'next' | 'prev') => {
         </div>
 
         <!-- Booking Drawer (Replaces BookingFormModal and BookingDetailsModal) -->
-        <BookingDrawer
+        <LazyAgendaBookingDrawer
             @refresh="queryClient.invalidateQueries({ queryKey: ['bookings'] })"
             @toast="displayToast" 
             @delete="confirmDelete" />
 
         <!-- Day Summary Modal -->
-        <DaySummaryModal 
+        <LazyAgendaDaySummaryModal 
             ref="daySummaryModalRef"
             @edit="(booking) => store.openBookingDrawer(booking)"
             @create="(d: Date, t: string) => store.openBookingDrawer(null, d, t)" />
 
         <!-- Confirm Delete Modal -->
-        <GenericDeleteModal
+        <LazySharedGenericDeleteModal
             :is-open="deleteModalOpen"
             :item-name="bookingToDelete?.client ? `${bookingToDelete.client.name} ${bookingToDelete.client.surname}` : 'esta cita'"
             :is-deleting="isDeletingBooking"

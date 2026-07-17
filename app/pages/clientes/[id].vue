@@ -13,12 +13,6 @@ import ProfileOverview from '~/components/clients/ProfileOverview.vue'
 import ProfileBilling from '~/components/clients/ProfileBilling.vue'
 
 
-import ConsentFormModal from '~/components/clients/ConsentFormModal.vue'
-import QuestionnaireFormModal from '~/components/clients/QuestionnaireFormModal.vue'
-import BookingDrawer from '~/components/agenda/BookingDrawer.vue'
-import RevokeFormModal from '~/components/clients/RevokeFormModal.vue'
-import DebtDetailsModal from '~/components/clients/DebtDetailsModal.vue'
-import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useAgendaStore } from '~/stores/useAgendaStore'
 
@@ -219,12 +213,12 @@ const handleEditBooking = (b: any) => {
       </div>
 
       <!-- Modals -->
-      <ConsentFormModal v-model="isConsentModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
-      <QuestionnaireFormModal v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
-      <RevokeFormModal v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
-      <BookingDrawer @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
-      <DebtDetailsModal ref="debtDetailsModalRef" @payment-success="() => { queryClient.invalidateQueries({ queryKey: ['client', clientId] }); queryClient.invalidateQueries({ queryKey: ['sales'] }); }" @toast="addToast" />
-      <PurchaseDetailsModal ref="purchaseDetailsModalRef" />
+      <LazyClientsConsentFormModal v-if="isConsentModalOpen" v-model="isConsentModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
+      <LazyClientsQuestionnaireFormModal v-if="isQuestionnaireModalOpen" v-model="isQuestionnaireModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
+      <LazyClientsRevokeFormModal v-if="isRevokeModalOpen" v-model="isRevokeModalOpen" :item-to-edit="mockItemToEdit" @success="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" />
+      <LazyAgendaBookingDrawer @refresh="queryClient.invalidateQueries({ queryKey: ['client', clientId] })" @toast="addToast" />
+      <LazyClientsDebtDetailsModal ref="debtDetailsModalRef" @payment-success="() => { queryClient.invalidateQueries({ queryKey: ['client', clientId] }); queryClient.invalidateQueries({ queryKey: ['sales'] }); }" @toast="addToast" />
+      <LazySharedPurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
       <!-- Toast -->
       <div v-if="showToast" class="toast toast-end toast-bottom z-100">
