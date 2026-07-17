@@ -14,6 +14,17 @@ const emit = defineEmits<{
 
 const daysOfWeek = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 
+const weeksNeeded = computed(() => {
+    const year = props.selectedDate.getFullYear()
+    const month = props.selectedDate.getMonth()
+    const firstDayOfMonth = new Date(year, month, 1)
+    let startOffset = firstDayOfMonth.getDay() - 1
+    if (startOffset === -1) startOffset = 6 // Sunday
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate()
+    
+    return Math.ceil((startOffset + lastDayOfMonth) / 7)
+})
+
 const calendarDays = computed(() => {
     const year = props.selectedDate.getFullYear()
     const month = props.selectedDate.getMonth()
@@ -45,7 +56,8 @@ const calendarDays = computed(() => {
     }
     
     // Days from next month
-    const remaining = 42 - days.length
+    const totalDays = weeksNeeded.value * 7
+    const remaining = totalDays - days.length
     for (let i = 1; i <= remaining; i++) {
         days.push({
             date: new Date(year, month + 1, i),
@@ -120,7 +132,11 @@ const getStatusColorClip = (status: string) => {
         </div>
 
         <!-- Grid -->
-        <div class="grid flex-1 grid-cols-7 grid-rows-6 border-border-subtle overflow-hidden">
+        <div class="grid flex-1 grid-cols-7 border-border-subtle overflow-hidden"
+             :class="[
+                weeksNeeded === 4 ? 'grid-rows-4' : 
+                weeksNeeded === 5 ? 'grid-rows-5' : 'grid-rows-6'
+             ]">
             <div 
                 v-for="{ date, currentMonth } in calendarDays" 
                 :key="date.toISOString()" 
