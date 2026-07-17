@@ -276,12 +276,21 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                                 class="absolute top-0 bottom-0 left-0 w-1 opacity-80"
                                 :class="getStatusStrip(booking.status)"></div>
 
-                            <div class="flex h-full flex-col text-left pl-1.5">
-                                <div class="truncate text-[10px] font-bold tracking-tight leading-tight">
+                            <div class="flex h-full flex-col text-left pl-1.5 overflow-hidden">
+                                <div class="truncate text-[9px] font-bold tracking-tight leading-tight shrink-0">
                                     {{ booking.client?.name }} {{ booking.client?.surname?.charAt(0) }}.
                                 </div>
-                                <div v-if="booking.duration > 30" class="text-[8px] font-semibold opacity-70 mt-0.5 truncate flex items-center gap-1">
+                                <div class="text-[8px] font-semibold opacity-70 mt-px truncate flex items-center gap-1 shrink-0">
                                     <Clock class="h-2 w-2 shrink-0" /> {{ booking.start_time }}
+                                </div>
+                                <div v-if="booking.booking_items?.length" class="mt-px flex-1 min-h-0 overflow-hidden">
+                                    <div v-for="item in booking.booking_items.slice(0, 1)" :key="item.id" 
+                                        class="text-[8px] font-medium opacity-80 truncate mt-px">
+                                        {{ item.name }}
+                                    </div>
+                                    <div v-if="booking.booking_items.length > 1" class="text-[7.5px] font-bold opacity-60 italic mt-px">
+                                        +{{ booking.booking_items.length - 1 }}
+                                    </div>
                                 </div>
                             </div>
                         </button>

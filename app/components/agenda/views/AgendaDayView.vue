@@ -335,25 +335,24 @@ onUnmounted(() => {
                             </div>
 
                             <!-- Meta Info (Time & Staff) -->
-                            <div class="flex items-center gap-2 mt-0.5 shrink-0 opacity-80">
-                                <span class="flex items-center gap-1 text-[9px] font-bold tabular-nums">
-                                    <Clock class="h-2.5 w-2.5" />
+                            <div class="flex items-center gap-2 mt-px shrink-0 opacity-80">
+                                <span class="flex items-center gap-1 text-[8.5px] font-bold tabular-nums">
+                                    <Clock class="h-2 w-2" />
                                     {{ booking.start_time }}
                                 </span>
-                                <span v-if="booking.staff" class="flex items-center gap-1 text-[9px] font-semibold truncate">
-                                    <UserIcon class="h-2.5 w-2.5" />
+                                <span v-if="booking.staff" class="flex items-center gap-1 text-[8.5px] font-semibold truncate">
+                                    <UserIcon class="h-2 w-2" />
                                     <span class="truncate max-w-[60px]">{{ booking.staff.name }}</span>
                                 </span>
                             </div>
 
-                            <!-- Services Info (Only if tall enough) -->
-                            <div v-if="booking.duration > 30 && booking.booking_items?.length" class="mt-1.5 overflow-hidden">
+                            <!-- Services Info -->
+                            <div v-if="booking.booking_items?.length" class="mt-0.5 flex-1 min-h-0 overflow-hidden">
                                 <div v-for="item in booking.booking_items.slice(0, 2)" :key="item.id" 
-                                    class="text-[9px] opacity-70 flex items-center gap-1 truncate mt-0.5">
-                                    <Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2 shrink-0" />
+                                    class="text-[9px] font-medium opacity-80 flex items-center gap-1 truncate mt-px">
                                     <span class="truncate">{{ item.name }}</span>
                                 </div>
-                                <div v-if="booking.booking_items.length > 2" class="text-[9px] opacity-50 mt-0.5 italic">
+                                <div v-if="booking.booking_items.length > 2" class="text-[8px] font-bold opacity-60 mt-px italic">
                                     +{{ booking.booking_items.length - 2 }} más
                                 </div>
                             </div>
