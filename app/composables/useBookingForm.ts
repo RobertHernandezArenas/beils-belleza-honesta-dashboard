@@ -82,12 +82,14 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         queryFn: () => $fetch<any[]>('/api/marketing/giftcards'),
     })
 
-    // Auto-fill staff
+    // Auto-fill staff (Alexandra Victoria as default)
     watch(staff, (newStaff) => {
         if (newStaff && !form.staff_id) {
-            const firstAdmin = newStaff.find((s: StaffItem) => s.role === 'ADMIN')
-            if (firstAdmin) {
-                form.staff_id = firstAdmin.user_id
+            const alexandra = newStaff.find((s: StaffItem) => s.name === 'Alexandra' && s.surname === 'Victoria')
+            if (alexandra) {
+                form.staff_id = alexandra.user_id
+            } else if (newStaff.length > 0) {
+                form.staff_id = newStaff[0].user_id
             }
         }
     }, { immediate: true })
@@ -120,6 +122,8 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             clientWallet.isLoading = false
         }
     })
+
+    const showLastSessionWarning = ref(false)
 
     // Mutation
     const { mutate: performSave, isPending: isSaving } = useMutation({
@@ -156,6 +160,26 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         if (!form.client_id) return emit('toast', 'Selecciona un cliente', 'error')
         if (form.items.length === 0) return emit('toast', 'Añade al menos un servicio', 'error')
         
+        // Date/Time validation for NEW bookings
+        if (!selectedBooking.value) {
+            const bookingDateTime = new Date(`${form.booking_date}T${form.start_time}`)
+            if (bookingDateTime < new Date()) {
+                return emit('toast', 'No se puede programar una cita en el pasado', 'error')
+            }
+            
+            // Check for last session of a bono
+            const hasLastSession = form.items.some(it => it.item_type === 'BONUS' && it.remaining_sessions === 1)
+            if (hasLastSession) {
+                showLastSessionWarning.value = true
+                return
+            }
+        }
+        
+        proceedSaveBooking()
+    }
+
+    const proceedSaveBooking = () => {
+        showLastSessionWarning.value = false
         performSave({
             ...form,
             duration: Number(form.duration),
@@ -178,7 +202,8 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
                     item_type: it.item_type,
                     item_id: it.item_id,
                     name: it.name,
-                    duration: it.duration
+                    duration: it.duration,
+                    remaining_sessions: it.remaining_sessions
                 }))
             } else {
                 form.items = []
@@ -191,6 +216,12 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             form.start_time = prefillTime.value || '10:00'
             form.duration = 0
             form.notes = ''
+            
+            // Re-apply staff auto-fill if resetting a new booking
+            if (staff.value) {
+                const alexandra = staff.value.find((s: StaffItem) => s.name === 'Alexandra' && s.surname === 'Victoria')
+                form.staff_id = alexandra ? alexandra.user_id : (staff.value[0]?.user_id || '')
+            }
         }
     }
 

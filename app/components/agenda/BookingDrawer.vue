@@ -24,6 +24,8 @@ const {
     clientWallet,
     isSaving,
     saveBooking,
+    proceedSaveBooking,
+    showLastSessionWarning,
     resetForm,
     localError,
     showLocalError,
@@ -126,14 +128,7 @@ const closeDropdowns = () => {
                         :client-wallet="clientWallet" 
                     />
 
-                    <!-- Professional -->
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Profesional</span></label>
-                        <select v-model="form.staff_id" class="select bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none">
-                            <option value="">-- Sin asignar --</option>
-                            <option v-for="user in staff?.filter(s => s.role === 'ADMIN' || s.user_id === form.staff_id)" :key="user.user_id" :value="user.user_id">{{ user.name }} {{ user.surname }}</option>
-                        </select>
-                    </div>
+                    <!-- Professional field removed (auto-assigned in background) -->
 
                     <div class="divider my-0 opacity-50"></div>
 
@@ -192,6 +187,20 @@ const closeDropdowns = () => {
             </div>
         </div>
     </Transition>
+
+    <!-- Last Session Warning Modal -->
+    <div class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': showLastSessionWarning }">
+        <div class="modal-box bg-bg-app border border-border-subtle shadow-2xl">
+            <h3 class="font-black uppercase tracking-wider text-lg text-primary">¡Última Sesión de Bono!</h3>
+            <p class="py-4 text-text-primary text-sm font-medium">
+                Has seleccionado un bono que se encuentra en su <strong>última sesión</strong>. Por favor, <strong>informa al cliente</strong> de que este bono se agotará con esta cita.
+            </p>
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost hover:bg-bg-muted text-text-muted" @click="showLastSessionWarning = false">Cancelar</button>
+                <button type="button" class="btn bg-primary text-white hover:bg-primary/90 font-black uppercase tracking-widest border-none" @click="proceedSaveBooking()">Entendido, Confirmar Cita</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>

@@ -340,9 +340,9 @@
     "semantic_hash": "ebc61bf83b634b06a0e3dcfec6ab16e0"
   },
   "app/composables/useSales.ts": {
-    "mtime": 1783380986.6614597,
-    "ast_hash": "f91519ac2b17f76571fa758c0e780669",
-    "semantic_hash": "f91519ac2b17f76571fa758c0e780669"
+    "mtime": 1784307969.7532835,
+    "ast_hash": "7ff155bbb630c07ec0bd66036468e58b",
+    "semantic_hash": ""
   },
   "app/composables/useSync.ts": {
     "mtime": 1774267084.2139866,
@@ -395,9 +395,9 @@
     "semantic_hash": "af11f0dc809f44167fb3d83d764054d1"
   },
   "app/pages/agenda/index.vue": {
-    "mtime": 1783548637.0679438,
-    "ast_hash": "a9622299bad229ed968812b794108bbf",
-    "semantic_hash": "a9622299bad229ed968812b794108bbf"
+    "mtime": 1784308200.9398737,
+    "ast_hash": "5a611fcaf4b58153cf1ae5b775355146",
+    "semantic_hash": ""
   },
   "app/pages/catalogo/productos/index.vue": {
     "mtime": 1783380986.665464,
@@ -405,9 +405,9 @@
     "semantic_hash": "202c2996e12a4fb5effeed9343fcdedf"
   },
   "app/pages/clientes/[id].vue": {
-    "mtime": 1783440325.1153417,
-    "ast_hash": "43204ea5288745f5706cbed91dc92929",
-    "semantic_hash": "43204ea5288745f5706cbed91dc92929"
+    "mtime": 1784308160.0978954,
+    "ast_hash": "ad3800fd48a6a5f9c4c9a166d92691d4",
+    "semantic_hash": ""
   },
   "app/pages/clientes/consentimientos/index.vue": {
     "mtime": 1773700158.7586567,
@@ -2102,6 +2102,16 @@
   "public/multimedia/imagenes/productos/1773580306272-VeriFactu-API_-Ingenier\u00eda-Inversa-Node_Nuxt__page-0001.webp": {
     "mtime": 1773700173.8250647,
     "ast_hash": "d7188b67887d6243771026c84fa8f355",
+    "semantic_hash": ""
+  },
+  "app/composables/useSalesAnalytics.ts": {
+    "mtime": 1784307854.9623954,
+    "ast_hash": "150da1fc8d0eeb0da979cb5596d634c7",
+    "semantic_hash": ""
+  },
+  "app/utils/exportHelpers.ts": {
+    "mtime": 1784307903.6997247,
+    "ast_hash": "a78c0ef426ff8cc261578e5405133bf7",
     "semantic_hash": ""
   }
 }

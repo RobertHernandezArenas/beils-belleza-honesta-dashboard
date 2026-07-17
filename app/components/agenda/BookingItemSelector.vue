@@ -33,7 +33,8 @@ const filteredItems = computed(() => {
             bonus_id: cb.client_bonus_id,
             name: `Bono: ${cb.bonus?.name} (Quedan ${cb.remaining_sessions})`,
             duration: cb.bonus?.service?.duration || 0,
-            is_client_bonus: true
+            is_client_bonus: true,
+            remaining_sessions: cb.remaining_sessions
         }))
     }
     else if (activeTab.value === 'GIFTCARD') {
@@ -60,7 +61,8 @@ const addItem = (item: any) => {
         item_type: activeTab.value,
         item_id: id,
         name: item.name,
-        duration: Number(item.duration || 0)
+        duration: Number(item.duration || 0),
+        remaining_sessions: item.remaining_sessions
     })
     itemSearch.value = ''
     isItemDropdownOpen.value = false

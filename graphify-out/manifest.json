@@ -120,9 +120,9 @@
     "semantic_hash": "924b63c83e01969858797be99168c00d"
   },
   "app/components/agenda/views/AgendaMonthView.vue": {
-    "mtime": 1783439790.3359036,
-    "ast_hash": "ed4469a75e0ecbfc03f3a17ac9d07559",
-    "semantic_hash": "ed4469a75e0ecbfc03f3a17ac9d07559"
+    "mtime": 1784310920.9349225,
+    "ast_hash": "a9d6fa2be9a5f53589db59d6f4cffa76",
+    "semantic_hash": ""
   },
   "app/components/agenda/views/AgendaYearView.vue": {
     "mtime": 1773700158.7312853,
