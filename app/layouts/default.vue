@@ -322,7 +322,7 @@
 			items: [
 				{ to: '/finanzas/deudas', label: 'catalog.menu.debts', icon: Landmark },
 				{ to: '/reportes', label: 'nav.reports', icon: PieChart },
-				{ to: '/multimedia', label: 'nav.multimedia', icon: Image },
+
 				{ to: '/configuracion', label: 'nav.settings', icon: SlidersHorizontal },
 			]
 		}

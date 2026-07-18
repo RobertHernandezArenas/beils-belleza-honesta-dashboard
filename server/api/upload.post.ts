@@ -48,7 +48,7 @@ export default defineEventHandler(async event => {
 
 		// Determine target directory and sanitize subdirectory
 		const safeSubdirectory = subdirectory.replace(/[^a-zA-Z0-9-_]/g, '_')
-		const uploadDir = join(process.cwd(), 'public', 'multimedia', category, type, safeSubdirectory)
+		const uploadDir = join(process.cwd(), 'public', 'uploads', category, type, safeSubdirectory)
 		await mkdir(uploadDir, { recursive: true })
 
 		const fileExtension = extname(file.filename || '.jpg')
@@ -66,7 +66,7 @@ export default defineEventHandler(async event => {
 				.toFile(optimizedPath)
 
 			return {
-				url: `/multimedia/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${optimizedFilename}`,
+				url: `/uploads/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${optimizedFilename}`,
 				filename: optimizedFilename,
 				size: file.data.length,
 			}
@@ -75,7 +75,7 @@ export default defineEventHandler(async event => {
 			const filePath = join(uploadDir, filename)
 			await writeFile(filePath, file.data)
 			return {
-				url: `/multimedia/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${filename}`,
+				url: `/uploads/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${filename}`,
 				filename,
 				size: file.data.length,
 			}

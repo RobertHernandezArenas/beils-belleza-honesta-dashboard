@@ -96,7 +96,7 @@
 			formData.append('category', 'usuarios')
 			formData.append('type', 'clientes')
 
-			const response = await $fetch<{ url: string }>('/api/multimedia/upload', {
+			const response = await $fetch<{ url: string }>('/api/upload', {
 				method: 'POST',
 				body: formData,
 			})
