@@ -54,81 +54,87 @@
 				</div>
 
 				<!-- Navegación -->
-				<div class="text-text-secondary relative z-10 w-full flex-1 overflow-y-auto px-4 py-6">
-					<p class="text-text-light mb-4 pl-2 text-[10px] font-medium tracking-widest uppercase">
-						{{ $t('nav.menu') || 'Menú Principal' }}
-					</p>
-
-					<ul ref="sidebarNav" class="relative flex w-full flex-col gap-1.5">
+				<div class="text-text-secondary relative z-10 w-full flex-1 overflow-y-auto px-4 py-4 scrollbar-hide lg:overflow-hidden">
+					<div ref="sidebarNav" class="relative flex w-full flex-col gap-4">
 						<!-- GSAP Active Pill Background -->
 						<div
 							ref="activePill"
-							class="bg-text-secondary pointer-events-none absolute left-0 w-full rounded-[1.25rem] opacity-0 shadow-md"
-							style="z-index: 0; min-height: 48px"></div>
+							class="bg-text-secondary pointer-events-none absolute top-0 left-0 w-full rounded-[1rem] opacity-0 shadow-md"
+							style="z-index: 0; min-height: 36px"></div>
 
-						<li
-							v-for="item in navItems"
-							:key="item.to || item.label"
-							class="relative z-10"
-							:ref="setNavRef(item.to)">
-							<NuxtLink
-								v-if="item.to"
-								:to="item.to"
-								class="group flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-colors duration-300"
-								:class="
-									currentActivePath === item.to
-										? 'text-bg-card font-medium'
-										: 'text-text-muted hover:bg-bg-muted/50 hover:text-text-secondary'
-								"
-								@click="closeDrawerMobile">
-								<component
-									:is="item.icon"
-									class="h-5 w-5 group-hover:scale-110"
-									:class="currentActivePath === item.to ? 'text-bg-card' : ''" />
-								<span
-									class="text-[13px] tracking-wider uppercase"
-									:class="currentActivePath === item.to ? 'font-medium' : 'font-bold'">
-									{{ t(item.label) }}
-								</span>
-							</NuxtLink>
+						<div v-for="(group, gIdx) in navGroups" :key="gIdx" class="flex flex-col gap-1">
+							<!-- Group Header -->
+							<p class="text-text-light mb-1 pl-4 text-[10px] font-bold tracking-widest uppercase opacity-60">
+								{{ group.title }}
+							</p>
 
-							<button
-								v-else
-								class="group text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-4 rounded-[1.25rem] px-5 py-3.5 text-left transition-colors duration-300">
-								<component :is="item.icon" class="h-5 w-5 group-hover:scale-110" />
-								<span class="text-[13px] font-bold tracking-wider uppercase">
-									{{ t(item.label) }}
-								</span>
-							</button>
-						</li>
-					</ul>
+							<!-- Group Items -->
+							<ul class="flex flex-col gap-0.5">
+								<li
+									v-for="item in group.items"
+									:key="item.to || item.label"
+									class="relative z-10 nav-item"
+									:ref="setNavRef(item.to)">
+									<NuxtLink
+										v-if="item.to"
+										:to="item.to"
+										class="group/link flex w-full cursor-pointer items-center gap-3 rounded-[1rem] px-4 py-2 text-left transition-colors duration-300"
+										:class="
+											currentActivePath === item.to
+												? 'text-bg-card font-medium'
+												: 'text-text-muted hover:text-text-secondary hover:bg-bg-muted/30'
+										"
+										@click="closeDrawerMobile">
+										<component
+											:is="item.icon"
+											class="h-4 w-4 transition-transform group-hover/link:scale-110"
+											:class="currentActivePath === item.to ? 'text-bg-card' : ''" />
+										<span
+											class="text-[13px] tracking-wider uppercase"
+											:class="currentActivePath === item.to ? 'font-medium' : 'font-bold'">
+											{{ t(item.label) }}
+										</span>
+									</NuxtLink>
+
+									<button
+										v-else
+										class="group/btn text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-3 rounded-[1rem] px-4 py-2 text-left transition-colors duration-300">
+										<component :is="item.icon" class="h-4 w-4 transition-transform group-hover/btn:scale-110" />
+										<span class="text-[13px] font-bold tracking-wider uppercase">
+											{{ t(item.label) }}
+										</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 
 				<!-- Footer del Sidebar (Perfil + Logout) -->
 				<div
-					class="bg-bg-app relative z-10 mt-auto flex w-full flex-col gap-4 border-t border-transparent p-5">
-					<div v-if="authStore.user" class="flex flex-col gap-4">
+					class="bg-bg-app relative z-10 mt-auto flex w-full flex-col gap-3 border-t border-transparent p-4">
+					<div v-if="authStore.user" class="flex flex-col gap-3">
 						<div class="flex items-center gap-3">
 							<div class="avatar">
 								<div
-									class="ring-border-default ring-offset-bg-card w-10 rounded-full ring-2 ring-offset-2">
+									class="ring-border-default ring-offset-bg-card w-9 rounded-full ring-2 ring-offset-2">
 									<img
 										:src="
 											authStore.user.avatar ||
 											`https://ui-avatars.com/api/?name=${authStore.user.name}+${authStore.user.surname || ''}&background=random`
 										"
 										alt="User Avatar"
-										width="40"
-										height="40"
+										width="36"
+										height="36"
 										class="object-cover" />
 								</div>
 							</div>
 							<div class="flex-1 overflow-hidden">
-								<p class="text-text-secondary truncate text-sm font-bold">
+								<p class="text-text-secondary truncate text-[13px] font-bold">
 									{{ authStore.user.name }} {{ authStore.user.surname }}
 								</p>
 								<p
-									class="text-text-muted truncate text-[10px] font-semibold tracking-widest uppercase">
+									class="text-text-muted truncate text-[9px] font-semibold tracking-widest uppercase">
 									{{ authStore.user.role }}
 								</p>
 							</div>
@@ -136,9 +142,9 @@
 
 						<button
 							@click="handleLogout"
-							class="group hover:text-bg-card flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff0000]/30 bg-[#ff0000]/10 px-4 py-2.5 font-bold text-[#ff0000] transition-[background-color,border-color,color,transform,box-shadow] hover:border-[#ff0000] hover:bg-[#ff0000] hover:shadow-md">
+							class="group hover:text-bg-card flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff0000]/30 bg-[#ff0000]/10 px-4 py-2 font-bold text-[#ff0000] transition-[background-color,border-color,color,transform,box-shadow] hover:border-[#ff0000] hover:bg-[#ff0000] hover:shadow-md">
 							<LogOut class="h-4 w-4 group-hover:-translate-x-0.5" />
-							<span class="text-xs tracking-wider uppercase">
+							<span class="text-[11px] tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}
 							</span>
 						</button>
@@ -179,6 +185,7 @@
 		ClipboardList,
 		ShieldOff,
 		Image,
+		ChevronDown,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -229,27 +236,35 @@
 	}
 
 	const updateActivePill = (immediate = false) => {
-		if (!activePill.value) return
+		requestAnimationFrame(() => {
+			if (!activePill.value || !sidebarNav.value) return
 
-		const activeEl = navRefs.value[currentActivePath.value]
-		if (activeEl) {
-			const top = activeEl.offsetTop
-			const height = activeEl.offsetHeight
+			const activeEl = navRefs.value[currentActivePath.value]
+			if (activeEl && activeEl.offsetHeight > 0) {
+				const navRect = sidebarNav.value.getBoundingClientRect()
+				const elRect = activeEl.getBoundingClientRect()
+				const top = elRect.top - navRect.top
+				const height = elRect.height
 
-			if (immediate) {
-				gsap.set(activePill.value, { y: top, height, opacity: 1 })
+				if (immediate) {
+					gsap.set(activePill.value, { y: top, height, opacity: 1 })
+				} else {
+					gsap.to(activePill.value, {
+						y: top,
+						height,
+						opacity: 1,
+						duration: 0.35,
+						ease: 'power3.out',
+					})
+				}
 			} else {
 				gsap.to(activePill.value, {
-					y: top,
-					height,
-					opacity: 1,
-					duration: 0.25,
-					ease: 'power2.out',
+					opacity: 0,
+					duration: 0.2,
+					ease: 'power2.in',
 				})
 			}
-		} else {
-			gsap.to(activePill.value, { opacity: 0, duration: 0.2 })
-		}
+		})
 	}
 
 	watch(
@@ -259,48 +274,65 @@
 		},
 	)
 
-	// GSAP sidebar nav stagger entrance
 	onMounted(() => {
+		// GSAP sidebar nav stagger entrance
 		if (sidebarNav.value) {
-			const navLinks = sidebarNav.value.querySelectorAll('li')
-			if (navLinks.length) {
-				gsap.set(navLinks, { opacity: 0, x: -16 })
-				gsap.to(navLinks, {
-					opacity: 1,
-					x: 0,
-					duration: 0.35,
-					stagger: 0.03,
-					ease: 'power2.out',
-					delay: 0.15,
-				})
+			const navItems = sidebarNav.value.querySelectorAll('.nav-item')
+			if (navItems.length) {
+				gsap.fromTo(
+					navItems,
+					{ opacity: 0, x: -16 },
+					{
+						opacity: 1,
+						x: 0,
+						duration: 0.5,
+						stagger: 0.04,
+						ease: 'power3.out',
+						delay: 0.15,
+					}
+				)
 			}
 		}
 
 		// Initial pill setup
-		setTimeout(() => updateActivePill(true), 150)
+		setTimeout(() => updateActivePill(true), 200)
 	})
 
-	const navItems = [
-		{ to: '/overview', label: 'nav.dashboard', icon: LayoutDashboard },
-		{ to: '/clientes', label: 'nav.clients', icon: UsersRound },
-		{ to: '/catalogo/productos', label: 'catalog.menu.products', icon: Package },
-		{ to: '/multimedia', label: 'nav.multimedia', icon: Image },
-		{ to: '/servicios', label: 'catalog.menu.services', icon: Scissors },
-		{ to: '/marketing/bonos', label: 'catalog.menu.bonuses', icon: Repeat },
-		{ to: '/agenda', label: 'catalog.menu.agenda', icon: CalendarDays },
-		{ to: '/tpv', label: 'catalog.menu.pos', icon: Store },
-		{ to: '/ventas', label: 'catalog.menu.sales', icon: ShoppingBag },
-		{ to: '/finanzas/deudas', label: 'catalog.menu.debts', icon: Landmark },
-		{ to: '/reportes', label: 'nav.reports', icon: PieChart },
-		{ to: '/configuracion', label: 'nav.settings', icon: SlidersHorizontal },
-	]
+	const navGroups = ref([
+		{
+			title: 'Principal',
+			items: [
+				{ to: '/overview', label: 'nav.dashboard', icon: LayoutDashboard },
+				{ to: '/agenda', label: 'catalog.menu.agenda', icon: CalendarDays },
+				{ to: '/clientes', label: 'nav.clients', icon: UsersRound },
+				{ to: '/tpv', label: 'catalog.menu.pos', icon: Store },
+			]
+		},
+		{
+			title: 'Catálogo y Ventas',
+			items: [
+				{ to: '/ventas', label: 'catalog.menu.sales', icon: ShoppingBag },
+				{ to: '/catalogo/productos', label: 'catalog.menu.products', icon: Package },
+				{ to: '/servicios', label: 'catalog.menu.services', icon: Scissors },
+				{ to: '/marketing/bonos', label: 'catalog.menu.bonuses', icon: Repeat },
+			]
+		},
+		{
+			title: 'Administración',
+			items: [
+				{ to: '/finanzas/deudas', label: 'catalog.menu.debts', icon: Landmark },
+				{ to: '/reportes', label: 'nav.reports', icon: PieChart },
+				{ to: '/multimedia', label: 'nav.multimedia', icon: Image },
+				{ to: '/configuracion', label: 'nav.settings', icon: SlidersHorizontal },
+			]
+		}
+	])
 
 	const currentRouteTranslated = computed(() => {
-		const currentNav = navItems.find(item => item.to === route.path)
-		if (currentNav) {
-			return t(currentNav.label)
+		for (const group of navGroups.value) {
+			const currentNav = group.items.find(item => item.to === route.path)
+			if (currentNav) return t(currentNav.label)
 		}
-
 		const pathValue = route.path.replace('/', '')
 		return pathValue ? pathValue.replace(/-/g, ' ') : 'Panel de Control'
 	})
@@ -343,18 +375,12 @@
 		animation-delay: 2s;
 	}
 
-	/* Scrollbar custom para el sidebar */
-	.overflow-y-auto::-webkit-scrollbar {
-		width: 4px;
+	/* Ocultar scrollbar completamente en LG y ajustar padding */
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
 	}
-	.overflow-y-auto::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.overflow-y-auto::-webkit-scrollbar-thumb {
-		background: rgba(255, 255, 255, 0.1);
-		border-radius: 10px;
-	}
-	.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-		background: rgba(255, 255, 0, 0.5);
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
 	}
 </style>
