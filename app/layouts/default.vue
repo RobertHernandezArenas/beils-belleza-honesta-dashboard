@@ -59,7 +59,7 @@
 						<!-- GSAP Active Pill Background -->
 						<div
 							ref="activePill"
-							class="bg-text-secondary pointer-events-none absolute top-0 left-0 w-full rounded-[1rem] opacity-0 shadow-md"
+							class="bg-text-secondary pointer-events-none absolute top-0 left-0 w-full rounded-2xl opacity-0 shadow-md"
 							style="z-index: 0; min-height: 36px"></div>
 
 						<div v-for="(group, gIdx) in navGroups" :key="gIdx" class="flex flex-col gap-1">
@@ -78,7 +78,7 @@
 									<NuxtLink
 										v-if="item.to"
 										:to="item.to"
-										class="group/link flex w-full cursor-pointer items-center gap-3 rounded-[1rem] px-4 py-2 text-left transition-colors duration-300"
+										class="group/link flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-2 text-left transition-colors duration-300"
 										:class="
 											currentActivePath === item.to
 												? 'text-bg-card font-medium'
@@ -98,7 +98,7 @@
 
 									<button
 										v-else
-										class="group/btn text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-3 rounded-[1rem] px-4 py-2 text-left transition-colors duration-300">
+										class="group/btn text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-2 text-left transition-colors duration-300">
 										<component :is="item.icon" class="h-4 w-4 transition-transform group-hover/btn:scale-110" />
 										<span class="text-[13px] font-bold tracking-wider uppercase">
 											{{ t(item.label) }}
