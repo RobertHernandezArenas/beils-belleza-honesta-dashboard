@@ -75,10 +75,17 @@ const processedDays = computed(() => {
         }).map(b => {
             const startMin = timeToMinutes(b.start_time)
             const duration = b.duration || 30
+            
+            // VISUAL PACKING LOGIC: Reserve at least 28 minutes visually (~45px) for short events
+            const minVisualDuration = 28 
+            const visualDuration = Math.max(duration, minVisualDuration)
+
             return {
                 ...b,
                 startMin,
                 endMin: startMin + duration,
+                visualEndMin: startMin + visualDuration,
+                visualDuration,
                 column: 0,
                 maxColumns: 1
             }
@@ -98,7 +105,7 @@ const processedDays = computed(() => {
                 const col = columns[colIndex]
                 if (!col) continue
                 const lastInCol = col[col.length - 1]
-                if (lastInCol?.endMin <= b.startMin) {
+                if (lastInCol?.visualEndMin <= b.startMin) {
                     b.column = colIndex
                     col.push(b)
                     placed = true
@@ -122,8 +129,8 @@ const processedDays = computed(() => {
                 blockEnd = -1
             }
             currentBlock.push(b)
-            if (b.endMin > blockEnd) {
-                blockEnd = b.endMin
+            if (b.visualEndMin > blockEnd) {
+                blockEnd = b.visualEndMin
             }
         }
         if (currentBlock.length > 0) {
@@ -147,13 +154,13 @@ const getBookingStyle = (booking: any) => {
     startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
     
     const top = ((startMin - (startHour * 60)) / 60) * hourHeight
-    const height = (booking.duration / 60) * hourHeight
+    const height = (booking.visualDuration / 60) * hourHeight
     const width = 100 / booking.maxColumns
     const left = booking.column * width
 
     return {
         top: `${top}px`,
-        height: `${Math.max(height, 24)}px`, // Grid view might need smaller min-height
+        height: `${height}px`, // Height is now driven by visualDuration to ensure readability
         width: `calc(${width}% - 2px)`, // 2px margin
         left: `${left}%`,
         zIndex: booking.column + 10

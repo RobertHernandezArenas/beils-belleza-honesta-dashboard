@@ -56,10 +56,17 @@ const processedBookings = computed(() => {
     }).map(b => {
         const startMin = timeToMinutes(b.start_time)
         const duration = b.duration || 30
+        
+        // VISUAL PACKING LOGIC: Reserve at least 35 minutes visually (56px) for short events
+        const minVisualDuration = 35 
+        const visualDuration = Math.max(duration, minVisualDuration)
+
         return {
             ...b,
             startMin,
             endMin: startMin + duration,
+            visualEndMin: startMin + visualDuration,
+            visualDuration,
             column: 0,
             maxColumns: 1
         }
@@ -84,7 +91,7 @@ const processedBookings = computed(() => {
             const lastInCol = col[col.length - 1]
             if (!lastInCol) continue
 
-            if (lastInCol.endMin <= b.startMin) {
+            if (lastInCol.visualEndMin <= b.startMin) {
                 // Doesn't overlap, can be placed here
                 b.column = colIndex
                 col.push(b)
@@ -113,8 +120,8 @@ const processedBookings = computed(() => {
             blockEnd = -1
         }
         currentBlock.push(b)
-        if (b.endMin > blockEnd) {
-            blockEnd = b.endMin
+        if (b.visualEndMin > blockEnd) {
+            blockEnd = b.visualEndMin
         }
     }
     if (currentBlock.length > 0) {
@@ -139,13 +146,13 @@ const getBookingStyle = (booking: any) => {
     startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
     
     const top = ((startMin - (startHour * 60)) / 60) * hourHeight
-    const height = (booking.duration / 60) * hourHeight
+    const height = (booking.visualDuration / 60) * hourHeight
     const width = 100 / booking.maxColumns
     const left = booking.column * width
 
     return {
         top: `${top}px`,
-        height: `${Math.max(height, 40)}px`, // Ensure at least 40px height to be clickable
+        height: `${height}px`, // Height is now driven by visualDuration to ensure readability
         width: `calc(${width}% - 4px)`, // 4px margin between columns
         left: `${left}%`,
         zIndex: booking.column + 10 // Layer overlapping correctly

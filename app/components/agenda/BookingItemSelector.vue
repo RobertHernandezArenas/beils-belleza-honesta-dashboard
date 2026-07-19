@@ -20,8 +20,12 @@ const activeTab = ref<'SERVICE' | 'BONUS'>('SERVICE')
 const itemSearch = ref('')
 const isItemDropdownOpen = ref(false)
 
+const normalizeStr = (str: string) => {
+    return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : ''
+}
+
 const filteredItems = computed(() => {
-    const q = itemSearch.value.toLowerCase().trim()
+    const q = normalizeStr(itemSearch.value)
     let source: any[] = []
     
     if (activeTab.value === 'SERVICE') source = props.services || []
@@ -40,8 +44,8 @@ const filteredItems = computed(() => {
     if (!q) return source.slice(0, 10)
     
     return source.filter(item => 
-        item.name?.toLowerCase().includes(q) || 
-        item.code?.toLowerCase().includes(q)
+        normalizeStr(item.name).includes(q) || 
+        normalizeStr(item.code).includes(q)
     ).slice(0, 15)
 })
 
