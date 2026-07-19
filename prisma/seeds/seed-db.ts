@@ -46,9 +46,7 @@ async function seedDB() {
 		await prisma.bonus.deleteMany()
 		await prisma.giftcard.deleteMany()
 		await prisma.coupon.deleteMany()
-		await prisma.packItemProduct.deleteMany()
-		await prisma.packItemService.deleteMany()
-		await prisma.pack.deleteMany()
+
 		await prisma.product.deleteMany()
 		await prisma.service.deleteMany()
 		await prisma.user.deleteMany()

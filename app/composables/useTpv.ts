@@ -132,8 +132,6 @@ export function useTpv() {
 								matchingBonus.remaining_sessions--
 							}
 						}
-					} else if (type === 'pack') {
-						foundItem = pks?.find((p: any) => p.pack_id === it.item_id)
 					} else if (type === 'bonus') {
 						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
 						// Fallback: If not a template, it might be an explicit ClientBonus from Agenda

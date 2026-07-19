@@ -79,7 +79,6 @@ defineExpose({ openModal, closeModal })
                         <span v-for="it in booking.booking_items" :key="it.item_id" class="text-[9px] bg-white/40 px-1.5 py-0.5 rounded flex items-center gap-1 font-bold">
                             <Scissors v-if="it.item_type === 'SERVICE'" class="h-2 w-2" />
                             <Ticket v-else-if="it.item_type === 'BONUS'" class="h-2 w-2" />
-                            <Package v-else-if="it.item_type === 'PACK'" class="h-2 w-2" />
                             <Gift v-else class="h-2 w-2" />
                             {{ it.name }}
                         </span>

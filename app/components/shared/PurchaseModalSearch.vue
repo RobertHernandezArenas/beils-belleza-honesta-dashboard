@@ -39,7 +39,7 @@ const internalSearch = computed({
                 v-model="internalSearch"
                 type="text" 
                 autofocus
-                :placeholder="isEditingItems ? 'Buscar servicios, productos o packs...' : 'Buscar cliente por nombre o teléfono...'" 
+                :placeholder="isEditingItems ? 'Buscar servicios o productos...' : 'Buscar cliente por nombre o teléfono...'" 
                 class="input w-full bg-bg-card border-border-default rounded-2xl pl-11 focus:border-primary focus:ring-primary/10"
             />
         </div>
@@ -102,7 +102,6 @@ const internalSearch = computed({
                     <div class="absolute -right-2 -bottom-2 opacity-5">
                         <Scissors v-if="item.item_type === 'service'" class="w-16 h-16" />
                         <Package v-else-if="item.item_type === 'product'" class="w-16 h-16" />
-                        <PackageSearch v-else-if="item.item_type === 'pack'" class="w-16 h-16" />
                         <Ticket v-else class="w-16 h-16" />
                     </div>
                 </div>

@@ -18,7 +18,6 @@ const {
     clients,
     staff,
     services,
-    packs,
     bonuses,
     clientWallet,
     isSaving,
@@ -138,7 +137,7 @@ const closeDropdowns = () => {
                     <!-- Services/Items -->
                     <div class="flex flex-col gap-3">
                         <div class="flex justify-between items-end">
-                            <span class="text-primary text-[10px] font-bold uppercase tracking-widest">Servicios/Packs *</span>
+                            <span class="text-primary text-[10px] font-bold uppercase tracking-widest">Servicios *</span>
                             <span class="text-text-muted text-[10px] font-bold tabular-nums">{{ form.duration }} min total</span>
                         </div>
                         
