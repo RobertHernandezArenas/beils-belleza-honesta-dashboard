@@ -7,7 +7,7 @@ export function useTpv() {
 	const router = useRouter()
 
 	// Tab control
-	const activeTab = ref<'products' | 'services' | 'packs' | 'bonuses'>('services')
+	const activeTab = ref<'products' | 'services' | 'bonuses'>('services')
 	const searchQuery = ref('')
 	const clientSearch = ref('')
 
@@ -50,23 +50,22 @@ export function useTpv() {
 		queryFn: () => $fetch('/api/services'),
 	})
 
-	const { data: packs } = useQuery<any[]>({
-		queryKey: ['packs-tpv'],
-		queryFn: () => $fetch('/api/catalog/packs'),
-	})
 
 	const { data: bonuses } = useQuery<any[]>({
 		queryKey: ['bonuses-tpv'],
 		queryFn: () => $fetch('/api/marketing/bonuses'),
 	})
 
+	const { data: packs } = useQuery<any[]>({
+		queryKey: ['packs-tpv'],
+		queryFn: () => $fetch('/api/catalog/packs'),
+	})
+
 	const processedBookingId = ref<string | null>(null)
 
 	// Promotions & Marketing State
 	const clientBonuses = ref<any[]>([])
-	const promoCode = ref('')
-	const appliedCouponCode = ref<string | undefined>(undefined)
-	const appliedGiftcardCode = ref<string | undefined>(undefined)
+
 
 	const fetchClientBonuses = async (clientId: string) => {
 		try {
@@ -87,53 +86,17 @@ export function useTpv() {
 		}
 	})
 
-	const validatePromoCode = async () => {
-		if (!promoCode.value) return
 
-		try {
-			const res: any = await $fetch('/api/marketing/validate-code', {
-				method: 'POST',
-				body: {
-					code: promoCode.value,
-					cartTotal: cartSubtotal.value
-				}
-			})
-
-			if (res.valid) {
-				if (res.type === 'coupon') {
-					appliedCouponCode.value = res.code
-					appliedGiftcardCode.value = undefined
-					discountAmount.value = res.discountAmount
-				} else if (res.type === 'giftcard') {
-					appliedGiftcardCode.value = res.code
-					appliedCouponCode.value = undefined
-					// If the giftcard has enough balance, it discounts the total cart amount.
-					// If it has less, it discounts whatever balance is left.
-					discountAmount.value = Math.min(res.balance, cartSubtotal.value)
-				}
-				displayToast(res.message, 'success')
-				promoCode.value = ''
-			}
-		} catch (error: any) {
-			displayToast(error.data?.statusMessage || 'Código inválido', 'error')
-		}
-	}
-
-	const removePromoCode = () => {
-		appliedCouponCode.value = undefined
-		appliedGiftcardCode.value = undefined
-		discountAmount.value = 0
-	}
 
 	// Watcher for booking param from URL
 	watch([
 		() => route.query.booking_id,
 		() => services.value,
-		() => packs.value,
 		() => bonuses.value,
 		() => products.value,
+		() => packs.value,
 		() => clients.value
-	], async ([bookingId, svcs, pks, bns, prds, cls]) => {
+	], async ([bookingId, svcs, bns, prds, pks, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
 		if (!svcs || !cls) return // Wait for crucial catalogs to load
 
@@ -169,15 +132,18 @@ export function useTpv() {
 								matchingBonus.remaining_sessions--
 							}
 						}
-					} else if (type === 'pack') {
-						foundItem = pks?.find((p: any) => p.pack_id === it.item_id)
 					} else if (type === 'bonus') {
 						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
 						// Fallback: If not a template, it might be an explicit ClientBonus from Agenda
 						if (!foundItem && currentClientBonuses.length > 0) {
 							const explicitBonus = currentClientBonuses.find(b => b.client_bonus_id === it.item_id)
-							if (explicitBonus && explicitBonus.bonus?.service) {
-								foundItem = explicitBonus.bonus.service
+							if (explicitBonus) {
+								foundItem = explicitBonus.bonus?.service || {
+									service_id: explicitBonus.client_bonus_id, // Fallback ID
+									name: explicitBonus.bonus?.name || it.name,
+									price: 0,
+									tax_rate: 21.0
+								}
 								appliedBonusId = explicitBonus.client_bonus_id
 								type = 'service'
 								explicitBonus.remaining_sessions--
@@ -185,35 +151,40 @@ export function useTpv() {
 						}
 					} else if (type === 'product') {
 						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
-					} else if (type === 'giftcard') {
-						// Si agendaron un giftcard_usage, copiamos el ID al input de promo del TPV y descartamos el ítem
-						promoCode.value = it.name?.includes('Tarjeta Regalo: ') ? it.name.split('Tarjeta Regalo: ')[1].split(' ')[0] : ''
-						if (promoCode.value) {
-							setTimeout(() => validatePromoCode(), 500)
-						}
-						continue // No se añade como ítem de venta
 					}
 
 					if (foundItem) {
-						itemsToAdd.push({
-							item_id: foundItem.product_id || foundItem.service_id || foundItem.pack_id || foundItem.bonus_id,
-							item_type: type,
-							name: foundItem.name,
-							unit_price: foundItem.price,
-							tax_rate: foundItem.tax_rate || 21.0,
-							quantity: 1,
-							applied_client_bonus_id: appliedBonusId
-						})
+						const matchingId = foundItem.product_id || foundItem.service_id || foundItem.bonus_id || it.item_id
+						const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId && i.applied_client_bonus_id === appliedBonusId)
+						
+						if (existingCartItem) {
+							existingCartItem.quantity++
+						} else {
+							itemsToAdd.push({
+								item_id: matchingId,
+								item_type: type,
+								name: foundItem.name || it.name,
+								unit_price: foundItem.price,
+								tax_rate: foundItem.tax_rate || 21.0,
+								quantity: 1,
+								applied_client_bonus_id: appliedBonusId
+							})
+						}
 					} else {
-						itemsToAdd.push({
-							item_id: it.item_id,
-							item_type: type,
-							name: it.name,
-							unit_price: 0,
-							tax_rate: 21.0,
-							quantity: 1,
-							applied_client_bonus_id: appliedBonusId
-						})
+						const existingCartItem = itemsToAdd.find(i => i.item_id === it.item_id && i.applied_client_bonus_id === appliedBonusId)
+						if (existingCartItem) {
+							existingCartItem.quantity++
+						} else {
+							itemsToAdd.push({
+								item_id: it.item_id,
+								item_type: type,
+								name: it.name,
+								unit_price: 0,
+								tax_rate: 21.0,
+								quantity: 1,
+								applied_client_bonus_id: appliedBonusId
+							})
+						}
 					}
 				}
 			}
@@ -287,11 +258,7 @@ export function useTpv() {
 				(s: any) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
 			)
 		}
-		if (activeTab.value === 'packs' && packs.value) {
-			return packs.value.filter(
-				(p: any) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
-			)
-		}
+
 		if (activeTab.value === 'bonuses' && bonuses.value) {
 			return bonuses.value.filter((b: any) => b.name.toLowerCase().includes(q))
 		}
@@ -314,15 +281,21 @@ export function useTpv() {
 
 	// Cart Operations
 	const addToCart = (item: any, type: string) => {
+		let itemId = ''
+		if (type === 'bonus') itemId = item.bonus_id
+		else if (type === 'service') itemId = item.service_id
+		else if (type === 'product') itemId = item.product_id
+		else itemId = item.product_id || item.service_id || item.bonus_id
+
 		const existing = cartItems.value.find(
-			i => i.item_id === (item.product_id || item.service_id || item.pack_id || item.bonus_id),
+			i => i.item_id === itemId && !i.applied_client_bonus_id,
 		)
 
 		if (existing) {
 			existing.quantity++
 		} else {
 			cartItems.value.push({
-				item_id: item.product_id || item.service_id || item.pack_id || item.bonus_id,
+				item_id: itemId,
 				item_type: type,
 				name: item.name,
 				unit_price: item.price,
@@ -331,6 +304,20 @@ export function useTpv() {
 			})
 		}
 		searchQuery.value = ''
+	}
+
+	const increaseItemQty = (index: number) => {
+		const item = cartItems.value[index]
+		if (item.applied_client_bonus_id) {
+			const cb = clientBonuses.value.find((b: any) => b.client_bonus_id === item.applied_client_bonus_id)
+			if (cb && item.quantity < cb.remaining_sessions) {
+				item.quantity++
+			} else {
+				displayToast('No quedan más sesiones disponibles en este bono', 'error')
+			}
+		} else {
+			item.quantity++
+		}
 	}
 
 	const removeFromCart = (index: number) => {
@@ -379,9 +366,6 @@ export function useTpv() {
 			discount: discountAmount.value,
 			items: cartItems.value,
 			booking_id: processedBookingId.value || undefined,
-			applied_coupon: appliedCouponCode.value,
-			applied_giftcard: appliedGiftcardCode.value,
-			applied_giftcard_amount: appliedGiftcardCode.value ? discountAmount.value : undefined,
 		})
 	}
 
@@ -414,18 +398,14 @@ export function useTpv() {
 		cartTotal,
 		isCheckingOut,
 		clientBonuses,
-		promoCode,
-		appliedCouponCode,
-		appliedGiftcardCode,
 		addToCart,
 		removeFromCart,
+		increaseItemQty,
 		clearCart,
 		selectClient,
 		handleCheckout,
 		handleAvatarError,
 		formatCurrency,
 		displayToast,
-		validatePromoCode,
-		removePromoCode,
 	}
 }

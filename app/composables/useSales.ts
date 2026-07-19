@@ -1,5 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useSalesAnalytics } from './useSalesAnalytics'
+import { exportVentasCsv, exportVentasPdf } from '~/utils/exportHelpers'
 
 export interface TicketSeriesRow {
 	start: Date
@@ -120,188 +122,17 @@ export function useSales() {
 
 	const totalPages = computed(() => Math.ceil(filteredSales.value.length / itemsPerPage.value))
 
-	const getStartOfDate = (type: 'day' | 'week' | 'month' | 'year') => {
-		const now = new Date()
-		now.setHours(0, 0, 0, 0)
-
-		if (type === 'day') return now
-		if (type === 'week') {
-			const day = now.getDay() || 7 // 1 is Monday, 7 is Sunday
-			now.setDate(now.getDate() - day + 1)
-			return now
-		}
-		if (type === 'month') {
-			now.setDate(1)
-			return now
-		}
-		if (type === 'year') {
-			now.setMonth(0, 1)
-			return now
-		}
-		return now
-	}
-
-	const getEndOfDate = (type: 'day' | 'week' | 'month' | 'year', start: Date) => {
-		const end = new Date(start)
-		if (type === 'day') end.setDate(end.getDate() + 1)
-		if (type === 'week') end.setDate(end.getDate() + 7)
-		if (type === 'month') end.setMonth(end.getMonth() + 1)
-		if (type === 'year') end.setFullYear(end.getFullYear() + 1)
-		return end
-	}
-
-	const getPreviousPeriodBounds = (type: 'day' | 'week' | 'month' | 'year', currentStart: Date, elapsedMs: number) => {
-		const prevStart = new Date(currentStart)
-		if (type === 'day') prevStart.setDate(prevStart.getDate() - 1)
-		if (type === 'week') prevStart.setDate(prevStart.getDate() - 7)
-		if (type === 'month') prevStart.setMonth(prevStart.getMonth() - 1)
-		if (type === 'year') prevStart.setFullYear(prevStart.getFullYear() - 1)
-		const prevEnd = new Date(prevStart.getTime() + elapsedMs)
-		return { start: prevStart, end: prevEnd }
-	}
-
-	const pctChange = (curr: number, prev: number) => {
-		if (prev > 0) return ((curr - prev) / prev) * 100
-		return curr > 0 ? 100 : 0
-	}
-
-	const timeframeLabels: Record<'day' | 'week' | 'month' | 'year', string> = {
-		day: 'HOY',
-		week: 'ESTA SEMANA',
-		month: 'ESTE MES',
-		year: 'ESTE AÑO',
-	}
-
-	const summaryStats = computed(() => {
-		const empty = { total: 0, count: 0, average: 0, totalChange: 0, countChange: 0, averageChange: 0 }
-		if (!sales.value) return empty
-
-		const now = new Date()
-		const startDate = getStartOfDate(summaryTimeframe.value)
-		const elapsed = now.getTime() - startDate.getTime()
-
-		const current = sales.value.filter((s: any) => {
-			const d = new Date(s.created_at)
-			return d >= startDate && d <= now
-		})
-
-		const { start: prevStart, end: prevEnd } = getPreviousPeriodBounds(summaryTimeframe.value, startDate, elapsed)
-		const previous = sales.value.filter((s: any) => {
-			const d = new Date(s.created_at)
-			return d >= prevStart && d <= prevEnd
-		})
-
-		const total = current.reduce((sum, s) => sum + s.total, 0)
-		const count = current.length
-		const average = count > 0 ? total / count : 0
-
-		const prevTotal = previous.reduce((sum, s) => sum + s.total, 0)
-		const prevCount = previous.length
-		const prevAverage = prevCount > 0 ? prevTotal / prevCount : 0
-
-		return {
-			total,
-			count,
-			average,
-			totalChange: pctChange(total, prevTotal),
-			countChange: pctChange(count, prevCount),
-			averageChange: pctChange(average, prevAverage),
-		}
-	})
-
-	const bucketCount = computed(() => {
-		if (summaryTimeframe.value === 'day') return 8
-		if (summaryTimeframe.value === 'week') return 7
-		if (summaryTimeframe.value === 'month') {
-			const now = new Date()
-			return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
-		}
-		return 12
-	})
-
-	const sparklineSeries = computed(() => {
-		const buckets = bucketCount.value
-		const totals = Array(buckets).fill(0)
-		const counts = Array(buckets).fill(0)
-
-		if (sales.value) {
-			const start = getStartOfDate(summaryTimeframe.value)
-			const end = getEndOfDate(summaryTimeframe.value, start)
-			const bucketMs = (end.getTime() - start.getTime()) / buckets
-
-			sales.value.forEach((s: any) => {
-				const t = new Date(s.created_at).getTime()
-				if (t >= start.getTime() && t < end.getTime()) {
-					const idx = Math.min(buckets - 1, Math.floor((t - start.getTime()) / bucketMs))
-					totals[idx] += s.total
-					counts[idx] += 1
-				}
-			})
-		}
-
-		const averages = totals.map((t, i) => (counts[i] > 0 ? t / counts[i] : 0))
-		return { totals, counts, averages }
-	})
-
-	const toSparklinePath = (values: number[]) => {
-		if (!values.length) return ''
-		const max = Math.max(...values)
-		const min = Math.min(...values, 0)
-		const range = max - min || 1
-		const stepX = values.length > 1 ? 100 / (values.length - 1) : 100
-		return values
-			.map((v, i) => {
-				const x = i * stepX
-				const y = 18 - ((v - min) / range) * 16
-				return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
-			})
-			.join(' ')
-	}
-
-	const toSparklineAreaPath = (values: number[]) => {
-		if (!values.length) return ''
-		const max = Math.max(...values)
-		const min = Math.min(...values, 0)
-		const range = max - min || 1
-		const stepX = values.length > 1 ? 100 / (values.length - 1) : 100
-		const points = values.map((v, i) => {
-			const x = i * stepX
-			const y = 18 - ((v - min) / range) * 16
-			return `${x.toFixed(1)},${y.toFixed(1)}`
-		})
-		return `M0,20 L${points.join(' L')} L100,20 Z`
-	}
-
-	const totalSparkline = computed(() => toSparklinePath(sparklineSeries.value.totals))
-	const totalSparklineArea = computed(() => toSparklineAreaPath(sparklineSeries.value.totals))
-	const countSparkline = computed(() => toSparklinePath(sparklineSeries.value.counts))
-	const countSparklineArea = computed(() => toSparklineAreaPath(sparklineSeries.value.counts))
-	const averageSparkline = computed(() => toSparklinePath(sparklineSeries.value.averages))
-	const averageSparklineArea = computed(() => toSparklineAreaPath(sparklineSeries.value.averages))
-
-	const monthlyProjection = computed(() => {
-		if (!sales.value) return { projected: 0, changeVsLastMonth: 0 }
-
-		const now = new Date()
-		const startMonth = getStartOfDate('month')
-		const daysElapsed = Math.max(1, Math.ceil((now.getTime() - startMonth.getTime()) / (1000 * 60 * 60 * 24)))
-		const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
-
-		const monthTotal = sales.value
-			.filter((s: any) => new Date(s.created_at) >= startMonth && new Date(s.created_at) <= now)
-			.reduce((sum, s) => sum + s.total, 0)
-
-		const projected = (monthTotal / daysElapsed) * daysInMonth
-
-		const lastMonthStart = new Date(startMonth)
-		lastMonthStart.setMonth(lastMonthStart.getMonth() - 1)
-		const lastMonthEnd = new Date(startMonth)
-		const lastMonthTotal = sales.value
-			.filter((s: any) => new Date(s.created_at) >= lastMonthStart && new Date(s.created_at) < lastMonthEnd)
-			.reduce((sum, s) => sum + s.total, 0)
-
-		return { projected, changeVsLastMonth: pctChange(projected, lastMonthTotal) }
-	})
+	const {
+		timeframeLabels,
+		summaryStats,
+		totalSparkline,
+		totalSparklineArea,
+		countSparkline,
+		countSparklineArea,
+		averageSparkline,
+		averageSparklineArea,
+		monthlyProjection,
+	} = useSalesAnalytics(sales, summaryTimeframe)
 
 	const toggleSort = (key: 'id' | 'date' | 'payment_method' | 'total' | 'client') => {
 		if (sortKey.value === key) {
@@ -339,23 +170,6 @@ export function useSales() {
 		const hours = date.getHours().toString().padStart(2, '0')
 		const minutes = date.getMinutes().toString().padStart(2, '0')
 		return `${day} ${month} ${year}, ${hours}:${minutes}`
-	}
-
-	const escapeCsvValue = (value: any) => {
-		const str = String(value ?? '')
-		if (/[";\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`
-		return str
-	}
-
-	const triggerDownload = (blob: Blob, filename: string) => {
-		const url = URL.createObjectURL(blob)
-		const link = document.createElement('a')
-		link.href = url
-		link.download = filename
-		document.body.appendChild(link)
-		link.click()
-		document.body.removeChild(link)
-		URL.revokeObjectURL(url)
 	}
 
 	const reportData = computed(() => {
@@ -452,229 +266,34 @@ export function useSales() {
 
 	const monthlySeries = computed(() => buildTicketSeries(monthStart, start => start.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })))
 
-	const formatMethodBreakdown = (methodCounts: Map<string, number>) =>
-		Array.from(methodCounts.entries())
-			.map(([method, count]) => `${count} ${method}`)
-			.join(', ')
-
 	const downloadCsv = () => {
-		if (!filteredSales.value.length) return
-
-		try {
-			const header = ['ID Ticket', 'Fecha y hora', 'Método de pago', 'Total (€)']
-			const rows = filteredSales.value.map((s: any) => [
-				getTicketDisplay(s),
-				formatCustomDate(s.created_at),
-				getPaymentMethodBadge(s.payment_method).label,
-				s.total.toFixed(2).replace('.', ','),
-			])
-
-			const lines = [header, ...rows]
-			lines.push([])
-			lines.push(['TOTAL GENERAL', '', '', reportData.value.grandTotal.toFixed(2).replace('.', ',')])
-			lines.push([])
-			lines.push(['RESUMEN POR MES Y MÉTODO DE PAGO'])
-
-			reportData.value.months.forEach(month => {
-				lines.push([])
-				lines.push([month.label.toUpperCase()])
-				month.methods.forEach((sum, method) => {
-					lines.push([method, sum.toFixed(2).replace('.', ',')])
-				})
-				lines.push([`Total ${month.label}`, month.total.toFixed(2).replace('.', ',')])
-			})
-
-			const seriesHeader = ['Periodo', 'Rango de tickets', 'Nº tickets', 'Desglose métodos de pago', 'Total (€)']
-			const pushSeries = (title: string, rows: typeof dailySeries.value) => {
-				lines.push([])
-				lines.push([title])
-				lines.push(seriesHeader)
-				rows.forEach(row => {
-					lines.push([row.label, `${row.firstTicket} - ${row.lastTicket}`, row.count, formatMethodBreakdown(row.methodCounts), row.total.toFixed(2).replace('.', ',')])
-				})
-			}
-
-			pushSeries('SERIE DIARIA DE TICKETS', dailySeries.value)
-			pushSeries('SERIE SEMANAL DE TICKETS', weeklySeries.value)
-			pushSeries('SERIE MENSUAL DE TICKETS', monthlySeries.value)
-
-			const csvContent = lines.map(row => row.map(escapeCsvValue).join(';')).join('\n')
-			const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-			triggerDownload(blob, `ventas_${new Date().toISOString().split('T')[0]}.csv`)
-		} catch (err) {
-			console.error('Error generando el CSV de ventas:', err)
-			displayToast('No se pudo generar el CSV. Inténtalo de nuevo.', 'error')
-		}
+		exportVentasCsv({
+			filteredSales: filteredSales.value,
+			reportData: reportData.value,
+			dailySeries: dailySeries.value,
+			weeklySeries: weeklySeries.value,
+			monthlySeries: monthlySeries.value,
+			getTicketDisplay,
+			formatCustomDate,
+			getPaymentMethodBadge,
+			displayToast
+		})
 	}
 
 	const downloadPdf = async () => {
-		if (!filteredSales.value.length || isGeneratingPdf.value) return
-		isGeneratingPdf.value = true
-
-		try {
-			const { jsPDF } = await import('jspdf')
-			const doc = new jsPDF({ unit: 'mm', format: 'a4' })
-			const pageWidth = doc.internal.pageSize.getWidth()
-			const pageHeight = doc.internal.pageSize.getHeight()
-			const marginX = 14
-			const contentWidth = pageWidth - marginX * 2
-			let y = 18
-
-			const ensureSpace = (needed: number) => {
-				if (y + needed > pageHeight - 14) {
-					doc.addPage()
-					y = 18
-				}
-			}
-
-			doc.setFont('helvetica', 'bold')
-			doc.setFontSize(16)
-			doc.text('Historial de tickets y facturación', marginX, y)
-			y += 6
-			doc.setFont('helvetica', 'normal')
-			doc.setFontSize(9)
-			doc.setTextColor(120)
-			doc.text(`Generado el ${new Date().toLocaleString('es-ES')}`, marginX, y)
-			doc.setTextColor(20)
-			y += 8
-
-			const columns = [
-				{ label: 'ID Ticket', width: 44 },
-				{ label: 'Fecha y hora', width: 46 },
-				{ label: 'Método pago', width: 30 },
-				{ label: 'Total', width: 26 },
-			]
-
-			const drawTableHeader = () => {
-				doc.setFillColor(242, 242, 242)
-				doc.rect(marginX, y - 4, contentWidth, 6, 'F')
-				doc.setFont('helvetica', 'bold')
-				doc.setFontSize(8)
-				let x = marginX
-				columns.forEach(col => {
-					doc.text(col.label, x + 1, y)
-					x += col.width
-				})
-				y += 5
-				doc.setFont('helvetica', 'normal')
-				doc.setFontSize(7.5)
-			}
-
-			ensureSpace(10)
-			drawTableHeader()
-
-			const totalColWidth = columns[3]!.width
-
-			filteredSales.value.forEach((s: any) => {
-				ensureSpace(6)
-				const cells = [getTicketDisplay(s), formatCustomDate(s.created_at), getPaymentMethodBadge(s.payment_method).label]
-
-				let x = marginX
-				cells.forEach((text, i) => {
-					const width = columns[i]!.width
-					const fitted = doc.splitTextToSize(text, width - 2)[0] || ''
-					doc.text(fitted, x + 1, y)
-					x += width
-				})
-				doc.text(formatCurrency(s.total), x + totalColWidth - 1, y, { align: 'right' })
-
-				y += 5
-				doc.setDrawColor(230)
-				doc.line(marginX, y - 3.5, marginX + contentWidth, y - 3.5)
-			})
-
-			ensureSpace(8)
-			y += 2
-			doc.setFont('helvetica', 'bold')
-			doc.setFontSize(9)
-			doc.text('TOTAL GENERAL', marginX + contentWidth - totalColWidth - 1, y, { align: 'right' })
-			doc.text(formatCurrency(reportData.value.grandTotal), marginX + contentWidth - 1, y, { align: 'right' })
-			y += 10
-
-			ensureSpace(8)
-			doc.setFontSize(12)
-			doc.text('Resumen por mes y método de pago', marginX, y)
-			y += 7
-
-			reportData.value.months.forEach(month => {
-				ensureSpace(8)
-				doc.setFont('helvetica', 'bold')
-				doc.setFontSize(9.5)
-				doc.text(month.label.charAt(0).toUpperCase() + month.label.slice(1), marginX, y)
-				y += 5.5
-
-				doc.setFont('helvetica', 'normal')
-				doc.setFontSize(8.5)
-				month.methods.forEach((sum, method) => {
-					ensureSpace(5.5)
-					doc.text(method, marginX + 4, y)
-					doc.text(formatCurrency(sum), marginX + contentWidth - 1, y, { align: 'right' })
-					y += 5
-				})
-
-				ensureSpace(6)
-				doc.setFont('helvetica', 'bold')
-				doc.text(`Total ${month.label}`, marginX + 4, y)
-				doc.text(formatCurrency(month.total), marginX + contentWidth - 1, y, { align: 'right' })
-				y += 8
-			})
-
-			const seriesColumns = [
-				{ label: 'Periodo', width: 34 },
-				{ label: 'Rango de tickets', width: 38 },
-				{ label: 'Nº tickets (desglose)', width: 76 },
-				{ label: 'Total', width: 24 },
-			]
-			const seriesTotalWidth = seriesColumns[3]!.width
-
-			const drawSeriesSection = (title: string, rows: TicketSeriesRow[]) => {
-				ensureSpace(15)
-				doc.setFont('helvetica', 'bold')
-				doc.setFontSize(12)
-				doc.text(title, marginX, y)
-				y += 7
-
-				doc.setFillColor(242, 242, 242)
-				doc.rect(marginX, y - 4, contentWidth, 6, 'F')
-				doc.setFontSize(8)
-				let hx = marginX
-				seriesColumns.forEach(col => {
-					doc.text(col.label, hx + 1, y)
-					hx += col.width
-				})
-				y += 5
-				doc.setFont('helvetica', 'normal')
-				doc.setFontSize(7.5)
-
-				rows.forEach(row => {
-					ensureSpace(6)
-					const cells = [row.label, `${row.firstTicket} - ${row.lastTicket}`, `${row.count} (${formatMethodBreakdown(row.methodCounts)})`]
-					let x = marginX
-					cells.forEach((text, i) => {
-						const width = seriesColumns[i]!.width
-						const fitted = doc.splitTextToSize(text, width - 2)[0] || ''
-						doc.text(fitted, x + 1, y)
-						x += width
-					})
-					doc.text(formatCurrency(row.total), x + seriesTotalWidth - 1, y, { align: 'right' })
-					y += 5
-					doc.setDrawColor(230)
-					doc.line(marginX, y - 3.5, marginX + contentWidth, y - 3.5)
-				})
-				y += 6
-			}
-
-			drawSeriesSection('Serie diaria de tickets', dailySeries.value)
-			drawSeriesSection('Serie semanal de tickets', weeklySeries.value)
-			drawSeriesSection('Serie mensual de tickets', monthlySeries.value)
-
-			doc.save(`ventas_${new Date().toISOString().split('T')[0]}.pdf`)
-		} catch (err) {
-			console.error('Error generando el PDF de ventas:', err)
-			displayToast('No se pudo generar el PDF. Inténtalo de nuevo.', 'error')
-		} finally {
-			isGeneratingPdf.value = false
-		}
+		await exportVentasPdf({
+			filteredSales: filteredSales.value,
+			reportData: reportData.value,
+			dailySeries: dailySeries.value,
+			weeklySeries: weeklySeries.value,
+			monthlySeries: monthlySeries.value,
+			isGeneratingPdf,
+			getTicketDisplay,
+			formatCustomDate,
+			getPaymentMethodBadge,
+			formatCurrency,
+			displayToast
+		})
 	}
 
 	return {

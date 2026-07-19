@@ -1,84 +1,135 @@
-# 💎 Beils Dashboard - Project Context & Guidelines
+# 💎 Beils Dashboard - Manual de Ingeniería
 
-This file serves as the primary instructional context for Gemini CLI when working on the Beils Dashboard project. It synthesizes the project's architecture, technology stack, development standards, and operational procedures.
+Este documento establece los estándares técnicos, arquitectónicos y éticos para el desarrollo de Beils. La
+coherencia en el código es lo que permite que el software sea honesto y sostenible.
 
-## 🚀 Project Overview
+## 🚀 Stack Tecnológico
 
-Beils Dashboard (Belleza Honesta) is a comprehensive Full-Stack administration panel designed to manage a beauty salon's operations, including sales, bookings, users, and billing with Veri*Factu integration.
+- **Framework:** Nuxt 4 (Directory structure & Layers)
+- **State Management:** Pinia (Composition API)
+- **Data Fetching:** TanStack Vue Query (v5)
+- **Validación:** Zod
+- **ORM & DB:** Prisma + MySQL
+- **Estilos:** TailwindCSS 4 + DaisyUI
+- **Package Manager:** PNPM
 
-- **Frontend:** Nuxt 4 (Vue 3, Composition API), Pinia (Global State), TanStack Vue Query (Server State).
-- **Backend:** Nuxt Server Engine (H3), Prisma ORM.
-- **Database:** MariaDB / MySQL.
-- **Styling:** TailwindCSS 4 + DaisyUI (Trend UI 2026 aesthetics with Glassmorphism).
-- **Core Features:** CRM, Catalog Management, Services & Packs, Marketing (Coupons, Bonuses), Point of Sale (TPV) with Veri*Factu, and a centralized Agenda.
+---
 
-## 🏛️ Architecture & Principles
+## 🏛️ Arquitectura y Principios de Diseño
 
-The project follows **Clean Architecture** principles to ensure business logic remains independent of the UI:
+### Clean Architecture (Frontend)
 
-1.  **Domain:** Interfaces and Zod schemas in `types/` or `schemas/`.
-2.  **Application:** Global state and logic in **Pinia Stores** and **Composables**.
-3.  **Infrastructure:** Data repositories, Prisma configuration, and API services.
-4.  **Presentation:** Vue components, Pages, and Layouts.
+El código se organiza para que la lógica de negocio no dependa de la UI:
 
-### Core Principles
-- **SOLID:** Adhere to Single Responsibility; split complex components.
-- **KISS:** Prioritize simplicity.
-- **DRY:** Abstract repetitive logic into Composables or Utilities.
-- **Repository Pattern:** Used for API interactions.
+1. **Domain:** Interfaces y tipos de Zod en `types/` o `schemas/`.
+2. **Application:** Casos de uso definidos en **Pinia Stores** (estado global) y **Composables**.
+3. **Infrastructure:** Repositorios de datos, configuración de Prisma y servicios de API.
+4. **Presentation:** Componentes de Vue, Pages y Layouts.
 
-## 🛠️ Building & Running
+### Principios de Código
 
-### Key Commands
-- `pnpm install`: Install dependencies.
-- `pnpm dev`: Start the local development server at `http://localhost:3000`.
-- `pnpm build`: Compile the project for production.
-- `pnpm preview`: Locally preview the production build.
-- `pnpm seed`: Populate the database with initial test data.
+- **SOLID:** Especial atención a _Single Responsibility_. Si un componente hace más de una cosa, divídelo.
+- **KISS (Keep It Simple, Stupid):** No utilices patrones complejos para problemas simples.
+- **DRY (Don't Repeat Yourself):** Si una lógica se repite 3 veces, conviértela en un Composable o Utility.
+- **Design Patterns:** Uso de _Repository Pattern_ para llamadas a la API y _Observer Pattern_ mediante el
+  sistema de reactividad de Vue.
 
-### Database Management (Prisma)
-- `pnpm prisma:generate`: Generate the Prisma Client (mandatory after schema changes).
-- `pnpm prisma:pull`: Extract structure from an existing database.
-- `pnpm prisma:migrate`: Apply database migrations.
+---
 
-## 🎨 Development Conventions
+## 🎨 Gestión de Estado y Datos
 
-### State & Data Fetching
-- **TanStack Vue Query:** Mandatory for all asynchronous data fetching. Use `useMutation` for POST/PUT/DELETE actions and invalidate related queries upon success.
-- **Pinia:** Reserved for truly global state (Auth, Theme, Persistent Notifications). Use **Composition API syntax**.
-- **Validation:** Every user input **must** be validated with **Zod** before server submission.
+### TanStack Vue Query (Data Fetching)
 
-### UI & Styling
-- **Vercel Style Guidelines:** Follow the specific palette and typography (Roboto/Roboto Condensed) defined in the project.
-- **DaisyUI:** Use DaisyUI components + TailwindCSS utility classes.
-- **Accessibility (A11y):**
-    - Prioritize semantic HTML (`<button>`, `<a>`, `<table>`).
-    - Icon-only buttons must have `aria-label`.
-    - Never use `outline-none` without a clear `focus-visible` replacement.
-    - Use `aria-live="polite"` for asynchronous updates (toasts).
-- **Performance:** Use `tabular-nums` for prices/dates and implement virtualization for lists >50 items.
+- **Caching:** Usar para todas las peticiones asíncronas.
+- **Mutations:** Todas las acciones de escritura (POST/PUT/DELETE) deben pasar por `useMutation` para manejar
+-   **Caching:** Usar para todas las peticiones asíncronas.
+-   **Mutations:** Todas las acciones de escritura (POST/PUT/DELETE) deben pasar por `useMutation` para manejar
+    estados de carga y errores de forma centralizada.
+-   **Invalidación:** Tras una mutación exitosa, invalidar las queries relacionadas para mantener la UI
+    sincronizada.
 
-### Component Structure
-Vue files should be declarative and follow this order:
-```vue
-<script setup lang="ts">
-// Imports, Props, Emits, Logic (Composables/Stores)
-</script>
+### Pinia (Global State)
 
-<template>
-  <!-- Declarative HTML -->
-</template>
+-   Usar **Composition API syntax** (`ref`, `computed`).
+-   **Imports:** Do not manually import Vue/Nuxt core functions (e.g., `ref`, `computed`, `watch`, `onMounted`, `defineProps`, `defineEmits`) as they are auto-imported by Nuxt. This keeps components cleaner and avoids redundancy.
+-   Solo almacenar estado que realmente sea global (Sesión de usuario, preferencias de tema, notificaciones
+    persistentes). La data del servidor vive en Vue Query.
 
-<style scoped>
-/* Specific scoped styles if necessary (Prefer Tailwind) */
-</style>
-```
+---
 
-## 🧪 Testing Strategy
-- **Vitest:** Primary testing framework.
-- **Unit Tests:** For utilities and pure logic in `utils/`.
-- **Composable/Store Tests:** Verify business logic in Pinia and custom composables.
-- **Component Tests:** Verify UI reactivity to state changes.
+## 🎨 Guía de Estilo UI (Vercel Guidelines)
+
+- Paleta de colores: #ffffff - #f2f0eb - #fbfaf9 - #dbd2c6 - #f4f1ee - #1a1a1a - #bababa - #8c8c8c - #666666 - #404040 - #1a1a1a
+- Tipografía: ROBOTO CONDENSED + ROBOTO + Arial.
+- Iconos: Usar los iconos de Lucide Icons +DaisyUI.
+- Componentes: Usar los componentes de DaisyUI + TailwinCSS.
+
+### Accesibilidad (A11y)
+
+- **Semántica:** Usar `<button>`, `<a>`, `<label>` y `<table>` antes de recurrir a ARIA.
+- **Interactividad:** Botones de solo icono **deben** incluir `aria-label`.
+- **Foco:** Nunca usar `outline-none` sin un reemplazo visual claro (`focus-visible:ring-2`).
+- **Anuncios:** Updates asíncronos (toasts) deben usar `aria-live="polite"`.
+- **Safe Areas:** Diseños full-bleed deben respetar `env(safe-area-inset-*)`.
+- **Async:** Actualizaciones de estado (toasts/validaciones) deben usar `aria-live="polite"`.
+- **Touch:** Usar `touch-action: manipulation` para evitar el delay de doble tap en móviles.
+- **Reduced Motion:** Respetar `prefers-reduced-motion`.
+- **Propiedades:** Animar solo `transform` y `opacity`. **Prohibido** usar `transition: all`; listar
+  propiedades explícitamente.
+- **CLS:** Las etiquetas `<img>` deben tener `width` y `height` explícitos.
+- **Virtualización:** Listas de >50 elementos deben usar virtualización o `content-visibility: auto`.
+- **Widows:** Usar `text-wrap: balance` o `text-pretty` en encabezados.
+- **I18n:** Formatear fechas y monedas siempre con `Intl.DateTimeFormat` e `Intl.NumberFormat`.
+- **Typography:** Usar `tabular-nums` para columnas de precios o fechas.
+- **Z-index:** Usar `z-[1000]` para componentes que requieran estar por encima de otros.
+- **Focus:** Usar `focus-visible:ring-2` para componentes que requieran estar por encima de otros.
+
+### Componentización y Orden
+
+- **Ubicación:** - `components/ui/`: Elementos base (Botones, Inputs de DaisyUI).
+   - `components/shared/`: Componentes de negocio reutilizables (Citas, Cards de cliente).
+   - `components/features/`: Componentes específicos de un módulo (ej. `InventoryTable.vue`).
+- **Limpieza:** Los archivos `.vue` deben ser mayoritariamente declarativos. Mover la lógica pesada a
+  `composables/`.
+- **Lógica:** Los archivos `.ts` deben ser mayoritariamente declarativos. Mover la lógica pesada a `stores/` o
+  en su defecto a `composables/`.
+- **Naming:** PascalCase para archivos `.vue` e involucrar el nombre del módulo (ej.
+  `ClientProfileHeader.vue`).
+- La estructura de un archivo `.vue` debe ser la siguiente:
+
+   ```vue
+   <script setup lang="ts"></script>
+
+   <template>
+   	<div>
+   		<ClientProfileHeader />
+   		<ClientProfileContent />
+   	</div>
+   </template>
+
+   <style scoped></style>
+   ```
+
+---
+
+## 🧪 Estrategia de Testing
+
+Se utiliza **Vitest** por su integración nativa con Vite/Nuxt.
+
+- **Unit Tests:** (Usa Jest/vitest)Para utilidades y lógica pura en `utils/`.
+- **Composable Tests:** Probar la lógica de los stores de Pinia y composables personalizados.
+- **Component Tests:** Verificar que la UI reacciona correctamente a los cambios de estado.
+
+---
+
+## 📝 Formas y Contenido
+
+- **Zod:** Todos los inputs del usuario deben validarse con un esquema de Zod antes de enviarse al servidor.
+- **Tipografía:** Usar `text-wrap: balance` en títulos y `tabular-nums` para columnas de precios o fechas.
+- **Loading:** Los estados de carga deben usar esqueletos (skeletons) consistentes con el diseño de DaisyUI.
+- **Traducciones:** Usar `i18n` para traducir textos.
+
+---
 
 ## 🚫 Anti-patterns & Critical Rules
 - **SSR ECharts Crash:** **PROHIBITED** to use `echarts` without ensuring `['echarts', 'vue-echarts', 'zrender']` are in `build.transpile` in `nuxt.config.ts`.
@@ -89,15 +140,21 @@ Vue files should be declarative and follow this order:
 - **DaisyUI Dropdowns & Z-Index:** When using DaisyUI `dropdown` components near `sticky` elements, explicitly assign a higher `z-index` (e.g., `relative z-30`) to the dropdown's parent to avoid it being hidden underneath the sticky layers.
 - **Select Elements & Blur Events:** Native `<select>` elements can trigger a `@blur` event when opening their OS-level dropdowns. Do NOT auto-close or destroy editable containers strictly on `@blur` for `<select>` elements.
 - **Inline Editing Actions:** When building inline editable fields with Save/Cancel buttons, avoid `absolute` positioning that overlays native UI elements. Use side-by-side flex layouts (`flex-1` and `shrink-0`) and always apply `@mousedown.stop.prevent` and `@click.stop.prevent` to action buttons to prevent focus loss and event bubbling conflicts.
-- **Vue Tag Integrity:** ALWAYS ensure every `.vue` file starts with `<script setup lang="ts">` (if using script) and that all `<template>`, `<script>`, and `<style>` blocks are correctly opened and closed. Missing opening tags can cause Vite/Vue compiler errors where TypeScript generics (e.g. `PropType<any>`) are misinterpreted as malformed HTML tags.
+- **Integridad de Etiquetas Vue:** Asegurarse SIEMPRE de que cada archivo `.vue` comience con `<script setup lang="ts">` (si se usa script) y que todos los bloques `<template>`, `<script>` y `<style>` estén correctamente abiertos y cerrados. La omisión de etiquetas de apertura causa errores de compilación donde los genéricos de TypeScript (ej. `PropType<any>`) se malinterpretan como HTML malformado.
 - **Seed Update Requirement:** Before finishing any assigned task(s), the `seeds/seed-db.ts` file **must** be updated to reflect any new data structures or to include relevant test data for the implemented features.
 - **Float Precision in DB/Math:** When working with DB `Float` arrays (e.g. debts/money), always apply strict rounding before logical comparisons (`Number(val.toFixed(2))`) to prevent IEEE 754 precision drift (e.g. `100.0100000001`) from blocking legitimate full exact payments.
 - **Data Query Truncation:** Never hardcode `take: N` or artificial dataset limits on generic API endpoints that feed "Complete History" UI tables. If performance is an issue, explicitly implement standard pagination.
 - **Backend Cascade Synchronization:** When a child entity's lifecycle resolves (e.g. a Debt becomes `paid`), the backend MUST automatically run side-effects on its parent (e.g. updating the associated `Cart` to `completed` and firing VeriFactu) within the very same transaction.
 - **Frontend Mutation Reactivity:** All modals, forms, and detached components that perform state mutations MUST emit a `@refresh` or `@success` event. The parent views MUST listen to this event and call `queryClient.invalidateQueries` to ensure the timeline/history syncs globally without requiring a manual browser reload.
 
-## Documentation
-- Update the documentation when you make changes to the project + README.md.
-- **Project Documentation:** [Beils Dashboard Documentation](https://roberthernandezarenas-beils-belleza-honesta-dashboard.mintlify.app/)
+"La limpieza en el código es el primer paso hacia un servicio honesto." 🌿
 
-"Clean code is the first step toward honest service." 🌿
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

@@ -74,8 +74,7 @@ async function seedDB() {
 		console.log('🧹 Cleaning up existing data...')
 		const tables = [
 			'booking', 'questionnaire', 'consent', 'revoke', 'clientBonus', 'bonus', 'debtPayment', 'debt',
-			'cartItem', 'cart', 'giftcard', 'coupon', 'packItemProduct', 'packItemService',
-			'pack', 'product', 'service', 'sequence', 'user'
+			'cartItem', 'cart', 'giftcard', 'coupon', 'product', 'service', 'sequence', 'user'
 		]
 		
 		// Disable foreign key checks for thorough cleanup
@@ -219,23 +218,7 @@ async function seedDB() {
 		}
 		const allServices = await prisma.service.findMany()
 
-		console.log('📦 Seeding Packs & Bonuses...')
-		// Add a sample Pack
-		const pack = await prisma.pack.create({
-			data: {
-				name: 'Pack Renovación Total',
-				description: 'Combinación de limpieza facial y masaje relajante.',
-				price: 70.00,
-				code: 'PACK-RENOV-01',
-				services: {
-					create: [
-						{ service_id: allServices.find(s => s.name.includes('Limpieza'))?.service_id || allServices[0].service_id, quantity: 1 },
-						{ service_id: allServices.find(s => s.name.includes('Masaje'))?.service_id || allServices[1].service_id, quantity: 1 }
-					]
-				}
-			}
-		})
-
+		console.log('📦 Seeding Bonuses...')
 		// Add some Bonuses
 		for (const s of allServices.slice(0, 2)) {
 			await prisma.bonus.create({
@@ -335,7 +318,7 @@ async function seedDB() {
 						remaining: amount,
 						status: 'pending',
 						due_date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
-						notes: 'Tratamiento pack avanzado pendiente de pago.'
+						notes: 'Tratamiento avanzado pendiente de pago.'
 					}
 				})
 			}

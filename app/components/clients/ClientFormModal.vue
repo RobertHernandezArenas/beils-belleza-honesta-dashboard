@@ -220,7 +220,7 @@
 				formData.append('subdirectory', subdirectory)
 				
 				try {
-					const uploadRes = await $fetch<{ url: string }>('/api/multimedia/upload', {
+					const uploadRes = await $fetch<{ url: string }>('/api/upload', {
 						method: 'POST',
 						body: formData,
 					})

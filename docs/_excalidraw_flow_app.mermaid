@@ -1,0 +1,105 @@
+flowchart TD
+    %% =======================
+    %% ACTORES
+    %% =======================
+    Client([Cliente / Paciente])
+    Staff([Staff Recepción / Ventas])
+    StaffCRM([Staff Médico / Estético])
+    StaffFinances([Staff Administración])
+
+    %% =======================
+    %% 1. MÓDULO CRM Y LEGAL
+    %% =======================
+    subgraph Módulo CRM [Gestión Clínica y Legal]
+        UI_Profile[UI: Perfil del Cliente]
+        API_Users[API: /api/users]
+        API_Consents[API: /api/consents]
+        API_Forms[API: /api/questionnaires]
+        
+        StaffCRM -- "1. Consulta historial" --> UI_Profile
+        UI_Profile -- "Obtiene datos" --> API_Users
+        
+        UI_Profile -- "Solicita Firma LGPD/Tratamiento" --> API_Consents
+        Client -- "Firma Digital en Tablet" --> API_Consents
+        
+        StaffCRM -- "2. Rellena Anamnesis" --> API_Forms
+    end
+
+    %% =======================
+    %% 2. MÓDULO AGENDA
+    %% =======================
+    subgraph Módulo Agenda [Gestión de Citas]
+        UI_Calendar[UI: Calendario]
+        API_Bookings[API: /api/bookings]
+        Validator[Validador de Disponibilidad]
+        
+        Staff -- "3. Agenda nueva cita" --> UI_Calendar
+        UI_Calendar --> API_Bookings
+        API_Bookings --> Validator
+    end
+
+    %% =======================
+    %% 3. MÓDULO TPV (VENTAS)
+    %% =======================
+    subgraph Módulo TPV [Punto de Venta]
+        UI_TPV[UI: Pantalla TPV]
+        CartState[Pinia: CartStore]
+        API_Carts[API: /api/carts]
+        
+        Staff -- "5. Añade al carrito" --> UI_TPV
+        UI_TPV --> CartState
+        CartState -- "Calcula Total/Impuestos" --> CartState
+        UI_TPV -- "6. Confirmar Pago" --> API_Carts
+    end
+
+    %% =======================
+    %% 4. MÓDULO FINANZAS (DEUDAS)
+    %% =======================
+    subgraph Módulo Finanzas [Deudas y Pagos]
+        UI_Debts[UI: Panel de Deudas]
+        API_Debts[API: /api/debts]
+        API_Payments[API: /api/debt-payments]
+        
+        StaffFinances -- "7. Consulta morosidad" --> UI_Debts
+        UI_Debts --> API_Debts
+        
+        StaffFinances -- "8. Amortizar deuda" --> UI_Debts
+        UI_Debts --> API_Payments
+    end
+
+    %% =======================
+    %% BASE DE DATOS CENTRAL
+    %% =======================
+    subgraph Database [Base de Datos MySQL / Prisma]
+        DB_Users[(DB: Users)]
+        DB_Consents[(DB: Consents)]
+        DB_Forms[(DB: Questionnaires)]
+        DB_Bookings[(DB: Bookings)]
+        DB_Products[(DB: Products & Services)]
+        DB_Carts[(DB: Carts & Items)]
+        DB_Debts[(DB: Debts & Payments)]
+    end
+
+    %% =======================
+    %% INTERACCIONES Y PERSISTENCIA
+    %% =======================
+    
+    %% CRM Persistencia
+    API_Users <--> DB_Users
+    API_Consents --> DB_Consents
+    API_Forms --> DB_Forms
+    
+    %% Agenda Persistencia y Cruces
+    Validator -- "Verifica horarios" --> DB_Bookings
+    Validator -- "Verifica Staff" --> DB_Users
+    Validator -- "Guarda Cita" --> DB_Bookings
+    API_Bookings -. "4. Cita finalizada pasa a caja" .-> UI_TPV
+    
+    %% TPV Persistencia y Cruces
+    UI_TPV -. "Consulta Precios" .-> DB_Products
+    API_Carts --> DB_Carts
+    API_Carts -. "Si falta dinero" .-> API_Debts
+    
+    %% Finanzas Persistencia
+    API_Debts --> DB_Debts
+    API_Payments -- "Actualiza Remaining" --> DB_Debts

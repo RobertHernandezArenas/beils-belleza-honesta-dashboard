@@ -287,7 +287,7 @@
 							<div class="bg-indigo-500/10 text-indigo-600 flex h-7 w-7 items-center justify-center rounded-lg">
 								<ImageIcon class="h-4 w-4" />
 							</div>
-							<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Multimedia</h4>
+							<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Imágenes</h4>
 						</div>
 						<div class="form-control">
 							<label class="label pb-1">

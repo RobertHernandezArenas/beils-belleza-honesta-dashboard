@@ -29,7 +29,7 @@
 	"nav": {
 		"dashboard": "Vista General",
 		"users": "Usuarios",
-		"multimedia": "Multimedia",
+
 		"clients": "Clientes",
 		"drivers": "Conductores",
 		"fleet": "Flota",
@@ -37,9 +37,12 @@
 		"settings": "Configuración",
 		"menu": "Menú Principal",
 		"logout": "Cerrar Sesión",
-		"reports": "Reportes"
+		"reports": "Reportes",
+		"agenda": "Agenda",
+		"sales": "Ventas / TPV"
 	},
 	"users": {
+		"avatar": "Foto de Perfil",
 		"header": {
 			"search": "Buscar usuarios...",
 			"filters": "Filtros",

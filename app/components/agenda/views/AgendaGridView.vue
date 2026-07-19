@@ -54,7 +54,7 @@ const formatHour = (hour: number) => {
 const timeToMinutes = (timeStr: string) => {
     if (!timeStr) return 0
     const [h, m] = timeStr.split(':').map(Number)
-    return h * 60 + (m || 0)
+    return (h || 0) * 60 + (m || 0)
 }
 
 // ----------------------------------------------------
@@ -75,10 +75,17 @@ const processedDays = computed(() => {
         }).map(b => {
             const startMin = timeToMinutes(b.start_time)
             const duration = b.duration || 30
+            
+            // VISUAL PACKING LOGIC: Reserve at least 28 minutes visually (~45px) for short events
+            const minVisualDuration = 28 
+            const visualDuration = Math.max(duration, minVisualDuration)
+
             return {
                 ...b,
                 startMin,
                 endMin: startMin + duration,
+                visualEndMin: startMin + visualDuration,
+                visualDuration,
                 column: 0,
                 maxColumns: 1
             }
@@ -96,8 +103,9 @@ const processedDays = computed(() => {
             let placed = false
             for (let colIndex = 0; colIndex < columns.length; colIndex++) {
                 const col = columns[colIndex]
+                if (!col) continue
                 const lastInCol = col[col.length - 1]
-                if (lastInCol.endMin <= b.startMin) {
+                if (lastInCol?.visualEndMin <= b.startMin) {
                     b.column = colIndex
                     col.push(b)
                     placed = true
@@ -121,8 +129,8 @@ const processedDays = computed(() => {
                 blockEnd = -1
             }
             currentBlock.push(b)
-            if (b.endMin > blockEnd) {
-                blockEnd = b.endMin
+            if (b.visualEndMin > blockEnd) {
+                blockEnd = b.visualEndMin
             }
         }
         if (currentBlock.length > 0) {
@@ -146,13 +154,13 @@ const getBookingStyle = (booking: any) => {
     startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
     
     const top = ((startMin - (startHour * 60)) / 60) * hourHeight
-    const height = (booking.duration / 60) * hourHeight
+    const height = (booking.visualDuration / 60) * hourHeight
     const width = 100 / booking.maxColumns
     const left = booking.column * width
 
     return {
         top: `${top}px`,
-        height: `${Math.max(height, 24)}px`, // Grid view might need smaller min-height
+        height: `${height}px`, // Height is now driven by visualDuration to ensure readability
         width: `calc(${width}% - 2px)`, // 2px margin
         left: `${left}%`,
         zIndex: booking.column + 10
@@ -258,7 +266,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
 
                         <!-- Empty State Indicator for Debugging -->
                         <div v-if="dayObj.bookings.length === 0" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-                            <span class="text-xs font-bold uppercase tracking-widest text-text-muted rotate-[-90deg] whitespace-nowrap">Sin citas</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-text-muted -rotate-90 whitespace-nowrap">Sin citas</span>
                         </div>
 
                         <!-- Bookings -->
@@ -275,12 +283,21 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                                 class="absolute top-0 bottom-0 left-0 w-1 opacity-80"
                                 :class="getStatusStrip(booking.status)"></div>
 
-                            <div class="flex h-full flex-col text-left pl-1.5">
-                                <div class="truncate text-[10px] font-bold tracking-tight leading-tight">
+                            <div class="flex h-full flex-col text-left pl-1.5 overflow-hidden">
+                                <div class="truncate text-[9px] font-bold tracking-tight leading-tight shrink-0">
                                     {{ booking.client?.name }} {{ booking.client?.surname?.charAt(0) }}.
                                 </div>
-                                <div v-if="booking.duration > 30" class="text-[8px] font-semibold opacity-70 mt-0.5 truncate flex items-center gap-1">
+                                <div class="text-[8px] font-semibold opacity-70 mt-px truncate flex items-center gap-1 shrink-0">
                                     <Clock class="h-2 w-2 shrink-0" /> {{ booking.start_time }}
+                                </div>
+                                <div v-if="booking.booking_items?.length" class="mt-px flex-1 min-h-0 overflow-hidden">
+                                    <div v-for="item in booking.booking_items.slice(0, 1)" :key="item.id" 
+                                        class="text-[8px] font-medium opacity-80 truncate mt-px">
+                                        {{ item.name }}
+                                    </div>
+                                    <div v-if="booking.booking_items.length > 1" class="text-[7.5px] font-bold opacity-60 italic mt-px">
+                                        +{{ booking.booking_items.length - 1 }}
+                                    </div>
                                 </div>
                             </div>
                         </button>

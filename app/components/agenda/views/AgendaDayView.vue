@@ -35,7 +35,7 @@ const formatHour = (hour: number) => `${hour.toString().padStart(2, '0')}:00`
 const timeToMinutes = (timeStr: string) => {
     if (!timeStr) return 0
     const [h, m] = timeStr.split(':').map(Number)
-    return h * 60 + (m || 0)
+    return (h || 0) * 60 + (m || 0)
 }
 
 // ----------------------------------------------------
@@ -56,10 +56,17 @@ const processedBookings = computed(() => {
     }).map(b => {
         const startMin = timeToMinutes(b.start_time)
         const duration = b.duration || 30
+        
+        // VISUAL PACKING LOGIC: Reserve at least 35 minutes visually (56px) for short events
+        const minVisualDuration = 35 
+        const visualDuration = Math.max(duration, minVisualDuration)
+
         return {
             ...b,
             startMin,
             endMin: startMin + duration,
+            visualEndMin: startMin + visualDuration,
+            visualDuration,
             column: 0,
             maxColumns: 1
         }
@@ -78,9 +85,13 @@ const processedBookings = computed(() => {
         let placed = false
         for (let colIndex = 0; colIndex < columns.length; colIndex++) {
             const col = columns[colIndex]
+            if (!col) continue
+            
             // Check if b overlaps with the last item in this column
             const lastInCol = col[col.length - 1]
-            if (lastInCol.endMin <= b.startMin) {
+            if (!lastInCol) continue
+
+            if (lastInCol.visualEndMin <= b.startMin) {
                 // Doesn't overlap, can be placed here
                 b.column = colIndex
                 col.push(b)
@@ -109,8 +120,8 @@ const processedBookings = computed(() => {
             blockEnd = -1
         }
         currentBlock.push(b)
-        if (b.endMin > blockEnd) {
-            blockEnd = b.endMin
+        if (b.visualEndMin > blockEnd) {
+            blockEnd = b.visualEndMin
         }
     }
     if (currentBlock.length > 0) {
@@ -135,13 +146,13 @@ const getBookingStyle = (booking: any) => {
     startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
     
     const top = ((startMin - (startHour * 60)) / 60) * hourHeight
-    const height = (booking.duration / 60) * hourHeight
+    const height = (booking.visualDuration / 60) * hourHeight
     const width = 100 / booking.maxColumns
     const left = booking.column * width
 
     return {
         top: `${top}px`,
-        height: `${Math.max(height, 40)}px`, // Ensure at least 40px height to be clickable
+        height: `${height}px`, // Height is now driven by visualDuration to ensure readability
         width: `calc(${width}% - 4px)`, // 4px margin between columns
         left: `${left}%`,
         zIndex: booking.column + 10 // Layer overlapping correctly
@@ -320,7 +331,7 @@ onUnmounted(() => {
                                     </button>
                                     <ul
                                         tabindex="0"
-                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-[100] mt-1 w-36 rounded-xl border p-1 shadow-xl">
+                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-xl">
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info h-3 w-3" /> Confirmar</a></li>
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success h-3 w-3" /> Finalizar</a></li>
                                         <div class="divider my-0 opacity-30 h-1"></div>
@@ -331,25 +342,24 @@ onUnmounted(() => {
                             </div>
 
                             <!-- Meta Info (Time & Staff) -->
-                            <div class="flex items-center gap-2 mt-0.5 shrink-0 opacity-80">
-                                <span class="flex items-center gap-1 text-[9px] font-bold tabular-nums">
-                                    <Clock class="h-2.5 w-2.5" />
+                            <div class="flex items-center gap-2 mt-px shrink-0 opacity-80">
+                                <span class="flex items-center gap-1 text-[8.5px] font-bold tabular-nums">
+                                    <Clock class="h-2 w-2" />
                                     {{ booking.start_time }}
                                 </span>
-                                <span v-if="booking.staff" class="flex items-center gap-1 text-[9px] font-semibold truncate">
-                                    <UserIcon class="h-2.5 w-2.5" />
+                                <span v-if="booking.staff" class="flex items-center gap-1 text-[8.5px] font-semibold truncate">
+                                    <UserIcon class="h-2 w-2" />
                                     <span class="truncate max-w-[60px]">{{ booking.staff.name }}</span>
                                 </span>
                             </div>
 
-                            <!-- Services Info (Only if tall enough) -->
-                            <div v-if="booking.duration > 30 && booking.booking_items?.length" class="mt-1.5 overflow-hidden">
+                            <!-- Services Info -->
+                            <div v-if="booking.booking_items?.length" class="mt-0.5 flex-1 min-h-0 overflow-hidden">
                                 <div v-for="item in booking.booking_items.slice(0, 2)" :key="item.id" 
-                                    class="text-[9px] opacity-70 flex items-center gap-1 truncate mt-0.5">
-                                    <Scissors v-if="item.item_type === 'SERVICE'" class="h-2 w-2 shrink-0" />
+                                    class="text-[9px] font-medium opacity-80 flex items-center gap-1 truncate mt-px">
                                     <span class="truncate">{{ item.name }}</span>
                                 </div>
-                                <div v-if="booking.booking_items.length > 2" class="text-[9px] opacity-50 mt-0.5 italic">
+                                <div v-if="booking.booking_items.length > 2" class="text-[8px] font-bold opacity-60 mt-px italic">
                                     +{{ booking.booking_items.length - 2 }} más
                                 </div>
                             </div>

@@ -94,7 +94,7 @@ const monthName = computed(() => {
         <!-- Mini Calendar -->
         <div class="p-5">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-bold uppercase tracking-wider capitalize text-text-primary">{{ monthName }}</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-text-primary">{{ monthName }}</span>
                 <div class="flex gap-1">
                     <button @click="prevMonth" class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary">
                         <ChevronLeft class="h-4 w-4" />
