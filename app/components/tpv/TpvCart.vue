@@ -56,7 +56,7 @@
 		for (const [bonusId, count] of Object.entries(appliedCounts)) {
 			const cb = props.clientBonuses.find(b => b.client_bonus_id === bonusId)
 			// Cuando el bono tenía X sesiones originalmente, y en el carrito se consumen X sesiones exactas (dejando 0 disponibles localmente), es la última.
-			if (cb && cb.remaining_sessions === 0) {
+			if (cb && (cb.remaining_sessions - count === 0)) {
 				hasLastSession = true
 				break
 			}
@@ -183,7 +183,7 @@
 									+
 								</button>
 								<div v-if="item.applied_client_bonus_id" class="bg-success/15 text-success border border-success/30 px-2 py-0.5 rounded-md text-[9px] font-black tracking-widest uppercase flex items-center gap-1">
-									<Check class="w-3 h-3" /> Bono Aplicado
+									<Check class="w-3 h-3" /> Bono Aplicado ({{ item.quantity }} / {{ clientBonuses.find(b => b.client_bonus_id === item.applied_client_bonus_id)?.remaining_sessions || '?' }})
 								</div>
 							</div>
 							<span class="text-xs font-black tabular-nums text-text-primary">

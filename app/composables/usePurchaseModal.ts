@@ -29,10 +29,9 @@ export function usePurchaseModal(emit: any) {
   const { data: catalogResults, isPending: isSearchingItems } = useQuery<any>({
     queryKey: ['catalog-search', searchQuery],
     queryFn: async () => {
-      const [prods, servs, packs, bonuses] = await Promise.all([
+      const [prods, servs, bonuses] = await Promise.all([
         $fetch<any[]>('/api/catalog/products'),
         $fetch<any[]>('/api/services'),
-        $fetch<any[]>('/api/catalog/packs'),
         $fetch<any[]>('/api/marketing/bonuses')
       ])
       
@@ -40,7 +39,6 @@ export function usePurchaseModal(emit: any) {
       const all = [
         ...(prods || []).map(p => ({ ...p, item_type: 'product', item_id: p.product_id })),
         ...(servs || []).map(s => ({ ...s, item_type: 'service', item_id: s.service_id })),
-        ...(packs || []).map(pk => ({ ...pk, item_type: 'pack', item_id: pk.pack_id })),
         ...(bonuses || []).map(b => ({ ...b, item_type: 'bonus', item_id: b.bonus_id }))
       ]
       

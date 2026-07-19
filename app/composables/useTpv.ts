@@ -56,6 +56,11 @@ export function useTpv() {
 		queryFn: () => $fetch('/api/marketing/bonuses'),
 	})
 
+	const { data: packs } = useQuery<any[]>({
+		queryKey: ['packs-tpv'],
+		queryFn: () => $fetch('/api/catalog/packs'),
+	})
+
 	const processedBookingId = ref<string | null>(null)
 
 	// Promotions & Marketing State
@@ -89,8 +94,9 @@ export function useTpv() {
 		() => services.value,
 		() => bonuses.value,
 		() => products.value,
+		() => packs.value,
 		() => clients.value
-	], async ([bookingId, svcs, bns, prds, cls]) => {
+	], async ([bookingId, svcs, bns, prds, pks, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
 		if (!svcs || !cls) return // Wait for crucial catalogs to load
 
@@ -284,7 +290,7 @@ export function useTpv() {
 		else itemId = item.product_id || item.service_id || item.bonus_id
 
 		const existing = cartItems.value.find(
-			i => i.item_id === itemId,
+			i => i.item_id === itemId && !i.applied_client_bonus_id,
 		)
 
 		if (existing) {
@@ -300,6 +306,20 @@ export function useTpv() {
 			})
 		}
 		searchQuery.value = ''
+	}
+
+	const increaseItemQty = (index: number) => {
+		const item = cartItems.value[index]
+		if (item.applied_client_bonus_id) {
+			const cb = clientBonuses.value.find((b: any) => b.client_bonus_id === item.applied_client_bonus_id)
+			if (cb && item.quantity < cb.remaining_sessions) {
+				item.quantity++
+			} else {
+				displayToast('No quedan más sesiones disponibles en este bono', 'error')
+			}
+		} else {
+			item.quantity++
+		}
 	}
 
 	const removeFromCart = (index: number) => {
@@ -382,6 +402,7 @@ export function useTpv() {
 		clientBonuses,
 		addToCart,
 		removeFromCart,
+		increaseItemQty,
 		clearCart,
 		selectClient,
 		handleCheckout,

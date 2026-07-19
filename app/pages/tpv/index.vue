@@ -33,6 +33,7 @@
 		handleAvatarError,
 		formatCurrency,
 		displayToast,
+		increaseItemQty,
 
 	} = useTpv()
 </script>
@@ -59,7 +60,7 @@
 			:filtered-clients="filteredClients"
 			:cart-subtotal="cartSubtotal"
 			:cart-total="cartTotal"
-			:is-checkingOut="isCheckingOut"
+			:is-checking-out="isCheckingOut"
 			:avatar-error="avatarError"
 			:format-currency="formatCurrency"
 			:client-bonuses="clientBonuses"
@@ -68,7 +69,7 @@
 			@remove-client="selectedClient = null"
 			@remove-item="removeFromCart"
 			@decrease-item-qty="(idx) => cartItems[idx].quantity > 1 ? cartItems[idx].quantity-- : removeFromCart(idx)"
-			@increase-item-qty="(idx) => cartItems[idx].quantity++"
+			@increase-item-qty="increaseItemQty"
 			@checkout="handleCheckout"
 			@avatar-error="handleAvatarError"
 
