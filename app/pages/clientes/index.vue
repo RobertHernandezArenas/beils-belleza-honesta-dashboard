@@ -57,6 +57,11 @@
 	const showDeleteModal = ref(false)
 	const selectedClient = ref<any>(null)
 
+	const refreshClients = () => {
+		page.value = 1
+		queryClient.invalidateQueries({ queryKey: ['clients-list'] })
+	}
+
 	// Acciones
 	const openCreateModal = () => {
 		selectedClient.value = null
@@ -370,7 +375,7 @@
 		</div>
 
 		<!-- Modales -->
-		<ClientFormModal v-model="showClientModal" :client-to-edit="selectedClient" />
+		<ClientFormModal v-model="showClientModal" :client-to-edit="selectedClient" @success="refreshClients" />
 		<UserDeleteModal
 			:is-open="showDeleteModal"
 			:user-name="selectedClient?.name || ''"
