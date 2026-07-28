@@ -49,9 +49,14 @@ export default defineEventHandler(async event => {
 		const salt = await bcrypt.genSalt(10)
 		const hashedPassword = await bcrypt.hash('beils12345', salt)
 
+		const email = parsedData.email || `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
+
 		const user = await prisma.user.create({
 			data: {
 				...parsedData,
+				email,
+				surname: parsedData.surname || '',
+				phone: parsedData.phone || '',
 				user_id: parsedData.user_id || undefined,
 				birth_date: new Date(parsedData.birth_date),
 				password: hashedPassword,

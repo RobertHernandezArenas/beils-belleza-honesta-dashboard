@@ -11,6 +11,8 @@
 		ShoppingBag,
 		Smartphone,
 		ArrowRightLeft,
+		X,
+		AlertTriangle
 	} from 'lucide-vue-next'
 
 	interface Props {
@@ -46,22 +48,21 @@
 	const handleAttemptCheckout = () => {
 		let hasLastSession = false
 		const appliedCounts: Record<string, number> = {}
-		
+
 		for (const item of props.cartItems) {
 			if (item.applied_client_bonus_id) {
 				appliedCounts[item.applied_client_bonus_id] = (appliedCounts[item.applied_client_bonus_id] || 0) + item.quantity
 			}
 		}
-		
+
 		for (const [bonusId, count] of Object.entries(appliedCounts)) {
 			const cb = props.clientBonuses.find(b => b.client_bonus_id === bonusId)
-			// Cuando el bono tenía X sesiones originalmente, y en el carrito se consumen X sesiones exactas (dejando 0 disponibles localmente), es la última.
 			if (cb && (cb.remaining_sessions - count === 0)) {
 				hasLastSession = true
 				break
 			}
 		}
-		
+
 		if (hasLastSession) {
 			isConfirmingLastSession.value = true
 		} else {
@@ -77,59 +78,71 @@
 
 <template>
 	<div
-		class="bg-bg-card/75 border-border-default/80 z-20 flex h-[48dvh] w-full shrink-0 flex-col border-t shadow-[0_-10px_35px_rgba(0,0,0,0.02)] backdrop-blur-2xl md:h-full md:w-[350px] md:border-t-0 md:border-l lg:w-[390px] xl:w-[420px]">
-		<!-- Client Selector Header -->
-		<div class="bg-bg-muted/10 border-border-default/70 relative z-50 border-b p-5 pt-6">
+		class="bg-bg-card/90 border-border-default/80 z-20 flex h-full w-full flex-col border-t shadow-xl backdrop-blur-2xl md:border-t-0 md:border-l overflow-y-auto md:overflow-hidden">
+
+		<!-- CLIENT SELECTOR HEADER -->
+		<div class="bg-bg-muted/15 border-border-default/70 relative z-30 border-b p-3.5 sm:p-5">
 			<div class="relative">
+				<!-- Search Client State -->
 				<div v-if="!selectedClient" class="relative">
-					<UserIcon class="text-text-muted absolute top-1/2 left-4 h-4.5 w-4.5 -translate-y-1/2" />
+					<UserIcon class="text-text-muted absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
 					<input
 						v-model="clientSearch"
 						type="text"
 						placeholder="Asignar cliente..."
-						class="input bg-white/60 border border-border-default/85 focus:border-text-primary/45 focus:bg-bg-card h-12 w-full rounded-2xl pl-11 text-xs font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.01)] transition-colors focus:ring-0" />
+						class="input bg-white/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
+					<button
+						v-if="clientSearch"
+						type="button"
+						class="btn btn-ghost btn-xs btn-circle absolute top-1/2 right-2 -translate-y-1/2 text-text-muted"
+						@click="clientSearch = ''">
+						<X class="h-3.5 w-3.5" />
+					</button>
 
 					<!-- Client Autocomplete Dropdown -->
 					<ul
 						v-if="clientSearch && filteredClients.length > 0"
-						class="border-border-default bg-bg-card absolute z-55 mt-1.5 w-full overflow-hidden rounded-2xl border shadow-xl">
+						class="border-border-default bg-bg-card absolute z-50 mt-1.5 w-full overflow-hidden rounded-2xl border shadow-2xl">
 						<li v-for="client in filteredClients" :key="client.user_id">
-								<button
-									@click="emit('select-client', client)"
-									class="hover:bg-bg-muted border-border-default/50 flex w-full items-center justify-between border-b p-3.5 text-left transition-colors last:border-0">
-									<div class="flex flex-col">
-										<span class="text-xs font-extrabold text-text-primary">{{ client.name }} {{ client.surname }}</span>
-										<span class="text-text-muted text-[10px] font-semibold mt-0.5">{{ client.phone }}</span>
-									</div>
-									<ChevronRight class="text-text-muted h-3.5 w-3.5" />
-								</button>
-							</li>
+							<button
+								type="button"
+								@click="emit('select-client', client)"
+								class="hover:bg-bg-muted border-border-default/40 flex w-full items-center justify-between border-b p-3 text-left transition-colors last:border-0">
+								<div class="flex flex-col">
+									<span class="text-xs font-bold text-text-primary">{{ client.name }} {{ client.surname }}</span>
+									<span class="text-text-muted text-[10px] font-medium mt-0.5">{{ client.phone || client.email }}</span>
+								</div>
+								<ChevronRight class="text-text-muted h-3.5 w-3.5" />
+							</button>
+						</li>
 					</ul>
 				</div>
 
+				<!-- Selected Client Badge -->
 				<div
 					v-else
-					class="bg-text-primary text-bg-card flex items-center justify-between rounded-2xl p-3.5 pl-4 shadow-sm border border-transparent">
+					class="bg-text-primary text-bg-card flex items-center justify-between rounded-2xl p-3 shadow-xs transition-all">
 					<div class="flex items-center gap-3">
 						<div
 							class="bg-white/20 text-white flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/10">
-							<img 
-								v-if="selectedClient.avatar && !avatarError" 
-								:src="selectedClient.avatar" 
+							<img
+								v-if="selectedClient.avatar && !avatarError"
+								:src="selectedClient.avatar"
 								class="h-full w-full object-cover"
 								@error="emit('avatar-error')" />
 							<span v-else class="text-xs font-black">
-								{{ selectedClient.name.charAt(0) }}{{ selectedClient.surname.charAt(0) }}
+								{{ selectedClient.name.charAt(0) }}{{ selectedClient.surname?.charAt(0) || '' }}
 							</span>
 						</div>
 						<div class="flex flex-col">
-							<span class="text-xs font-black leading-none">
+							<span class="text-xs font-bold leading-tight">
 								{{ selectedClient.name }} {{ selectedClient.surname }}
 							</span>
-							<span class="text-white/60 text-[9px] font-extrabold tracking-widest uppercase mt-1">CLIENTE ASOCIADO</span>
+							<span class="text-white/70 text-[9px] font-bold tracking-wider uppercase mt-0.5">Cliente Asociado</span>
 						</div>
 					</div>
 					<button
+						type="button"
 						@click="emit('remove-client')"
 						aria-label="Remove Client"
 						class="btn btn-ghost btn-circle btn-xs text-white/70 hover:bg-white/15 hover:text-white border-none">
@@ -137,68 +150,93 @@
 					</button>
 				</div>
 			</div>
+
+			<!-- Active Client Bonuses Notice -->
+			<div v-if="selectedClient && clientBonuses.length > 0" class="mt-2.5 flex flex-wrap gap-1.5">
+				<div
+					v-for="bonus in clientBonuses"
+					:key="bonus.client_bonus_id"
+					class="badge badge-accent badge-sm gap-1 font-mono text-[9px] font-bold py-2">
+					<Tag class="h-3 w-3" />
+					{{ bonus.bonus?.name }}: {{ bonus.remaining_sessions }} ses.
+				</div>
+			</div>
 		</div>
 
-		<!-- Cart Items List -->
-		<div class="custom-scrollbar bg-bg-app/10 flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
+		<!-- CART ITEMS LIST CONTAINER -->
+		<div class="custom-scrollbar flex-1 shrink-0 overflow-y-auto p-3.5 sm:p-4 flex flex-col gap-2 min-h-[220px] md:min-h-0">
+			<!-- Empty Cart State -->
 			<div
 				v-if="cartItems.length === 0"
-				class="flex h-full flex-col items-center justify-center text-center opacity-45 py-12">
-				<ShoppingBag class="text-text-muted/60 mb-3 h-10 w-10" />
-				<p class="text-text-muted text-xs font-bold tracking-wider uppercase">Carrito vacío</p>
-				<p class="text-text-muted/70 mt-1 max-w-[180px] text-[10px]">Selecciona ítems del catálogo izquierdo para comenzar</p>
+				class="flex h-full flex-col items-center justify-center text-center py-12 opacity-60">
+				<div class="bg-bg-muted/40 mb-3 flex h-14 w-14 items-center justify-center rounded-full">
+					<ShoppingBag class="text-text-muted h-7 w-7 opacity-50" />
+				</div>
+				<p class="text-text-primary text-xs font-bold uppercase tracking-wider">Carrito vacío</p>
+				<p class="text-text-muted mt-1 max-w-[200px] text-[11px]">Selecciona ítems del catálogo para comenzar la venta</p>
 			</div>
 
+			<!-- Items List -->
 			<div v-else class="flex flex-col gap-2">
 				<div
 					v-for="(item, index) in cartItems"
 					:key="index"
-					class="bg-bg-card border-border-default/80 group relative flex gap-3 overflow-hidden rounded-xl border p-3 shadow-[0_1px_2px_rgba(0,0,0,0.015)] transition-all hover:border-border-default">
-					<!-- Item Details -->
+					class="bg-bg-card border-border-default/80 group relative flex gap-3 overflow-hidden rounded-2xl border p-3 shadow-xs transition-all hover:border-border-default">
 					<div class="flex flex-1 flex-col justify-center">
-						<div class="mb-2.5 flex items-start justify-between">
-							<span class="pr-6 text-xs font-extrabold text-text-primary leading-tight line-clamp-2">{{ item.name }}</span>
+						<div class="flex items-start justify-between gap-2">
+							<span class="pr-6 text-xs font-bold text-text-primary leading-tight line-clamp-2">
+								{{ item.name }}
+							</span>
 							<button
+								type="button"
 								@click="emit('remove-item', index)"
 								aria-label="Remove Item"
-								class="text-text-muted/50 hover:text-error bg-bg-card absolute top-3 right-3 p-1 rounded-md opacity-0 transition-all group-hover:opacity-100 hover:bg-error/5">
+								class="text-text-muted/60 hover:text-error bg-bg-card absolute top-2.5 right-2.5 p-1 rounded-md transition-all group-hover:opacity-100">
 								<Trash2 class="h-3.5 w-3.5" />
 							</button>
 						</div>
-						<div class="flex items-center justify-between mt-2">
-							<div class="flex items-center gap-1.5">
+
+						<div class="flex items-center justify-between mt-2.5">
+							<!-- Quantity Adjust Controls -->
+							<div class="join border-border-default/60 bg-bg-muted/40 rounded-xl border">
 								<button
+									type="button"
 									@click="item.quantity > 1 ? emit('decrease-item-qty', index) : emit('remove-item', index)"
 									aria-label="Decrease Quantity"
-									class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
+									class="join-item btn btn-xs btn-ghost text-text-primary font-bold px-2">
 									-
 								</button>
-								<span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
+								<span class="join-item flex items-center px-2 text-xs font-bold tabular-nums text-text-primary font-mono">
 									{{ item.quantity }}
 								</span>
 								<button
+									type="button"
 									@click="emit('increase-item-qty', index)"
 									aria-label="Increase Quantity"
-									class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors">
+									class="join-item btn btn-xs btn-ghost text-text-primary font-bold px-2">
 									+
 								</button>
-								<div v-if="item.applied_client_bonus_id" class="bg-success/15 text-success border border-success/30 px-2 py-0.5 rounded-md text-[9px] font-black tracking-widest uppercase flex items-center gap-1">
-									<Check class="w-3 h-3" /> Bono Aplicado ({{ item.quantity }} / {{ clientBonuses.find(b => b.client_bonus_id === item.applied_client_bonus_id)?.remaining_sessions || '?' }})
-								</div>
 							</div>
-							<span class="text-xs font-black tabular-nums text-text-primary">
-								{{ formatCurrency(item.applied_client_bonus_id ? 0 : item.unit_price * item.quantity) }}
-							</span>
+
+							<!-- Bonus Badge or Unit Price -->
+							<div class="flex items-center gap-2">
+								<div v-if="item.applied_client_bonus_id" class="badge badge-success badge-sm text-[9px] font-black uppercase tracking-wider">
+									Bono Aplicado
+								</div>
+								<span class="text-xs font-black tabular-nums text-text-primary">
+									{{ formatCurrency(item.applied_client_bonus_id ? 0 : item.unit_price * item.quantity) }}
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- Checkout Footer -->
-		<div class="bg-bg-card border-border-default/80 z-20 border-t p-5 pb-6 shadow-[0_-5px_15px_rgba(0,0,0,0.015)]">
-			<!-- Totals -->
-			<div class="mb-5 flex flex-col gap-2">
+		<!-- CHECKOUT FOOTER & PAYMENT METHOD SELECTION -->
+		<div class="bg-bg-card border-border-default/80 z-20 border-t p-4 sm:p-5 shadow-2xl">
+			<!-- Totals Section -->
+			<div class="mb-4 flex flex-col gap-2">
 				<div class="text-text-muted flex items-center justify-between text-xs font-semibold uppercase">
 					<span>Subtotal</span>
 					<span class="tabular-nums font-bold text-text-primary">{{ formatCurrency(cartSubtotal) }}</span>
@@ -209,110 +247,90 @@
 						<Tag class="h-3 w-3" />
 						<span>Descuento</span>
 					</span>
-					<div class="relative w-24">
+					<div class="relative w-28">
 						<span class="absolute top-1/2 left-2 -translate-y-1/2 text-xs font-extrabold">-</span>
 						<input
 							v-model="discountAmount"
 							type="number"
 							min="0"
 							:max="cartSubtotal"
-							class="input input-xs bg-error/10 text-error h-7 w-full rounded-md border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" />
+							class="input input-xs bg-error/10 text-error h-7 w-full rounded-lg border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" />
 					</div>
 				</div>
 
+				<div class="divider my-1 opacity-30"></div>
 
-
-				<div class="divider my-0.5 opacity-40"></div>
 				<div class="flex items-end justify-between">
 					<span class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Total a Pagar</span>
-					<span class="text-text-primary text-3xl leading-none font-black tracking-tight tabular-nums">
+					<span class="text-text-primary text-2xl sm:text-3xl leading-none font-black tracking-tight tabular-nums">
 						{{ formatCurrency(cartTotal) }}
 					</span>
 				</div>
 			</div>
 
-			<!-- Payment Methods -->
-			<div class="mb-5 grid grid-cols-2 gap-1.5">
+			<!-- Payment Methods Grid (DaisyUI Style Buttons) -->
+			<div class="mb-4 grid grid-cols-3 gap-1.5">
 				<button
-					class="btn border-border-default/80 flex h-auto items-center justify-start gap-3 rounded-xl border p-3.5 transition-all text-left group hover:border-text-primary/30 active:scale-[0.98]"
-					:class="paymentMethod === 'card' ? 'bg-text-primary text-bg-card border-text-primary shadow-xs' : 'bg-bg-muted/40 text-text-muted hover:text-text-primary'"
+					type="button"
+					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
+					:class="paymentMethod === 'card' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'card'">
-					<CreditCard class="h-4.5 w-4.5 shrink-0 transition-transform group-hover:scale-110" />
-					<div class="flex flex-col">
-						<span class="text-[10px] font-extrabold tracking-wider uppercase">Tarjeta</span>
-						<span class="text-[8px] opacity-75 font-semibold mt-0.5">Pago físico</span>
-					</div>
-					<Check v-if="paymentMethod === 'card'" class="ml-auto h-3.5 w-3.5 shrink-0" />
+					<CreditCard class="h-4 w-4 mb-0.5 shrink-0" />
+					<span class="text-[9px] font-extrabold uppercase tracking-wider">Tarjeta</span>
 				</button>
 
 				<button
-					class="btn border-border-default/80 flex h-auto items-center justify-start gap-3 rounded-xl border p-3.5 transition-all text-left group hover:border-text-primary/30 active:scale-[0.98]"
-					:class="paymentMethod === 'cash' ? 'bg-text-primary text-bg-card border-text-primary shadow-xs' : 'bg-bg-muted/40 text-text-muted hover:text-text-primary'"
+					type="button"
+					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
+					:class="paymentMethod === 'cash' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'cash'">
-					<Banknote class="h-4.5 w-4.5 shrink-0 transition-transform group-hover:scale-110" />
-					<div class="flex flex-col">
-						<span class="text-[10px] font-extrabold tracking-wider uppercase">Efectivo</span>
-						<span class="text-[8px] opacity-75 font-semibold mt-0.5">En caja</span>
-					</div>
-					<Check v-if="paymentMethod === 'cash'" class="ml-auto h-3.5 w-3.5 shrink-0" />
+					<Banknote class="h-4 w-4 mb-0.5 shrink-0" />
+					<span class="text-[9px] font-extrabold uppercase tracking-wider">Efectivo</span>
 				</button>
 
 				<button
-					class="btn border-border-default/80 flex h-auto items-center justify-start gap-3 rounded-xl border p-3.5 transition-all text-left group hover:border-text-primary/30 active:scale-[0.98]"
-					:class="paymentMethod === 'bizum' ? 'bg-text-primary text-bg-card border-text-primary shadow-xs' : 'bg-bg-muted/40 text-text-muted hover:text-text-primary'"
+					type="button"
+					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
+					:class="paymentMethod === 'bizum' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'bizum'">
-					<Smartphone class="h-4.5 w-4.5 shrink-0 transition-transform group-hover:scale-110" />
-					<div class="flex flex-col">
-						<span class="text-[10px] font-extrabold tracking-wider uppercase">Bizum</span>
-						<span class="text-[8px] opacity-75 font-semibold mt-0.5">Pago móvil</span>
-					</div>
-					<Check v-if="paymentMethod === 'bizum'" class="ml-auto h-3.5 w-3.5 shrink-0" />
+					<Smartphone class="h-4 w-4 mb-0.5 shrink-0" />
+					<span class="text-[9px] font-extrabold uppercase tracking-wider">Bizum</span>
 				</button>
 
 				<button
-					class="btn border-border-default/80 flex h-auto items-center justify-start gap-3 rounded-xl border p-3.5 transition-all text-left group hover:border-text-primary/30 active:scale-[0.98]"
-					:class="paymentMethod === 'transfer' ? 'bg-text-primary text-bg-card border-text-primary shadow-xs' : 'bg-bg-muted/40 text-text-muted hover:text-text-primary'"
+					type="button"
+					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
+					:class="paymentMethod === 'transfer' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'transfer'">
-					<ArrowRightLeft class="h-4.5 w-4.5 shrink-0 transition-transform group-hover:scale-110" />
-					<div class="flex flex-col">
-						<span class="text-[10px] font-extrabold tracking-wider uppercase">Transf.</span>
-						<span class="text-[8px] opacity-75 font-semibold mt-0.5">Bancaria</span>
-					</div>
-					<Check v-if="paymentMethod === 'transfer'" class="ml-auto h-3.5 w-3.5 shrink-0" />
+					<ArrowRightLeft class="h-4 w-4 mb-0.5 shrink-0" />
+					<span class="text-[9px] font-extrabold uppercase tracking-wider">Transf.</span>
 				</button>
 
 				<button
-					class="btn border-border-default/80 flex h-auto items-center justify-start gap-3 rounded-xl border p-3.5 transition-all text-left group hover:border-text-primary/30 active:scale-[0.98]"
-					:class="paymentMethod === 'mixed' ? 'bg-text-primary text-bg-card border-text-primary shadow-xs' : 'bg-bg-muted/40 text-text-muted hover:text-text-primary'"
+					type="button"
+					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
+					:class="paymentMethod === 'mixed' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'mixed'">
-					<Wallet class="h-4.5 w-4.5 shrink-0 transition-transform group-hover:scale-110" />
-					<div class="flex flex-col">
-						<span class="text-[10px] font-extrabold tracking-wider uppercase">Mixto</span>
-						<span class="text-[8px] opacity-75 font-semibold mt-0.5">Multitransac.</span>
-					</div>
-					<Check v-if="paymentMethod === 'mixed'" class="ml-auto h-3.5 w-3.5 shrink-0" />
+					<Wallet class="h-4 w-4 mb-0.5 shrink-0" />
+					<span class="text-[9px] font-extrabold uppercase tracking-wider">Mixto</span>
 				</button>
 
 				<button
-					class="btn flex h-auto items-center justify-start gap-3 rounded-xl border p-3.5 transition-all text-left group active:scale-[0.98]"
-					:class="paymentMethod === 'debt' ? 'bg-error border-error text-white shadow-xs' : 'border-error/15 bg-error/5 text-error hover:bg-error/10'"
+					type="button"
+					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
+					:class="paymentMethod === 'debt' ? 'btn-error text-white shadow-xs' : 'btn-ghost border-error/20 text-error hover:bg-error/10'"
 					@click="paymentMethod = 'debt'">
-					<div class="h-4.5 w-4.5 flex items-center justify-center shrink-0 font-black text-xs font-mono">
-						D
-					</div>
-					<div class="flex flex-col">
-						<span class="text-[10px] font-extrabold tracking-wider uppercase">A Deber</span>
-						<span class="text-[8px] opacity-75 font-semibold mt-0.5" :class="paymentMethod === 'debt' ? 'text-white/80' : 'text-error/80'">Deuda cliente</span>
-					</div>
-					<Check v-if="paymentMethod === 'debt'" class="ml-auto h-3.5 w-3.5 shrink-0 text-white" />
+					<span class="h-4 w-4 flex items-center justify-center font-black text-xs font-mono mb-0.5">D</span>
+					<span class="text-[9px] font-extrabold uppercase tracking-wider">A Deber</span>
 				</button>
 			</div>
 
-			<!-- Action -->
+			<!-- Main Action Button -->
 			<button
+				type="button"
 				@click="handleAttemptCheckout"
 				:disabled="cartItems.length === 0 || isCheckingOut"
-				class="btn h-14 w-full rounded-2xl border-none text-sm font-black tracking-widest uppercase shadow-md active:scale-[0.97] transition-all"
+				class="btn h-12 sm:h-14 w-full rounded-2xl border-none text-xs sm:text-sm font-black tracking-widest uppercase shadow-md transition-all active:scale-[0.98]"
 				:class="cartItems.length > 0 ? 'bg-text-primary hover:bg-text-primary/95 text-bg-card' : 'bg-bg-muted text-text-muted/60 opacity-50 cursor-not-allowed'">
 				<span v-if="isCheckingOut" class="loading loading-spinner loading-sm"></span>
 				<span v-else>Confirmar y Cobrar</span>
@@ -320,29 +338,36 @@
 		</div>
 	</div>
 
-	<!-- Last Session Confirmation Modal -->
-	<div v-if="isConfirmingLastSession" class="fixed inset-0 z-200 flex items-center justify-center p-4 sm:p-0">
-		<div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="isConfirmingLastSession = false"></div>
-
-		<div class="bg-bg-card shadow-3xl relative w-full max-w-sm transform overflow-hidden rounded-3xl p-6 transition-all sm:w-[400px]">
-			<div class="mb-5 flex flex-col items-center text-center">
-				<div class="bg-warning/20 text-warning mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-					<Tag class="h-8 w-8" />
+	<!-- DaisyUI Modal: Confirmation for Last Session of Bonus -->
+	<dialog :class="{ 'modal-open': isConfirmingLastSession }" class="modal modal-bottom sm:modal-middle">
+		<div class="modal-box bg-bg-card border-border-default border rounded-3xl p-6 shadow-2xl">
+			<div class="flex flex-col items-center text-center">
+				<div class="bg-warning/20 text-warning mb-4 flex h-14 w-14 items-center justify-center rounded-2xl">
+					<AlertTriangle class="h-7 w-7" />
 				</div>
-				<h3 class="text-text-primary text-xl font-black tracking-tight">Última Sesión</h3>
-				<p class="text-text-muted mt-2 text-sm font-medium">
-					Estás a punto de consumir la <strong class="text-text-primary">última sesión</strong> de uno de los bonos aplicados en este cobro. ¿Deseas continuar?
+				<h3 class="text-text-primary text-lg font-black tracking-tight">Última Sesión del Bono</h3>
+				<p class="text-text-muted mt-2 text-xs font-medium leading-relaxed">
+					Estás a punto de consumir la <strong class="text-text-primary">última sesión</strong> disponible de uno de los bonos aplicados. ¿Deseas procesar el cobro?
 				</p>
 			</div>
 
-			<div class="flex gap-3">
-				<button @click="isConfirmingLastSession = false" class="btn bg-bg-muted text-text-primary hover:bg-bg-muted/80 flex-1 rounded-xl border-none font-bold">
+			<div class="modal-action flex gap-3 mt-6">
+				<button
+					type="button"
+					@click="isConfirmingLastSession = false"
+					class="btn bg-bg-muted text-text-primary hover:bg-bg-muted/80 flex-1 rounded-xl border-none font-bold text-xs uppercase">
 					Cancelar
 				</button>
-				<button @click="confirmLastSession" class="btn btn-warning text-warning-content hover:bg-warning/90 flex-1 rounded-xl border-none font-bold shadow-lg">
+				<button
+					type="button"
+					@click="confirmLastSession"
+					class="btn btn-warning text-warning-content hover:bg-warning/90 flex-1 rounded-xl border-none font-bold text-xs uppercase shadow-md">
 					Sí, Cobrar
 				</button>
 			</div>
 		</div>
-	</div>
+		<form method="dialog" class="modal-backdrop bg-black/60 backdrop-blur-xs">
+			<button @click="isConfirmingLastSession = false">close</button>
+		</form>
+	</dialog>
 </template>
