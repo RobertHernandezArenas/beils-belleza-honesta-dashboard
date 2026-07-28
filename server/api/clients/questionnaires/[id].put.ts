@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 const questionnaireUpdateSchema = z.object({
 	title: z.string().min(2, 'El título es obligatorio').optional(),
-	data: z.record(z.any()).optional(),
+	data: z.record(z.string(), z.any()).optional(),
 })
 
 export default defineEventHandler(async event => {
@@ -16,9 +16,14 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = questionnaireUpdateSchema.parse(body)
 
+		const updateData: any = { ...parsedData }
+		if (parsedData.data) {
+			updateData.data = JSON.stringify(parsedData.data)
+		}
+
 		const questionnaire = await prisma.questionnaire.update({
 			where: { questionnaire_id: id },
-			data: parsedData,
+			data: updateData,
 			include: {
 				user: {
 					select: { user_id: true, name: true, surname: true, email: true },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Edit2, CheckCircle, Trash2, UserPlus, CreditCard, Banknote } from 'lucide-vue-next'
+import { Edit2, CheckCircle, Trash2, UserPlus, CreditCard, Banknote, Calendar } from 'lucide-vue-next'
 
 const props = defineProps<{
     cart: any
@@ -10,7 +10,38 @@ const emit = defineEmits<{
     (e: 'searchClient'): void
     (e: 'removeClient'): void
     (e: 'editClient'): void
+    (e: 'updateDate', newDate: string): void
 }>()
+
+import { ref } from 'vue'
+
+const isEditingDate = ref(false)
+const editableDate = ref('')
+
+const startEditingDate = () => {
+    // Format to YYYY-MM-DDThh:mm for datetime-local input
+    const date = new Date(props.cart.created_at)
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    editableDate.value = localDate.toISOString().slice(0, 16)
+    isEditingDate.value = true
+}
+
+const saveDate = () => {
+    if (editableDate.value) {
+        emit('updateDate', new Date(editableDate.value).toISOString())
+    }
+    isEditingDate.value = false
+}
+
+const formatCustomDate = (dateString: string) => {
+    return new Intl.DateTimeFormat('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(new Date(dateString))
+}
 </script>
 
 <template>
@@ -85,7 +116,7 @@ const emit = defineEmits<{
                 </div>
              </div>
 
-             <div class="flex flex-col gap-1">
+             <div class="flex flex-col gap-1 border-b border-border-subtle pb-3">
                 <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Método</label>
                 <div class="flex items-center gap-2 mt-1">
                     <span class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg flex items-center gap-1.5">
@@ -93,6 +124,30 @@ const emit = defineEmits<{
                         <Banknote v-if="cart.payment_method === 'cash'" class="w-3.5 h-3.5" />
                         {{ cart.payment_method }}
                     </span>
+                </div>
+             </div>
+
+             <div class="flex flex-col gap-1">
+                <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Fecha</label>
+                <div class="flex items-center gap-2 mt-1">
+                    <div v-if="!isEditingDate" class="flex items-center justify-between w-full group/date transition-all">
+                        <span class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                            <Calendar class="w-3.5 h-3.5" />
+                            {{ formatCustomDate(cart.created_at) }}
+                        </span>
+                        <div class="flex gap-1 opacity-0 group-hover/date:opacity-100 transition-opacity">
+                            <button @click="startEditingDate" class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Fecha">
+                                <Edit2 class="w-3 h-3" />
+                            </button>
+                        </div>
+                    </div>
+                    <div v-else class="flex flex-col gap-2 w-full">
+                        <input type="datetime-local" v-model="editableDate" class="input input-sm input-bordered w-full text-xs font-bold bg-bg-card" />
+                        <div class="flex gap-2 justify-end">
+                            <button @click="isEditingDate = false" class="btn btn-xs btn-ghost rounded-lg">Cancelar</button>
+                            <button @click="saveDate" class="btn btn-xs btn-primary rounded-lg">Guardar</button>
+                        </div>
+                    </div>
                 </div>
              </div>
           </div>

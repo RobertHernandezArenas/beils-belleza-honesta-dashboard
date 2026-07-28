@@ -13,20 +13,7 @@ export default defineEventHandler(async event => {
 			})
 		}
 
-		// Buscar tarjetas regalo activas asociadas al cliente y con saldo positivo
-		const giftcards = await prisma.giftcard.findMany({
-			where: {
-				client_id: id,
-				current_balance: {
-					gt: 0,
-				},
-				status: 'active',
-			},
-			orderBy: {
-				created_at: 'desc',
-			},
-		})
-
-		return giftcards
+		// TODO: Implement giftcards when added to Prisma schema
+		return []
 	}
 })

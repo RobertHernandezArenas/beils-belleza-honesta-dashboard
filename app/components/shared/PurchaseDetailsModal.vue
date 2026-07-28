@@ -25,7 +25,8 @@ const {
     assignClient,
     isAssigningClient,
     saveItems,
-    isSavingItems
+    isSavingItems,
+    updateDate
 } = usePurchaseModal(emit as any)
 
 // Modal Controller Methods
@@ -147,6 +148,7 @@ defineExpose({ open, close })
             @search-client="startClientSearch"
             @remove-client="removeAssignedClient"
             @edit-client="editAssignedClient"
+            @update-date="updateDate"
          />
 
          <!-- Search Mode View (Compatible with Clients & Items) -->

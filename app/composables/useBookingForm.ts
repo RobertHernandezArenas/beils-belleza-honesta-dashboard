@@ -77,7 +77,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             if (alexandra) {
                 form.staff_id = alexandra.user_id
             } else if (newStaff.length > 0) {
-                form.staff_id = newStaff[0].user_id
+                form.staff_id = newStaff[0]?.user_id || ''
             }
         }
     }, { immediate: true })

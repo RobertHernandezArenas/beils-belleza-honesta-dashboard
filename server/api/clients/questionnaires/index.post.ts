@@ -4,7 +4,7 @@ import { z } from 'zod'
 const questionnaireSchema = z.object({
 	user_id: z.string().min(1, 'El cliente es obligatorio'),
 	title: z.string().min(2, 'El título es obligatorio'),
-	data: z.record(z.any()).default({}),
+	data: z.record(z.string(), z.any()).default({}),
 })
 
 export default defineEventHandler(async event => {
@@ -12,8 +12,11 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = questionnaireSchema.parse(body)
 
+		const createData: any = { ...parsedData }
+		createData.data = JSON.stringify(parsedData.data)
+
 		const questionnaire = await prisma.questionnaire.create({
-			data: parsedData,
+			data: createData,
 			include: {
 				user: {
 					select: { user_id: true, name: true, surname: true, email: true },

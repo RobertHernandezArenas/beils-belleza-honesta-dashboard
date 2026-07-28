@@ -84,6 +84,20 @@ export function usePurchaseModal(emit: any) {
     }
   })
 
+  // Update Date Mutation
+  const { mutate: updateDate, isPending: isUpdatingDate } = useMutation({
+    mutationFn: (newDate: string) => 
+      $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
+        method: 'PUT',
+        body: { created_at: newDate }
+      }),
+    onSuccess: (updatedCart: any) => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] })
+      cart.value = { ...cart.value, created_at: updatedCart.created_at }
+      emit('success')
+    }
+  })
+
   return {
     cart,
     isSearching,
@@ -99,6 +113,8 @@ export function usePurchaseModal(emit: any) {
     assignClient,
     isAssigningClient,
     saveItems,
-    isSavingItems
+    isSavingItems,
+    updateDate,
+    isUpdatingDate
   }
 }

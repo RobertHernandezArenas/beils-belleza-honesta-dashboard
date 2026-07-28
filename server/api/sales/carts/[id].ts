@@ -123,18 +123,24 @@ export default defineEventHandler(async event => {
 			}
 
 			// 3. Update Cart
+			const updateData: any = {
+				user_id: body.user_id,
+				status: body.status,
+				payment_method: body.payment_method,
+				notes: body.notes,
+				subtotal,
+				discount,
+				total,
+				...verifactuData,
+			}
+
+			if (body.created_at) {
+				updateData.created_at = new Date(body.created_at)
+			}
+
 			const cart = await tx.cart.update({
 				where: { cart_id: id },
-				data: {
-					user_id: body.user_id,
-					status: body.status,
-					payment_method: body.payment_method,
-					notes: body.notes,
-					subtotal,
-					discount,
-					total,
-					...verifactuData,
-				},
+				data: updateData,
 				include: { items: true, debts: true },
 			})
 
