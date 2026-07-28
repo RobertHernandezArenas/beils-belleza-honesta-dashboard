@@ -56,11 +56,6 @@ export function useTpv() {
 		queryFn: () => $fetch('/api/marketing/bonuses'),
 	})
 
-	const { data: packs } = useQuery<any[]>({
-		queryKey: ['packs-tpv'],
-		queryFn: () => $fetch('/api/catalog/packs'),
-	})
-
 	const processedBookingId = ref<string | null>(null)
 
 	// Promotions & Marketing State
@@ -94,9 +89,8 @@ export function useTpv() {
 		() => services.value,
 		() => bonuses.value,
 		() => products.value,
-		() => packs.value,
 		() => clients.value
-	], async ([bookingId, svcs, bns, prds, pks, cls]) => {
+	], async ([bookingId, svcs, bns, prds, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
 		if (!svcs || !cls) return // Wait for crucial catalogs to load
 

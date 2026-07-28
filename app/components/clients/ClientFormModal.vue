@@ -52,7 +52,7 @@
 		city: '',
 		country: 'España',
 		postal_code: '',
-		gender: '',
+		gender: 'female',
 		birth_date: new Date().toISOString().split('T')[0],
 		status: 'ON',
 		avatar: '',
@@ -155,7 +155,7 @@
 			form.city = props.clientToEdit.city || ''
 			form.country = props.clientToEdit.country || 'España'
 			form.postal_code = props.clientToEdit.postal_code || ''
-			form.gender = props.clientToEdit.gender || ''
+			form.gender = props.clientToEdit.gender || 'female'
 			form.birth_date = props.clientToEdit.birth_date ? new Date(props.clientToEdit.birth_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
 			form.status = props.clientToEdit.status || 'ON'
 			form.avatar = props.clientToEdit.avatar || ''
@@ -171,7 +171,7 @@
 			form.city = ''
 			form.country = 'España'
 			form.postal_code = ''
-			form.gender = ''
+			form.gender = 'female'
 			form.birth_date = new Date().toISOString().split('T')[0]
 			form.status = 'ON'
 			form.avatar = ''
@@ -186,13 +186,23 @@
 		apiError.value = ''
 	}
 
+	const formatNameInput = () => {
+		form.name = form.name.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase())
+		clearError('name')
+	}
+
+	const formatSurnameInput = () => {
+		form.surname = form.surname.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase())
+		clearError('surname')
+	}
+
 	const clientSchema = z.object({
 		name: z.string().min(2, 'El nombre es obligatorio'),
-		surname: z.string().min(2, 'El apellido es obligatorio'),
-		email: z.string().email('Email inválido'),
-		phone: z.string().min(6, 'El teléfono es obligatorio'),
+		surname: z.string().optional().or(z.literal('')),
+		email: z.string().email('Email inválido').optional().or(z.literal('')),
+		phone: z.string().optional().or(z.literal('')),
 		document_type: z.enum(['DNI', 'PASSPORT', 'NIE']),
-		document_number: z.string().min(3, 'Documento inválido'),
+		document_number: z.string().optional().or(z.literal('')),
 		address: z.string().optional().default(''),
 		city: z.string().optional().default(''),
 		country: z.string().optional().default('España'),
@@ -385,13 +395,13 @@
 								type="text"
 								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.name }"
-								@input="clearError('name')" />
+								@input="formatNameInput" />
 						</div>
 
 						<div class="form-control">
 							<label class="label">
 								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
-									{{ t('catalog.clients.form.surname') }} *
+									{{ t('catalog.clients.form.surname') }}
 								</span>
 							</label>
 							<input
@@ -399,7 +409,7 @@
 								type="text"
 								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.surname }"
-								@input="clearError('surname')" />
+								@input="formatSurnameInput" />
 						</div>
 
 						<div class="form-control">
@@ -475,7 +485,7 @@
 						<div class="form-control">
 							<label class="label">
 								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
-									{{ t('catalog.clients.form.phone') }} *
+									{{ t('catalog.clients.form.phone') }}
 								</span>
 							</label>
 							<input
@@ -489,7 +499,7 @@
 						<div class="form-control">
 							<label class="label">
 								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
-									{{ t('catalog.clients.form.email') }} *
+									{{ t('catalog.clients.form.email') }}
 								</span>
 							</label>
 							<input
@@ -500,7 +510,7 @@
 								@input="clearError('email')" />
 						</div>
 
-						<div class="form-control">
+						<div class="form-control" v-if="false">
 							<label class="label">
 								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
 									{{ t('catalog.clients.form.status') }}

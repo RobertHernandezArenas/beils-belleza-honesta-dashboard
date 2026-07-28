@@ -4,10 +4,10 @@ import bcrypt from 'bcryptjs'
 import { requireAdmin } from '../../utils/auth'
 
 const clientSchema = z.object({
-	email: z.string().email('Email inválido'),
+	email: z.string().email('Email inválido').optional().or(z.literal('')),
 	name: z.string().min(2, 'El nombre es obligatorio'),
-	surname: z.string().min(2, 'El apellido es obligatorio'),
-	phone: z.string().min(6, 'El teléfono es obligatorio'),
+	surname: z.string().optional().or(z.literal('')),
+	phone: z.string().optional().or(z.literal('')),
 	address: z.string().optional().default(''),
 	city: z.string().optional().default(''),
 	country: z.string().optional().default(''),
@@ -29,6 +29,10 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = clientSchema.parse(body)
 
+		if (!parsedData.email) {
+			parsedData.email = `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
+		}
+
 		const existingUser = await prisma.user.findUnique({
 			where: { email: parsedData.email },
 		})
@@ -45,9 +49,14 @@ export default defineEventHandler(async event => {
 		const salt = await bcrypt.genSalt(10)
 		const hashedPassword = await bcrypt.hash('beils12345', salt)
 
+		const email = parsedData.email || `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
+
 		const user = await prisma.user.create({
 			data: {
 				...parsedData,
+				email,
+				surname: parsedData.surname || '',
+				phone: parsedData.phone || '',
 				user_id: parsedData.user_id || undefined,
 				birth_date: new Date(parsedData.birth_date),
 				password: hashedPassword,

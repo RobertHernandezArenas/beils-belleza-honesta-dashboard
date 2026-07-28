@@ -57,6 +57,11 @@
 	const showDeleteModal = ref(false)
 	const selectedClient = ref<any>(null)
 
+	const refreshClients = () => {
+		page.value = 1
+		queryClient.invalidateQueries({ queryKey: ['clients-list'] })
+	}
+
 	// Acciones
 	const openCreateModal = () => {
 		selectedClient.value = null
@@ -109,7 +114,7 @@
 <template>
 	<div
 		class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:flex lg:h-[calc(100dvh-73px)] lg:flex-col lg:overflow-hidden lg:p-10">
-		<div class="mx-auto flex h-full w-full max-w-[1400px] flex-col lg:overflow-hidden">
+		<div class="mx-auto flex h-full w-full max-w-350 flex-col lg:overflow-hidden">
 			<!-- Header -->
 			<header
 				data-aos="fade-up"
@@ -167,7 +172,7 @@
 				class="glass-card flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl">
 				<div class="custom-scrollbar w-full flex-1 overflow-x-auto">
 					<table
-						class="w-full min-w-[700px] table-auto border border-[#fbfaf9] text-left text-sm lg:table-fixed lg:text-[13px]">
+						class="w-full min-w-175 table-auto border border-[#fbfaf9] text-left text-sm lg:table-fixed lg:text-[13px]">
 						<thead class="text-text-secondary sticky top-0 z-10 bg-[#fbfaf9]">
 							<tr>
 								<th class="px-6 py-4 text-[14px] font-bold tracking-tight lg:w-[30%]">Cliente</th>
@@ -370,7 +375,7 @@
 		</div>
 
 		<!-- Modales -->
-		<ClientFormModal v-model="showClientModal" :client-to-edit="selectedClient" />
+		<ClientFormModal v-model="showClientModal" :client-to-edit="selectedClient" @success="refreshClients" />
 		<UserDeleteModal
 			:is-open="showDeleteModal"
 			:user-name="selectedClient?.name || ''"
