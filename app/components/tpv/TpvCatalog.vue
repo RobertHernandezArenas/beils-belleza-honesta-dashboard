@@ -57,21 +57,21 @@
 
 				<button
 					type="button"
-					class="tab relative z-10 flex h-10 min-h-[40px] flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
+					class="tab relative z-10 flex h-10 min-h-10 flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
 					:class="activeTab === 'services' ? 'text-bg-card font-extrabold' : 'text-text-muted hover:text-text-primary'"
 					@click="activeTab = 'services'">
 					<span>Servicios</span>
 				</button>
 				<button
 					type="button"
-					class="tab relative z-10 flex h-10 min-h-[40px] flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
+					class="tab relative z-10 flex h-10 min-h-10 flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
 					:class="activeTab === 'products' ? 'text-bg-card font-extrabold' : 'text-text-muted hover:text-text-primary'"
 					@click="activeTab = 'products'">
 					<span>Productos</span>
 				</button>
 				<button
 					type="button"
-					class="tab relative z-10 flex h-10 min-h-[40px] flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
+					class="tab relative z-10 flex h-10 min-h-10 flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
 					:class="activeTab === 'bonuses' ? 'text-bg-card font-extrabold' : 'text-text-muted hover:text-text-primary'"
 					@click="activeTab = 'bonuses'">
 					<span>Bonos</span>

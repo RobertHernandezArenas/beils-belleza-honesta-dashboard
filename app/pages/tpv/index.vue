@@ -101,7 +101,7 @@
 
 		<!-- CART SECTION -->
 		<div
-			class="flex-1 flex-col overflow-hidden transition-all duration-300 md:w-[380px] lg:w-[420px] xl:w-[460px] md:flex-none"
+			class="flex-1 flex-col overflow-hidden transition-all duration-300 md:w-95 lg:w-105 xl:w-115 md:flex-none"
 			:class="[mobileTab === 'cart' ? 'flex' : 'hidden md:flex']">
 			<TpvCart
 				v-model:client-search="clientSearch"

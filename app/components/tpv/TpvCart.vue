@@ -164,7 +164,7 @@
 		</div>
 
 		<!-- CART ITEMS LIST CONTAINER -->
-		<div class="custom-scrollbar flex-1 shrink-0 overflow-y-auto p-3.5 sm:p-4 flex flex-col gap-2 min-h-[220px] md:min-h-0">
+		<div class="custom-scrollbar flex-1 shrink-0 overflow-y-auto p-3.5 sm:p-4 flex flex-col gap-2 min-h-55 md:min-h-0">
 			<!-- Empty Cart State -->
 			<div
 				v-if="cartItems.length === 0"
@@ -173,7 +173,7 @@
 					<ShoppingBag class="text-text-muted h-7 w-7 opacity-50" />
 				</div>
 				<p class="text-text-primary text-xs font-bold uppercase tracking-wider">Carrito vacío</p>
-				<p class="text-text-muted mt-1 max-w-[200px] text-[11px]">Selecciona ítems del catálogo para comenzar la venta</p>
+				<p class="text-text-muted mt-1 max-w-50 text-[11px]">Selecciona ítems del catálogo para comenzar la venta</p>
 			</div>
 
 			<!-- Items List -->
