@@ -154,14 +154,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         if (!form.client_id) return emit('toast', 'Selecciona un cliente', 'error')
         if (form.items.length === 0) return emit('toast', 'Añade al menos un servicio', 'error')
         
-        // Date/Time validation for NEW bookings
-        if (!selectedBooking.value) {
-            const bookingDateTime = new Date(`${form.booking_date}T${form.start_time}`)
-            if (bookingDateTime < new Date()) {
-                return emit('toast', 'No se puede programar una cita en el pasado', 'error')
-            }
-        }
-        
+        // Date/Time validation for NEW bookings has been removed to allow scheduling past bookings        
         // Check for last session or finished of a bono (for both NEW and EDIT)
         let highestWarning: 'NONE' | 'ONE_LEFT' | 'FINISHED' = 'NONE'
         if (clientWallet.bonuses) {
