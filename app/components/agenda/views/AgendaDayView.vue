@@ -304,26 +304,26 @@ onUnmounted(() => {
                     <button
                         v-for="booking in processedBookings"
                         :key="booking.booking_id"
-                        class="booking-card group absolute ml-1 cursor-pointer overflow-hidden rounded-xl border p-2 transition-all hover:z-50 hover:shadow-md"
+                        class="booking-card group absolute ml-1 cursor-pointer rounded-xl border p-2 transition-all hover:z-50 hover:shadow-md z-10"
                         :class="getStatusColor(booking.status)"
                         :style="getBookingStyle(booking)"
                         @click.stop="emit('edit', booking)">
                         
                         <!-- Left Status Strip -->
                         <div
-                            class="absolute top-0 bottom-0 left-0 w-1 opacity-80"
+                            class="absolute top-0 bottom-0 left-0 w-1 opacity-80 rounded-l-xl"
                             :class="getStatusStrip(booking.status)"></div>
 
                         <!-- Content Layout -->
-                        <div class="flex h-full flex-col overflow-hidden pl-2">
+                        <div class="flex h-full flex-col pl-2">
                             <!-- Header Row -->
                             <div class="flex items-start justify-between gap-1 shrink-0">
                                 <h4 class="truncate font-bold tracking-tight text-xs leading-tight">
-                                    {{ booking.client?.name }} {{ booking.client?.surname }}
+                                    {{ booking.client?.name ? `${booking.client.name} ${booking.client.surname || ''}` : 'Cliente No Registrado' }}
                                 </h4>
 
                                 <!-- Action Dropdown -->
-                                <div class="dropdown dropdown-end" @click.stop>
+                                <div class="dropdown dropdown-end relative z-50" @click.stop>
                                     <button
                                         tabindex="0"
                                         class="btn btn-ghost btn-xs btn-circle h-5 w-5 min-h-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -331,7 +331,7 @@ onUnmounted(() => {
                                     </button>
                                     <ul
                                         tabindex="0"
-                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-xl">
+                                        class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-2xl">
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info h-3 w-3" /> Confirmar</a></li>
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success h-3 w-3" /> Finalizar</a></li>
                                         <div class="divider my-0 opacity-30 h-1"></div>

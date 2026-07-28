@@ -70,6 +70,19 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         queryKey: ['bonuses-agenda'],
         queryFn: () => $fetch<any[]>('/api/marketing/bonuses'),
     })
+    // Auto-fill client if not set and fallback exists
+    watch(clients, (newClients) => {
+        if (newClients && newClients.length > 0 && !form.client_id) {
+            const fallback = newClients.find((c: any) => 
+                c.name?.toLowerCase().includes('no registrado') || 
+                c.name?.toLowerCase().includes('mostrador')
+            )
+            if (fallback) {
+                form.client_id = fallback.user_id
+            }
+        }
+    }, { immediate: true })
+
     // Auto-fill staff (Alexandra Victoria as default)
     watch(staff, (newStaff) => {
         if (newStaff && !form.staff_id) {
@@ -151,6 +164,13 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
     })
 
     const saveBooking = () => {
+        if (!form.client_id && clients.value?.length) {
+            const fallback = clients.value.find((c: any) => 
+                c.name?.toLowerCase().includes('no registrado') || 
+                c.name?.toLowerCase().includes('mostrador')
+            ) || clients.value[0]
+            if (fallback) form.client_id = fallback.user_id
+        }
         if (!form.client_id) return emit('toast', 'Selecciona un cliente', 'error')
         if (form.items.length === 0) return emit('toast', 'Añade al menos un servicio', 'error')
         
