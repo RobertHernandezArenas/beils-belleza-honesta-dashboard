@@ -3,10 +3,10 @@ import { z } from 'zod'
 import { requireAdmin } from '../../utils/auth'
 
 const clientSchema = z.object({
-	email: z.string().email('Email inválido').optional(),
+	email: z.string().email('Email inválido').optional().or(z.literal('')),
 	name: z.string().min(2, 'El nombre es obligatorio').optional(),
-	surname: z.string().min(2, 'El apellido es obligatorio').optional(),
-	phone: z.string().min(6, 'El teléfono es obligatorio').optional(),
+	surname: z.string().optional().or(z.literal('')),
+	phone: z.string().optional().or(z.literal('')),
 	address: z.string().optional(),
 	city: z.string().optional(),
 	country: z.string().optional(),
@@ -30,6 +30,10 @@ export default defineEventHandler(async event => {
 
 		const body = await readBody(event)
 		const parsedData = clientSchema.parse(body)
+
+		if (parsedData.email === '') {
+			parsedData.email = `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
+		}
 
 		if (parsedData.email) {
 			const existingUser = await prisma.user.findFirst({

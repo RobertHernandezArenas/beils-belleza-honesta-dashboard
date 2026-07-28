@@ -4,10 +4,10 @@ import bcrypt from 'bcryptjs'
 import { requireAdmin } from '../../utils/auth'
 
 const clientSchema = z.object({
-	email: z.string().email('Email inválido'),
+	email: z.string().email('Email inválido').optional().or(z.literal('')),
 	name: z.string().min(2, 'El nombre es obligatorio'),
-	surname: z.string().min(2, 'El apellido es obligatorio'),
-	phone: z.string().min(6, 'El teléfono es obligatorio'),
+	surname: z.string().optional().or(z.literal('')),
+	phone: z.string().optional().or(z.literal('')),
 	address: z.string().optional().default(''),
 	city: z.string().optional().default(''),
 	country: z.string().optional().default(''),
@@ -28,6 +28,10 @@ export default defineEventHandler(async event => {
 		requireAdmin(event)
 		const body = await readBody(event)
 		const parsedData = clientSchema.parse(body)
+
+		if (!parsedData.email) {
+			parsedData.email = `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
+		}
 
 		const existingUser = await prisma.user.findUnique({
 			where: { email: parsedData.email },
