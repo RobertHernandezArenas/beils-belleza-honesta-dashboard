@@ -60,7 +60,7 @@
 </script>
 
 <template>
-	<div class="flex flex-1 flex-col overflow-hidden px-4 pt-4 md:px-6 md:pt-6">
+	<div class="flex flex-1 flex-col overflow-hidden px-4 pt-4 md:px-6 md:pt-6 max-h-[55dvh] md:max-h-none shrink-0 md:shrink">
 		<!-- Generic Header -->
 		<div class="mb-5 flex flex-col items-center justify-between gap-4 sm:flex-row">
 			<div class="flex w-full items-center gap-3">

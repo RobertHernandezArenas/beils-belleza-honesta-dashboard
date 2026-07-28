@@ -39,7 +39,7 @@
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary flex h-dvh w-full flex-col overflow-hidden md:flex-row">
+	<div class="bg-bg-app text-text-secondary flex h-dvh w-full flex-col overflow-y-auto overflow-x-hidden md:flex-row md:overflow-hidden">
 		<!-- LEFT SIDE: Catalog & Browser -->
 		<TpvCatalog
 			v-model:active-tab="activeTab"
@@ -89,8 +89,10 @@
 </template>
 
 <style scoped>
-	/* Allow layout full height without scroll on body for TPV experience */
-	:global(body) {
-		overflow: hidden;
+	/* Allow layout full height without scroll on body for TPV experience on Desktop */
+	@media (min-width: 768px) {
+		:global(body) {
+			overflow: hidden;
+		}
 	}
 </style>
