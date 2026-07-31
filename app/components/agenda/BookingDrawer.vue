@@ -18,6 +18,7 @@ const {
     clients,
     staff,
     services,
+    clientPackages,
     isSaving,
     saveBooking,
     proceedSaveBooking,
@@ -137,6 +138,8 @@ const closeDropdowns = () => {
                         <BookingItemSelector 
                             ref="itemSelectorRef"
                             :services="services"
+                            :client-packages="clientPackages"
+                            :selected-items="form.items"
                             :disabled="form.status === 'COMPLETADA'"
                             @add="handleAddItem"
                         />

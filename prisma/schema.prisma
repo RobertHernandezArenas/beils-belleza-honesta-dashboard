@@ -37,6 +37,7 @@ model User {
   debts           Debt[]
   questionnaires  Questionnaire[]
   revokes         Revoke[]
+  client_packages ClientPackage[]
 
   @@index([role])
   @@index([status])
@@ -276,3 +277,43 @@ enum DocumentType {
   PASSPORT
   NIE
 }
+
+model Package {
+  package_id      String          @id @default(uuid()) @db.Char(100)
+  name            String          @db.VarChar(150)
+  description     String?         @db.Text
+  type            PackageType     @default(INDIVIDUAL)
+  price           Float
+  total_sessions  Int             @default(1)
+  service_id      String?         @db.Char(100)
+  status          String          @default("activo") @db.VarChar(20)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  client_packages ClientPackage[]
+
+  @@map("packages")
+}
+
+model ClientPackage {
+  client_package_id  String      @id @default(uuid()) @db.Char(100)
+  user_id            String      @db.Char(100)
+  package_id         String      @db.Char(100)
+  total_sessions     Int
+  remaining_sessions Int
+  expiry_date        DateTime?
+  status             String      @default("ACTIVE") @db.VarChar(20)
+  created_at         DateTime    @default(now())
+  updated_at         DateTime    @updatedAt
+  user               User        @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  package            Package     @relation(fields: [package_id], references: [package_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([package_id])
+  @@map("client_packages")
+}
+
+enum PackageType {
+  INDIVIDUAL
+  MIXTO
+}
+

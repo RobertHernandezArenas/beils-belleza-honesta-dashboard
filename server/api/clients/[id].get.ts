@@ -27,6 +27,12 @@ export default defineEventHandler(async event => {
 					orderBy: { created_at: 'desc' },
 					include: { items: true }
 				},
+				client_packages: {
+					include: {
+						package: true
+					},
+					orderBy: { created_at: 'desc' }
+				},
 				debts: {
 					where: { status: { in: ['pending', 'partial'] } },
 					include: {

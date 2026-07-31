@@ -1,43 +1,32 @@
 <script setup lang="ts">
-import { Package, AlertCircle, ChevronRight } from 'lucide-vue-next'
+import { Package as PackageIcon, AlertCircle, ChevronRight } from 'lucide-vue-next'
 
 const props = defineProps({
 	client: { type: Object as PropType<any>, required: true }
 })
 
-// Mock or calculated active client packages (Individual vs Mixto)
-const mockPackages = computed(() => {
-	const items: any[] = []
-	const bookingsCount = props.client.client_bookings?.length || 0
-	
-	items.push({
-		id: 'pkg-indiba-01',
-		name: 'Bono / Paquete Indiba Corporal (6 Sesiones)',
-		type: 'INDIVIDUAL',
-		category: 'Servicio Individual',
-		totalSessions: 6,
-		completedSessions: Math.min(6, Math.max(1, bookingsCount)),
-		status: 'ACTIVE',
-		expiryDate: '2026-12-31',
-		serviceName: 'Tratamiento Indiba Corporal Pro'
+// Real active client packages from DB
+const activePackages = computed(() => {
+	if (!props.client.client_packages?.length) return []
+	return props.client.client_packages.map((cp: any) => {
+		const completed = cp.total_sessions - cp.remaining_sessions
+		const expiryFormatted = cp.expiry_date ? new Date(cp.expiry_date).toISOString().split('T')[0] : 'Sin vencimiento'
+		return {
+			id: cp.client_package_id,
+			name: cp.package?.name || 'Paquete / Bono',
+			type: cp.package?.type || 'INDIVIDUAL',
+			totalSessions: cp.total_sessions,
+			completedSessions: Math.max(0, completed),
+			remainingSessions: cp.remaining_sessions,
+			status: cp.status,
+			expiryDate: expiryFormatted,
+			description: cp.package?.description
+		}
 	})
-
-	items.push({
-		id: 'pkg-mix-02',
-		name: 'Pack Mixto Renovación Facial & Corporal',
-		type: 'MIXTO',
-		category: 'Paquete Mixto (Tratamiento + Producto)',
-		totalSessions: 4,
-		completedSessions: 2,
-		status: 'ACTIVE',
-		expiryDate: '2026-10-15',
-		servicesIncluded: ['Limpieza Facial Profunda', 'Peeling Químico Renovador', 'Sérum Vitamina C']
-	})
-
-	return items
 })
 
 const getProgressPercentage = (completed: number, total: number) => {
+	if (!total) return 0
 	return Math.round((completed / total) * 100)
 }
 </script>
@@ -50,7 +39,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-subtle pb-4">
 				<div class="flex items-center gap-3">
 					<div class="p-3 bg-primary/15 text-primary rounded-2xl">
-						<Package class="w-6 h-6" />
+						<PackageIcon class="w-6 h-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-xl font-black tracking-tight flex items-center gap-2">
@@ -64,14 +53,14 @@ const getProgressPercentage = (completed: number, total: number) => {
 				</div>
 
 				<div class="badge badge-neutral font-black text-xs uppercase px-3 py-2">
-					{{ mockPackages.length }} Paquetes Activos
+					{{ activePackages.length }} Paquetes Activos
 				</div>
 			</div>
 
 			<!-- LIST OF PACKAGES -->
-			<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+			<div v-if="activePackages.length > 0" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
 				<div 
-					v-for="pkg in mockPackages" 
+					v-for="pkg in activePackages" 
 					:key="pkg.id"
 					class="bg-bg-muted/20 border border-border-subtle hover:border-primary/40 rounded-3xl p-6 space-y-5 transition-all shadow-xs flex flex-col justify-between"
 				>
@@ -90,7 +79,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 							</div>
 
 							<span class="badge badge-success badge-sm font-black text-[9px] uppercase">
-								ACTIVO
+								{{ pkg.status }}
 							</span>
 						</div>
 
@@ -114,28 +103,23 @@ const getProgressPercentage = (completed: number, total: number) => {
 								></div>
 							</div>
 						</div>
-
-						<!-- INCLUDED SERVICES / ITEMS -->
-						<div v-if="pkg.servicesIncluded" class="space-y-1 pt-2">
-							<span class="text-[10px] font-black uppercase tracking-wider text-text-muted">Servicios & Productos Incluidos:</span>
-							<div class="flex flex-wrap gap-1">
-								<span v-for="s in pkg.servicesIncluded" :key="s" class="badge bg-bg-card text-text-primary font-bold text-[10px] border border-border-subtle">
-									{{ s }}
-								</span>
-							</div>
-						</div>
 					</div>
 
 					<div class="pt-4 border-t border-border-subtle flex items-center justify-between">
 						<span class="text-xs font-semibold text-text-muted">
-							Quedan <strong class="text-text-primary tabular-nums">{{ pkg.totalSessions - pkg.completedSessions }} sesiones</strong> disponibles
+							Quedan <strong class="text-text-primary tabular-nums">{{ pkg.remainingSessions }} sesiones</strong> disponibles
 						</span>
 
 						<button class="btn btn-ghost btn-xs font-bold text-primary">
-							Ver Historial <ChevronRight class="w-3.5 h-3.5" />
+							Ver Detalles <ChevronRight class="w-3.5 h-3.5" />
 						</button>
 					</div>
 				</div>
+			</div>
+
+			<div v-else class="py-12 flex flex-col items-center justify-center text-center text-text-muted opacity-60">
+				<PackageIcon class="w-12 h-12 mb-2 stroke-[1.5]" />
+				<p class="text-xs font-bold uppercase tracking-wider">El cliente no posee paquetes activos contratados</p>
 			</div>
 
 		</div>

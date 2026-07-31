@@ -66,6 +66,15 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         queryKey: ['services-agenda'],
         queryFn: () => $fetch<any[]>('/api/services'),
     })
+
+    const { data: clientPackages } = useQuery({
+        queryKey: ['client-packages-agenda', computed(() => form.client_id)],
+        queryFn: async () => {
+            if (!form.client_id) return []
+            return await $fetch<any[]>(`/api/clients/${form.client_id}/packages`)
+        },
+        enabled: computed(() => !!form.client_id)
+    })
     // Auto-fill client if not set and fallback exists
     watch(clients, (newClients) => {
         if (newClients && newClients.length > 0 && !form.client_id) {
@@ -197,6 +206,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         clients,
         staff,
         services,
+        clientPackages,
         isSaving,
         saveBooking,
         proceedSaveBooking,

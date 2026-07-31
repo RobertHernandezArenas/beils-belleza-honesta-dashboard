@@ -52,7 +52,8 @@ const removeGroup = (indices: number[]) => {
         <div v-for="(group, idx) in groupedItems" :key="idx" 
             class="bg-bg-card border border-border-default p-3 rounded-xl flex items-center justify-between group shadow-sm transition-all hover:border-primary/30">
             <div class="flex items-center gap-3">
-                <Scissors class="h-4 w-4 text-primary" />
+                <Package v-if="group.item.item_type === 'PACKAGE'" class="h-4 w-4 text-primary" />
+                <Scissors v-else class="h-4 w-4 text-primary" />
                 
                 <div class="flex flex-col">
                     <span class="text-xs font-bold text-text-primary uppercase tracking-tight">{{ group.item.name }}</span>

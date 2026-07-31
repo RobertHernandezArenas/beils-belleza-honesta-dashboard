@@ -74,7 +74,7 @@ async function seedDB() {
 		console.log('🧹 Cleaning up existing data...')
 		const tables = [
 			'booking', 'questionnaire', 'consent', 'revoke', 'debtPayment', 'debt',
-			'cartItem', 'cart', 'giftcard', 'coupon', 'product', 'service', 'sequence', 'user'
+			'cartItem', 'cart', 'giftcard', 'coupon', 'clientPackage', 'package', 'product', 'service', 'sequence', 'user'
 		]
 		
 		// Disable foreign key checks for thorough cleanup
@@ -218,7 +218,35 @@ async function seedDB() {
 		}
 		const allServices = await prisma.service.findMany()
 
+		console.log('📦 Seeding Packages (Bonos)...')
+		const indibaService = allServices.find(s => s.name.includes('Indiba')) || allServices[0]
+		const facialService = allServices.find(s => s.name.includes('Facial')) || allServices[1]
 
+		const pkg1 = await prisma.package.create({
+			data: {
+				name: 'Bono / Paquete Indiba Corporal (6 Sesiones)',
+				description: 'Sesiones de radiofrecuencia corporal avanzada para firmeza y remodelación.',
+				type: 'INDIVIDUAL',
+				price: 320,
+				total_sessions: 6,
+				service_id: indibaService?.service_id,
+				status: 'activo'
+			}
+		})
+
+		const pkg2 = await prisma.package.create({
+			data: {
+				name: 'Pack Mixto Renovación Facial & Corporal',
+				description: 'Combinación especial de limpieza facial profunda y peeling renovador.',
+				type: 'MIXTO',
+				price: 250,
+				total_sessions: 4,
+				service_id: facialService?.service_id,
+				status: 'activo'
+			}
+		})
+
+		const allPackages = [pkg1, pkg2]
 
 		console.log('🔢 Seeding Sequences (Veri*Factu)...')
 		await prisma.sequence.createMany({
@@ -228,15 +256,35 @@ async function seedDB() {
 			]
 		})
 
-		console.log('🎟️ Seeding Marketing & CRM Data...')
-		await prisma.coupon.createMany({
-			data: [
-				{ code: 'BELLEZA2026', discount_type: 'percentage', discount_value: 15, description: 'Descuento especial temporada' },
-				{ code: 'BIENVENIDA', discount_type: 'fixed', discount_value: 5, description: 'Descuento bienvenida nuevos clientes' }
-			]
-		})
+
 
 		for (const client of allUsers) {
+			if (client.role === 'CLIENT') {
+				// Seed 1-2 active packages for each client
+				await prisma.clientPackage.create({
+					data: {
+						user_id: client.user_id,
+						package_id: pkg1.package_id,
+						total_sessions: 6,
+						remaining_sessions: 5,
+						expiry_date: new Date(2026, 11, 31),
+						status: 'ACTIVE'
+					}
+				})
+
+				if (Math.random() > 0.4) {
+					await prisma.clientPackage.create({
+						data: {
+							user_id: client.user_id,
+							package_id: pkg2.package_id,
+							total_sessions: 4,
+							remaining_sessions: 2,
+							expiry_date: new Date(2026, 9, 15),
+							status: 'ACTIVE'
+						}
+					})
+				}
+			}
 			// Consents (70% conversion)
 			if (Math.random() > 0.3) {
 				await prisma.consent.create({
@@ -255,10 +303,10 @@ async function seedDB() {
 					data: {
 						user_id: client.user_id,
 						title: 'Ficha Técnica Inicial',
-						data: {
+						data: JSON.stringify({
 							skin_type: getRandomItem(['Grassa', 'Mixta', 'Seca', 'Sensible']),
 							allergies: getRandomItem(['Ninguna', 'Polen', 'Látex', 'Metales'])
-						}
+						})
 					}
 				})
 			}
@@ -276,6 +324,8 @@ async function seedDB() {
 					data: {
 						client_id: client.user_id,
 						staff_id: getRandomItem(staffMembers).user_id,
+						item_type: 'service',
+						item_id: service.service_id,
 						status: isPast ? 'COMPLETADA' : 'PENDIENTE',
 						booking_date: date,
 						start_time: `${hour.toString().padStart(2, '0')}:00`,
