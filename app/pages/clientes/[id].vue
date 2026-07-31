@@ -57,7 +57,6 @@ const {
 } = useQuery<any, any>({
   queryKey: ['client', clientId],
   queryFn: () => $fetch(`/api/clients/${clientId}`),
-  refetchInterval: 3000,
 })
 
 useHead({

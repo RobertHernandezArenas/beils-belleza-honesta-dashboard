@@ -36,8 +36,22 @@
 
 	const emit = defineEmits(['update:modelValue', 'save'])
 
+	const formatDateForInput = (val: any) => {
+		if (props.type === 'date' && val) {
+			try {
+				const d = new Date(val as string)
+				if (!isNaN(d.getTime())) {
+					return d.toISOString().split('T')[0] as string | number | Date
+				}
+			} catch (e) {
+				// ignore
+			}
+		}
+		return val
+	}
+
 	const isEditing = ref(false)
-	const localValue = ref(props.modelValue)
+	const localValue = ref(formatDateForInput(props.modelValue))
 	const inputRef = ref<HTMLInputElement | HTMLSelectElement | null>(null)
 	const textContainerRef = ref<HTMLElement | null>(null)
 	const editContainerRef = ref<HTMLElement | null>(null)
@@ -46,7 +60,7 @@
 		() => props.modelValue,
 		newVal => {
 			if (!isEditing.value) {
-				localValue.value = newVal
+				localValue.value = formatDateForInput(newVal)
 			}
 		},
 	)
@@ -64,17 +78,7 @@
 
 	const startEdit = () => {
 		if (props.isMutating) return
-		localValue.value = props.modelValue
-
-		// Format date for date input if necessary
-		if (props.type === 'date' && localValue.value) {
-			try {
-				const d = new Date(localValue.value as string)
-				localValue.value = d.toISOString().split('T')[0] as string | number | Date
-			} catch (e) {
-				// ignore
-			}
-		}
+		localValue.value = formatDateForInput(props.modelValue)
 
 		isEditing.value = true
 

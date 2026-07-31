@@ -45,37 +45,38 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado' })
 		}
 
-		// KPI Calculation
-		const topServices = await prisma.cartItem.groupBy({
-			by: ['name'],
-			where: { cart: { user_id: id, status: 'completed' }, item_type: 'service' },
-			_sum: { quantity: true, total: true },
-			orderBy: { _sum: { quantity: 'desc' } },
-			take: 3
-		})
+		// KPI Calculation in Parallel
+		const [topServices, topProducts, cartStats, bookings] = await Promise.all([
+			prisma.cartItem.groupBy({
+				by: ['name'],
+				where: { cart: { user_id: id, status: 'completed' }, item_type: 'service' },
+				_sum: { quantity: true, total: true },
+				orderBy: { _sum: { quantity: 'desc' } },
+				take: 3
+			}),
+			prisma.cartItem.groupBy({
+				by: ['name'],
+				where: { cart: { user_id: id, status: 'completed' }, item_type: 'product' },
+				_sum: { quantity: true, total: true },
+				orderBy: { _sum: { quantity: 'desc' } },
+				take: 3
+			}),
+			prisma.cart.aggregate({
+				where: { user_id: id, status: 'completed' },
+				_sum: { total: true },
+				_count: { cart_id: true }
+			}),
+			prisma.booking.findMany({
+				where: { client_id: id },
+				orderBy: { booking_date: 'asc' },
+				select: { booking_date: true }
+			})
+		])
 
-		const topProducts = await prisma.cartItem.groupBy({
-			by: ['name'],
-			where: { cart: { user_id: id, status: 'completed' }, item_type: 'product' },
-			_sum: { quantity: true, total: true },
-			orderBy: { _sum: { quantity: 'desc' } },
-			take: 3
-		})
-
-		const cartStats = await prisma.cart.aggregate({
-			where: { user_id: id, status: 'completed' },
-			_sum: { total: true },
-			_count: { cart_id: true }
-		})
 		const ltv = cartStats._sum.total || 0
 		const totalPurchases = cartStats._count.cart_id || 0
 		const aov = totalPurchases > 0 ? ltv / totalPurchases : 0
 
-		const bookings = await prisma.booking.findMany({
-			where: { client_id: id },
-			orderBy: { booking_date: 'asc' },
-			select: { booking_date: true }
-		})
 		let bookingFrequencyDays = 0
 		if (bookings.length > 1) {
 			const firstDate = new Date(bookings[0]?.booking_date || new Date()).getTime()
