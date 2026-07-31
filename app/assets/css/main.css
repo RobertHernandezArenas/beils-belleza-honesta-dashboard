@@ -166,6 +166,7 @@ textarea:focus {
    ============================================ */
 .dropdown-content,
 .menu.dropdown-content {
+	z-index: 9999 !important;
 	transform-origin: top center;
 	animation: dropdown-slide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -230,9 +231,14 @@ input[type='checkbox']:checked {
 }
 
 /* ============================================
-   TOOLTIP animation
+   TOOLTIP animation & Z-index fix
    ============================================ */
-.tooltip::before {
+.tooltip {
+	position: relative;
+}
+.tooltip::before,
+.tooltip::after {
+	z-index: 9999 !important;
 	transition-property: opacity, transform;
 	transition-duration: 0.2s;
 	transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);

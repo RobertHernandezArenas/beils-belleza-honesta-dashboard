@@ -4,14 +4,14 @@ import { useRoute } from 'vue-router'
 import {
   ArrowLeft,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  UserCheck
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
 import ProfileHeader from '~/components/clients/ProfileHeader.vue'
 import ProfileOverview from '~/components/clients/ProfileOverview.vue'
 import ProfileBilling from '~/components/clients/ProfileBilling.vue'
-
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useAgendaStore } from '~/stores/useAgendaStore'
@@ -86,8 +86,6 @@ const formatDateTime = (dateStr: string) => {
   }).format(new Date(dateStr))
 }
 
-
-
 // Modal States
 const isConsentModalOpen = ref(false)
 const isQuestionnaireModalOpen = ref(false)
@@ -131,50 +129,70 @@ const handleEditBooking = (b: any) => {
 </script>
 
 <template>
-  <div class="bg-bg-app overflow-x-clip min-h-screen w-full p-4 font-sans lg:p-10 3xl:p-16 transition-all duration-500">
+  <div class="bg-base-200/30 min-h-screen w-full p-4 font-sans lg:p-8 2xl:p-12 transition-colors duration-500">
     <div class="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1800px]">
-      <!-- Breadcrumbs / Back button -->
-      <div class="mb-8 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+      
+      <!-- DaisyUI Breadcrumbs & Navigation Bar -->
+      <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
           <NuxtLink
             to="/clientes"
-            class="btn btn-circle btn-ghost bg-bg-card border-border-subtle hover:border-text-secondary border shadow-sm transition-all hover:scale-105"
+            class="btn btn-circle btn-ghost bg-base-100 border border-base-300 hover:bg-base-200 shadow-sm transition-all hover:scale-105"
+            aria-label="Volver"
           >
-            <ArrowLeft class="text-text-primary h-5 w-5" />
+            <ArrowLeft class="text-base-content h-5 w-5" />
           </NuxtLink>
-          <div class="flex flex-col">
-            <h1 class="text-text-primary text-2xl font-bold tracking-tight">{{ $t('catalog.clients.profile.title') }}</h1>
-            <p class="text-text-muted text-xs font-medium uppercase tracking-widest">{{ $t('catalog.clients.profile.subtitle') }}</p>
+
+          <!-- DaisyUI Breadcrumbs -->
+          <div class="breadcrumbs text-sm">
+            <ul>
+              <li>
+                <NuxtLink to="/clientes" class="text-base-content/70 font-semibold hover:text-primary">
+                  {{ $t('nav.clients') || 'Clientes' }}
+                </NuxtLink>
+              </li>
+              <li>
+                <span class="font-black text-base-content flex items-center gap-1">
+                  <UserCheck class="w-4 h-4 text-primary" />
+                  {{ client ? `${client.name} ${client.surname}` : $t('catalog.clients.profile.title') }}
+                </span>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
 
-      <!-- Loading State -->
-      <div v-if="isPending" class="space-y-8">
-        <div class="animate-pulse bg-bg-card h-64 w-full rounded-3xl"></div>
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_2.5fr]">
-          <div class="animate-pulse bg-bg-card h-96 rounded-3xl"></div>
-          <div class="animate-pulse bg-bg-card h-96 rounded-3xl"></div>
+        <div v-if="isFetching && !isPending" class="badge badge-info badge-sm gap-1 animate-pulse font-bold">
+          {{ locale === 'es' ? 'Sincronizando...' : 'Syncing...' }}
         </div>
       </div>
 
-      <!-- Error State -->
+      <!-- Loading State with DaisyUI Skeletons -->
+      <div v-if="isPending" class="space-y-6">
+        <div class="skeleton h-64 w-full rounded-3xl"></div>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div class="skeleton h-96 rounded-3xl"></div>
+          <div class="skeleton h-96 rounded-3xl"></div>
+          <div class="skeleton h-96 rounded-3xl"></div>
+        </div>
+      </div>
+
+      <!-- Error State with DaisyUI Alert Component -->
       <div
         v-else-if="error"
-        class="bg-error/10 text-error flex flex-col items-center justify-center rounded-3xl p-20 text-center shadow-inner"
+        class="alert alert-error shadow-xl rounded-3xl p-12 flex flex-col items-center justify-center text-center"
       >
-        <AlertCircle class="mb-4 h-16 w-16 opacity-50" />
-        <h2 class="text-2xl font-bold">{{ $t('catalog.clients.profile.status.error') }}</h2>
-        <p class="mt-2 text-sm font-medium opacity-80 max-w-md">
+        <AlertCircle class="h-16 w-16 mb-2 text-error-content" />
+        <h2 class="text-2xl font-black text-error-content">{{ $t('catalog.clients.profile.status.error') }}</h2>
+        <p class="mt-1 text-sm font-semibold text-error-content/80 max-w-md">
           {{ error.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
         </p>
-        <NuxtLink to="/clientes" class="btn btn-error btn-sm mt-8 rounded-xl font-bold">
+        <NuxtLink to="/clientes" class="btn btn-outline btn-neutral btn-sm mt-6 rounded-xl font-bold">
           {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
         </NuxtLink>
       </div>
 
-      <!-- Content -->
-      <div v-else-if="client" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <!-- Main Content -->
+      <div v-else-if="client" class="space-y-8 animate-in fade-in duration-500">
         <!-- 1. Full Width Header -->
         <ProfileHeader 
           :client="client" 
@@ -187,10 +205,8 @@ const handleEditBooking = (b: any) => {
           @toast="addToast"
         />
 
-
-
         <!-- 2. Continuous Content (Overview + Billing) -->
-        <div class="space-y-8 lg:space-y-12 pb-20">
+        <div class="space-y-8 pb-16">
             <!-- Strategic Overview -->
             <ProfileOverview 
                 :client="client" 
@@ -201,7 +217,7 @@ const handleEditBooking = (b: any) => {
             />
 
             <!-- Divider -->
-            <div class="border-t border-border-subtle/20 my-8"></div>
+            <div class="divider my-8"></div>
 
             <!-- Billing & Financial History -->
             <ProfileBilling 
@@ -220,10 +236,14 @@ const handleEditBooking = (b: any) => {
       <LazyClientsDebtDetailsModal ref="debtDetailsModalRef" @payment-success="() => { queryClient.invalidateQueries({ queryKey: ['client', clientId] }); queryClient.invalidateQueries({ queryKey: ['sales'] }); }" @toast="addToast" />
       <LazySharedPurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
-      <!-- Toast -->
-      <div v-if="showToast" class="toast toast-end toast-bottom z-100">
-        <div class="alert text-white shadow-lg" :class="toastType === 'success' ? 'bg-success' : 'bg-error'">
-          <span class="font-medium">{{ toastMessage }}</span>
+      <!-- DaisyUI Toast Container -->
+      <div v-if="showToast" class="toast toast-end toast-bottom z-50">
+        <div 
+          class="alert shadow-xl font-bold flex items-center gap-2"
+          :class="toastType === 'success' ? 'alert-success text-success-content' : 'alert-error text-error-content'"
+        >
+          <component :is="toastType === 'success' ? CheckCircle2 : AlertCircle" class="w-5 h-5 shrink-0" />
+          <span>{{ toastMessage }}</span>
         </div>
       </div>
     </div>
@@ -231,25 +251,4 @@ const handleEditBooking = (b: any) => {
 </template>
 
 <style scoped>
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Animations for tab transition */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
 </style>
