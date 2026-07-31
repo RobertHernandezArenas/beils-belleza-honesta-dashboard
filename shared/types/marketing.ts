@@ -1,17 +1,3 @@
-export interface IBonus {
-	bonus_id: string
-	name: string
-	description: string | null
-	total_sessions: number
-	price: number
-	status: string
-	service_id: string | null
-	service?: {
-		name: string
-	} | null
-	created_at: string | Date
-	updated_at: string | Date
-}
 
 export interface IGiftcard {
 	giftcard_id: string

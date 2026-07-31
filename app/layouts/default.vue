@@ -177,7 +177,6 @@
 		Scissors,
 		PackageSearch,
 		Ticket,
-		Repeat,
 		CreditCard,
 		Store,
 		Landmark,
@@ -314,7 +313,6 @@
 				{ to: '/ventas', label: 'catalog.menu.sales', icon: ShoppingBag },
 				{ to: '/catalogo/productos', label: 'catalog.menu.products', icon: Package },
 				{ to: '/servicios', label: 'catalog.menu.services', icon: Scissors },
-				{ to: '/marketing/bonos', label: 'catalog.menu.bonuses', icon: Repeat },
 			]
 		},
 		{

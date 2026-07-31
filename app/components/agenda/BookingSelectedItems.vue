@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Scissors, Ticket, Package, Gift, Trash2 } from 'lucide-vue-next'
+import { Scissors, Package, Gift, Trash2 } from 'lucide-vue-next'
 import type { BookingItemData } from '~/composables/useBookingForm'
 
 const props = defineProps<{
@@ -52,8 +52,7 @@ const removeGroup = (indices: number[]) => {
         <div v-for="(group, idx) in groupedItems" :key="idx" 
             class="bg-bg-card border border-border-default p-3 rounded-xl flex items-center justify-between group shadow-sm transition-all hover:border-primary/30">
             <div class="flex items-center gap-3">
-                <Scissors v-if="group.item.item_type === 'SERVICE'" class="h-4 w-4 text-primary" />
-                <Ticket v-else class="h-4 w-4 text-info" />
+                <Scissors class="h-4 w-4 text-primary" />
                 
                 <div class="flex flex-col">
                     <span class="text-xs font-bold text-text-primary uppercase tracking-tight">{{ group.item.name }}</span>
@@ -68,7 +67,7 @@ const removeGroup = (indices: number[]) => {
                     <span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
                         {{ group.count }}
                     </span>
-                    <button type="button" @click="addGroupItem(group.item)" :disabled="disabled || (group.item.item_type === 'BONUS' && group.count >= group.item.remaining_sessions)" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <button type="button" @click="addGroupItem(group.item)" :disabled="disabled" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
                         +
                     </button>
                 </div>

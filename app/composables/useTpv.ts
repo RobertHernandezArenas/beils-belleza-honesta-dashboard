@@ -7,7 +7,7 @@ export function useTpv() {
 	const router = useRouter()
 
 	// Tab control
-	const activeTab = ref<'products' | 'services' | 'bonuses'>('services')
+	const activeTab = ref<'products' | 'services'>('services')
 	const searchQuery = ref('')
 	const clientSearch = ref('')
 
@@ -50,47 +50,13 @@ export function useTpv() {
 		queryFn: () => $fetch('/api/services'),
 	})
 
-
-	const { data: bonuses } = useQuery<any[]>({
-		queryKey: ['bonuses-tpv'],
-		queryFn: () => $fetch('/api/marketing/bonuses'),
-	})
-
 	const processedBookingId = ref<string | null>(null)
-
-	// Promotions & Marketing State
-	const clientBonuses = ref<any[]>([])
-
-
-	const fetchClientBonuses = async (clientId: string) => {
-		try {
-			const data: any = await $fetch(`/api/clients/${clientId}/bonuses`)
-			clientBonuses.value = data || []
-		} catch (error) {
-			console.error('Error fetching client bonuses:', error)
-			clientBonuses.value = []
-		}
-	}
-
-	watch(selectedClient, (newClient) => {
-		avatarError.value = false
-		if (newClient) {
-			fetchClientBonuses(newClient.user_id)
-		} else {
-			clientBonuses.value = []
-		}
-	})
-
-
-
-	// Watcher for booking param from URL
 	watch([
 		() => route.query.booking_id,
 		() => services.value,
-		() => bonuses.value,
 		() => products.value,
 		() => clients.value
-	], async ([bookingId, svcs, bns, prds, cls]) => {
+	], async ([bookingId, svcs, prds, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
 		if (!svcs || !cls) return // Wait for crucial catalogs to load
 
@@ -101,12 +67,8 @@ export function useTpv() {
 			if (!bookingData) return
 
 			const client = cls.find((c: any) => c.user_id === bookingData.client_id)
-			let currentClientBonuses: any[] = []
 			if (client) {
 				selectedClient.value = client
-				try {
-					currentClientBonuses = await $fetch(`/api/clients/${client.user_id}/bonuses`)
-				} catch (e) {}
 			}
 
 			const itemsToAdd: any[] = []
@@ -114,42 +76,16 @@ export function useTpv() {
 				for (const it of bookingData.booking_items) {
 					let foundItem: any = null
 					let type = it.item_type.toLowerCase()
-					let appliedBonusId: string | undefined = undefined
 					
 					if (type === 'service') {
 						foundItem = svcs.find((s: any) => s.service_id === it.item_id)
-						// Check if client has a bonus for this service
-						if (foundItem) {
-							const matchingBonus = currentClientBonuses.find(b => b.bonus?.service?.service_id === foundItem.service_id && b.remaining_sessions > 0)
-							if (matchingBonus) {
-								appliedBonusId = matchingBonus.client_bonus_id
-								matchingBonus.remaining_sessions--
-							}
-						}
-					} else if (type === 'bonus') {
-						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
-						// Fallback: If not a template, it might be an explicit ClientBonus from Agenda
-						if (!foundItem && currentClientBonuses.length > 0) {
-							const explicitBonus = currentClientBonuses.find(b => b.client_bonus_id === it.item_id)
-							if (explicitBonus) {
-								foundItem = explicitBonus.bonus?.service || {
-									service_id: explicitBonus.client_bonus_id, // Fallback ID
-									name: explicitBonus.bonus?.name || it.name,
-									price: 0,
-									tax_rate: 21.0
-								}
-								appliedBonusId = explicitBonus.client_bonus_id
-								type = 'service'
-								explicitBonus.remaining_sessions--
-							}
-						}
 					} else if (type === 'product') {
 						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
 					}
 
 					if (foundItem) {
-						const matchingId = foundItem.product_id || foundItem.service_id || foundItem.bonus_id || it.item_id
-						const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId && i.applied_client_bonus_id === appliedBonusId)
+						const matchingId = foundItem.product_id || foundItem.service_id || it.item_id
+						const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId)
 						
 						if (existingCartItem) {
 							existingCartItem.quantity++
@@ -160,12 +96,11 @@ export function useTpv() {
 								name: foundItem.name || it.name,
 								unit_price: foundItem.price,
 								tax_rate: foundItem.tax_rate || 21.0,
-								quantity: 1,
-								applied_client_bonus_id: appliedBonusId
+								quantity: 1
 							})
 						}
 					} else {
-						const existingCartItem = itemsToAdd.find(i => i.item_id === it.item_id && i.applied_client_bonus_id === appliedBonusId)
+						const existingCartItem = itemsToAdd.find(i => i.item_id === it.item_id)
 						if (existingCartItem) {
 							existingCartItem.quantity++
 						} else {
@@ -175,8 +110,7 @@ export function useTpv() {
 								name: it.name,
 								unit_price: 0,
 								tax_rate: 21.0,
-								quantity: 1,
-								applied_client_bonus_id: appliedBonusId
+								quantity: 1
 							})
 						}
 					}
@@ -252,10 +186,6 @@ export function useTpv() {
 				(s: any) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
 			)
 		}
-
-		if (activeTab.value === 'bonuses' && bonuses.value) {
-			return bonuses.value.filter((b: any) => b.name.toLowerCase().includes(q))
-		}
 		return []
 	})
 
@@ -276,13 +206,12 @@ export function useTpv() {
 	// Cart Operations
 	const addToCart = (item: any, type: string) => {
 		let itemId = ''
-		if (type === 'bonus') itemId = item.bonus_id
-		else if (type === 'service') itemId = item.service_id
+		if (type === 'service') itemId = item.service_id
 		else if (type === 'product') itemId = item.product_id
-		else itemId = item.product_id || item.service_id || item.bonus_id
+		else itemId = item.product_id || item.service_id
 
 		const existing = cartItems.value.find(
-			i => i.item_id === itemId && !i.applied_client_bonus_id,
+			i => i.item_id === itemId
 		)
 
 		if (existing) {
@@ -302,16 +231,7 @@ export function useTpv() {
 
 	const increaseItemQty = (index: number) => {
 		const item = cartItems.value[index]
-		if (item.applied_client_bonus_id) {
-			const cb = clientBonuses.value.find((b: any) => b.client_bonus_id === item.applied_client_bonus_id)
-			if (cb && item.quantity < cb.remaining_sessions) {
-				item.quantity++
-			} else {
-				displayToast('No quedan más sesiones disponibles en este bono', 'error')
-			}
-		} else {
-			item.quantity++
-		}
+		item.quantity++
 	}
 
 	const removeFromCart = (index: number) => {
@@ -334,7 +254,6 @@ export function useTpv() {
 	// Computed Totals
 	const cartSubtotal = computed(() => {
 		return cartItems.value.reduce((acc, item) => {
-			if (item.applied_client_bonus_id) return acc
 			return acc + item.unit_price * item.quantity
 		}, 0)
 	})
@@ -391,7 +310,6 @@ export function useTpv() {
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
-		clientBonuses,
 		addToCart,
 		removeFromCart,
 		increaseItemQty,

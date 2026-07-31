@@ -116,42 +116,8 @@ model Service {
   status      String   @default("activo") @db.VarChar(20)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  bonuses     Bonus[]
 
   @@map("services")
-}
-
-model Bonus {
-  bonus_id       String        @id @default(uuid()) @db.Char(100)
-  name           String        @db.VarChar(150)
-  description    String?       @db.Text
-  total_sessions Int
-  price          Float
-  status         String        @default("activo") @db.VarChar(20)
-  service_id     String?       @db.Char(100)
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
-  service        Service?      @relation(fields: [service_id], references: [service_id])
-  client_bonuses ClientBonus[]
-
-  @@index([service_id], map: "bonuses_service_id_fkey")
-  @@map("bonuses")
-}
-
-model ClientBonus {
-  client_bonus_id    String    @id @default(uuid()) @db.Char(100)
-  client_id          String    @db.Char(100)
-  bonus_id           String    @db.Char(100)
-  remaining_sessions Int
-  purchase_date      DateTime  @default(now())
-  expiration_date    DateTime?
-  status             String    @default("activo") @db.VarChar(20)
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
-  bonus              Bonus     @relation(fields: [bonus_id], references: [bonus_id], onDelete: NoAction)
-
-  @@index([bonus_id], map: "client_bonuses_bonus_id_fkey")
-  @@map("client_bonuses")
 }
 
 model Sequence {

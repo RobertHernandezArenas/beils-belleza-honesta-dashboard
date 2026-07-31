@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { Search, Ticket, Package as PackageIcon } from 'lucide-vue-next'
+import { Search, Package as PackageIcon } from 'lucide-vue-next'
 import type { ClientItem } from '~/composables/useBookingForm'
 
 const props = defineProps<{
     modelValue: string
     clients: ClientItem[] | undefined
-    clientWallet: {
-        bonuses: any[]
-        isLoading: boolean
-    }
-    availableBonuses: any[]
     disabled?: boolean
 }>()
 
@@ -81,15 +76,5 @@ defineExpose({
             </div>
         </div>
 
-        <!-- Client Wallet Indicator -->
-        <div v-if="props.modelValue && (!clientWallet.isLoading) && (clientWallet.bonuses.length > 0)" class="rounded-xl border border-primary/20 bg-primary/5 p-4 mt-2">
-            <h4 class="mb-3 text-[10px] font-bold uppercase tracking-widest text-primary">Disponibles del Cliente</h4>
-            <div class="flex flex-col gap-2">
-                <div v-for="b in availableBonuses" :key="b.client_bonus_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-primary/10">
-                    <Ticket class="h-3 w-3 text-primary" />
-                    <span>{{ b.bonus?.name || 'Bono' }} (Quedan {{ b.current_remaining }})</span>
-                </div>
-            </div>
-        </div>
     </div>
 </template>

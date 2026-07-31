@@ -24,7 +24,6 @@
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
-		clientBonuses,
 
 		addToCart,
 		removeFromCart,
@@ -116,7 +115,6 @@
 				:is-checking-out="isCheckingOut"
 				:avatar-error="avatarError"
 				:format-currency="formatCurrency"
-				:client-bonuses="clientBonuses"
 
 				@select-client="selectClient"
 				@remove-client="selectedClient = null"

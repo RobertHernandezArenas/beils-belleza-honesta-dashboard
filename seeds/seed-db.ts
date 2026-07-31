@@ -73,7 +73,7 @@ async function seedDB() {
 	try {
 		console.log('🧹 Cleaning up existing data...')
 		const tables = [
-			'booking', 'questionnaire', 'consent', 'revoke', 'clientBonus', 'bonus', 'debtPayment', 'debt',
+			'booking', 'questionnaire', 'consent', 'revoke', 'debtPayment', 'debt',
 			'cartItem', 'cart', 'giftcard', 'coupon', 'product', 'service', 'sequence', 'user'
 		]
 		
@@ -218,20 +218,7 @@ async function seedDB() {
 		}
 		const allServices = await prisma.service.findMany()
 
-		console.log('📦 Seeding Bonuses...')
-		// Add some Bonuses
-		for (const s of allServices.slice(0, 2)) {
-			await prisma.bonus.create({
-				data: {
-					name: `Bono 5 sesiones: ${s.name}`,
-					total_sessions: 5,
-					price: s.price * 4, // 5th session free
-					service_id: s.service_id,
-					status: 'activo'
-				}
-			})
-		}
-		const allBonuses = await prisma.bonus.findMany()
+
 
 		console.log('🔢 Seeding Sequences (Veri*Factu)...')
 		await prisma.sequence.createMany({
@@ -245,7 +232,7 @@ async function seedDB() {
 		await prisma.coupon.createMany({
 			data: [
 				{ code: 'BELLEZA2026', discount_type: 'percentage', discount_value: 15, description: 'Descuento especial temporada' },
-				{ code: 'BIENVENIDA', discount_type: 'fixed', discount_value: 5, description: 'Bono bienvenida nuevos clientes' }
+				{ code: 'BIENVENIDA', discount_type: 'fixed', discount_value: 5, description: 'Descuento bienvenida nuevos clientes' }
 			]
 		})
 
@@ -323,18 +310,7 @@ async function seedDB() {
 				})
 			}
 
-			// Client Bonuses (10% conversion)
-			if (Math.random() > 0.9) {
-				const bonus = getRandomItem(allBonuses)
-				await prisma.clientBonus.create({
-					data: {
-						client_id: client.user_id,
-						bonus_id: bonus.bonus_id,
-						remaining_sessions: bonus.total_sessions - 1,
-						status: 'activo'
-					}
-				})
-			}
+
 
 			// Carts (Sales) - 40% conversion
 			if (Math.random() > 0.6) {

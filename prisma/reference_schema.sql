@@ -181,37 +181,6 @@ CREATE TABLE IF NOT EXISTS `coupons` (
   `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- ----------------------------
--- Table: bonuses
--- ----------------------------
-CREATE TABLE IF NOT EXISTS `bonuses` (
-  `bonus_id` CHAR(100) NOT NULL PRIMARY KEY,
-  `name` VARCHAR(150) NOT NULL,
-  `description` TEXT NULL,
-  `total_sessions` INTEGER NOT NULL,
-  `price` DOUBLE NOT NULL,
-  `status` VARCHAR(20) NOT NULL DEFAULT 'activo',
-  `service_id` CHAR(100) NULL,
-  `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  CONSTRAINT `bonuses_service_id_fkey` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- ----------------------------
--- Table: client_bonuses
--- ----------------------------
-CREATE TABLE IF NOT EXISTS `client_bonuses` (
-  `client_bonus_id` CHAR(100) NOT NULL PRIMARY KEY,
-  `client_id` CHAR(100) NOT NULL,
-  `bonus_id` CHAR(100) NOT NULL,
-  `remaining_sessions` INTEGER NOT NULL,
-  `purchase_date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `expiration_date` DATETIME(3) NULL,
-  `status` VARCHAR(20) NOT NULL DEFAULT 'activo',
-  `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  CONSTRAINT `client_bonuses_bonus_id_fkey` FOREIGN KEY (`bonus_id`) REFERENCES `bonuses` (`bonus_id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table: giftcards

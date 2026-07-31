@@ -29,17 +29,15 @@ export function usePurchaseModal(emit: any) {
   const { data: catalogResults, isPending: isSearchingItems } = useQuery<any>({
     queryKey: ['catalog-search', searchQuery],
     queryFn: async () => {
-      const [prods, servs, bonuses] = await Promise.all([
+      const [prods, servs] = await Promise.all([
         $fetch<any[]>('/api/catalog/products'),
-        $fetch<any[]>('/api/services'),
-        $fetch<any[]>('/api/marketing/bonuses')
+        $fetch<any[]>('/api/services')
       ])
       
       const q = searchQuery.value.toLowerCase()
       const all = [
         ...(prods || []).map(p => ({ ...p, item_type: 'product', item_id: p.product_id })),
-        ...(servs || []).map(s => ({ ...s, item_type: 'service', item_id: s.service_id })),
-        ...(bonuses || []).map(b => ({ ...b, item_type: 'bonus', item_id: b.bonus_id }))
+        ...(servs || []).map(s => ({ ...s, item_type: 'service', item_id: s.service_id }))
       ]
       
       if (!q) return all.slice(0, 10)

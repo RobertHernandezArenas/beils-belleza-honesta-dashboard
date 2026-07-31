@@ -55,10 +55,8 @@ export default defineEventHandler(async event => {
 					total: 0, 
 					items: {
 						create: items.map((item: any) => {
-							const isBonusApplied = !!item.applied_client_bonus_id;
 							const itemSubtotal = item.quantity * item.unit_price;
-							// If a bonus is applied, the item total is 0
-							const itemTotal = isBonusApplied ? 0 : itemSubtotal;
+							const itemTotal = itemSubtotal;
 
 							subtotal = Number((subtotal + itemSubtotal).toFixed(2));
 							total = Number((total + itemTotal).toFixed(2));
@@ -80,41 +78,7 @@ export default defineEventHandler(async event => {
 
 			// Process post-creation actions for each item
 			for (const item of items) {
-				// 1. Deduct Bonus Session
-				if (item.applied_client_bonus_id) {
-					const cb = await tx.clientBonus.findUnique({ where: { client_bonus_id: item.applied_client_bonus_id } });
-					if (cb && cb.remaining_sessions > 0) {
-						const newRemaining = cb.remaining_sessions - item.quantity;
-						await tx.clientBonus.update({
-							where: { client_bonus_id: item.applied_client_bonus_id },
-							data: {
-								remaining_sessions: newRemaining,
-								status: newRemaining <= 0 ? 'agotado' : 'activo'
-							}
-						});
-					}
-				}
-
-
-
-				// 3. Generar nuevo Bono (ClientBonus) si se está comprando
-				if ((item.item_type === 'bonus' || item.item_type === 'BONUS') && !item.applied_client_bonus_id && user_id) {
-					const bonusTemplate = await tx.bonus.findUnique({ where: { bonus_id: item.item_id } });
-					if (bonusTemplate) {
-						// Si compra cantidad > 1, creamos múltiples bonos
-						for (let i = 0; i < item.quantity; i++) {
-							await tx.clientBonus.create({
-								data: {
-									client_id: user_id,
-									bonus_id: item.item_id,
-									remaining_sessions: bonusTemplate.total_sessions,
-									status: 'activo'
-								}
-							});
-						}
-					}
-				}
-
+				// Space for future post-creation logic (e.g. inventory deduction)
 			}
 
 			total = Number((total - discount).toFixed(2))

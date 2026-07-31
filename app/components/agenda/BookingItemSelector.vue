@@ -4,19 +4,14 @@ import { Search, Plus } from 'lucide-vue-next'
 
 const props = defineProps<{
     services: any[] | undefined
-    clientWallet: {
-        bonuses: any[]
-        isLoading: boolean
-    }
-    availableBonuses: any[]
     disabled?: boolean
 }>()
+
 
 const emit = defineEmits<{
     (e: 'add', item: any): void
 }>()
 
-const activeTab = ref<'SERVICE' | 'BONUS'>('SERVICE')
 const itemSearch = ref('')
 const isItemDropdownOpen = ref(false)
 
@@ -26,20 +21,7 @@ const normalizeStr = (str: string) => {
 
 const filteredItems = computed(() => {
     const q = normalizeStr(itemSearch.value)
-    let source: any[] = []
-    
-    if (activeTab.value === 'SERVICE') source = props.services || []
-    else if (activeTab.value === 'BONUS') {
-        source = (props.availableBonuses || [])
-            .filter((cb: any) => cb.current_remaining > 0)
-            .map((cb: any) => ({
-                bonus_id: cb.client_bonus_id,
-                name: `Bono: ${cb.bonus?.name} (Quedan ${cb.current_remaining})`,
-                duration: cb.bonus?.service?.duration || 0,
-                is_client_bonus: true,
-                remaining_sessions: cb.remaining_sessions // We keep the absolute total max here for limits
-            }))
-    }
+    let source: any[] = props.services || []
     
     if (!q) return source.slice(0, 10)
     
@@ -50,13 +32,12 @@ const filteredItems = computed(() => {
 })
 
 const addItem = (item: any) => {
-    const id = item.service_id || item.bonus_id
+    const id = item.service_id
     emit('add', {
-        item_type: activeTab.value,
+        item_type: 'SERVICE',
         item_id: id,
         name: item.name,
-        duration: Number(item.duration || 0),
-        remaining_sessions: item.remaining_sessions
+        duration: Number(item.duration || 0)
     })
     itemSearch.value = ''
     isItemDropdownOpen.value = false
@@ -73,18 +54,6 @@ defineExpose({
 
 <template>
     <div class="flex flex-col gap-3">
-        <!-- Categories Tabs -->
-        <div class="flex w-full bg-bg-muted/50 p-1 rounded-lg border border-border-subtle">
-            <button v-for="t in ['SERVICE', 'BONUS']" :key="t" 
-                type="button"
-                :disabled="disabled"
-                class="flex-1 py-1.5 text-[9px] font-black uppercase rounded-md transition-all disabled:opacity-60"
-                :class="activeTab === t ? 'bg-bg-card text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'"
-                @click="activeTab = t as any">
-                {{ t === 'SERVICE' ? 'SERV.' : 'BONOS' }}
-            </button>
-        </div>
-
         <!-- Item Search -->
         <div class="relative z-40">
             <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -94,7 +63,7 @@ defineExpose({
                 @keydown.esc="isItemDropdownOpen = false" />
             
             <div v-show="isItemDropdownOpen" class="bg-bg-card border-border-default absolute z-50 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                <button v-for="it in filteredItems" :key="it.service_id || it.bonus_id"
+                <button v-for="it in filteredItems" :key="it.service_id"
                     type="button" class="hover:bg-bg-muted flex w-full items-center justify-between px-4 py-3 text-left border-b border-border-subtle last:border-none"
                     @mousedown="addItem(it)">
                     <div class="flex flex-col">

@@ -4,7 +4,6 @@
 		Plus,
 		Package as PackageIcon,
 		Scissors,
-		Ticket,
 		X
 	} from 'lucide-vue-next'
 
@@ -19,12 +18,12 @@
 		(e: 'add-to-cart', item: any, type: string): void
 	}>()
 
-	const activeTab = defineModel<'products' | 'services' | 'bonuses'>('activeTab', { required: true })
+	const activeTab = defineModel<'products' | 'services'>('activeTab', { required: true })
 	const searchQuery = defineModel<string>('searchQuery', { required: true })
 
 	// GPU Hardware-Accelerated Tab Pill Offset
 	const activePillStyle = computed(() => {
-		const index = activeTab.value === 'services' ? 0 : activeTab.value === 'products' ? 1 : 2
+		const index = activeTab.value === 'services' ? 0 : 1
 		return {
 			transform: `translate3d(${index * 100}%, 0, 0)`,
 		}
@@ -37,7 +36,7 @@
 		<div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
 			<div>
 				<h1 class="text-base font-black tracking-wider uppercase font-sans sm:text-lg">Catálogo TPV</h1>
-				<p class="text-text-muted text-[11px] font-medium opacity-80">Selecciona productos, servicios o bonos para facturar</p>
+				<p class="text-text-muted text-[11px] font-medium opacity-80">Selecciona productos o servicios para facturar</p>
 			</div>
 			<div class="badge bg-text-primary text-bg-card border-none shrink-0 px-3 py-2 text-[10px] font-extrabold whitespace-nowrap font-mono rounded-xl self-start sm:self-center">
 				{{ filteredCatalog.length }} {{ filteredCatalog.length === 1 ? 'resultado' : 'resultados' }}
@@ -51,7 +50,7 @@
 				class="bg-white/60 border-border-default/80 relative flex w-full flex-1 flex-nowrap items-center rounded-2xl border p-1 shadow-xs backdrop-blur-md overflow-hidden">
 				<!-- GPU Hardware-Accelerated Active Pill -->
 				<div
-					class="bg-text-primary absolute top-1 bottom-1 left-1 rounded-xl shadow-xs pointer-events-none transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] w-[calc((100%-8px)/3)]"
+					class="bg-text-primary absolute top-1 bottom-1 left-1 rounded-xl shadow-xs pointer-events-none transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] w-[calc((100%-8px)/2)]"
 					:style="activePillStyle"
 					style="z-index: 0"></div>
 
@@ -68,13 +67,6 @@
 					:class="activeTab === 'products' ? 'text-bg-card font-extrabold' : 'text-text-muted hover:text-text-primary'"
 					@click="activeTab = 'products'">
 					<span>Productos</span>
-				</button>
-				<button
-					type="button"
-					class="tab relative z-10 flex h-10 min-h-10 flex-1 items-center justify-center rounded-xl px-3 text-[10px] font-black tracking-wider uppercase transition-colors duration-200 sm:text-xs select-none"
-					:class="activeTab === 'bonuses' ? 'text-bg-card font-extrabold' : 'text-text-muted hover:text-text-primary'"
-					@click="activeTab = 'bonuses'">
-					<span>Bonos</span>
 				</button>
 			</div>
 
@@ -101,9 +93,9 @@
 			<div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 				<button
 					v-for="item in filteredCatalog"
-					:key="item.product_id || item.service_id || item.bonus_id"
+					:key="item.product_id || item.service_id"
 					type="button"
-					@click="emit('add-to-cart', item, activeTab === 'bonuses' ? 'bonus' : activeTab.slice(0, -1))"
+					@click="emit('add-to-cart', item, activeTab.slice(0, -1))"
 					class="group bg-bg-card border-border-default/80 hover:border-text-primary/40 relative flex h-28 sm:h-32 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-3 sm:p-4 text-left shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]">
 					<div class="z-10 flex flex-col w-full">
 						<span class="group-hover:text-primary line-clamp-2 text-xs font-bold text-text-primary leading-tight transition-colors">
@@ -129,8 +121,7 @@
 					<!-- Background graphic subtle icon -->
 					<div class="absolute -right-2 -bottom-2 opacity-[0.03] transition-opacity group-hover:opacity-[0.07] pointer-events-none">
 						<PackageIcon v-if="activeTab === 'products'" class="h-14 w-14 sm:h-16 sm:w-16" />
-						<Scissors v-else-if="activeTab === 'services'" class="h-14 w-14 sm:h-16 sm:w-16" />
-						<Ticket v-else class="h-14 w-14 sm:h-16 sm:w-16" />
+						<Scissors v-else class="h-14 w-14 sm:h-16 sm:w-16" />
 					</div>
 				</button>
 
