@@ -113,6 +113,19 @@ const uploadCroppedImage = async (blob: Blob) => {
 }
 
 const engagementScore = computed(() => props.client.kpis?.engagementScore || 0)
+const engagementTier = computed(() => props.client.kpis?.engagementTier || 'BRONZE')
+const engagementTierLabel = computed(() => props.client.kpis?.engagementTierLabel || 'Bronce')
+
+const getTierBadgeStyle = computed(() => {
+	if (engagementTier.value === 'GOLD_VIP') {
+		return 'bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-600/30 text-amber-700 border-amber-500/40'
+	}
+	if (engagementTier.value === 'SILVER') {
+		return 'bg-slate-500/20 text-slate-700 border-slate-400/40'
+	}
+	return 'bg-amber-800/10 text-amber-900 border-amber-800/20'
+})
+
 const getStatusBadgeClass = (status: string) => (status === 'ON' ? 'badge-success' : 'badge-error')
 const blurActiveElement = () => {
 	if (typeof document !== 'undefined') {
@@ -122,7 +135,7 @@ const blurActiveElement = () => {
 </script>
 
 <template>
-	<div class="card bg-base-100/90 backdrop-blur-md shadow-md border border-base-200/80 relative z-40 overflow-visible rounded-3xl p-6 lg:p-8 transition-all duration-300 hover:shadow-lg">
+	<div class="card bg-bg-card border-border-default shadow-md relative z-40 overflow-visible rounded-3xl p-6 lg:p-8 transition-all duration-300 hover:shadow-xl">
 		<input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileSelect" />
 
 		<!-- Main Layout Grid -->
@@ -133,18 +146,18 @@ const blurActiveElement = () => {
 				<!-- DaisyUI Avatar Component with Indicator -->
 				<div class="indicator relative">
 					<span 
-						class="indicator-item badge badge-sm p-2 shadow-lg font-black tracking-wider uppercase text-[9px] border-none"
+						class="indicator-item badge badge-sm p-2 shadow-md font-black tracking-wider uppercase text-[9px] border-none"
 						:class="getStatusBadgeClass(client.status)"
 					>
 						{{ client.status === 'ON' ? 'ACTIVO' : 'INACTIVO' }}
 					</span>
 					<div 
-						class="avatar cursor-pointer group relative overflow-hidden rounded-full ring-4 ring-primary/20 ring-offset-4 ring-offset-base-100 transition-all duration-300 hover:scale-105 shadow-xl w-20 h-20 lg:w-24 lg:h-24"
+						class="avatar cursor-pointer group relative overflow-hidden rounded-full ring-4 ring-primary/20 ring-offset-4 ring-offset-bg-card transition-all duration-300 hover:scale-105 shadow-xl w-20 h-20 lg:w-24 lg:h-24"
 						role="button"
 						:aria-label="$t('common.edit') + ' ' + $t('users.avatar')"
 						@click="triggerAvatarUpload"
 					>
-						<div v-if="isUploadingAvatar" class="absolute inset-0 z-20 flex items-center justify-center bg-base-300/80 text-base-content">
+						<div v-if="isUploadingAvatar" class="absolute inset-0 z-20 flex items-center justify-center bg-bg-card/80 text-text-primary">
 							<span class="loading loading-spinner loading-md"></span>
 						</div>
 						<div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-[2px]">
@@ -152,7 +165,7 @@ const blurActiveElement = () => {
 							<span class="text-[9px] font-black uppercase tracking-wider">{{ $t('common.edit') }}</span>
 						</div>
 						<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="object-cover w-full h-full" @error="handleAvatarError" />
-						<div v-else class="bg-gradient-to-br from-primary/20 to-secondary/20 text-primary flex h-full w-full items-center justify-center text-2xl font-black">
+						<div v-else class="bg-bg-muted text-primary flex h-full w-full items-center justify-center text-2xl font-black">
 							{{ client.name.charAt(0) }}{{ client.surname?.charAt(0) || '' }}
 						</div>
 					</div>
@@ -160,54 +173,63 @@ const blurActiveElement = () => {
 
 				<div class="space-y-1.5">
 					<div class="flex items-center gap-3 flex-wrap">
-						<h1 class="text-base-content text-2xl lg:text-3xl font-black tracking-tight flex items-center gap-2">
+						<h1 class="text-text-primary text-2xl lg:text-3xl font-black tracking-tight flex items-center gap-2">
 							{{ client.name }} {{ client.surname }}
 						</h1>
-						<div class="badge badge-primary badge-outline font-black text-[10px] tracking-wider uppercase px-3 py-2">
-							VIP Client
+						<!-- 3-Tier Commitment Badge -->
+						<div class="tooltip tooltip-bottom z-50" data-tip="Categoría de cliente según nivel de compromiso: Bronce (0-35 pts), Plata (36-70 pts) u Oro VIP (71-100 pts).">
+							<div 
+								class="badge border font-black text-[10px] tracking-wider uppercase px-3 py-2 flex items-center gap-1 shadow-xs cursor-help"
+								:class="getTierBadgeStyle"
+							>
+								<Sparkles class="w-3 h-3" />
+								<span>Cliente {{ engagementTierLabel }}</span>
+							</div>
 						</div>
 					</div>
-					<div class="text-base-content/70 flex flex-col gap-1 text-xs font-semibold">
+					<div class="text-text-muted flex flex-col gap-1 text-xs font-semibold">
 						<div class="flex items-center gap-3 flex-wrap">
 							<span class="flex items-center gap-1.5"><Mail class="w-3.5 h-3.5 text-primary opacity-80" /> {{ client.email }}</span>
 							<span class="opacity-30">•</span>
 							<span class="flex items-center gap-1.5"><Phone class="w-3.5 h-3.5 text-primary opacity-80" /> {{ client.phone }}</span>
 						</div>
-						<span class="text-[11px] font-medium opacity-60">
-							{{ $t('catalog.clients.profile.kpis.registered') }}: {{ new Date(client.created_at).toLocaleDateString() }}
-						</span>
+						<div class="flex items-center gap-3 text-[11px] font-medium opacity-70 flex-wrap mt-0.5">
+							<span>Registrado: {{ new Date(client.created_at).toLocaleDateString() }}</span>
+							<span v-if="client.city" class="opacity-50">• {{ client.city }}, {{ client.country || 'España' }}</span>
+							<span v-if="client.document_number" class="opacity-50">• Doc: {{ client.document_number }}</span>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- 2. DaisyUI Stat Component for Engagement Score (Ultra Premium) -->
-			<div class="stats overflow-visible bg-gradient-to-br from-base-200/80 to-base-200/40 border border-base-300/70 shadow-inner rounded-2xl p-2 min-w-[280px] sm:min-w-[340px]">
+			<!-- 2. Commitment Level Stat Card (0 - 100) -->
+			<div class="stats overflow-visible bg-bg-muted/30 border border-border-default/80 shadow-xs rounded-2xl p-2 min-w-[280px] sm:min-w-[340px]">
 				<div class="stat overflow-visible p-3 flex items-center justify-between gap-4">
 					<div class="space-y-1">
-						<div class="stat-title text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-base-content/70">
-							<Sparkles class="w-3.5 h-3.5 text-warning" />
-							{{ $t('catalog.clients.profile.kpis.engagement') }}
-							<div class="tooltip tooltip-top z-50 relative" :data-tip="$t('catalog.clients.profile.kpis.vipStatus')">
-								<AlertCircle class="w-3.5 h-3.5 text-base-content/40 cursor-help" />
+						<div class="stat-title text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-text-muted">
+							<Sparkles class="w-3.5 h-3.5 text-amber-500" />
+							Frecuencia & Compromiso
+							<div class="tooltip tooltip-left z-50" data-tip="Índice de 0 a 100 calculado a partir de la frecuencia de visitas, total consumido y estado de cumplimientos legales.">
+								<AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
 							</div>
 						</div>
-						<div class="stat-value text-3xl font-black text-base-content flex items-baseline gap-1 tabular-nums">
+						<div class="stat-value text-3xl font-black text-text-primary flex items-baseline gap-1 tabular-nums">
 							<span>{{ engagementScore }}</span>
-							<span class="text-xs font-bold text-base-content/50">/100</span>
+							<span class="text-xs font-bold text-text-muted">/100</span>
 						</div>
 						<div class="stat-desc">
 							<span 
-								class="badge badge-sm font-black text-[10px] uppercase border-none px-2 py-1 shadow-sm"
-								:class="engagementScore > 80 ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'"
+								class="badge badge-sm font-black text-[10px] uppercase border-none px-2 py-1 shadow-xs"
+								:class="getTierBadgeStyle"
 							>
-								{{ engagementScore > 80 ? $t('catalog.clients.profile.kpis.loyaltyHigh') : (locale === 'es' ? 'Fidelidad Media' : 'Medium Loyalty') }}
+								Nivel {{ engagementTierLabel }}
 							</span>
 						</div>
 					</div>
 
-					<!-- DaisyUI Radial Progress -->
+					<!-- Radial Progress -->
 					<div 
-						class="radial-progress text-primary font-black text-xs shrink-0 shadow-sm" 
+						class="radial-progress text-primary font-black text-xs shrink-0 shadow-xs" 
 						:style="`--value:${engagementScore}; --size:3.8rem; --thickness: 6px;`" 
 						role="progressbar"
 					>
