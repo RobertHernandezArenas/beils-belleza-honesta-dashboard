@@ -355,7 +355,7 @@
 							<div v-if="pkg.items && pkg.items.length > 0" class="bg-bg-muted/50 rounded-2xl p-3 border border-border-default space-y-1.5 mb-4">
 								<span class="text-[10px] font-black uppercase text-text-muted tracking-wider block">Tratamientos / Productos incluidos:</span>
 								<div v-for="it in pkg.items" :key="it.package_item_id" class="flex items-center justify-between text-xs">
-									<span class="font-medium text-text-primary truncate max-w-[170px]">{{ it.name }}</span>
+									<span class="font-medium text-text-primary truncate max-w-42.5">{{ it.name }}</span>
 									<span class="font-mono font-bold text-text-muted text-[11px]">{{ it.quantity }}x</span>
 								</div>
 							</div>

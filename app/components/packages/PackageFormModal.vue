@@ -109,21 +109,21 @@ const removeItemRow = (index: number) => {
 }
 
 const onServiceSelect = (index: number, serviceId: string) => {
+	const item = form.items[index]
 	const svc = (services.value || []).find((s: any) => s.service_id === serviceId)
-	if (svc) {
-		form.items[index].item_id = svc.service_id
-		form.items[index].name = svc.name
-		form.items[index].duration = svc.duration || 45
-	}
+	if (!item || !svc) return
+	item.item_id = svc.service_id
+	item.name = svc.name
+	item.duration = svc.duration || 45
 }
 
 const onProductSelect = (index: number, productId: string) => {
+	const item = form.items[index]
 	const prd = (products.value || []).find((p: any) => p.product_id === productId)
-	if (prd) {
-		form.items[index].item_id = prd.product_id
-		form.items[index].name = prd.name
-		form.items[index].duration = 0
-	}
+	if (!item || !prd) return
+	item.item_id = prd.product_id
+	item.name = prd.name
+	item.duration = 0
 }
 
 // Recalculate total_sessions automatically when items change in MIXTO (Only SERVICE items count as sessions!)
@@ -160,7 +160,7 @@ defineExpose({ openModal, closeModal })
 			</div>
 
 			<!-- Body -->
-			<form @submit.prevent="savePackage" class="mt-4 space-y-4">
+			<form @submit.prevent="() => savePackage()" class="mt-4 space-y-4">
 				<!-- Name & Price -->
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>

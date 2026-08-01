@@ -76,7 +76,7 @@ defineExpose({ openModal, closeModal })
 			</div>
 
 			<!-- Body -->
-			<form @submit.prevent="assignPackage" class="mt-4 space-y-4">
+			<form @submit.prevent="() => assignPackage()" class="mt-4 space-y-4">
 				<!-- Package Selector -->
 				<div>
 					<label class="block text-xs font-bold uppercase text-text-muted mb-2">Selecciona un Paquete del Catálogo</label>
