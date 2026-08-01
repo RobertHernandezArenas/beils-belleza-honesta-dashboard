@@ -5,7 +5,7 @@
 		<!-- NAVBAR (Glassmorphism) -->
 		<div class="drawer-content relative z-10 flex h-dvh flex-col">
 			<nav
-				class="bg-bg-card/90 sticky top-0 z-50 h-[73px] w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
+				class="bg-bg-card/90 sticky top-0 z-50 h-18.25 w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
 				<div class="flex w-full items-center justify-between">
 					<div class="flex items-center gap-4">
 						<div class="lg:hidden">
@@ -42,7 +42,7 @@
 
 				<!-- LOGO SPACE -->
 				<div
-					class="relative z-10 flex h-[73px] min-h-[73px] w-full items-center justify-start gap-3 border-b border-transparent p-6">
+					class="relative z-10 flex h-18.25 min-h-18.25 w-full items-center justify-start gap-3 border-b border-transparent p-6">
 					<div class="group relative shrink-0">
 						<NuxtLink to="/">
 							<img
