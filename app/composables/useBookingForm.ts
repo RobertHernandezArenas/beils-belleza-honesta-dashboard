@@ -75,20 +75,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         },
         enabled: computed(() => !!form.client_id)
     })
-    // Auto-fill client if not set and fallback exists
-    watch(clients, (newClients) => {
-        if (newClients && newClients.length > 0 && !form.client_id) {
-            const fallback = newClients.find((c: any) => 
-                c.name?.toLowerCase().includes('no registrado') || 
-                c.name?.toLowerCase().includes('mostrador')
-            )
-            if (fallback) {
-                form.client_id = fallback.user_id
-            }
-        }
-    }, { immediate: true })
-
-    // Auto-fill staff (Alexandra Victoria as default)
+    // Auto-fill staff (Alexandra Victoria as default) — only runs once at mount
     watch(staff, (newStaff) => {
         if (newStaff && !form.staff_id) {
             const alexandra = newStaff.find((s: StaffItem) => s.name === 'Alexandra' && s.surname === 'Victoria')
@@ -99,6 +86,16 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             }
         }
     }, { immediate: true })
+
+    // Reset form every time the drawer opens, reading all prefill values at once
+    // flush:'post' ensures all store mutations from openBookingDrawer() are settled
+    watch(
+        () => store.isBookingDrawerOpen,
+        (isOpen) => {
+            if (isOpen) resetForm()
+        },
+        { flush: 'post' }
+    )
 
     // Mutation
     const { mutate: performSave, isPending: isSaving } = useMutation({
@@ -176,7 +173,16 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
                 form.items = []
             }
         } else {
-            form.client_id = prefillClientId.value || ''
+            // If there's a prefill, use it; otherwise fall back to the "mostrador" client
+            if (prefillClientId.value) {
+                form.client_id = prefillClientId.value
+            } else {
+                const fallback = clients.value?.find((c: any) =>
+                    c.name?.toLowerCase().includes('no registrado') ||
+                    c.name?.toLowerCase().includes('mostrador')
+                )
+                form.client_id = fallback?.user_id || ''
+            }
             form.items = []
             form.status = 'PENDIENTE'
             form.booking_date = getLocalDateString(prefillDate.value || new Date())

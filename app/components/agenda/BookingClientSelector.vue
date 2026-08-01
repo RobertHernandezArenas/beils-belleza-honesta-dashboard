@@ -32,14 +32,18 @@ const selectClient = (client: ClientItem) => {
     isClientDropdownOpen.value = false
 }
 
-watch(() => props.modelValue, (newVal) => {
-    if (newVal && props.clients) {
-        const c = props.clients.find(x => x.user_id === newVal)
-        if (c) clientSearch.value = `${c.name} ${c.surname || ''}`.trim()
-    } else {
-        clientSearch.value = ''
-    }
-}, { immediate: true })
+watch(
+    [() => props.modelValue, () => props.clients],
+    ([newVal, newClients]) => {
+        if (newVal && newClients && newClients.length > 0) {
+            const c = (newClients as ClientItem[]).find(x => x.user_id === newVal)
+            if (c) clientSearch.value = `${c.name} ${c.surname || ''}`.trim()
+        } else if (!newVal) {
+            clientSearch.value = ''
+        }
+    },
+    { immediate: true }
+)
 
 const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 

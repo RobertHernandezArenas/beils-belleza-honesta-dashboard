@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Trash2, X } from 'lucide-vue-next'
 import { useAgendaStore } from '~/stores/useAgendaStore'
@@ -44,12 +44,7 @@ const handlePayInTpv = async () => {
     router.push(`/tpv?booking_id=${bId}`)
 }
 
-// Watch pinia state to reset form
-watch(isBookingDrawerOpen, (isOpen) => {
-    if (isOpen) {
-        resetForm()
-    }
-})
+
 
 const handleAddItem = (item: any) => {
     form.items.push(item)

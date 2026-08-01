@@ -110,10 +110,6 @@ const handleFieldUpdate = (field: string, value: any) => {
 const handleNewBooking = () => {
   agendaStore.openBookingDrawer(null, new Date(), null, clientId)
 }
-
-const handleEditBooking = (b: any) => {
-  agendaStore.openBookingDrawer(b)
-}
 </script>
 
 <template>
@@ -241,7 +237,7 @@ const handleEditBooking = (b: any) => {
               :client="client" 
               :is-updating="isUpdating"
               @update="handleFieldUpdate" 
-              @open-booking="handleEditBooking"
+              @open-booking="handleNewBooking"
               @open-purchase="purchaseDetailsModalRef?.open($event)"
               @open-debt="debtDetailsModalRef?.open($event)"
             />
