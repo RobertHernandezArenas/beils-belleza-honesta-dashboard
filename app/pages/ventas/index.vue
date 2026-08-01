@@ -14,6 +14,10 @@ useHead({ title: 'Ventas | Finanzas' })
 const { t } = useI18n()
 const queryClient = useQueryClient()
 
+// Live-refresh sales metrics when a sale/debt is collected anywhere (this tab or another)
+const { listenSalesChanged } = useRealtimeSales()
+listenSalesChanged()
+
 // Instantiate state & logic from useSales composable
 const {
 	searchQuery,

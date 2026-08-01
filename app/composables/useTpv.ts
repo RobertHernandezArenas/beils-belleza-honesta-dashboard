@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 export function useTpv() {
 	const queryClient = useQueryClient()
 	const { emitSync } = useSync()
+	const { notifySalesChanged } = useRealtimeSales()
 	const route = useRoute()
 	const router = useRouter()
 
@@ -176,12 +177,12 @@ export function useTpv() {
 				})
 			}
 			
-			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
-			queryClient.invalidateQueries({ queryKey: ['debts'] })
+			// Real-time refresh of every sales/collection view (this tab + broadcast to others)
+			notifySalesChanged()
+			// Client-specific caches touched by a sale
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
-			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			clearCart()
 		},
 		onError: (error: any) => {

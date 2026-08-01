@@ -5,6 +5,7 @@
 
 	definePageMeta({ layout: 'default' })
 	const queryClient = useQueryClient()
+	const { notifySalesChanged } = useRealtimeSales()
 	const { t } = useI18n()
 	const searchQuery = ref('')
 	const filterStatus = ref('pending')
@@ -45,8 +46,8 @@
 				body: { amount: payload.amount, payment_method: payload.payment_method },
 			}),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['debts'] })
-			queryClient.invalidateQueries({ queryKey: ['sales'] })
+			// Real-time refresh of sales/overview views (this tab + broadcast to others)
+			notifySalesChanged()
 			displayToast(t('finances.debts.messages.success'), 'success')
 			closePaymentModal()
 		},

@@ -173,16 +173,10 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
                 form.items = []
             }
         } else {
-            // If there's a prefill, use it; otherwise fall back to the "mostrador" client
-            if (prefillClientId.value) {
-                form.client_id = prefillClientId.value
-            } else {
-                const fallback = clients.value?.find((c: any) =>
-                    c.name?.toLowerCase().includes('no registrado') ||
-                    c.name?.toLowerCase().includes('mostrador')
-                )
-                form.client_id = fallback?.user_id || ''
-            }
+            // New booking: preselect the client only when opened from a client profile.
+            // Otherwise leave the field empty (the "no registrado / mostrador" walk-in
+            // fallback is still applied at save time in saveBooking()).
+            form.client_id = prefillClientId.value || ''
             form.items = []
             form.status = 'PENDIENTE'
             form.booking_date = getLocalDateString(prefillDate.value || new Date())
