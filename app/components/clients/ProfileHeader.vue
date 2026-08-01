@@ -177,7 +177,7 @@ const blurActiveElement = () => {
 							{{ client.name }} {{ client.surname }}
 						</h1>
 						<!-- 3-Tier Commitment Badge -->
-						<div class="tooltip tooltip-bottom z-50" data-tip="Categoría de cliente según nivel de compromiso: Bronce (0-35 pts), Plata (36-70 pts) u Oro VIP (71-100 pts).">
+						<div class="tooltip tooltip-bottom z-50" data-tip="Categoría de cliente según nivel de compromiso: Bronce (0-64 pts), Plata (65-89 pts) u Oro VIP (90-100 pts).">
 							<div 
 								class="badge border font-black text-[10px] tracking-wider uppercase px-3 py-2 flex items-center gap-1 shadow-xs cursor-help"
 								:class="getTierBadgeStyle"

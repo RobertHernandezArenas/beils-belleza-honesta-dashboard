@@ -76,9 +76,99 @@ export default defineEventHandler(async event => {
 				},
 			})
 
-			// Process post-creation actions for each item
+			// Process post-creation actions for each item (deduct package sessions)
 			for (const item of items) {
-				// Space for future post-creation logic (e.g. inventory deduction)
+				const isPackageItem = (item.item_type || '').toLowerCase() === 'package' || 
+					(item.name && (item.name.includes('[SESIÓN BONO]') || item.name.includes('[BONO MIXTO]')))
+
+				if (isPackageItem) {
+					const qtyToDeduct = Math.max(1, Number(item.quantity) || 1)
+
+					// 1. Try to find and update ClientPackageItem directly
+					const clientPkgItem = await tx.clientPackageItem.findUnique({
+						where: { client_package_item_id: item.item_id }
+					}).catch(() => null)
+
+					if (clientPkgItem) {
+						await tx.clientPackageItem.update({
+							where: { client_package_item_id: clientPkgItem.client_package_item_id },
+							data: {
+								quantity_remaining: { decrement: Math.min(clientPkgItem.quantity_remaining, qtyToDeduct) }
+							}
+						})
+
+						await tx.clientPackage.update({
+							where: { client_package_id: clientPkgItem.client_package_id },
+							data: {
+								remaining_sessions: { decrement: Math.min(clientPkgItem.quantity_remaining, qtyToDeduct) }
+							}
+						})
+					} else {
+						// 2. Try to find and update ClientPackage directly
+						const clientPkg = await tx.clientPackage.findUnique({
+							where: { client_package_id: item.item_id }
+						}).catch(() => null)
+
+						if (clientPkg) {
+							await tx.clientPackage.update({
+								where: { client_package_id: clientPkg.client_package_id },
+								data: {
+									remaining_sessions: { decrement: Math.min(clientPkg.remaining_sessions, qtyToDeduct) }
+								}
+							})
+						} else if (user_id) {
+							// 3. Fallback: Search matching active ClientPackageItem or ClientPackage by user_id
+							const cleanName = item.name ? item.name.replace(/\[.*?\]\s*/g, '').trim() : ''
+							
+							const matchingSubItem = await tx.clientPackageItem.findFirst({
+								where: {
+									client_package: { user_id },
+									quantity_remaining: { gt: 0 },
+									OR: [
+										{ package_item_id: item.item_id },
+										{ name: { contains: cleanName } }
+									]
+								}
+							})
+
+							if (matchingSubItem) {
+								await tx.clientPackageItem.update({
+									where: { client_package_item_id: matchingSubItem.client_package_item_id },
+									data: {
+										quantity_remaining: { decrement: Math.min(matchingSubItem.quantity_remaining, qtyToDeduct) }
+									}
+								})
+
+								await tx.clientPackage.update({
+									where: { client_package_id: matchingSubItem.client_package_id },
+									data: {
+										remaining_sessions: { decrement: Math.min(matchingSubItem.quantity_remaining, qtyToDeduct) }
+									}
+								})
+							} else {
+								const matchingPkg = await tx.clientPackage.findFirst({
+									where: {
+										user_id,
+										remaining_sessions: { gt: 0 },
+										OR: [
+											{ package_id: item.item_id },
+											{ package: { name: { contains: cleanName } } }
+										]
+									}
+								})
+
+								if (matchingPkg) {
+									await tx.clientPackage.update({
+										where: { client_package_id: matchingPkg.client_package_id },
+										data: {
+											remaining_sessions: { decrement: Math.min(matchingPkg.remaining_sessions, qtyToDeduct) }
+										}
+									})
+								}
+							}
+						}
+					}
+				}
 			}
 
 			total = Number((total - discount).toFixed(2))

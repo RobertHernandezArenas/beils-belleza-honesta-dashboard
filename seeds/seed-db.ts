@@ -74,7 +74,7 @@ async function seedDB() {
 		console.log('🧹 Cleaning up existing data...')
 		const tables = [
 			'booking', 'questionnaire', 'consent', 'revoke', 'debtPayment', 'debt',
-			'cartItem', 'cart', 'giftcard', 'coupon', 'clientPackage', 'package', 'product', 'service', 'sequence', 'user'
+			'cartItem', 'cart', 'giftcard', 'coupon', 'clientPackageItem', 'clientPackage', 'packageItem', 'package', 'product', 'service', 'sequence', 'user'
 		]
 		
 		// Disable foreign key checks for thorough cleanup
@@ -217,6 +217,7 @@ async function seedDB() {
 			})
 		}
 		const allServices = await prisma.service.findMany()
+		const allProducts = await prisma.product.findMany()
 
 		console.log('📦 Seeding Packages (Bonos)...')
 		const indibaService = allServices.find(s => s.name.includes('Indiba')) || allServices[0]
@@ -234,15 +235,59 @@ async function seedDB() {
 			}
 		})
 
+		const pkg1Item = await prisma.packageItem.create({
+			data: {
+				package_id: pkg1.package_id,
+				item_type: 'SERVICE',
+				item_id: indibaService?.service_id || 'indiba-01',
+				name: indibaService?.name || 'Tratamiento Indiba Corporal Pro',
+				quantity: 6,
+				duration: indibaService?.duration || 45
+			}
+		})
+
 		const pkg2 = await prisma.package.create({
 			data: {
 				name: 'Pack Mixto Renovación Facial & Corporal',
-				description: 'Combinación especial de limpieza facial profunda y peeling renovador.',
+				description: 'Combinación especial de limpieza facial profunda, peeling renovador y sérum de regalo.',
 				type: 'MIXTO',
 				price: 250,
 				total_sessions: 4,
 				service_id: facialService?.service_id,
 				status: 'activo'
+			}
+		})
+
+		const pkg2Item1 = await prisma.packageItem.create({
+			data: {
+				package_id: pkg2.package_id,
+				item_type: 'SERVICE',
+				item_id: facialService?.service_id || 'facial-01',
+				name: 'Limpieza Facial Profunda',
+				quantity: 2,
+				duration: 45
+			}
+		})
+
+		const pkg2Item2 = await prisma.packageItem.create({
+			data: {
+				package_id: pkg2.package_id,
+				item_type: 'SERVICE',
+				item_id: allServices[2]?.service_id || 'peeling-01',
+				name: 'Peeling Químico Renovador',
+				quantity: 2,
+				duration: 30
+			}
+		})
+
+		const pkg2Item3 = await prisma.packageItem.create({
+			data: {
+				package_id: pkg2.package_id,
+				item_type: 'PRODUCT',
+				item_id: allProducts[0]?.product_id || 'serum-01',
+				name: 'Sérum Vitamina C Anti-Ox (Regalo)',
+				quantity: 1,
+				duration: 0
 			}
 		})
 
@@ -256,35 +301,42 @@ async function seedDB() {
 			]
 		})
 
+		const targetClientPackages = [
+			{ user_id: '18b4b6bd-c768-417c-8289-961d9b9cb8a6', name: 'Bono Indiba 11', sessions: 11 },
+			{ user_id: '20c8c750-33be-4d8e-84e4-092cf5c6482a', name: 'Bono Corporal Indiba 15 sesiones', sessions: 15 },
+			{ user_id: '34958d5c-6685-4287-9e1c-f3b42a4fdee4', name: 'Bono INDIBA Facial 6+ 1 Sesiones', sessions: 7 },
+			{ user_id: '4e694f11-a2a7-4053-8aa2-13ea5bd6eb3a', name: 'Bono Corporal Indiba 15 sesiones', sessions: 15 },
+			{ user_id: '87f8b95a-1763-47e6-8acd-824bdae7b5ef', name: 'Bono Indiba 11', sessions: 11 }
+		]
 
-
-		for (const client of allUsers) {
-			if (client.role === 'CLIENT') {
-				// Seed 1-2 active packages for each client
-				await prisma.clientPackage.create({
+		for (const tcp of targetClientPackages) {
+			const u = allUsers.find(user => user.user_id === tcp.user_id)
+			if (u) {
+				const pkg = allPackages.find(p => p.name.includes(tcp.name)) || pkg1
+				const cp = await prisma.clientPackage.create({
 					data: {
-						user_id: client.user_id,
-						package_id: pkg1.package_id,
-						total_sessions: 6,
-						remaining_sessions: 5,
+						user_id: u.user_id,
+						package_id: pkg.package_id,
+						total_sessions: tcp.sessions,
+						remaining_sessions: tcp.sessions,
 						expiry_date: new Date(2026, 11, 31),
 						status: 'ACTIVE'
 					}
 				})
-
-				if (Math.random() > 0.4) {
-					await prisma.clientPackage.create({
-						data: {
-							user_id: client.user_id,
-							package_id: pkg2.package_id,
-							total_sessions: 4,
-							remaining_sessions: 2,
-							expiry_date: new Date(2026, 9, 15),
-							status: 'ACTIVE'
-						}
-					})
-				}
+				await prisma.clientPackageItem.create({
+					data: {
+						client_package_id: cp.client_package_id,
+						package_item_id: pkg1Item.package_item_id,
+						name: tcp.name,
+						item_type: 'SERVICE',
+						quantity_total: tcp.sessions,
+						quantity_remaining: tcp.sessions,
+						duration: 45
+					}
+				})
 			}
+		}
+
 			// Consents (70% conversion)
 			if (Math.random() > 0.3) {
 				await prisma.consent.create({

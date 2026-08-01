@@ -29,7 +29,8 @@ export default defineEventHandler(async event => {
 				},
 				client_packages: {
 					include: {
-						package: true
+						package: true,
+						items: true
 					},
 					orderBy: { created_at: 'desc' }
 				},
@@ -134,10 +135,10 @@ export default defineEventHandler(async event => {
 		// 3-Tier Client Category Classification (Bronce, Plata, Oro VIP)
 		let engagementTier: 'BRONZE' | 'SILVER' | 'GOLD_VIP' = 'BRONZE'
 		let engagementTierLabel = 'Bronce'
-		if (engagementScore >= 71) {
+		if (engagementScore >= 90) {
 			engagementTier = 'GOLD_VIP'
 			engagementTierLabel = 'Oro VIP'
-		} else if (engagementScore >= 36) {
+		} else if (engagementScore >= 65) {
 			engagementTier = 'SILVER'
 			engagementTierLabel = 'Plata'
 		}
@@ -185,10 +186,11 @@ export default defineEventHandler(async event => {
 			document_number: reveal ? client.document_number : maskDocument(client.document_number),
 		}
 	} catch (error: any) {
+		console.error('Error in GET /api/clients/[id]:', error)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error al obtener el cliente',
+			statusMessage: error.message || 'Error al obtener el cliente',
 		})
 	}
 })

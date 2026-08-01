@@ -30,6 +30,19 @@ const {
 
 const clientSelectorRef = ref<InstanceType<typeof BookingClientSelector> | null>(null)
 const itemSelectorRef = ref<InstanceType<typeof BookingItemSelector> | null>(null)
+const router = useRouter()
+
+const handlePayInTpv = async () => {
+    if (!selectedBooking.value?.booking_id) return
+    const bId = selectedBooking.value.booking_id
+    try {
+        await proceedSaveBooking()
+    } catch (e) {
+        console.error('Error auto-saving booking before TPV:', e)
+    }
+    store.closeBookingDrawer()
+    router.push(`/tpv?booking_id=${bId}`)
+}
 
 // Watch pinia state to reset form
 watch(isBookingDrawerOpen, (isOpen) => {
@@ -165,13 +178,15 @@ const closeDropdowns = () => {
 
             <!-- Footer -->
             <div class="border-border-subtle shrink-0 border-t bg-bg-card/90 px-6 py-5 backdrop-blur-md space-y-3">
-                <NuxtLink 
+                <button 
                     v-if="selectedBooking && selectedBooking.booking_id && form.status !== 'COMPLETADA'" 
-                    :to="`/tpv?booking_id=${selectedBooking.booking_id}`" 
+                    type="button"
                     class="btn btn-primary btn-outline w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-sm"
-                    @click="store.closeBookingDrawer()">
-                    Cobrar en TPV
-                </NuxtLink>
+                    :disabled="isSaving"
+                    @click="handlePayInTpv">
+                    <span v-if="isSaving" class="loading loading-spinner"></span>
+                    <span v-else>Cobrar en TPV</span>
+                </button>
                 <button v-if="form.status !== 'COMPLETADA'" type="submit" form="drawerBookingForm" class="btn text-bg-card hover:bg-text-secondary/90 bg-text-secondary w-full h-12 rounded-xl border-none font-black uppercase tracking-widest shadow-lg" :disabled="isSaving">
                     <span v-if="isSaving" class="loading loading-spinner"></span>
                     <span v-else>{{ selectedBooking ? 'Guardar Cambios' : 'Confirmar Reserva' }}</span>

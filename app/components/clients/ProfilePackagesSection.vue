@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { Package as PackageIcon, AlertCircle, ChevronRight } from 'lucide-vue-next'
+import { Package as PackageIcon, AlertCircle, ChevronRight, Scissors, ShoppingBag, Plus } from 'lucide-vue-next'
+import AssignPackageModal from '~/components/packages/AssignPackageModal.vue'
 
 const props = defineProps({
 	client: { type: Object as PropType<any>, required: true }
 })
+
+const assignModalRef = ref<InstanceType<typeof AssignPackageModal> | null>(null)
+
+const openAssignModal = () => {
+	assignModalRef.value?.openModal()
+}
 
 // Real active client packages from DB
 const activePackages = computed(() => {
@@ -20,7 +27,8 @@ const activePackages = computed(() => {
 			remainingSessions: cp.remaining_sessions,
 			status: cp.status,
 			expiryDate: expiryFormatted,
-			description: cp.package?.description
+			description: cp.package?.description,
+			items: cp.items || []
 		}
 	})
 })
@@ -52,8 +60,17 @@ const getProgressPercentage = (completed: number, total: number) => {
 					</div>
 				</div>
 
-				<div class="badge badge-neutral font-black text-xs uppercase px-3 py-2">
-					{{ activePackages.length }} Paquetes Activos
+				<div class="flex items-center gap-3">
+					<div class="badge badge-neutral font-black text-xs uppercase px-3 py-2">
+						{{ activePackages.length }} Paquetes Activos
+					</div>
+					<button
+						type="button"
+						class="btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
+						@click="openAssignModal">
+						<Plus class="w-4 h-4" />
+						Asignar Bono
+					</button>
 				</div>
 			</div>
 
@@ -103,28 +120,56 @@ const getProgressPercentage = (completed: number, total: number) => {
 								></div>
 							</div>
 						</div>
+
+						<!-- INCLUDED MIXED ITEMS BREAKDOWN -->
+						<div v-if="pkg.items && pkg.items.length > 0" class="space-y-2 pt-3 border-t border-border-subtle/50">
+							<span class="text-[10px] font-black uppercase tracking-wider text-text-muted">Desglose de Tratamientos y Productos:</span>
+							<div class="grid grid-cols-1 gap-1.5">
+								<div 
+									v-for="it in pkg.items" 
+									:key="it.client_package_item_id"
+									class="flex items-center justify-between p-2 rounded-xl bg-bg-card border border-border-subtle text-xs"
+								>
+									<div class="flex items-center gap-2">
+										<Scissors v-if="it.item_type === 'SERVICE'" class="w-3.5 h-3.5 text-primary shrink-0" />
+										<ShoppingBag v-else class="w-3.5 h-3.5 text-amber-600 shrink-0" />
+										<span class="font-bold text-text-primary text-[11px]">{{ it.name }}</span>
+									</div>
+									<span class="text-[10px] font-bold text-text-muted tabular-nums">
+										Quedan <strong class="text-text-primary font-black">{{ it.quantity_remaining }}</strong> de {{ it.quantity_total }}
+									</span>
+								</div>
+							</div>
+						</div>
 					</div>
 
 					<div class="pt-4 border-t border-border-subtle flex items-center justify-between">
 						<span class="text-xs font-semibold text-text-muted">
 							Quedan <strong class="text-text-primary tabular-nums">{{ pkg.remainingSessions }} sesiones</strong> disponibles
 						</span>
-
-						<button class="btn btn-ghost btn-xs font-bold text-primary">
-							Ver Detalles <ChevronRight class="w-3.5 h-3.5" />
-						</button>
 					</div>
 				</div>
 			</div>
 
 			<div v-else class="py-12 flex flex-col items-center justify-center text-center text-text-muted opacity-60">
 				<PackageIcon class="w-12 h-12 mb-2 stroke-[1.5]" />
-				<p class="text-xs font-bold uppercase tracking-wider">El cliente no posee paquetes activos contratados</p>
+				<p class="text-xs font-bold uppercase tracking-wider mb-3">El cliente no posee paquetes activos contratados</p>
+				<button
+					type="button"
+					class="btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
+					@click="openAssignModal">
+					<Plus class="w-4 h-4" />
+					Asignar Primer Bono
+				</button>
 			</div>
 
 		</div>
+
+		<!-- Assign Package Modal -->
+		<AssignPackageModal
+			ref="assignModalRef"
+			:client-id="props.client.user_id"
+			:client-name="props.client.name + ' ' + (props.client.surname || '')"
+		/>
 	</div>
 </template>
-
-<style scoped>
-</style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search, Plus, Package, Sparkles } from 'lucide-vue-next'
+import { Search, Plus, Package, Sparkles, Scissors, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
 const props = defineProps<{
     services: any[] | undefined
@@ -15,6 +15,11 @@ const emit = defineEmits<{
 
 const itemSearch = ref('')
 const isItemDropdownOpen = ref(false)
+const expandedPackages = ref<Record<string, boolean>>({})
+
+const toggleExpandPackage = (pkgId: string) => {
+    expandedPackages.value[pkgId] = !expandedPackages.value[pkgId]
+}
 
 const normalizeStr = (str: string) => {
     return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : ''
@@ -32,17 +37,22 @@ const filteredItems = computed(() => {
     ).slice(0, 15)
 })
 
-const getUsedCount = (pkg: any) => {
+// Calculate used count for individual package or sub-item
+const getUsedCount = (itemId: string) => {
     if (!props.selectedItems) return 0
-    const pkgId = pkg.client_package_id || pkg.package_id
-    return props.selectedItems.filter((item: any) => 
-        item.item_id === pkgId
-    ).length
+    return props.selectedItems.filter((item: any) => item.item_id === itemId).length
 }
 
-const getEffectiveRemaining = (pkg: any) => {
-    const used = getUsedCount(pkg)
+const getEffectiveRemainingForPackage = (pkg: any) => {
+    const pkgId = pkg.client_package_id || pkg.package_id
+    const used = getUsedCount(pkgId)
     return Math.max(0, (pkg.remaining_sessions || 0) - used)
+}
+
+const getEffectiveRemainingForSubItem = (subItem: any) => {
+    const itemId = subItem.client_package_item_id || subItem.package_item_id
+    const used = getUsedCount(itemId)
+    return Math.max(0, (subItem.quantity_remaining || 0) - used)
 }
 
 const addServiceItem = (item: any) => {
@@ -56,8 +66,8 @@ const addServiceItem = (item: any) => {
     isItemDropdownOpen.value = false
 }
 
-const addPackageItem = (pkg: any) => {
-    if (getEffectiveRemaining(pkg) <= 0) return
+const addIndividualPackageItem = (pkg: any) => {
+    if (getEffectiveRemainingForPackage(pkg) <= 0) return
     const pkgId = pkg.client_package_id || pkg.package_id
     emit('add', {
         item_type: 'PACKAGE',
@@ -65,6 +75,20 @@ const addPackageItem = (pkg: any) => {
         name: `[SESIÓN BONO] ${pkg.name}`,
         duration: 45,
         remaining_sessions: pkg.remaining_sessions
+    })
+    itemSearch.value = ''
+    isItemDropdownOpen.value = false
+}
+
+const addMixedPackageSubItem = (pkg: any, subItem: any) => {
+    if (getEffectiveRemainingForSubItem(subItem) <= 0) return
+    const itemId = subItem.client_package_item_id || subItem.package_item_id
+    emit('add', {
+        item_type: 'PACKAGE',
+        item_id: itemId,
+        name: `[BONO MIXTO: ${pkg.name}] ${subItem.name}`,
+        duration: Number(subItem.duration || 0),
+        parent_package_id: pkg.client_package_id || pkg.package_id
     })
     itemSearch.value = ''
     isItemDropdownOpen.value = false
@@ -94,28 +118,100 @@ defineExpose({
                 </span>
             </div>
 
-            <div class="space-y-1.5">
-                <button 
+            <div class="space-y-2">
+                <div 
                     v-for="pkg in clientPackages" 
                     :key="pkg.client_package_id || pkg.package_id"
-                    type="button"
-                    :disabled="disabled || getEffectiveRemaining(pkg) <= 0"
-                    @click="addPackageItem(pkg)"
-                    class="w-full bg-bg-card hover:bg-bg-muted border border-border-subtle hover:border-primary/50 p-2.5 rounded-lg flex items-center justify-between text-left transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="bg-bg-card border border-border-subtle rounded-xl p-2.5 space-y-2 shadow-xs"
                 >
-                    <div class="flex items-center gap-2">
-                        <Package class="w-4 h-4 text-primary shrink-0" />
-                        <div>
-                            <p class="text-xs font-bold text-text-primary group-hover:text-primary transition-colors leading-snug">{{ pkg.name }}</p>
-                            <span class="text-[9px] font-bold text-text-muted">
-                                Quedan <strong class="text-text-primary font-black tabular-nums">{{ getEffectiveRemaining(pkg) }}</strong> de {{ pkg.total_sessions }} sesiones
-                            </span>
+                    <!-- Header Card del Paquete -->
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <Package class="w-4 h-4 text-primary shrink-0" />
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <p class="text-xs font-bold text-text-primary leading-snug">{{ pkg.name }}</p>
+                                    <span 
+                                        class="badge badge-xs font-black text-[8px] uppercase border-none px-1.5"
+                                        :class="pkg.type === 'MIXTO' ? 'bg-amber-500/20 text-amber-700' : 'bg-primary/20 text-primary'"
+                                    >
+                                        {{ pkg.type === 'MIXTO' ? 'MIXTO' : 'INDIVIDUAL' }}
+                                    </span>
+                                </div>
+                                <span v-if="pkg.type !== 'MIXTO'" class="text-[9px] font-bold text-text-muted">
+                                    Quedan <strong class="text-text-primary font-black tabular-nums">{{ getEffectiveRemainingForPackage(pkg) }}</strong> de {{ pkg.total_sessions }} sesiones
+                                </span>
+                                <span v-else class="text-[9px] font-bold text-text-muted">
+                                    Paquete combinado (Servicios + Productos)
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Botón para Paquete Individual -->
+                        <button 
+                            v-if="pkg.type !== 'MIXTO'"
+                            type="button"
+                            :disabled="disabled || getEffectiveRemainingForPackage(pkg) <= 0"
+                            @click="addIndividualPackageItem(pkg)"
+                            class="badge badge-neutral font-bold text-[9px] px-2.5 py-1 hover:bg-primary hover:text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {{ getEffectiveRemainingForPackage(pkg) > 0 ? 'Usar Sesión' : 'Agotado' }}
+                        </button>
+
+                        <!-- Toggle Botón para Paquete Mixto -->
+                        <button 
+                            v-else
+                            type="button"
+                            @click="toggleExpandPackage(pkg.client_package_id || pkg.package_id)"
+                            class="btn btn-ghost btn-xs font-black text-[9px] uppercase gap-1 text-primary"
+                        >
+                            <span>{{ expandedPackages[pkg.client_package_id || pkg.package_id] ? 'Ocultar Items' : 'Ver Items Incluidos' }}</span>
+                            <ChevronUp v-if="expandedPackages[pkg.client_package_id || pkg.package_id]" class="w-3 h-3" />
+                            <ChevronDown v-else class="w-3 h-3" />
+                        </button>
+                    </div>
+
+                    <!-- DESGLOSE DE SUB-ITEMS DE BONO MIXTO -->
+                    <div 
+                        v-if="pkg.type === 'MIXTO' && (expandedPackages[pkg.client_package_id || pkg.package_id] !== false)"
+                        class="pt-2 border-t border-border-subtle/60 space-y-1.5 pl-2"
+                    >
+                        <p class="text-[9px] font-black uppercase tracking-wider text-text-muted flex items-center gap-1">
+                            <span>Selecciona el tratamiento/producto a consumir:</span>
+                        </p>
+                        
+                        <div 
+                            v-for="subItem in (pkg.items || [])" 
+                            :key="subItem.client_package_item_id || subItem.package_item_id"
+                            class="flex items-center justify-between p-2 rounded-lg bg-bg-muted/40 border border-border-subtle/50 hover:border-primary/40 transition-all"
+                        >
+                            <div class="flex items-center gap-2">
+                                <Scissors v-if="subItem.item_type === 'SERVICE'" class="w-3.5 h-3.5 text-primary shrink-0" />
+                                <ShoppingBag v-else class="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                <div>
+                                    <p class="text-[11px] font-bold text-text-primary leading-tight">{{ subItem.name }}</p>
+                                    <div class="flex items-center gap-1.5 text-[9px] text-text-muted font-semibold">
+                                        <span class="badge badge-outline badge-xs text-[8px] font-extrabold uppercase py-0 px-1">
+                                            {{ subItem.item_type === 'SERVICE' ? `${subItem.duration || 30} min` : 'Producto' }}
+                                        </span>
+                                        <span>
+                                            Quedan <strong class="text-text-primary font-black tabular-nums">{{ getEffectiveRemainingForSubItem(subItem) }}</strong> de {{ subItem.quantity_total }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button 
+                                type="button"
+                                :disabled="disabled || getEffectiveRemainingForSubItem(subItem) <= 0"
+                                @click="addMixedPackageSubItem(pkg, subItem)"
+                                class="badge badge-neutral font-bold text-[9px] px-2 py-1 hover:bg-primary hover:text-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                {{ getEffectiveRemainingForSubItem(subItem) > 0 ? (subItem.item_type === 'SERVICE' ? 'Usar Sesión' : 'Entregar Producto') : 'Agotado' }}
+                            </button>
                         </div>
                     </div>
-                    <div class="badge badge-neutral font-bold text-[9px] px-2.5 py-1 group-hover:bg-primary group-hover:text-white transition-colors">
-                        {{ getEffectiveRemaining(pkg) > 0 ? 'Usar Sesión' : 'Agotado' }}
-                    </div>
-                </button>
+                </div>
             </div>
         </div>
 

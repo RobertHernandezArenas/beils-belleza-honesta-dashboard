@@ -22,7 +22,7 @@ export function useTpv() {
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
 
-	// Manejo de errores de avatar
+	// Avatar Error Handling
 	const avatarError = ref(false)
 	const handleAvatarError = () => {
 		avatarError.value = true
@@ -51,6 +51,7 @@ export function useTpv() {
 	})
 
 	const processedBookingId = ref<string | null>(null)
+
 	watch([
 		() => route.query.booking_id,
 		() => services.value,
@@ -58,7 +59,6 @@ export function useTpv() {
 		() => clients.value
 	], async ([bookingId, svcs, prds, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
-		if (!svcs || !cls) return // Wait for crucial catalogs to load
 
 		processedBookingId.value = bookingId
 
@@ -66,53 +66,68 @@ export function useTpv() {
 			const bookingData: any = await $fetch(`/api/agenda/bookings/${bookingId}`)
 			if (!bookingData) return
 
-			const client = cls.find((c: any) => c.user_id === bookingData.client_id)
-			if (client) {
-				selectedClient.value = client
+			// 1. Set Selected Client (Reliably!)
+			if (bookingData.client && (bookingData.client.user_id || bookingData.client_id)) {
+				selectedClient.value = {
+					user_id: bookingData.client.user_id || bookingData.client_id,
+					name: bookingData.client.name || 'Cliente',
+					surname: bookingData.client.surname || '',
+					email: bookingData.client.email || '',
+					phone: bookingData.client.phone || '',
+					avatar: bookingData.client.avatar || null
+				}
+			} else if (bookingData.client_id) {
+				const found = (cls || []).find((c: any) => c.user_id === bookingData.client_id)
+				if (found) {
+					selectedClient.value = found
+				} else {
+					try {
+						const directClient: any = await $fetch(`/api/clients/${bookingData.client_id}`)
+						if (directClient) selectedClient.value = directClient
+					} catch (e) {
+						console.error('Failed fallback client fetch:', e)
+					}
+				}
 			}
 
+			// 2. Set Cart Items from Booking Items
 			const itemsToAdd: any[] = []
 			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
 				for (const it of bookingData.booking_items) {
 					let foundItem: any = null
-					let type = it.item_type.toLowerCase()
+					let type = (it.item_type || 'service').toLowerCase()
 					
 					if (type === 'service') {
-						foundItem = svcs.find((s: any) => s.service_id === it.item_id)
+						foundItem = (svcs || []).find((s: any) => s.service_id === it.item_id)
 					} else if (type === 'product') {
-						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
+						foundItem = (prds || []).find((p: any) => p.product_id === it.item_id)
 					}
 
-					if (foundItem) {
-						const matchingId = foundItem.product_id || foundItem.service_id || it.item_id
-						const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId)
-						
-						if (existingCartItem) {
-							existingCartItem.quantity++
-						} else {
-							itemsToAdd.push({
-								item_id: matchingId,
-								item_type: type,
-								name: foundItem.name || it.name,
-								unit_price: foundItem.price,
-								tax_rate: foundItem.tax_rate || 21.0,
-								quantity: 1
-							})
-						}
+					let unitPrice = 0
+					if (type === 'package' || (it.name && (it.name.includes('[SESIÓN BONO]') || it.name.includes('[BONO MIXTO]')))) {
+						unitPrice = 0 // Package session is 0 EUR in TPV
+					} else if (foundItem) {
+						unitPrice = Number(foundItem.price || 0)
 					} else {
-						const existingCartItem = itemsToAdd.find(i => i.item_id === it.item_id)
-						if (existingCartItem) {
-							existingCartItem.quantity++
-						} else {
-							itemsToAdd.push({
-								item_id: it.item_id,
-								item_type: type,
-								name: it.name,
-								unit_price: 0,
-								tax_rate: 21.0,
-								quantity: 1
-							})
-						}
+						unitPrice = 0
+					}
+
+					const itemName = it.name || foundItem?.name || 'Servicio'
+					const matchingId = it.item_id || foundItem?.product_id || foundItem?.service_id || 'item'
+
+					const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId && i.name === itemName)
+					
+					if (existingCartItem) {
+						existingCartItem.quantity++
+					} else {
+						itemsToAdd.push({
+							item_id: matchingId,
+							item_type: type,
+							name: itemName,
+							unit_price: unitPrice,
+							tax_rate: foundItem?.tax_rate || 21.0,
+							quantity: 1
+						})
 					}
 				}
 			}
@@ -129,7 +144,7 @@ export function useTpv() {
 		}
 	}, { immediate: true })
 
-	// Process checkout mutation
+	// Process Checkout Mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
 		mutationFn: async (payload: any) => {
 			const res: any = await $fetch('/api/sales/carts', {
@@ -164,6 +179,8 @@ export function useTpv() {
 			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
 			queryClient.invalidateQueries({ queryKey: ['debts'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
+			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
+			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			clearCart()
 		},
@@ -221,7 +238,7 @@ export function useTpv() {
 				item_id: itemId,
 				item_type: type,
 				name: item.name,
-				unit_price: item.price,
+				unit_price: Number(item.price || 0),
 				tax_rate: item.tax_rate || 21.0,
 				quantity: 1,
 			})
@@ -231,7 +248,17 @@ export function useTpv() {
 
 	const increaseItemQty = (index: number) => {
 		const item = cartItems.value[index]
-		item.quantity++
+		if (item) item.quantity++
+	}
+
+	const decreaseItemQty = (index: number) => {
+		const item = cartItems.value[index]
+		if (!item) return
+		if (item.quantity > 1) {
+			item.quantity--
+		} else {
+			cartItems.value.splice(index, 1)
+		}
 	}
 
 	const removeFromCart = (index: number) => {
@@ -254,7 +281,7 @@ export function useTpv() {
 	// Computed Totals
 	const cartSubtotal = computed(() => {
 		return cartItems.value.reduce((acc, item) => {
-			return acc + item.unit_price * item.quantity
+			return acc + (item.unit_price || 0) * item.quantity
 		}, 0)
 	})
 
@@ -313,6 +340,7 @@ export function useTpv() {
 		addToCart,
 		removeFromCart,
 		increaseItemQty,
+		decreaseItemQty,
 		clearCart,
 		selectClient,
 		handleCheckout,

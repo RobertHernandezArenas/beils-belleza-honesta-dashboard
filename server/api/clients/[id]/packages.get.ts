@@ -14,27 +14,38 @@ export default defineEventHandler(async (event) => {
 				remaining_sessions: { gt: 0 }
 			},
 			include: {
-				package: true
+				package: true,
+				items: true
 			},
 			orderBy: { created_at: 'desc' }
 		})
 
-		return clientPackages.map(cp => ({
+		return (clientPackages || []).map(cp => ({
 			client_package_id: cp.client_package_id,
 			package_id: cp.package_id,
-			name: cp.package.name,
-			description: cp.package.description,
-			type: cp.package.type,
+			name: cp.package?.name || 'Paquete / Bono',
+			description: cp.package?.description || '',
+			type: cp.package?.type || 'INDIVIDUAL',
 			total_sessions: cp.total_sessions,
 			remaining_sessions: cp.remaining_sessions,
-			service_id: cp.package.service_id,
-			expiry_date: cp.expiry_date
+			service_id: cp.package?.service_id || null,
+			expiry_date: cp.expiry_date,
+			items: (cp.items || []).map(it => ({
+				client_package_item_id: it.client_package_item_id,
+				package_item_id: it.package_item_id,
+				name: it.name,
+				item_type: it.item_type,
+				quantity_total: it.quantity_total,
+				quantity_remaining: it.quantity_remaining,
+				duration: it.duration
+			}))
 		}))
 	} catch (error: any) {
+		console.error('Error fetching client packages:', error)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error fetching client packages'
+			statusMessage: error.message || 'Error fetching client packages'
 		})
 	}
 })

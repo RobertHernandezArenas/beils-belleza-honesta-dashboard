@@ -12,7 +12,7 @@ export default defineEventHandler(async event => {
 		const booking = await prisma.booking.findUnique({
 			where: { booking_id: id },
 			include: {
-				client: { select: { name: true, surname: true, email: true, phone: true } },
+				client: { select: { user_id: true, name: true, surname: true, email: true, phone: true, avatar: true } },
 				staff: { select: { name: true, surname: true } },
 				booking_items: true,
 			},
@@ -119,7 +119,7 @@ export default defineEventHandler(async event => {
 					} : undefined
 				},
 				include: {
-					client: { select: { name: true, surname: true, phone: true } },
+					client: { select: { user_id: true, name: true, surname: true, phone: true, avatar: true } },
 					staff: { select: { name: true, surname: true } },
 					booking_items: true
 				},
