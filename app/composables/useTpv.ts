@@ -61,6 +61,12 @@ export function useTpv() {
 	], async ([bookingId, svcs, prds, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
 
+		// Wait until the catalog is loaded before resolving booking items. Prices come
+		// exclusively from the live catalog (booking_items store no price), so processing
+		// too early would set every unit_price to 0 and produce a 0,00 € ticket.
+		// The watch re-fires when services/products arrive, so we simply defer.
+		if (!svcs || !prds) return
+
 		processedBookingId.value = bookingId
 
 		try {
