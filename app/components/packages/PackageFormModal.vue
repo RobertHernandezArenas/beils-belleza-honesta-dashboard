@@ -139,7 +139,7 @@ defineExpose({ openModal, closeModal })
 </script>
 
 <template>
-	<div v-if="isOpen" class="modal modal-open z-50 backdrop-blur-sm bg-black/40">
+	<div v-if="isOpen" class="modal modal-open z-[1000] backdrop-blur-sm bg-black/40">
 		<div class="modal-box max-w-2xl bg-bg-card border border-border-default rounded-3xl p-6 shadow-2xl relative">
 			<!-- Header -->
 			<div class="flex items-center justify-between border-b border-border-default pb-4">

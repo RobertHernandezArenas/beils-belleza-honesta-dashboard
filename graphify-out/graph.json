@@ -11125,10 +11125,21 @@
       "norm_label": "opencreatemodal()"
     },
     {
+      "label": "closeMenu()",
+      "file_type": "code",
+      "source_file": "app/pages/servicios/index.vue",
+      "source_location": "L72",
+      "_origin": "ast",
+      "id": "app_pages_servicios_index_closemenu",
+      "community": 30,
+      "community_name": "index.vue",
+      "norm_label": "closemenu()"
+    },
+    {
       "label": "openEditModal()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L71",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "app_pages_servicios_index_openeditmodal",
       "community": 30,
@@ -11139,7 +11150,7 @@
       "label": "openEditPackageModal()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L75",
+      "source_location": "L83",
       "_origin": "ast",
       "id": "app_pages_servicios_index_openeditpackagemodal",
       "community": 30,
@@ -11150,7 +11161,7 @@
       "label": "confirmDelete()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L79",
+      "source_location": "L88",
       "_origin": "ast",
       "id": "app_pages_servicios_index_confirmdelete",
       "community": 30,
@@ -11161,7 +11172,7 @@
       "label": "confirmDeletePackage()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L85",
+      "source_location": "L95",
       "_origin": "ast",
       "id": "app_pages_servicios_index_confirmdeletepackage",
       "community": 30,
@@ -11172,7 +11183,7 @@
       "label": "displayToast()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L91",
+      "source_location": "L102",
       "_origin": "ast",
       "id": "app_pages_servicios_index_displaytoast",
       "community": 30,
@@ -11183,7 +11194,7 @@
       "label": "formatDuration()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L98",
+      "source_location": "L109",
       "_origin": "ast",
       "id": "app_pages_servicios_index_formatduration",
       "community": 30,
@@ -11194,7 +11205,7 @@
       "label": "formatCurrency()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L106",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "app_pages_servicios_index_formatcurrency",
       "community": 30,
@@ -11205,7 +11216,7 @@
       "label": "formatPackageBadge()",
       "file_type": "code",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L110",
+      "source_location": "L121",
       "_origin": "ast",
       "id": "app_pages_servicios_index_formatpackagebadge",
       "community": 30,
@@ -12385,8 +12396,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "package_dependencies_aos",
-      "community": 111,
-      "community_name": "html2pdf.js",
+      "community": 107,
+      "community_name": "dexie",
       "norm_label": "aos"
     },
     {
@@ -12396,8 +12407,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "aos",
-      "community": 111,
-      "community_name": "html2pdf.js",
+      "community": 107,
+      "community_name": "dexie",
       "norm_label": "aos"
     },
     {
@@ -12693,8 +12704,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "package_dependencies_qrcode_vue",
-      "community": 107,
-      "community_name": "dexie",
+      "community": 459,
+      "community_name": "qrcode.vue",
       "norm_label": "qrcode.vue"
     },
     {
@@ -12704,8 +12715,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "qrcode_vue",
-      "community": 107,
-      "community_name": "dexie",
+      "community": 459,
+      "community_name": "qrcode.vue",
       "norm_label": "qrcode.vue"
     },
     {
@@ -16049,8 +16060,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 111,
+      "community_name": "html2pdf.js",
       "norm_label": "author"
     },
     {
@@ -16060,8 +16071,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author_name",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 111,
+      "community_name": "html2pdf.js",
       "norm_label": "name"
     },
     {
@@ -16071,8 +16082,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author_email",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 111,
+      "community_name": "html2pdf.js",
       "norm_label": "email"
     },
     {
@@ -16093,8 +16104,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_repository",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 124,
+      "community_name": "qrcode.vue",
       "norm_label": "repository"
     },
     {
@@ -16104,8 +16115,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_repository_type",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 124,
+      "community_name": "qrcode.vue",
       "norm_label": "type"
     },
     {
@@ -16115,8 +16126,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_repository_url",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 124,
+      "community_name": "qrcode.vue",
       "norm_label": "url"
     },
     {
@@ -29381,8 +29392,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_skill",
-      "community": 149,
-      "community_name": "[id].put.ts",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "skill.md"
     },
     {
@@ -30712,8 +30723,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_directives",
-      "community": 199,
-      "community_name": "Directive Best Practices",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "directives.md"
     },
     {
@@ -31735,8 +31746,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "updated-hook-performance.md"
     },
     {
@@ -31746,8 +31757,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_avoid_expensive_operations_in_updated_hook",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "avoid expensive operations in updated hook"
     },
     {
@@ -31757,8 +31768,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_task_list",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "task list"
     },
     {
@@ -31768,8 +31779,8 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_valid_use_cases_for_updated_hook",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "valid use cases for updated hook"
     },
     {
@@ -31779,8 +31790,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_prefer_computed_properties_for_derived_data",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 266,
+      "community_name": "State Management Strategy",
       "norm_label": "prefer computed properties for derived data"
     },
     {
@@ -54111,7 +54122,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L79",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_servicios_index",
+      "target": "app_pages_servicios_index_closemenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/servicios/index.vue",
+      "source_location": "L88",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54122,7 +54144,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L85",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54155,7 +54177,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L91",
+      "source_location": "L102",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54166,7 +54188,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L106",
+      "source_location": "L117",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54177,7 +54199,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L98",
+      "source_location": "L109",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54188,7 +54210,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L110",
+      "source_location": "L121",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54243,7 +54265,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L71",
+      "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54254,7 +54276,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/servicios/index.vue",
-      "source_location": "L75",
+      "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_servicios_index",
@@ -54336,6 +54358,54 @@
       "_origin": "ast",
       "source": "app_pages_servicios_index",
       "target": "app_pages_servicios_index_toasttype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/servicios/index.vue",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_servicios_index_confirmdelete",
+      "target": "app_pages_servicios_index_closemenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/servicios/index.vue",
+      "source_location": "L96",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_servicios_index_confirmdeletepackage",
+      "target": "app_pages_servicios_index_closemenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/servicios/index.vue",
+      "source_location": "L79",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_servicios_index_openeditmodal",
+      "target": "app_pages_servicios_index_closemenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/servicios/index.vue",
+      "source_location": "L84",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_servicios_index_openeditpackagemodal",
+      "target": "app_pages_servicios_index_closemenu",
       "confidence_score": 1.0
     },
     {
@@ -90428,5 +90498,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f7a05f19317170284ded7e108347eb9d9f29f4ab"
+  "built_at_commit": "f7c10d1b20eeacd69e3b29bf8b0fb584e2ce37c3"
 }

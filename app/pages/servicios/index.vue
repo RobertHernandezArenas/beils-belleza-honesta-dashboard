@@ -68,21 +68,32 @@
 		}
 	}
 
+	// DaisyUI dropdowns stay open via :focus-within; blur to close before opening a modal/dialog
+	const closeMenu = () => {
+		if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+			document.activeElement.blur()
+		}
+	}
+
 	const openEditModal = (service: any) => {
+		closeMenu()
 		modalRef.value?.showModal(service)
 	}
 
 	const openEditPackageModal = (pkg: any) => {
+		closeMenu()
 		packageModalRef.value?.openModal(pkg)
 	}
 
 	const confirmDelete = (id: string) => {
+		closeMenu()
 		if (confirm('¿Estás seguro de que deseas eliminar este servicio? No podrás recuperarlo.')) {
 			deleteService(id)
 		}
 	}
 
 	const confirmDeletePackage = (id: string) => {
+		closeMenu()
 		if (confirm('¿Estás seguro de que deseas eliminar este paquete del catálogo?')) {
 			deletePackage(id)
 		}

@@ -450,8 +450,8 @@
     "semantic_hash": "911de8239a01b659e02217aadf040aa0"
   },
   "app/pages/servicios/index.vue": {
-    "mtime": 1785546845.880257,
-    "ast_hash": "0351fee6cbfad5f92be7a215237bdd19",
+    "mtime": 1785621035.0072312,
+    "ast_hash": "42f26b75d66433a25e1986ea02291ae4",
     "semantic_hash": ""
   },
   "app/pages/tpv/index.vue": {
@@ -3230,13 +3230,13 @@
     "semantic_hash": ""
   },
   "app/components/packages/AssignPackageModal.vue": {
-    "mtime": 1785546842.631525,
-    "ast_hash": "94fe814b1cd744403d0e0f3f660a6563",
+    "mtime": 1785621025.8642087,
+    "ast_hash": "4482aedd26b83417906496dfbda628f8",
     "semantic_hash": ""
   },
   "app/components/packages/PackageFormModal.vue": {
-    "mtime": 1785546941.6650805,
-    "ast_hash": "05be9e003635ce5a81058ce7af6f4bd3",
+    "mtime": 1785621021.1663017,
+    "ast_hash": "581e612e980b4ae629cb78d659b210c3",
     "semantic_hash": ""
   },
   "app/composables/useRealtimeSales.ts": {

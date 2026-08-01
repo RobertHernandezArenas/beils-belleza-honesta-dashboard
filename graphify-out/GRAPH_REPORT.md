@@ -1,16 +1,16 @@
 # Graph Report - beils-belleza-honesta-dashboard  (2026-08-01)
 
 ## Corpus Check
-- 575 files · ~574,912 words
+- 575 files · ~574,949 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3859 nodes · 4281 edges · 466 communities (379 shown, 87 thin omitted)
+- 3860 nodes · 4286 edges · 467 communities (380 shown, 87 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f7a05f19`
+- Built from commit: `f7c10d1b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -435,6 +435,7 @@
 - author
 - repository
 - bin.ts
+- qrcode.vue
 - @peculiar/webcrypto
 - prisma
 - @prisma/adapter-mariadb
@@ -467,7 +468,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (466 total, 87 thin omitted)
+## Communities (467 total, 87 thin omitted)
 
 ### Community 0 - "BookingDrawer.vue"
 Cohesion: 0.05
@@ -628,8 +629,8 @@ Cohesion: 0.05
 Nodes (41): 1. Use Modern Layout Methods, 2. Handle Edge Cases, 3. Use Semantic Sizing, 4. Test All Breakpoints, Advanced Flexbox Patterns, Advanced Spacing, Aspect Ratio and Object Fit, Auto-Fill and Auto-Fit Grids (+33 more)
 
 ### Community 30 - "index.vue"
-Cohesion: 0.09
-Nodes (13): activeTab, { data: packages, isPending: isPendingPackages }, { data: services, isPending }, modalRef, { mutate: deletePackage }, { mutate: deleteService }, packageModalRef, queryClient (+5 more)
+Cohesion: 0.10
+Nodes (18): activeTab, closeMenu(), confirmDelete(), confirmDeletePackage(), { data: packages, isPending: isPendingPackages }, { data: services, isPending }, modalRef, { mutate: deletePackage } (+10 more)
 
 ### Community 31 - "devDependencies"
 Cohesion: 0.13
@@ -944,11 +945,15 @@ Nodes (3): {
 
 ### Community 107 - "dexie"
 Cohesion: 0.12
-Nodes (17): dexie, echarts, lucide-vue-next, dependencies, dexie, echarts, lucide-vue-next, pinia (+9 more)
+Nodes (17): aos, dexie, echarts, lucide-vue-next, dependencies, aos, dexie, echarts (+9 more)
 
 ### Community 108 - "bcryptjs"
 Cohesion: 0.40
 Nodes (3): exportVentasPdf(), jspdf, jspdf
+
+### Community 111 - "html2pdf.js"
+Cohesion: 0.67
+Nodes (3): author, email, name
 
 ### Community 112 - "jsonwebtoken"
 Cohesion: 0.08
@@ -959,8 +964,8 @@ Cohesion: 0.09
 Nodes (26): ApiResponse, SyncResponse, convertTextToLabel(), ElementInput, sanitizeFilePath(), cleanElementsForShare(), concatBuffers(), exportToExcalidrawUrl() (+18 more)
 
 ### Community 124 - "qrcode.vue"
-Cohesion: 0.40
-Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
+Cohesion: 0.67
+Nodes (3): repository, type, url
 
 ### Community 126 - "@tailwindcss/vite"
 Cohesion: 0.07
@@ -995,7 +1000,7 @@ Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
 ### Community 149 - "[id].put.ts"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 157 - "index.vue"
@@ -1075,7 +1080,7 @@ Cohesion: 0.11
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 199 - "Directive Best Practices"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (11): Avoid Directives on Components, Clean Up Side Effects in `unmounted`, Decide Between Directives and Components, Directive Best Practices, Handle SSR with `getSSRProps`, Prefer Declarative Templates When Possible, Prefer Function Shorthand for Single-Hook Directives, Task List (+3 more)
 
 ### Community 200 - "Directive Best Practices"
@@ -1343,8 +1348,8 @@ Cohesion: 0.29
 Nodes (6): Alternatives to Wrapper Components, Avoid Excessive Component Abstraction in Large Lists, Impact Calculation, Measuring Component Overhead, Task List, When Abstraction Is Still Worth It
 
 ### Community 266 - "State Management Strategy"
-Cohesion: 0.29
-Nodes (6): Avoid Exporting Mutable Module State, Choose the Lightest Store Approach, Do Not Use Runtime Singletons in SSR, State Management Strategy, Task List, Use `createGlobalState` for Small SPA Global State
+Cohesion: 0.14
+Nodes (10): Avoid Exporting Mutable Module State, Choose the Lightest Store Approach, Do Not Use Runtime Singletons in SSR, State Management Strategy, Task List, Use `createGlobalState` for Small SPA Global State, Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data (+2 more)
 
 ### Community 267 - "SKILL.md"
 Cohesion: 0.29
@@ -1467,8 +1472,8 @@ Cohesion: 0.40
 Nodes (5): Example Workflow, Step 1: Analyze Requirements, Step 2: Generate Design System (REQUIRED), Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines
 
 ### Community 298 - "Best practices for `computed`"
-Cohesion: 0.08
-Nodes (23): author, email, name, bin, excalidraw-canvas, mcp-excalidraw-server, bugs, url (+15 more)
+Cohesion: 0.11
+Nodes (17): bin, excalidraw-canvas, mcp-excalidraw-server, bugs, url, description, engines, node (+9 more)
 
 ### Community 299 - "Avoid Expensive Operations in Updated Hook"
 Cohesion: 0.40
@@ -1958,11 +1963,9 @@ Nodes (3): npx, excalidraw-mcp, mcp_excalidraw
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dexie` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `html2pdf.js`, `dependencies`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `bcryptjs`, `gsap`, `html2pdf.js`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `soap`, `@tanstack/vue-query`?**
+- **Why does `dependencies` connect `dexie` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `html2pdf.js`, `dependencies`, `qrcode.vue`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `bcryptjs`, `gsap`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `soap`, `@tanstack/vue-query`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `author`, `repository`, `prettier`, `tsx`, `@types/node`, `package.json`, `index.post.ts`, `@peculiar/webcrypto`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **Why does `daisyUI 5` connect `daisyUI 5` to `SKILL.md`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
   _2273 weakly-connected nodes found - possible documentation gaps or missing edges._
@@ -1972,3 +1975,5 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `prisma.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
+- **Should `ClientFormModal.vue` be split into smaller, more focused modules?**
+  _Cohesion score 0.07389162561576355 - nodes in this community are weakly interconnected._
