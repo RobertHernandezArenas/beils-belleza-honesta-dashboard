@@ -31,6 +31,16 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const { user_id, items, booking_id, ...cartData } = body
 
+		// Selling a bono/package assigns it to a person, so a registered client is required.
+		const hasPackageSale = Array.isArray(items) &&
+			items.some((it: any) => (it.item_type || '').toLowerCase() === 'package_sale')
+		if (hasPackageSale && !user_id) {
+			throw createError({
+				statusCode: 400,
+				statusMessage: 'Selecciona un cliente registrado para vender un bono o paquete',
+			})
+		}
+
 		// Wrap in transaction to ensure consistency
 		const cart = await prisma.$transaction(async tx => {
 			if (booking_id) {
@@ -167,6 +177,55 @@ export default defineEventHandler(async event => {
 								}
 							}
 						}
+					}
+				}
+			}
+
+			// Sell bonos/packages: create a ClientPackage for the client for each catalog package sold.
+			// (Consumption items use item_type 'package' and are handled by the deduction loop above.)
+			for (const item of items) {
+				if ((item.item_type || '').toLowerCase() !== 'package_sale') continue
+
+				const catalogPkg = await tx.package.findUnique({
+					where: { package_id: item.item_id },
+					include: { items: true },
+				})
+				if (!catalogPkg) continue
+
+				const totalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items?.length
+					? catalogPkg.items
+							.filter(it => it.item_type === 'SERVICE')
+							.reduce((sum, it) => sum + (it.quantity || 0), 0)
+					: catalogPkg.total_sessions
+
+				const expiryDate = new Date()
+				expiryDate.setMonth(expiryDate.getMonth() + 6)
+
+				const units = Math.max(1, Number(item.quantity) || 1)
+				for (let i = 0; i < units; i++) {
+					const cp = await tx.clientPackage.create({
+						data: {
+							user_id,
+							package_id: catalogPkg.package_id,
+							total_sessions: totalServiceSessions,
+							remaining_sessions: totalServiceSessions,
+							expiry_date: expiryDate,
+							status: 'ACTIVE',
+						},
+					})
+
+					if (catalogPkg.items?.length) {
+						await tx.clientPackageItem.createMany({
+							data: catalogPkg.items.map(it => ({
+								client_package_id: cp.client_package_id,
+								package_item_id: it.package_item_id,
+								name: it.name,
+								item_type: it.item_type,
+								quantity_total: it.quantity,
+								quantity_remaining: it.quantity,
+								duration: it.duration,
+							})),
+						})
 					}
 				}
 			}

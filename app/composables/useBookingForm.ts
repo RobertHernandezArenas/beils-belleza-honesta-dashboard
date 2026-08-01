@@ -67,6 +67,12 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         queryFn: () => $fetch<any[]>('/api/services'),
     })
 
+    // Sellable bonos/packages catalog (to sell a bono within an appointment)
+    const { data: catalogPackages } = useQuery({
+        queryKey: ['packages-agenda'],
+        queryFn: () => $fetch<any[]>('/api/packages'),
+    })
+
     const { data: clientPackages } = useQuery({
         queryKey: ['client-packages-agenda', computed(() => form.client_id)],
         queryFn: async () => {
@@ -207,6 +213,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         staff,
         services,
         clientPackages,
+        catalogPackages,
         isSaving,
         saveBooking,
         proceedSaveBooking,

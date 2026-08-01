@@ -95,8 +95,8 @@
     "semantic_hash": "52cbca79096919003a6bfd49aec33a10"
   },
   "app/components/agenda/BookingDrawer.vue": {
-    "mtime": 1785548694.305352,
-    "ast_hash": "6ae507168f71db22043b1be5392b6d96",
+    "mtime": 1785582898.1899967,
+    "ast_hash": "6f495a34c217016ee4aedae50588798a",
     "semantic_hash": ""
   },
   "app/components/agenda/DaySummaryModal.vue": {
@@ -235,8 +235,8 @@
     "semantic_hash": ""
   },
   "app/components/tpv/TpvCatalog.vue": {
-    "mtime": 1785518754.5559988,
-    "ast_hash": "6beace317195173affcf2cd093fe3955",
+    "mtime": 1785582825.5408208,
+    "ast_hash": "5e86348861a3856a571e8fa62dc8b23f",
     "semantic_hash": ""
   },
   "app/components/ui/AppBreadcrumbs.vue": {
@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "app/composables/useTpv.ts": {
-    "mtime": 1785581699.0208242,
-    "ast_hash": "c2e52921fff2611600e6503565a6b2a8",
+    "mtime": 1785582979.3526032,
+    "ast_hash": "869330ecade64c3069750444e584c96b",
     "semantic_hash": ""
   },
   "app/error.vue": {
@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "app/pages/tpv/index.vue": {
-    "mtime": 1785518731.8995972,
-    "ast_hash": "e3cedc7fe57989b188f0abdddb668f36",
+    "mtime": 1785582837.771908,
+    "ast_hash": "d8d44608196691df0ea0971a76b82c49",
     "semantic_hash": ""
   },
   "app/pages/usuarios/index.vue": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "server/api/sales/carts/index.ts": {
-    "mtime": 1785542869.260715,
-    "ast_hash": "c50ea113084bf136352b8de9abd3d54e",
+    "mtime": 1785582673.1123974,
+    "ast_hash": "eea3b27cdd807d79b66f9929abdebc15",
     "semantic_hash": ""
   },
   "server/api/sales/debts/[id].ts": {
@@ -870,8 +870,8 @@
     "semantic_hash": ""
   },
   "app/components/agenda/BookingItemSelector.vue": {
-    "mtime": 1785542059.614828,
-    "ast_hash": "885b2c8b2e50c42aa0efdb6318a895f3",
+    "mtime": 1785582949.554604,
+    "ast_hash": "0008cacba35f249cd514157f8fe8951d",
     "semantic_hash": ""
   },
   "app/components/agenda/BookingSelectedItems.vue": {
@@ -900,8 +900,8 @@
     "semantic_hash": ""
   },
   "app/composables/useBookingForm.ts": {
-    "mtime": 1785580616.6070151,
-    "ast_hash": "6e36b14caba66c419be95fa086d21869",
+    "mtime": 1785582871.2952838,
+    "ast_hash": "65a43f03f44cf3b20478fd200203bf3c",
     "semantic_hash": ""
   },
   "app/composables/usePurchaseModal.ts": {

@@ -8,7 +8,7 @@ export function useTpv() {
 	const router = useRouter()
 
 	// Tab control
-	const activeTab = ref<'products' | 'services'>('services')
+	const activeTab = ref<'products' | 'services' | 'packages'>('services')
 	const searchQuery = ref('')
 	const clientSearch = ref('')
 
@@ -51,21 +51,39 @@ export function useTpv() {
 		queryFn: () => $fetch('/api/services'),
 	})
 
+	// Sellable bonos/packages catalog
+	const { data: packages } = useQuery<any[]>({
+		queryKey: ['packages-tpv'],
+		queryFn: () => $fetch('/api/packages'),
+	})
+
+	// Active bonos/packages owned by the selected client (for consuming sessions)
+	const { data: clientPackages } = useQuery<any[]>({
+		queryKey: ['client-packages-tpv', computed(() => selectedClient.value?.user_id)],
+		queryFn: async () => {
+			const id = selectedClient.value?.user_id
+			if (!id) return []
+			return await $fetch<any[]>(`/api/clients/${id}/packages`)
+		},
+		enabled: computed(() => !!selectedClient.value?.user_id),
+	})
+
 	const processedBookingId = ref<string | null>(null)
 
 	watch([
 		() => route.query.booking_id,
 		() => services.value,
 		() => products.value,
+		() => packages.value,
 		() => clients.value
-	], async ([bookingId, svcs, prds, cls]) => {
+	], async ([bookingId, svcs, prds, pkgs, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
 
 		// Wait until the catalog is loaded before resolving booking items. Prices come
 		// exclusively from the live catalog (booking_items store no price), so processing
 		// too early would set every unit_price to 0 and produce a 0,00 € ticket.
-		// The watch re-fires when services/products arrive, so we simply defer.
-		if (!svcs || !prds) return
+		// The watch re-fires when services/products/packages arrive, so we simply defer.
+		if (!svcs || !prds || !pkgs) return
 
 		processedBookingId.value = bookingId
 
@@ -108,6 +126,8 @@ export function useTpv() {
 						foundItem = (svcs || []).find((s: any) => s.service_id === it.item_id)
 					} else if (type === 'product') {
 						foundItem = (prds || []).find((p: any) => p.product_id === it.item_id)
+					} else if (type === 'package_sale') {
+						foundItem = (pkgs || []).find((p: any) => p.package_id === it.item_id)
 					}
 
 					let unitPrice = 0
@@ -189,6 +209,7 @@ export function useTpv() {
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
+			queryClient.invalidateQueries({ queryKey: ['client-packages-tpv'] })
 			clearCart()
 		},
 		onError: (error: any) => {
@@ -210,6 +231,11 @@ export function useTpv() {
 				(s: any) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
 			)
 		}
+		if (activeTab.value === 'packages' && packages.value) {
+			return packages.value.filter(
+				(p: any) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
+			)
+		}
 		return []
 	})
 
@@ -229,6 +255,12 @@ export function useTpv() {
 
 	// Cart Operations
 	const addToCart = (item: any, type: string) => {
+		// A catalog package is SOLD (item_type 'package_sale'), not consumed.
+		if (type === 'package') {
+			addPackageSale(item)
+			return
+		}
+
 		let itemId = ''
 		if (type === 'service') itemId = item.service_id
 		else if (type === 'product') itemId = item.product_id
@@ -251,6 +283,54 @@ export function useTpv() {
 			})
 		}
 		searchQuery.value = ''
+	}
+
+	// Sell a bono/package from the catalog (assigned to the client on checkout)
+	const addPackageSale = (pkg: any) => {
+		const existing = cartItems.value.find(
+			i => i.item_id === pkg.package_id && i.item_type === 'package_sale',
+		)
+		if (existing) {
+			existing.quantity++
+		} else {
+			cartItems.value.push({
+				item_id: pkg.package_id,
+				item_type: 'package_sale',
+				name: pkg.name,
+				unit_price: Number(pkg.price || 0),
+				tax_rate: pkg.tax_rate || 21.0,
+				quantity: 1,
+			})
+		}
+		searchQuery.value = ''
+	}
+
+	// Consume one session of a bono/package the client already owns (0 € line)
+	const consumeClientPackage = (pkg: any) => {
+		const remaining = Number(pkg.remaining_sessions || 0)
+		const alreadyInCart = cartItems.value
+			.filter(i => i.item_id === pkg.client_package_id && i.item_type === 'package')
+			.reduce((sum, i) => sum + i.quantity, 0)
+		if (remaining - alreadyInCart <= 0) {
+			displayToast('Este bono no tiene sesiones disponibles', 'error')
+			return
+		}
+
+		const existing = cartItems.value.find(
+			i => i.item_id === pkg.client_package_id && i.item_type === 'package',
+		)
+		if (existing) {
+			existing.quantity++
+		} else {
+			cartItems.value.push({
+				item_id: pkg.client_package_id,
+				item_type: 'package',
+				name: `[SESIÓN BONO] ${pkg.name}`,
+				unit_price: 0,
+				tax_rate: 0,
+				quantity: 1,
+			})
+		}
 	}
 
 	const increaseItemQty = (index: number) => {
@@ -306,6 +386,13 @@ export function useTpv() {
 			return
 		}
 
+		// Selling a bono/package assigns it to a person -> a registered client is required
+		const hasPackageSale = cartItems.value.some(i => i.item_type === 'package_sale')
+		if (hasPackageSale && !selectedClient.value?.user_id) {
+			displayToast('Selecciona un cliente registrado para vender un bono o paquete', 'error')
+			return
+		}
+
 		processSale({
 			user_id: selectedClient.value?.user_id,
 			status: paymentMethod.value === 'debt' ? 'pending' : 'completed',
@@ -341,10 +428,12 @@ export function useTpv() {
 		avatarError,
 		filteredCatalog,
 		filteredClients,
+		clientPackages,
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
 		addToCart,
+		consumeClientPackage,
 		removeFromCart,
 		increaseItemQty,
 		decreaseItemQty,

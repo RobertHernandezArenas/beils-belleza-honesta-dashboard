@@ -1,16 +1,16 @@
-# Graph Report - beils-belleza-honesta-dashboard  (2026-07-31)
+# Graph Report - beils-belleza-honesta-dashboard  (2026-08-01)
 
 ## Corpus Check
-- 568 files · ~570,541 words
+- 575 files · ~573,787 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3822 nodes · 4242 edges · 468 communities (382 shown, 86 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 29 edges (avg confidence: 0.58)
+- 3855 nodes · 4276 edges · 466 communities (379 shown, 87 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `86341288`
+- Built from commit: `458bf1fd`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -141,7 +141,6 @@
 - vue
 - vue-advanced-cropper
 - vue-echarts
-- vue-i18n
 - vue-router
 - @vueuse/core
 - workbox-window
@@ -161,6 +160,8 @@
 - index.vue
 - [id].ts
 - Excalidraw Skill
+- [id].ts
+- index.ts
 - App.tsx
 - elements.ts
 - types.ts
@@ -270,7 +271,6 @@
 - graphify reference: query, path, explain
 - Common Rules for Professional UI
 - Example Workflow
-- Avoid Expensive Operations in Updated Hook
 - Alternative Solutions
 - Web Interface Guidelines
 - useBookingForm.ts
@@ -455,23 +455,23 @@
 ## Surprising Connections (you probably didn't know these)
 - `useSales()` --indirect_call--> `query()`  [INFERRED]
   app/composables/useSales.ts → tmp-excalidraw-mcp/src/cli/commands/elements.ts
+- `main()` --references--> `@prisma/client`  [EXTRACTED]
+  scripts/create-missing-tables.ts → package.json
+- `main()` --references--> `@prisma/client`  [EXTRACTED]
+  scripts/sync-exact-client-packages.ts → package.json
+- `main()` --references--> `@prisma/client`  [EXTRACTED]
+  scripts/test-db-connection.ts → package.json
 - `_generate_intelligent_overrides()` --calls--> `search()`  [INFERRED]
   .agents/skills/ui-ux-pro-max/scripts/design_system.py → .agents/skills/ui-ux-pro-max/scripts/core.py
-- `_generate_intelligent_overrides()` --calls--> `search()`  [INFERRED]
-  .claude/skills/ui-ux-pro-max/scripts/design_system.py → .claude/skills/ui-ux-pro-max/scripts/core.py
-- `exportVentasPdf()` --references--> `jspdf`  [EXTRACTED]
-  app/utils/exportHelpers.ts → package.json
-- `handlePrintReceipt()` --calls--> `printReceipt()`  [INFERRED]
-  app/components/shared/PurchaseModalHeader.vue → app/components/clients/DebtDetailsModal.vue
 
 ## Import Cycles
 - None detected.
 
-## Communities (468 total, 86 thin omitted)
+## Communities (466 total, 87 thin omitted)
 
 ### Community 0 - "BookingDrawer.vue"
-Cohesion: 0.07
-Nodes (25): clientSearch, emit, filteredClients, isClientDropdownOpen, props, selectClient(), clientSelectorRef, emit (+17 more)
+Cohesion: 0.06
+Nodes (31): clientSearch, emit, filteredClients, isClientDropdownOpen, props, selectClient(), clientSelectorRef, emit (+23 more)
 
 ### Community 1 - "PurchaseDetailsModal.vue"
 Cohesion: 0.12
@@ -496,28 +496,28 @@ Nodes (3): {
 
 ### Community 2 - "prisma.ts"
 Cohesion: 0.05
-Nodes (10): consentUpdateSchema, consentSchema, TODO: Implement giftcards when added to Prisma schema, questionnaireUpdateSchema, questionnaireSchema, revokeUpdateSchema, revokeSchema, userSchema (+2 more)
+Nodes (7): consentUpdateSchema, TODO: Implement giftcards when added to Prisma schema, questionnaireSchema, revokeUpdateSchema, userSchema, localGlobal, poolConfig
 
 ### Community 3 - "ClientFormModal.vue"
 Cohesion: 0.07
 Nodes (21): { animateOpen, animateClose }, apiError, avatarError, avatarFile, avatarPreview, clearError(), clientDialog, clientSchema (+13 more)
 
 ### Community 4 - "[id].vue"
-Cohesion: 0.08
-Nodes (17): agendaStore, clientId, {
+Cohesion: 0.09
+Nodes (18): activeTab, agendaStore, clientId, {
   data: client,
   isPending,
   error,
   isFetching,
-}, debtDetailsModalRef, isConsentModalOpen, isQuestionnaireModalOpen, isRevokeModalOpen, { locale, t } (+9 more)
+}, debtDetailsModalRef, isConsentModalOpen, isQuestionnaireModalOpen, isRevokeModalOpen (+10 more)
 
 ### Community 5 - "PackFormModal.vue"
 Cohesion: 0.04
 Nodes (45): frontend, **/*.js, **/*.jsx, node, node_modules, **/*.spec.ts, src/**/*.ts, **/*.test.ts (+37 more)
 
 ### Community 6 - "index.vue"
-Cohesion: 0.09
-Nodes (18): authStore, avatarErrors, { data: bookings, isPending: loadingBookings }, { data: carts, isPending: loadingCarts }, { data: clients, isPending: loadingClients }, { data: debts, isPending: loadingDebts }, { data: products, isPending: loadingProducts }, dateOptions (+10 more)
+Cohesion: 0.08
+Nodes (19): authStore, avatarErrors, { data: bookings, isPending: loadingBookings }, { data: carts, isPending: loadingCarts }, { data: clients, isPending: loadingClients }, { data: debts, isPending: loadingDebts }, { data: products, isPending: loadingProducts }, dateOptions (+11 more)
 
 ### Community 7 - "index.vue"
 Cohesion: 0.09
@@ -528,8 +528,8 @@ Nodes (19): currentPage, {
 	}, filteredUsers, filtersStore, handleToast(), itemsPerPage, { mutate: deleteUser, isPending: isDeletingUser }, { mutate: updateStatus } (+11 more)
 
 ### Community 8 - "ProfileHeader.vue"
-Cohesion: 0.11
-Nodes (14): avatarError, avatarTimestamp, currentFileMeta, displayAvatar, emit, engagementScore, fileInput, isUploadingAvatar (+6 more)
+Cohesion: 0.09
+Nodes (17): avatarError, avatarTimestamp, currentFileMeta, displayAvatar, emit, engagementScore, engagementTier, engagementTierLabel (+9 more)
 
 ### Community 9 - "index.vue"
 Cohesion: 0.09
@@ -540,20 +540,20 @@ Nodes (14): avatarErrors, clients, {
 	}, limit, { mutate: deleteClient, isPending: deleting }, page, pagination, queryClient (+6 more)
 
 ### Community 10 - "index.vue"
-Cohesion: 0.11
-Nodes (17): { data: debts, isPending }, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, paymentAmount, paymentMethod, paymentModalRef (+9 more)
+Cohesion: 0.10
+Nodes (18): { data: debts, isPending }, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, { notifySalesChanged }, paymentAmount, paymentMethod (+10 more)
 
 ### Community 11 - "design_system.py"
-Cohesion: 0.15
-Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
+Cohesion: 0.13
+Nodes (22): ansi_ljust(), _detect_page_type(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides() (+14 more)
 
 ### Community 12 - "DesignSystemGenerator"
 Cohesion: 0.14
 Nodes (11): DesignSystemGenerator, Find matching reasoning rule for a category., Apply reasoning rules to search results., Select best matching result based on priority keywords., Extract results list from search result dict., Generate complete design system recommendation.          variance/motion/densi, Bucket a 1-10 dial value into its tier config. Returns None if value is None., Generates design system recommendations from aggregated searches. (+3 more)
 
 ### Community 13 - "ProfileOverview.vue"
-Cohesion: 0.12
-Nodes (18): emit, formatDate(), gdprStatus, getConsentStatus(), isSavingNotes, kpis, lastVisitDays, { locale, t } (+10 more)
+Cohesion: 0.14
+Nodes (12): chartOptions, emit, isSavingNotes, kpis, { locale }, nextBookingData, notesText, pendingDebtTotal (+4 more)
 
 ### Community 14 - "design_system.py"
 Cohesion: 0.15
@@ -596,8 +596,8 @@ Cohesion: 0.05
 Nodes (38): 1. Create a project, 2. Send a chat message, 3. Show the results, Chat: Cancel Run, Chat: Poll Run Status, Chat: Send Message, Common Mistakes, Components (+30 more)
 
 ### Community 23 - "BonusFormModal.vue"
-Cohesion: 0.13
-Nodes (11): { animateOpen, animateClose }, { data: services }, editingBonus, emit, form, isSaving, modalRef, { mutate: performSave } (+3 more)
+Cohesion: 0.12
+Nodes (9): { data: products }, { data: services }, editingId, emit, form, isEditing, isOpen, { mutate: savePackage, isPending: isSaving } (+1 more)
 
 ### Community 24 - "MediaLibrary.vue"
 Cohesion: 0.05
@@ -628,8 +628,8 @@ Cohesion: 0.05
 Nodes (41): 1. Use Modern Layout Methods, 2. Handle Edge Cases, 3. Use Semantic Sizing, 4. Test All Breakpoints, Advanced Flexbox Patterns, Advanced Spacing, Aspect Ratio and Object Fit, Auto-Fill and Auto-Fit Grids (+33 more)
 
 ### Community 30 - "index.vue"
-Cohesion: 0.13
-Nodes (9): { data: services, isPending }, modalRef, { mutate: deleteService }, queryClient, queryParams, searchQuery, showToast, toastMessage (+1 more)
+Cohesion: 0.09
+Nodes (13): activeTab, { data: packages, isPending: isPendingPackages }, { data: services, isPending }, modalRef, { mutate: deletePackage }, { mutate: deleteService }, packageModalRef, queryClient (+5 more)
 
 ### Community 31 - "devDependencies"
 Cohesion: 0.13
@@ -664,20 +664,20 @@ Nodes (8): {
 	}, filteredItems, { mutate: deleteItem, isPending: deleting }, queryClient, searchQuery, selectedItem, showDeleteModal, showFormModal
 
 ### Community 38 - "index.vue"
-Cohesion: 0.14
-Nodes (9): { data: bonuses, isPending }, modalRef, { mutate: deleteBonus }, queryClient, queryParams, searchQuery, showToast, toastMessage (+1 more)
+Cohesion: 0.18
+Nodes (8): { data: catalogPackages, isPending: isLoadingPackages }, emit, expiryMonths, isOpen, { mutate: assignPackage, isPending: isAssigning }, props, queryClient, selectedPackageId
 
 ### Community 39 - "index.vue"
-Cohesion: 0.50
-Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
+Cohesion: 0.29
+Nodes (6): emit, indibaContraindications, indibaQuestionnaire, laserContraindications, laserQuestionnaire, props
 
 ### Community 40 - "_sync_all.py"
 Cohesion: 0.29
 Nodes (13): blend(), derive_row(), derive_ui_reasoning(), h2r(), is_dark(), lum(), on_color(), r2h() (+5 more)
 
 ### Community 41 - "auth.ts"
-Cohesion: 0.33
-Nodes (4): clientSchema, clientSchema, requireAdmin(), maskDocument()
+Cohesion: 0.27
+Nodes (5): clientSchema, clientSchema, paymentSchema, requireAdmin(), maskDocument()
 
 ### Community 42 - "AgendaGridView.vue"
 Cohesion: 0.17
@@ -704,16 +704,16 @@ Cohesion: 0.25
 Nodes (10): detect_domain(), _load_csv(), Load CSV and return list of dicts, Core search function using BM25, Auto-detect the most relevant domain from query, Main search function with auto-domain detection, Search stack-specific guidelines, search() (+2 more)
 
 ### Community 48 - "dependencies"
-Cohesion: 0.18
-Nodes (11): aos, jsonwebtoken, dependencies, aos, jsonwebtoken, @prisma/client, @tailwindcss/vite, xadesjs (+3 more)
+Cohesion: 0.13
+Nodes (12): @prisma/client, @prisma/client, main(), poolConfig, prisma, main(), poolConfig, prisma (+4 more)
 
 ### Community 49 - "AgendaYearView.vue"
 Cohesion: 0.18
 Nodes (5): currentYear, emit, monthNames, months, props
 
 ### Community 50 - "TpvCart.vue"
-Cohesion: 0.28
-Nodes (8): clientSearch, confirmLastSession(), discountAmount, emit, handleAttemptCheckout(), isConfirmingLastSession, paymentMethod, Props
+Cohesion: 0.33
+Nodes (5): clientSearch, discountAmount, emit, paymentMethod, Props
 
 ### Community 51 - "AppPagination.vue"
 Cohesion: 0.18
@@ -740,12 +740,12 @@ Cohesion: 0.20
 Nodes (7): currentLanguage, dropdownRef, isOpen, languageMap, { locale, setLocale }, localeCookie, locales
 
 ### Community 57 - "seed-db.ts"
-Cohesion: 0.24
-Nodes (9): cities, documentTypes, getRandomItem(), getRandomNumber(), namesFemale, namesMale, seedDB(), statuses (+1 more)
+Cohesion: 0.33
+Nodes (3): activePackages, assignModalRef, props
 
 ### Community 58 - "verifactu.ts"
-Cohesion: 0.35
-Nodes (6): paymentSchema, submitToAeat(), generateInvoiceHash(), generateQrUrl(), generateInvoiceNumber(), processVerifactuInvoice()
+Cohesion: 0.42
+Nodes (5): submitToAeat(), generateInvoiceHash(), generateQrUrl(), generateInvoiceNumber(), processVerifactuInvoice()
 
 ### Community 59 - "compilerOptions"
 Cohesion: 0.20
@@ -788,8 +788,8 @@ Nodes (6): {
 	}, isExporting, paymentMethodsOptions, revenueTrendOptions, { t }, topItemsOptions
 
 ### Community 68 - "index.vue"
-Cohesion: 0.25
-Nodes (6): purchaseDetailsModalRef, queryClient, salesCount, salesTotalSum, {
+Cohesion: 0.22
+Nodes (7): { listenSalesChanged }, purchaseDetailsModalRef, queryClient, salesCount, salesTotalSum, {
 	searchQuery,
 	filterDateMode,
 	filterDateSingle,
@@ -870,8 +870,8 @@ Nodes (5): daySummaryModalRef, queryClient, {
 }, viewComponent, viewContainer
 
 ### Community 75 - "ProfileBilling.vue"
-Cohesion: 0.40
-Nodes (3): emit, { locale }, props
+Cohesion: 0.29
+Nodes (5): chartOptions, emit, { locale }, paymentMethodsData, props
 
 ### Community 76 - "ProfileTabs.vue"
 Cohesion: 0.50
@@ -905,10 +905,6 @@ Nodes (3): IPack, IProduct, IService
 Cohesion: 0.50
 Nodes (3): AEATStatus, IInvoice, IIssuer
 
-### Community 85 - "marketing.ts"
-Cohesion: 0.50
-Nodes (3): IBonus, ICoupon, IGiftcard
-
 ### Community 90 - "useSync.ts"
 Cohesion: 0.67
 Nodes (3): getChannel(), SyncEvent, useSync()
@@ -932,7 +928,6 @@ Nodes (3): {
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
-		clientBonuses,
 
 		addToCart,
 		removeFromCart,
@@ -945,6 +940,10 @@ Nodes (3): {
 		increaseItemQty,
 	}, mobileTab, totalCartCount
 
+### Community 107 - "dexie"
+Cohesion: 0.12
+Nodes (17): dexie, echarts, html2pdf.js, lucide-vue-next, dependencies, dexie, echarts, html2pdf.js (+9 more)
+
 ### Community 108 - "bcryptjs"
 Cohesion: 0.40
 Nodes (3): exportVentasPdf(), jspdf, jspdf
@@ -955,7 +954,7 @@ Nodes (24): For /graphify add and --watch, For /graphify query, For the commit h
 
 ### Community 123 - "@prisma/client"
 Cohesion: 0.09
-Nodes (26): ApiResponse, SyncResponse, convertTextToLabel(), ElementInput, sanitizeFilePath(), cleanElementsForShare(), concatBuffers(), exportToExcalidrawUrl() (+18 more)
+Nodes (24): describe(), ApiResponse, SyncResponse, describeScene(), cleanElementsForShare(), concatBuffers(), exportToExcalidrawUrl(), AlignElementsSchema (+16 more)
 
 ### Community 126 - "@tailwindcss/vite"
 Cohesion: 0.07
@@ -986,7 +985,7 @@ Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
 ### Community 149 - "[id].put.ts"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 157 - "index.vue"
@@ -1006,8 +1005,8 @@ Cohesion: 0.14
 Nodes (20): ApiResponse, App(), cleanElementForExcalidraw(), convertElementsPreservingImageProps(), ExcalidrawAPIRefValue, isFreedrawElement(), isImageElement(), isShapeContainerType() (+12 more)
 
 ### Community 179 - "elements.ts"
-Cohesion: 0.23
-Nodes (22): parseArgs(), add(), apply(), coerce(), del(), get(), lookupPath(), normalizePatchUpdate() (+14 more)
+Cohesion: 0.19
+Nodes (25): parseArgs(), add(), apply(), coerce(), del(), get(), lookupPath(), normalizePatchUpdate() (+17 more)
 
 ### Community 180 - "types.ts"
 Cohesion: 0.11
@@ -1066,7 +1065,7 @@ Cohesion: 0.11
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 199 - "Directive Best Practices"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (11): Avoid Directives on Components, Clean Up Side Effects in `unmounted`, Decide Between Directives and Components, Directive Best Practices, Handle SSR with `getSSRProps`, Prefer Declarative Templates When Possible, Prefer Function Shorthand for Single-Hook Directives, Task List (+3 more)
 
 ### Community 200 - "Directive Best Practices"
@@ -1334,8 +1333,8 @@ Cohesion: 0.29
 Nodes (6): Alternatives to Wrapper Components, Avoid Excessive Component Abstraction in Large Lists, Impact Calculation, Measuring Component Overhead, Task List, When Abstraction Is Still Worth It
 
 ### Community 266 - "State Management Strategy"
-Cohesion: 0.29
-Nodes (6): Avoid Exporting Mutable Module State, Choose the Lightest Store Approach, Do Not Use Runtime Singletons in SSR, State Management Strategy, Task List, Use `createGlobalState` for Small SPA Global State
+Cohesion: 0.14
+Nodes (10): Avoid Exporting Mutable Module State, Choose the Lightest Store Approach, Do Not Use Runtime Singletons in SSR, State Management Strategy, Task List, Use `createGlobalState` for Small SPA Global State, Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data (+2 more)
 
 ### Community 267 - "SKILL.md"
 Cohesion: 0.29
@@ -1437,10 +1436,6 @@ Nodes (5): Common Rules for Professional UI, Icons & Visual Elements, Interactio
 Cohesion: 0.40
 Nodes (5): Example Workflow, Step 1: Analyze Requirements, Step 2: Generate Design System (REQUIRED), Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines
 
-### Community 292 - "Avoid Expensive Operations in Updated Hook"
-Cohesion: 0.40
-Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
-
 ### Community 293 - "Alternative Solutions"
 Cohesion: 0.40
 Nodes (5): 1. Use Arrow Functions in the Template, 2. Bind Methods in the Store Definition, 3. Use Pinia (Recommended), 4. Wrap in a Local Function, Alternative Solutions
@@ -1534,8 +1529,8 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ### Community 351 - "scene.ts"
-Cohesion: 0.22
-Nodes (13): CliUsageError, FlagSpec, ParsedArgs, readStdin(), describe(), importCmd(), mermaid(), readTextFileOrStdin() (+5 more)
+Cohesion: 0.20
+Nodes (17): CliUsageError, FlagSpec, ParsedArgs, readStdin(), countFiles(), expandHome(), findSkillSource(), installSkill() (+9 more)
 
 ### Community 352 - "arrange.ts"
 Cohesion: 0.31
@@ -1558,20 +1553,20 @@ Cohesion: 0.12
 Nodes (16): aliases, components, hooks, lib, ui, utils, rsc, $schema (+8 more)
 
 ### Community 357 - "DebtDetailsModal.vue"
-Cohesion: 0.16
-Nodes (13): amountToPay, close(), debt, emit, getRemainingAfterPayment(), isProcessing, isValidPayment, { locale } (+5 more)
+Cohesion: 0.15
+Nodes (14): amountToPay, close(), debt, emit, getRemainingAfterPayment(), isProcessing, isValidPayment, { locale } (+6 more)
 
 ### Community 358 - "scripts"
 Cohesion: 0.13
 Nodes (15): scripts, build, build:frontend, build:server, build:types, canvas, cli, dev (+7 more)
 
 ### Community 359 - "run.ts"
-Cohesion: 0.25
-Nodes (12): countFiles(), expandHome(), findSkillSource(), installSkill(), resolveSkillsRoot(), resolveTarget(), Command, COMMANDS (+4 more)
+Cohesion: 0.43
+Nodes (6): Command, COMMANDS, exitCodeFor(), printHelp(), runCli(), packageVersion()
 
 ### Community 360 - "scene-io.ts"
-Cohesion: 0.23
-Nodes (13): getElements(), getFiles(), _decompress(), decompressFromBase64(), extractSceneJsonFromObsidianMd(), isObsidianExcalidrawMd(), nanoid8(), renameElementId() (+5 more)
+Cohesion: 0.22
+Nodes (14): getElements(), getFiles(), sanitizeFilePath(), _decompress(), decompressFromBase64(), extractSceneJsonFromObsidianMd(), isObsidianExcalidrawMd(), nanoid8() (+6 more)
 
 ### Community 361 - "Tailwind CSS Accessibility Guidelines"
 Cohesion: 0.14
@@ -1954,24 +1949,24 @@ Cohesion: 0.67
 Nodes (3): repository, type, url
 
 ## Knowledge Gaps
-- **2252 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2247 more)
+- **2270 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2265 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **86 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `vue-i18n`, `vue-router`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `dexie`, `bcryptjs`, `echarts`, `gsap`, `html2pdf.js`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `qrcode.vue`, `soap`, `@tanstack/vue-query`?**
+- **Why does `dependencies` connect `dexie` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `dependencies`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `bcryptjs`, `gsap`, `html2pdf.js`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `qrcode.vue`, `soap`, `@tanstack/vue-query`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `scripts` connect `scripts` to `package.json`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _2252 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2270 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `BookingDrawer.vue` be split into smaller, more focused modules?**
-  _Cohesion score 0.06554621848739496 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.058693244739756366 - nodes in this community are weakly interconnected._
 - **Should `PurchaseDetailsModal.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `prisma.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.047619047619047616 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
 - **Should `ClientFormModal.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.07389162561576355 - nodes in this community are weakly interconnected._
-- **Should `[id].vue` be split into smaller, more focused modules?**
-  _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._

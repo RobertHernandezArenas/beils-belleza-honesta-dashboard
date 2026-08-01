@@ -21,11 +21,13 @@
 		avatarError,
 		filteredCatalog,
 		filteredClients,
+		clientPackages,
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
 
 		addToCart,
+		consumeClientPackage,
 		removeFromCart,
 		clearCart,
 		selectClient,
@@ -94,7 +96,10 @@
 				v-model:search-query="searchQuery"
 				:filtered-catalog="filteredCatalog"
 				:format-currency="formatCurrency"
+				:client-packages="clientPackages"
+				:selected-client="selectedClient"
 				@add-to-cart="handleAddToCartAndNotify"
+				@consume-package="consumeClientPackage"
 			/>
 		</div>
 

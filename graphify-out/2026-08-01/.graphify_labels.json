@@ -291,7 +291,6 @@
   "289": "graphify reference: query, path, explain",
   "290": "Common Rules for Professional UI",
   "291": "Example Workflow",
-  "292": "Avoid Expensive Operations in Updated Hook",
   "293": "Alternative Solutions",
   "294": "Web Interface Guidelines",
   "295": "useBookingForm.ts",
@@ -463,7 +462,6 @@
   "461": "prisma",
   "462": "@prisma/adapter-mariadb",
   "463": "@types/node",
-  "464": "test-db-connection.ts",
   "465": "vite.config.ts",
   "466": "upload.post.ts",
   "467": "vite.config.js"

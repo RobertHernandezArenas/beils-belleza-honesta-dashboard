@@ -5,6 +5,7 @@ import { Search, Plus, Package, Sparkles, Scissors, ShoppingBag, ChevronDown, Ch
 const props = defineProps<{
     services: any[] | undefined
     clientPackages?: any[] | undefined
+    catalogPackages?: any[] | undefined
     selectedItems?: any[] | undefined
     disabled?: boolean
 }>()
@@ -15,6 +16,8 @@ const emit = defineEmits<{
 
 const itemSearch = ref('')
 const isItemDropdownOpen = ref(false)
+const pkgSearch = ref('')
+const isPkgDropdownOpen = ref(false)
 const expandedPackages = ref<Record<string, boolean>>({})
 
 const toggleExpandPackage = (pkgId: string) => {
@@ -66,6 +69,29 @@ const addServiceItem = (item: any) => {
     isItemDropdownOpen.value = false
 }
 
+const filteredPackages = computed(() => {
+    const q = normalizeStr(pkgSearch.value)
+    const source: any[] = props.catalogPackages || []
+    if (!q) return source.slice(0, 10)
+    return source.filter(pkg =>
+        normalizeStr(pkg.name).includes(q) ||
+        normalizeStr(pkg.code || '').includes(q)
+    ).slice(0, 15)
+})
+
+// Sell a bono/package within the appointment (assigned to the client on checkout in TPV)
+const addPackageSaleItem = (pkg: any) => {
+    emit('add', {
+        item_type: 'package_sale',
+        item_id: pkg.package_id,
+        name: pkg.name,
+        duration: 0,
+        price: Number(pkg.price || 0)
+    })
+    pkgSearch.value = ''
+    isPkgDropdownOpen.value = false
+}
+
 const addIndividualPackageItem = (pkg: any) => {
     if (getEffectiveRemainingForPackage(pkg) <= 0) return
     const pkgId = pkg.client_package_id || pkg.package_id
@@ -96,6 +122,7 @@ const addMixedPackageSubItem = (pkg: any, subItem: any) => {
 
 const closeDropdown = () => {
     isItemDropdownOpen.value = false
+    isPkgDropdownOpen.value = false
 }
 
 defineExpose({
@@ -234,6 +261,32 @@ defineExpose({
                     <Plus class="h-4 w-4 text-primary" />
                 </button>
                 <div v-if="filteredItems.length === 0" class="px-4 py-4 text-center text-xs text-text-muted italic">No hay resultados</div>
+            </div>
+        </div>
+
+        <!-- Vender Bono / Paquete -->
+        <div v-if="catalogPackages && catalogPackages.length > 0" class="relative z-30">
+            <Package class="text-primary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <input v-model="pkgSearch" type="text" placeholder="Vender bono / paquete..." :disabled="disabled"
+                class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
+                @focus="!disabled && (isPkgDropdownOpen = true)"
+                @keydown.esc="isPkgDropdownOpen = false" />
+
+            <div v-show="isPkgDropdownOpen" class="bg-bg-card border-border-default absolute z-40 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
+                <button v-for="pkg in filteredPackages" :key="pkg.package_id"
+                    type="button" class="hover:bg-bg-muted flex w-full items-center justify-between px-4 py-3 text-left border-b border-border-subtle last:border-none"
+                    @mousedown="addPackageSaleItem(pkg)">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-text-primary">{{ pkg.name }}</span>
+                        <span class="text-text-muted text-[10px] uppercase font-bold mt-0.5">
+                            {{ pkg.type === 'MIXTO' ? 'Mixto' : `${pkg.total_sessions} sesiones` }}
+                        </span>
+                    </div>
+                    <span class="text-xs font-black tabular-nums text-primary">
+                        {{ new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(pkg.price || 0) }}
+                    </span>
+                </button>
+                <div v-if="filteredPackages.length === 0" class="px-4 py-4 text-center text-xs text-text-muted italic">No hay bonos</div>
             </div>
         </div>
     </div>
