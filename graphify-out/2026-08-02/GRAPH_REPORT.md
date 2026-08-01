@@ -1,16 +1,16 @@
-# Graph Report - beils-belleza-honesta-dashboard  (2026-08-02)
+# Graph Report - beils-belleza-honesta-dashboard  (2026-08-01)
 
 ## Corpus Check
-- 577 files · ~576,963 words
+- 575 files · ~574,949 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3896 nodes · 4320 edges · 470 communities (383 shown, 87 thin omitted)
+- 3860 nodes · 4286 edges · 467 communities (380 shown, 87 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `59f9614b`
+- Built from commit: `f7c10d1b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -440,9 +440,6 @@
 - prisma
 - @prisma/adapter-mariadb
 - @types/node
-- Avoid Expensive Operations in Updated Hook
-- @nuxtjs/google-fonts
-- vite
 
 ## God Nodes (most connected - your core abstractions)
 1. `ensureCanvasRunning()` - 32 edges
@@ -471,7 +468,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (470 total, 87 thin omitted)
+## Communities (467 total, 87 thin omitted)
 
 ### Community 0 - "BookingDrawer.vue"
 Cohesion: 0.05
@@ -637,7 +634,7 @@ Nodes (18): activeTab, closeMenu(), confirmDelete(), confirmDeletePackage(), { d
 
 ### Community 31 - "devDependencies"
 Cohesion: 0.13
-Nodes (15): daisyui, h3, devDependencies, daisyui, h3, prettier-plugin-tailwindcss, sharp, tailwindcss (+7 more)
+Nodes (15): daisyui, h3, @nuxtjs/google-fonts, devDependencies, daisyui, h3, @nuxtjs/google-fonts, prettier-plugin-tailwindcss (+7 more)
 
 ### Community 32 - "_sync_all.py"
 Cohesion: 0.29
@@ -1003,7 +1000,7 @@ Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
 ### Community 149 - "[id].put.ts"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 157 - "index.vue"
@@ -1083,7 +1080,7 @@ Cohesion: 0.11
 Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
 
 ### Community 199 - "Directive Best Practices"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (11): Avoid Directives on Components, Clean Up Side Effects in `unmounted`, Decide Between Directives and Components, Directive Best Practices, Handle SSR with `getSSRProps`, Prefer Declarative Templates When Possible, Prefer Function Shorthand for Single-Hook Directives, Task List (+3 more)
 
 ### Community 200 - "Directive Best Practices"
@@ -1351,8 +1348,8 @@ Cohesion: 0.29
 Nodes (6): Alternatives to Wrapper Components, Avoid Excessive Component Abstraction in Large Lists, Impact Calculation, Measuring Component Overhead, Task List, When Abstraction Is Still Worth It
 
 ### Community 266 - "State Management Strategy"
-Cohesion: 0.29
-Nodes (6): Avoid Exporting Mutable Module State, Choose the Lightest Store Approach, Do Not Use Runtime Singletons in SSR, State Management Strategy, Task List, Use `createGlobalState` for Small SPA Global State
+Cohesion: 0.14
+Nodes (10): Avoid Exporting Mutable Module State, Choose the Lightest Store Approach, Do Not Use Runtime Singletons in SSR, State Management Strategy, Task List, Use `createGlobalState` for Small SPA Global State, Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data (+2 more)
 
 ### Community 267 - "SKILL.md"
 Cohesion: 0.29
@@ -1958,20 +1955,8 @@ Nodes (3): Algunas palabras del Diccionario Caleño:, Consejos para hablar con a
 Cohesion: 0.50
 Nodes (3): npx, excalidraw-mcp, mcp_excalidraw
 
-### Community 455 - "author"
-Cohesion: 0.09
-Nodes (22): 1. Context and goals, 2.1 Typography, 2.2 Color (semantic tokens — do not use raw hex in components), 2.3 Spacing, 2.4 Radius, elevation, motion, 2. Design tokens and foundations, 3.1 Buttons (`btn`), 3.2 Inputs / selects / textareas (+14 more)
-
-### Community 456 - "repository"
-Cohesion: 0.15
-Nodes (12): Accessibility, Brand, Component Rule Expectations, Gogo Admin Template, Guideline Authoring Workflow, Mission, Quality Gates, Required Output Structure (+4 more)
-
-### Community 464 - "Avoid Expensive Operations in Updated Hook"
-Cohesion: 0.40
-Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
-
 ## Knowledge Gaps
-- **2302 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2297 more)
+- **2273 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2268 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1980,15 +1965,15 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `dependencies` connect `dexie` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `html2pdf.js`, `dependencies`, `qrcode.vue`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `bcryptjs`, `gsap`, `lucide-vue-next`, `mariadb`, `nuxt`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `soap`, `@tanstack/vue-query`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `prettier`, `tsx`, `@types/node`, `package.json`, `@nuxtjs/google-fonts`, `vite`, `index.post.ts`, `@peculiar/webcrypto`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **Why does `daisyUI 5` connect `daisyUI 5` to `SKILL.md`?**
+- **Why does `devDependencies` connect `devDependencies` to `author`, `repository`, `prettier`, `tsx`, `@types/node`, `package.json`, `index.post.ts`, `@peculiar/webcrypto`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _2302 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2273 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `BookingDrawer.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.05365402405180388 - nodes in this community are weakly interconnected._
 - **Should `PurchaseDetailsModal.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `prisma.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
+- **Should `ClientFormModal.vue` be split into smaller, more focused modules?**
+  _Cohesion score 0.07389162561576355 - nodes in this community are weakly interconnected._

@@ -56,6 +56,8 @@ export default defineNuxtConfig({
 
 	googleFonts: {
 		families: {
+			// Gogo Admin Template primary typeface
+			Mulish: [300, 400, 500, 600, 700, 800],
 			Roboto: [300, 400, 500, 700],
 			'Roboto Condensed': [300, 400, 700],
 		},

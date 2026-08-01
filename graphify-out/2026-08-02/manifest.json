@@ -350,8 +350,8 @@
     "semantic_hash": "cd51d9168e7b0da00b8975d731198c73"
   },
   "app/layouts/default.vue": {
-    "mtime": 1785622500.441046,
-    "ast_hash": "f6fa4221ded56f675cc84070e7f0062c",
+    "mtime": 1785518697.9453323,
+    "ast_hash": "2ec5ac784cf55e4c4b48e9cd88966f0e",
     "semantic_hash": ""
   },
   "app/locales/en.json": {
@@ -520,9 +520,9 @@
     "semantic_hash": "13ddc4ba52b2a85e25937aebcdb4df62"
   },
   "nuxt.config.ts": {
-    "mtime": 1785623926.1678784,
-    "ast_hash": "d284061eec69e04fdce60cad95926c60",
-    "semantic_hash": ""
+    "mtime": 1785367062.3191266,
+    "ast_hash": "9126a178ec07df30904fd61233c8938b",
+    "semantic_hash": "9126a178ec07df30904fd61233c8938b"
   },
   "package.json": {
     "mtime": 1785490050.799426,
@@ -3277,16 +3277,6 @@
   "server/api/packages/index.post.ts": {
     "mtime": 1785543834.8510928,
     "ast_hash": "950a8699cda6af06f1263f52b0cfd938",
-    "semantic_hash": ""
-  },
-  ".claude/skills/gogo-theme/SKILL.md": {
-    "mtime": 1785623253.1029725,
-    "ast_hash": "5c1b3db68d10bba3e01a5d3803b6399a",
-    "semantic_hash": ""
-  },
-  "docs/design-system-gogo.md": {
-    "mtime": 1785624838.2702796,
-    "ast_hash": "64adbff0831a14fe8a3128e05dbcf979",
     "semantic_hash": ""
   }
 }
