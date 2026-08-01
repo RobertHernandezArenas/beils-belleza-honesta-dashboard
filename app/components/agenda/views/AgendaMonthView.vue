@@ -113,8 +113,8 @@ const getStatusColorClip = (status: string) => {
         confirmada: 'bg-primary/10 text-primary',
         completed: 'bg-emerald-500/10 text-emerald-700',
         completada: 'bg-emerald-500/10 text-emerald-700',
-        cancelled: 'bg-stone-500/10 text-stone-500 opacity-60',
-        cancelada: 'bg-stone-500/10 text-stone-500 opacity-60',
+        cancelled: 'bg-text-muted/10 text-text-muted opacity-60',
+        cancelada: 'bg-text-muted/10 text-text-muted opacity-60',
     }
     return map[key] || 'bg-bg-muted text-text-muted'
 }

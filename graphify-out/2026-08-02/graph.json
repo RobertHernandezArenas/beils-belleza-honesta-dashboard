@@ -1088,8 +1088,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_hex_to_ansi",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "hex_to_ansi()"
     },
     {
@@ -1099,8 +1099,8 @@
       "source_location": "L347",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_ansi_ljust",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "ansi_ljust()"
     },
     {
@@ -1110,8 +1110,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_section_header",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "section_header()"
     },
     {
@@ -1121,8 +1121,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_format_ascii_box",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "format_ascii_box()"
     },
     {
@@ -1187,8 +1187,8 @@
       "source_location": "L1176",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_generate_intelligent_overrides",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "_generate_intelligent_overrides()"
     },
     {
@@ -1198,8 +1198,8 @@
       "source_location": "L1282",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_detect_page_type",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "_detect_page_type()"
     },
     {
@@ -1308,8 +1308,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_334",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "convert hex color to ansi true color swatch (\u2588\u2588) with fallback."
     },
     {
@@ -1319,8 +1319,8 @@
       "source_location": "L348",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_348",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "like str.ljust but accounts for zero-width ansi escape sequences."
     },
     {
@@ -1330,8 +1330,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_356",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "create a unicode section separator: \u251c\u2500\u2500\u2500 name \u2500\u2500\u2500...\u2524"
     },
     {
@@ -1341,8 +1341,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_363",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "format design system as unicode box with ansi color swatches."
     },
     {
@@ -1407,8 +1407,8 @@
       "source_location": "L1177",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_1177",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "generate intelligent overrides based on page type using layered search."
     },
     {
@@ -1418,8 +1418,8 @@
       "source_location": "L1283",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_1283",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "detect page type from context and search results."
     },
     {
@@ -1957,8 +1957,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_hex_to_ansi",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "hex_to_ansi()"
     },
     {
@@ -1968,8 +1968,8 @@
       "source_location": "L347",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_ansi_ljust",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "ansi_ljust()"
     },
     {
@@ -1979,8 +1979,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_section_header",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "section_header()"
     },
     {
@@ -1990,8 +1990,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_format_ascii_box",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "format_ascii_box()"
     },
     {
@@ -2056,8 +2056,8 @@
       "source_location": "L1176",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_generate_intelligent_overrides",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "_generate_intelligent_overrides()"
     },
     {
@@ -2067,8 +2067,8 @@
       "source_location": "L1282",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_detect_page_type",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "_detect_page_type()"
     },
     {
@@ -2177,8 +2177,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_334",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "convert hex color to ansi true color swatch (\u2588\u2588) with fallback."
     },
     {
@@ -2188,8 +2188,8 @@
       "source_location": "L348",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_348",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "like str.ljust but accounts for zero-width ansi escape sequences."
     },
     {
@@ -2199,8 +2199,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_356",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "create a unicode section separator: \u251c\u2500\u2500\u2500 name \u2500\u2500\u2500...\u2524"
     },
     {
@@ -2210,8 +2210,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_363",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "format design system as unicode box with ansi color swatches."
     },
     {
@@ -2276,8 +2276,8 @@
       "source_location": "L1177",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_1177",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "generate intelligent overrides based on page type using layered search."
     },
     {
@@ -2287,8 +2287,8 @@
       "source_location": "L1283",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_1283",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "detect page type from context and search results."
     },
     {
@@ -4635,10 +4635,21 @@
       "norm_label": "paymentmethodsdata"
     },
     {
+      "label": "chart",
+      "file_type": "code",
+      "source_file": "app/components/clients/ProfileBilling.vue",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "app_components_clients_profilebilling_chart",
+      "community": 75,
+      "community_name": "ProfileBilling.vue",
+      "norm_label": "chart"
+    },
+    {
       "label": "chartOptions",
       "file_type": "code",
       "source_file": "app/components/clients/ProfileBilling.vue",
-      "source_location": "L24",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "app_components_clients_profilebilling_chartoptions",
       "community": 75,
@@ -5185,10 +5196,21 @@
       "norm_label": "nextbookingdata"
     },
     {
-      "label": "chartOptions",
+      "label": "chart",
       "file_type": "code",
       "source_file": "app/components/clients/ProfileOverview.vue",
       "source_location": "L67",
+      "_origin": "ast",
+      "id": "app_components_clients_profileoverview_chart",
+      "community": 13,
+      "community_name": "ProfileOverview.vue",
+      "norm_label": "chart"
+    },
+    {
+      "label": "chartOptions",
+      "file_type": "code",
+      "source_file": "app/components/clients/ProfileOverview.vue",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "app_components_clients_profileoverview_chartoptions",
       "community": 13,
@@ -5199,7 +5221,7 @@
       "label": "pendingDebtTotal",
       "file_type": "code",
       "source_file": "app/components/clients/ProfileOverview.vue",
-      "source_location": "L129",
+      "source_location": "L131",
       "_origin": "ast",
       "id": "app_components_clients_profileoverview_pendingdebttotal",
       "community": 13,
@@ -7498,7 +7520,7 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L11",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "app_components_tpv_tpvcatalog_props",
       "community": 62,
@@ -7509,7 +7531,7 @@
       "label": "emit",
       "file_type": "code",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L20",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "app_components_tpv_tpvcatalog_emit",
       "community": 62,
@@ -7520,7 +7542,7 @@
       "label": "activeTab",
       "file_type": "code",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L25",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "app_components_tpv_tpvcatalog_activetab",
       "community": 62,
@@ -7531,7 +7553,7 @@
       "label": "searchQuery",
       "file_type": "code",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L26",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "app_components_tpv_tpvcatalog_searchquery",
       "community": 62,
@@ -7539,15 +7561,70 @@
       "norm_label": "searchquery"
     },
     {
-      "label": "activePillStyle",
+      "label": "pillRef",
       "file_type": "code",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L29",
+      "source_location": "L31",
       "_origin": "ast",
-      "id": "app_components_tpv_tpvcatalog_activepillstyle",
+      "id": "app_components_tpv_tpvcatalog_pillref",
       "community": 62,
       "community_name": "TpvCatalog.vue",
-      "norm_label": "activepillstyle"
+      "norm_label": "pillref"
+    },
+    {
+      "label": "gridRef",
+      "file_type": "code",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "app_components_tpv_tpvcatalog_gridref",
+      "community": 62,
+      "community_name": "TpvCatalog.vue",
+      "norm_label": "gridref"
+    },
+    {
+      "label": "tabIndex()",
+      "file_type": "code",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "app_components_tpv_tpvcatalog_tabindex",
+      "community": 62,
+      "community_name": "TpvCatalog.vue",
+      "norm_label": "tabindex()"
+    },
+    {
+      "label": "prefersReducedMotion()",
+      "file_type": "code",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "app_components_tpv_tpvcatalog_prefersreducedmotion",
+      "community": 62,
+      "community_name": "TpvCatalog.vue",
+      "norm_label": "prefersreducedmotion()"
+    },
+    {
+      "label": "movePill()",
+      "file_type": "code",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "app_components_tpv_tpvcatalog_movepill",
+      "community": 62,
+      "community_name": "TpvCatalog.vue",
+      "norm_label": "movepill()"
+    },
+    {
+      "label": "animateContent()",
+      "file_type": "code",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "app_components_tpv_tpvcatalog_animatecontent",
+      "community": 62,
+      "community_name": "TpvCatalog.vue",
+      "norm_label": "animatecontent()"
     },
     {
       "label": "AppBreadcrumbs.vue",
@@ -8386,6 +8463,28 @@
       "norm_label": "usebookingform()"
     },
     {
+      "label": "useChartTheme.ts",
+      "file_type": "code",
+      "source_file": "app/composables/useChartTheme.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_composables_usecharttheme",
+      "community": 471,
+      "community_name": "useChartTheme.ts",
+      "norm_label": "usecharttheme.ts"
+    },
+    {
+      "label": "useChartTheme()",
+      "file_type": "code",
+      "source_file": "app/composables/useChartTheme.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "app_composables_usecharttheme_usecharttheme",
+      "community": 471,
+      "community_name": "useChartTheme.ts",
+      "norm_label": "usecharttheme()"
+    },
+    {
       "label": "useDataPrivacy.ts",
       "file_type": "code",
       "source_file": "app/composables/useDataPrivacy.ts",
@@ -8672,6 +8771,61 @@
       "norm_label": "usesync()"
     },
     {
+      "label": "useTheme.ts",
+      "file_type": "code",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_composables_usetheme",
+      "community": 113,
+      "community_name": "lucide-vue-next",
+      "norm_label": "usetheme.ts"
+    },
+    {
+      "label": "ThemeMode",
+      "file_type": "code",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "app_composables_usetheme_thememode",
+      "community": 113,
+      "community_name": "lucide-vue-next",
+      "norm_label": "thememode"
+    },
+    {
+      "label": "theme",
+      "file_type": "code",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "app_composables_usetheme_theme",
+      "community": 113,
+      "community_name": "lucide-vue-next",
+      "norm_label": "theme"
+    },
+    {
+      "label": "applyTheme()",
+      "file_type": "code",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "app_composables_usetheme_applytheme",
+      "community": 113,
+      "community_name": "lucide-vue-next",
+      "norm_label": "applytheme()"
+    },
+    {
+      "label": "useTheme()",
+      "file_type": "code",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "app_composables_usetheme_usetheme",
+      "community": 113,
+      "community_name": "lucide-vue-next",
+      "norm_label": "usetheme()"
+    },
+    {
       "label": "useTpv.ts",
       "file_type": "code",
       "source_file": "app/composables/useTpv.ts",
@@ -8763,7 +8917,7 @@
       "label": "{ t, locale }",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L190",
+      "source_location": "L216",
       "_origin": "ast",
       "id": "app_layouts_default_t_locale",
       "community": 20,
@@ -8771,10 +8925,21 @@
       "norm_label": "{ t, locale }"
     },
     {
+      "label": "{ theme, toggleTheme }",
+      "file_type": "code",
+      "source_file": "app/layouts/default.vue",
+      "source_location": "L217",
+      "_origin": "ast",
+      "id": "app_layouts_default_theme_toggletheme",
+      "community": 20,
+      "community_name": "default.vue",
+      "norm_label": "{ theme, toggletheme }"
+    },
+    {
       "label": "localeCookie",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L191",
+      "source_location": "L218",
       "_origin": "ast",
       "id": "app_layouts_default_localecookie",
       "community": 20,
@@ -8785,7 +8950,7 @@
       "label": "route",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L192",
+      "source_location": "L219",
       "_origin": "ast",
       "id": "app_layouts_default_route",
       "community": 20,
@@ -8796,7 +8961,7 @@
       "label": "authStore",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L193",
+      "source_location": "L220",
       "_origin": "ast",
       "id": "app_layouts_default_authstore",
       "community": 20,
@@ -8807,7 +8972,7 @@
       "label": "router",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L194",
+      "source_location": "L221",
       "_origin": "ast",
       "id": "app_layouts_default_router",
       "community": 20,
@@ -8818,7 +8983,7 @@
       "label": "handleLogout()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L196",
+      "source_location": "L223",
       "_origin": "ast",
       "id": "app_layouts_default_handlelogout",
       "community": 20,
@@ -8829,7 +8994,7 @@
       "label": "isDrawerOpen",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L204",
+      "source_location": "L231",
       "_origin": "ast",
       "id": "app_layouts_default_isdraweropen",
       "community": 20,
@@ -8840,7 +9005,7 @@
       "label": "closeDrawerMobile()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L205",
+      "source_location": "L232",
       "_origin": "ast",
       "id": "app_layouts_default_closedrawermobile",
       "community": 20,
@@ -8851,7 +9016,7 @@
       "label": "sidebarNav",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L210",
+      "source_location": "L237",
       "_origin": "ast",
       "id": "app_layouts_default_sidebarnav",
       "community": 20,
@@ -8862,7 +9027,7 @@
       "label": "activePill",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L211",
+      "source_location": "L238",
       "_origin": "ast",
       "id": "app_layouts_default_activepill",
       "community": 20,
@@ -8873,7 +9038,7 @@
       "label": "navRefs",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L212",
+      "source_location": "L239",
       "_origin": "ast",
       "id": "app_layouts_default_navrefs",
       "community": 20,
@@ -8884,7 +9049,7 @@
       "label": "currentActivePath",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L214",
+      "source_location": "L241",
       "_origin": "ast",
       "id": "app_layouts_default_currentactivepath",
       "community": 20,
@@ -8895,7 +9060,7 @@
       "label": "setNavRef()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L231",
+      "source_location": "L258",
       "_origin": "ast",
       "id": "app_layouts_default_setnavref",
       "community": 20,
@@ -8906,7 +9071,7 @@
       "label": "updateActivePill()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L237",
+      "source_location": "L264",
       "_origin": "ast",
       "id": "app_layouts_default_updateactivepill",
       "community": 20,
@@ -8917,7 +9082,7 @@
       "label": "navGroups",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L300",
+      "source_location": "L327",
       "_origin": "ast",
       "id": "app_layouts_default_navgroups",
       "community": 20,
@@ -8928,7 +9093,7 @@
       "label": "currentRouteTranslated",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L329",
+      "source_location": "L356",
       "_origin": "ast",
       "id": "app_layouts_default_currentroutetranslated",
       "community": 20,
@@ -10905,10 +11070,21 @@
       "norm_label": "{\n\t\tdata: reports,\n\t\tispending,\n\t\tiserror,\n\t}"
     },
     {
+      "label": "chart",
+      "file_type": "code",
+      "source_file": "app/pages/reportes/index.vue",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "app_pages_reportes_index_chart",
+      "community": 67,
+      "community_name": "index.vue",
+      "norm_label": "chart"
+    },
+    {
       "label": "revenueTrendOptions",
       "file_type": "code",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L31",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "app_pages_reportes_index_revenuetrendoptions",
       "community": 67,
@@ -10919,7 +11095,7 @@
       "label": "paymentMethodsOptions",
       "file_type": "code",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L75",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "app_pages_reportes_index_paymentmethodsoptions",
       "community": 67,
@@ -10930,7 +11106,7 @@
       "label": "topItemsOptions",
       "file_type": "code",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L100",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "app_pages_reportes_index_topitemsoptions",
       "community": 67,
@@ -10941,7 +11117,7 @@
       "label": "isExporting",
       "file_type": "code",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L127",
+      "source_location": "L132",
       "_origin": "ast",
       "id": "app_pages_reportes_index_isexporting",
       "community": 67,
@@ -10952,7 +11128,7 @@
       "label": "exportToPDF()",
       "file_type": "code",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L128",
+      "source_location": "L133",
       "_origin": "ast",
       "id": "app_pages_reportes_index_exporttopdf",
       "community": 67,
@@ -11673,6 +11849,17 @@
       "community": 161,
       "community_name": "i18n.ts",
       "norm_label": "i18n.ts"
+    },
+    {
+      "label": "theme.client.ts",
+      "file_type": "code",
+      "source_file": "app/plugins/theme.client.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_plugins_theme_client",
+      "community": 470,
+      "community_name": "theme.client.ts",
+      "norm_label": "theme.client.ts"
     },
     {
       "label": "vue-query.ts",
@@ -12462,7 +12649,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "package_dependencies_dotenv",
-      "community": 348,
+      "community": 472,
       "community_name": "dotenv",
       "norm_label": "dotenv"
     },
@@ -12473,7 +12660,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "package_json_dotenv",
-      "community": 348,
+      "community": 472,
       "community_name": "dotenv",
       "norm_label": "dotenv"
     },
@@ -12550,8 +12737,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "package_dependencies_jsonwebtoken",
-      "community": 113,
-      "community_name": "lucide-vue-next",
+      "community": 124,
+      "community_name": "qrcode.vue",
       "norm_label": "jsonwebtoken"
     },
     {
@@ -12561,8 +12748,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "jsonwebtoken",
-      "community": 113,
-      "community_name": "lucide-vue-next",
+      "community": 124,
+      "community_name": "qrcode.vue",
       "norm_label": "jsonwebtoken"
     },
     {
@@ -13001,8 +13188,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "package_devdependencies_vite_pwa_nuxt",
-      "community": 456,
-      "community_name": "repository",
+      "community": 31,
+      "community_name": "devDependencies",
       "norm_label": "@vite-pwa/nuxt"
     },
     {
@@ -13012,8 +13199,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "vite_pwa_nuxt",
-      "community": 456,
-      "community_name": "repository",
+      "community": 31,
+      "community_name": "devDependencies",
       "norm_label": "@vite-pwa/nuxt"
     },
     {
@@ -13111,8 +13298,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "package_devdependencies_sharp",
-      "community": 455,
-      "community_name": "author",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "sharp"
     },
     {
@@ -13122,8 +13309,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "sharp",
-      "community": 455,
-      "community_name": "author",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "sharp"
     },
     {
@@ -13199,8 +13386,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "package_devdependencies_vite",
-      "community": 31,
-      "community_name": "devDependencies",
+      "community": 473,
+      "community_name": "vite",
       "norm_label": "vite"
     },
     {
@@ -13210,8 +13397,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "package_json_vite",
-      "community": 31,
-      "community_name": "devDependencies",
+      "community": 473,
+      "community_name": "vite",
       "norm_label": "vite"
     },
     {
@@ -15136,8 +15323,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_bin",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 469,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "bin"
     },
     {
@@ -15147,8 +15334,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_bin_mcp_excalidraw_server",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 469,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "mcp-excalidraw-server"
     },
     {
@@ -15158,8 +15345,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_bin_excalidraw_canvas",
-      "community": 298,
-      "community_name": "Best practices for `computed`",
+      "community": 469,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "excalidraw-canvas"
     },
     {
@@ -16060,8 +16247,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author",
-      "community": 111,
-      "community_name": "html2pdf.js",
+      "community": 348,
+      "community_name": "dotenv",
       "norm_label": "author"
     },
     {
@@ -16071,8 +16258,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author_name",
-      "community": 111,
-      "community_name": "html2pdf.js",
+      "community": 348,
+      "community_name": "dotenv",
       "norm_label": "name"
     },
     {
@@ -16082,8 +16269,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author_email",
-      "community": 111,
-      "community_name": "html2pdf.js",
+      "community": 348,
+      "community_name": "dotenv",
       "norm_label": "email"
     },
     {
@@ -16104,8 +16291,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_repository",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "repository"
     },
     {
@@ -16115,8 +16302,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_repository_type",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "type"
     },
     {
@@ -16126,8 +16313,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_repository_url",
-      "community": 124,
-      "community_name": "qrcode.vue",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "url"
     },
     {
@@ -16764,8 +16951,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "install-skill.ts"
     },
     {
@@ -16775,8 +16962,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill_findskillsource",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "findskillsource()"
     },
     {
@@ -16786,8 +16973,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill_expandhome",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "expandhome()"
     },
     {
@@ -16797,8 +16984,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill_resolveskillsroot",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "resolveskillsroot()"
     },
     {
@@ -16808,8 +16995,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill_resolvetarget",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "resolvetarget()"
     },
     {
@@ -16819,8 +17006,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill_countfiles",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "countfiles()"
     },
     {
@@ -16830,8 +17017,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_install_skill_installskill",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "installskill()"
     },
     {
@@ -16863,8 +17050,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_describe",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "describe()"
     },
     {
@@ -17490,8 +17677,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_describe",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "describe.ts"
     },
     {
@@ -17501,8 +17688,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_describe_describescene",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "describescene()"
     },
     {
@@ -17666,8 +17853,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "normalize.ts"
     },
     {
@@ -17677,8 +17864,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_sanitizefilepath",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 360,
+      "community_name": "scene-io.ts",
       "norm_label": "sanitizefilepath()"
     },
     {
@@ -17699,8 +17886,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_converttexttolabel",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "converttexttolabel()"
     },
     {
@@ -17710,8 +17897,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_elementinput",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "elementinput"
     },
     {
@@ -19107,8 +19294,8 @@
       "source_location": "L326",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_normalizefontfamily",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "normalizefontfamily()"
     },
     {
@@ -29392,8 +29579,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_skill",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 149,
+      "community_name": "[id].put.ts",
       "norm_label": "skill.md"
     },
     {
@@ -30723,8 +30910,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_directives",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 199,
+      "community_name": "Directive Best Practices",
       "norm_label": "directives.md"
     },
     {
@@ -31746,8 +31933,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 464,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "updated-hook-performance.md"
     },
     {
@@ -31757,8 +31944,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_avoid_expensive_operations_in_updated_hook",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 464,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "avoid expensive operations in updated hook"
     },
     {
@@ -31768,8 +31955,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_task_list",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 464,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "task list"
     },
     {
@@ -31779,8 +31966,8 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_valid_use_cases_for_updated_hook",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 464,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "valid use cases for updated hook"
     },
     {
@@ -31790,8 +31977,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "agents_skills_vue_best_practices_references_updated_hook_performance_prefer_computed_properties_for_derived_data",
-      "community": 266,
-      "community_name": "State Management Strategy",
+      "community": 464,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "prefer computed properties for derived data"
     },
     {
@@ -33146,6 +33333,149 @@
       "community": 269,
       "community_name": "Frontend Design",
       "norm_label": "more on writing in design"
+    },
+    {
+      "label": "SKILL.md",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "skill.md"
+    },
+    {
+      "label": "Gogo Admin Template",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "gogo admin template"
+    },
+    {
+      "label": "Mission",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_mission",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "mission"
+    },
+    {
+      "label": "Brand",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_brand",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "brand"
+    },
+    {
+      "label": "Style Foundations",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_style_foundations",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "style foundations"
+    },
+    {
+      "label": "Accessibility",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_accessibility",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "accessibility"
+    },
+    {
+      "label": "Writing Tone",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_writing_tone",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "writing tone"
+    },
+    {
+      "label": "Rules: Do",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_rules_do",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "rules: do"
+    },
+    {
+      "label": "Rules: Don't",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_rules_don_t",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "rules: don't"
+    },
+    {
+      "label": "Guideline Authoring Workflow",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_guideline_authoring_workflow",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "guideline authoring workflow"
+    },
+    {
+      "label": "Required Output Structure",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_required_output_structure",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "required output structure"
+    },
+    {
+      "label": "Component Rule Expectations",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_component_rule_expectations",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "component rule expectations"
+    },
+    {
+      "label": "Quality Gates",
+      "file_type": "document",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "claude_skills_gogo_theme_skill_quality_gates",
+      "community": 456,
+      "community_name": "repository",
+      "norm_label": "quality gates"
     },
     {
       "label": "SKILL.md",
@@ -40672,6 +41002,336 @@
       "norm_label": "principios fundamentales"
     },
     {
+      "label": "color-audit.md",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_color_audit",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "color-audit.md"
+    },
+    {
+      "label": "Color Audit \u2014 hardcoded colors vs. theme tokens",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_color_audit_color_audit_hardcoded_colors_vs_theme_tokens",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "color audit \u2014 hardcoded colors vs. theme tokens"
+    },
+    {
+      "label": "Summary (at time of audit)",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "docs_color_audit_summary_at_time_of_audit",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "summary (at time of audit)"
+    },
+    {
+      "label": "Already fixed",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "docs_color_audit_already_fixed",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "already fixed"
+    },
+    {
+      "label": "Not touched on purpose",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "docs_color_audit_not_touched_on_purpose",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "not touched on purpose"
+    },
+    {
+      "label": "Phase 2 \u2014 conversion order (reviewable batches)",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "docs_color_audit_phase_2_conversion_order_reviewable_batches",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "phase 2 \u2014 conversion order (reviewable batches)"
+    },
+    {
+      "label": "Guardrail",
+      "file_type": "document",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "docs_color_audit_guardrail",
+      "community": 111,
+      "community_name": "html2pdf.js",
+      "norm_label": "guardrail"
+    },
+    {
+      "label": "design-system-gogo.md",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "design-system-gogo.md"
+    },
+    {
+      "label": "Gogo Admin \u2014 Design System Guidelines (Beils Dashboard)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "gogo admin \u2014 design system guidelines (beils dashboard)"
+    },
+    {
+      "label": "1. Context and goals",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_1_context_and_goals",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "1. context and goals"
+    },
+    {
+      "label": "2. Design tokens and foundations",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_2_design_tokens_and_foundations",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "2. design tokens and foundations"
+    },
+    {
+      "label": "2.1 Typography",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_2_1_typography",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "2.1 typography"
+    },
+    {
+      "label": "2.2 Color (semantic tokens \u2014 do not use raw hex in components)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_2_2_color_semantic_tokens_do_not_use_raw_hex_in_components",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "2.2 color (semantic tokens \u2014 do not use raw hex in components)"
+    },
+    {
+      "label": "2.3 Spacing",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L68",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_2_3_spacing",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "2.3 spacing"
+    },
+    {
+      "label": "2.4 Radius, elevation, motion",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L72",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_2_4_radius_elevation_motion",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "2.4 radius, elevation, motion"
+    },
+    {
+      "label": "3. Component-level rules",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L85",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_component_level_rules",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3. component-level rules"
+    },
+    {
+      "label": "3.1 Buttons (`btn`)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L91",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_1_buttons_btn",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.1 buttons (`btn`)"
+    },
+    {
+      "label": "3.2 Inputs / selects / textareas",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L105",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_2_inputs_selects_textareas",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.2 inputs / selects / textareas"
+    },
+    {
+      "label": "3.3 Cards / panels",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L113",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_3_cards_panels",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.3 cards / panels"
+    },
+    {
+      "label": "3.4 Modals & drawers",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L120",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_4_modals_drawers",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.4 modals & drawers"
+    },
+    {
+      "label": "3.5 Tabs / segmented controls (TPV, Servicios)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L129",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_5_tabs_segmented_controls_tpv_servicios",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.5 tabs / segmented controls (tpv, servicios)"
+    },
+    {
+      "label": "3.6 Tables & lists (sales, debts)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L135",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_6_tables_lists_sales_debts",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.6 tables & lists (sales, debts)"
+    },
+    {
+      "label": "3.7 Badges / status pills",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L143",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_7_badges_status_pills",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.7 badges / status pills"
+    },
+    {
+      "label": "3.8 Toasts",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L147",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_8_toasts",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.8 toasts"
+    },
+    {
+      "label": "3.9 Responsive behavior (all families)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L151",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_3_9_responsive_behavior_all_families",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "3.9 responsive behavior (all families)"
+    },
+    {
+      "label": "4. Accessibility \u2014 testable acceptance criteria",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L158",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_4_accessibility_testable_acceptance_criteria",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "4. accessibility \u2014 testable acceptance criteria"
+    },
+    {
+      "label": "5. Content and tone standards",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L176",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_5_content_and_tone_standards",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "5. content and tone standards"
+    },
+    {
+      "label": "6. Anti-patterns and prohibited implementations",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L193",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_6_anti_patterns_and_prohibited_implementations",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "6. anti-patterns and prohibited implementations"
+    },
+    {
+      "label": "Migration notes",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L206",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_migration_notes",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "migration notes"
+    },
+    {
+      "label": "7. QA checklist (per screen / PR)",
+      "file_type": "document",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L217",
+      "_origin": "ast",
+      "id": "docs_design_system_gogo_7_qa_checklist_per_screen_pr",
+      "community": 455,
+      "community_name": "author",
+      "norm_label": "7. qa checklist (per screen / pr)"
+    },
+    {
       "label": "backend.md",
       "file_type": "document",
       "source_file": "docs/development/backend.md",
@@ -48085,7 +48745,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/clients/ProfileBilling.vue",
-      "source_location": "L24",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_clients_profilebilling",
+      "target": "app_components_clients_profilebilling_chart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/clients/ProfileBilling.vue",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_clients_profilebilling",
@@ -48530,6 +49201,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_clients_profileoverview",
+      "target": "app_components_clients_profileoverview_chart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/clients/ProfileOverview.vue",
+      "source_location": "L68",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_clients_profileoverview",
       "target": "app_components_clients_profileoverview_chartoptions",
       "confidence_score": 1.0
     },
@@ -48625,7 +49307,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/clients/ProfileOverview.vue",
-      "source_location": "L129",
+      "source_location": "L131",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_clients_profileoverview",
@@ -51011,18 +51693,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L29",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_components_tpv_tpvcatalog",
-      "target": "app_components_tpv_tpvcatalog_activepillstyle",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_tpv_tpvcatalog",
@@ -51033,7 +51704,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L20",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog",
+      "target": "app_components_tpv_tpvcatalog_animatecontent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_tpv_tpvcatalog",
@@ -51044,7 +51726,51 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L11",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog",
+      "target": "app_components_tpv_tpvcatalog_gridref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog",
+      "target": "app_components_tpv_tpvcatalog_movepill",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog",
+      "target": "app_components_tpv_tpvcatalog_pillref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog",
+      "target": "app_components_tpv_tpvcatalog_prefersreducedmotion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_tpv_tpvcatalog",
@@ -51055,11 +51781,58 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/tpv/TpvCatalog.vue",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_tpv_tpvcatalog",
       "target": "app_components_tpv_tpvcatalog_searchquery",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog",
+      "target": "app_components_tpv_tpvcatalog_tabindex",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog_movepill",
+      "target": "app_components_tpv_tpvcatalog_tabindex",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog_animatecontent",
+      "target": "app_components_tpv_tpvcatalog_prefersreducedmotion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/tpv/TpvCatalog.vue",
+      "source_location": "L42",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_tpv_tpvcatalog_movepill",
+      "target": "app_components_tpv_tpvcatalog_prefersreducedmotion",
       "confidence_score": 1.0
     },
     {
@@ -51772,6 +52545,17 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/composables/useChartTheme.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_composables_usecharttheme",
+      "target": "app_composables_usecharttheme_usecharttheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/composables/useDataPrivacy.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -52019,6 +52803,62 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_composables_usetheme",
+      "target": "app_composables_usetheme_applytheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_composables_usetheme",
+      "target": "app_composables_usetheme_theme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_composables_usetheme",
+      "target": "app_composables_usetheme_thememode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_composables_usetheme",
+      "target": "app_composables_usetheme_usetheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/composables/useTheme.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_composables_usetheme_usetheme",
+      "target": "app_composables_usetheme_applytheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/composables/useTpv.ts",
       "source_location": "L3",
       "weight": 1.0,
@@ -52064,7 +52904,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L211",
+      "source_location": "L238",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52075,7 +52915,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L193",
+      "source_location": "L220",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52086,7 +52926,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L205",
+      "source_location": "L232",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52097,7 +52937,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L214",
+      "source_location": "L241",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52108,7 +52948,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L329",
+      "source_location": "L356",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52119,7 +52959,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L196",
+      "source_location": "L223",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52130,7 +52970,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L204",
+      "source_location": "L231",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52141,7 +52981,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L191",
+      "source_location": "L218",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52152,7 +52992,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L300",
+      "source_location": "L327",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52163,7 +53003,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L212",
+      "source_location": "L239",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52174,7 +53014,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L192",
+      "source_location": "L219",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52185,7 +53025,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L194",
+      "source_location": "L221",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52196,7 +53036,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L231",
+      "source_location": "L258",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52207,7 +53047,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L210",
+      "source_location": "L237",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52218,7 +53058,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L190",
+      "source_location": "L216",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -52229,7 +53069,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L237",
+      "source_location": "L217",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_layouts_default",
+      "target": "app_layouts_default_theme_toggletheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/layouts/default.vue",
+      "source_location": "L264",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -54034,6 +54885,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/reportes/index.vue",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_reportes_index",
+      "target": "app_pages_reportes_index_chart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/reportes/index.vue",
       "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
@@ -54045,7 +54907,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L128",
+      "source_location": "L133",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_reportes_index",
@@ -54056,7 +54918,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L127",
+      "source_location": "L132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_reportes_index",
@@ -54067,7 +54929,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L75",
+      "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_reportes_index",
@@ -54078,7 +54940,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_reportes_index",
@@ -54100,7 +54962,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/reportes/index.vue",
-      "source_location": "L100",
+      "source_location": "L104",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_reportes_index",
@@ -81666,6 +82528,138 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill",
+      "target": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_accessibility",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_brand",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L64",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_component_rule_expectations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_guideline_authoring_workflow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_mission",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_quality_gates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_required_output_structure",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_rules_do",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_rules_don_t",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_style_foundations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/gogo-theme/SKILL.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "claude_skills_gogo_theme_skill_gogo_admin_template",
+      "target": "claude_skills_gogo_theme_skill_writing_tone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": ".claude/skills/graphify/SKILL.md",
       "source_location": "L6",
       "weight": 1.0,
@@ -88816,6 +89810,314 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_color_audit",
+      "target": "docs_color_audit_color_audit_hardcoded_colors_vs_theme_tokens",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_color_audit_color_audit_hardcoded_colors_vs_theme_tokens",
+      "target": "docs_color_audit_already_fixed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_color_audit_color_audit_hardcoded_colors_vs_theme_tokens",
+      "target": "docs_color_audit_not_touched_on_purpose",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_color_audit_color_audit_hardcoded_colors_vs_theme_tokens",
+      "target": "docs_color_audit_phase_2_conversion_order_reviewable_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_color_audit_color_audit_hardcoded_colors_vs_theme_tokens",
+      "target": "docs_color_audit_summary_at_time_of_audit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/color-audit.md",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_color_audit_phase_2_conversion_order_reviewable_batches",
+      "target": "docs_color_audit_guardrail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo",
+      "target": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_1_context_and_goals",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_2_design_tokens_and_foundations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L85",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_3_component_level_rules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L158",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_4_accessibility_testable_acceptance_criteria",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L176",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_5_content_and_tone_standards",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L193",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_6_anti_patterns_and_prohibited_implementations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L217",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_gogo_admin_design_system_guidelines_beils_dashboard",
+      "target": "docs_design_system_gogo_7_qa_checklist_per_screen_pr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_2_design_tokens_and_foundations",
+      "target": "docs_design_system_gogo_2_1_typography",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_2_design_tokens_and_foundations",
+      "target": "docs_design_system_gogo_2_2_color_semantic_tokens_do_not_use_raw_hex_in_components",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_2_design_tokens_and_foundations",
+      "target": "docs_design_system_gogo_2_3_spacing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_2_design_tokens_and_foundations",
+      "target": "docs_design_system_gogo_2_4_radius_elevation_motion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L91",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_1_buttons_btn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_2_inputs_selects_textareas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L113",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_3_cards_panels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L120",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_4_modals_drawers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L129",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_5_tabs_segmented_controls_tpv_servicios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L135",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_6_tables_lists_sales_debts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L143",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_7_badges_status_pills",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L147",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_8_toasts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L151",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_3_component_level_rules",
+      "target": "docs_design_system_gogo_3_9_responsive_behavior_all_families",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design-system-gogo.md",
+      "source_location": "L206",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_design_system_gogo_6_anti_patterns_and_prohibited_implementations",
+      "target": "docs_design_system_gogo_migration_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/development/backend.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -90498,5 +91800,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f7c10d1b20eeacd69e3b29bf8b0fb584e2ce37c3"
+  "built_at_commit": "47b1b7cfdd5b315dbb515387794cdbb7d92fc9b8"
 }

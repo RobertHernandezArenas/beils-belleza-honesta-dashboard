@@ -193,7 +193,7 @@
 							<tr
 								v-for="client in clients"
 								:key="client.user_id"
-								class="premium-lift group cursor-pointer transition-all duration-300 hover:bg-white/60"
+								class="premium-lift group cursor-pointer transition-all duration-300 hover:bg-bg-card/60"
 								@click="navigateTo(`/clientes/${client.user_id}`)">
 								<!-- Columna Cliente -->
 								<td class="px-6 py-4">
@@ -261,13 +261,13 @@
 								<td class="hidden px-6 py-4 md:table-cell">
 									<div class="flex items-center gap-2">
 										<div
-											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-white/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
+											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-bg-card/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
 											title="Citas Reservadas">
 											<CalendarDays class="text-primary/70 h-3.5 w-3.5" />
 											<span class="tabular-nums">{{ client._count?.client_bookings || 0 }}</span>
 										</div>
 										<div
-											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-white/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
+											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-bg-card/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
 											title="Consentimientos Firmados">
 											<ExternalLink class="text-primary/70 h-3.5 w-3.5" />
 											<span class="tabular-nums">{{ client._count?.consents || 0 }}</span>
@@ -329,7 +329,7 @@
 							<span class="opacity-60">Filas:</span>
 							<div class="group relative">
 								<div
-									class="border-border-default/50 hover:bg-bg-hover flex h-9 items-center justify-between gap-2 rounded-xl border bg-white px-3 shadow-sm transition-all">
+									class="border-border-default/50 hover:bg-bg-hover flex h-9 items-center justify-between gap-2 rounded-xl border bg-bg-card px-3 shadow-sm transition-all">
 									<span class="text-text-primary shrink-0 text-xs font-bold tabular-nums">
 										{{ limit }}
 									</span>
@@ -352,19 +352,19 @@
 
 					<div class="join border-border-default/50 overflow-hidden rounded-2xl border shadow-sm">
 						<button
-							class="join-item btn btn-sm border-none bg-white/50 hover:bg-white disabled:bg-transparent disabled:opacity-30"
+							class="join-item btn btn-sm border-none bg-bg-card/50 hover:bg-bg-card disabled:bg-transparent disabled:opacity-30"
 							:disabled="page === 1"
 							@click="page--">
 							«
 						</button>
 						<button
-							class="join-item btn btn-sm border-border-default/20 pointer-events-none border-x border-none bg-white/80 px-6 font-bold tracking-tight">
+							class="join-item btn btn-sm border-border-default/20 pointer-events-none border-x border-none bg-bg-card/80 px-6 font-bold tracking-tight">
 							Pág. {{ page }}
 							<span class="text-text-muted mx-1 font-medium italic">de</span>
 							{{ pagination.totalPages || 1 }}
 						</button>
 						<button
-							class="join-item btn btn-sm border-none bg-white/50 hover:bg-white disabled:bg-transparent disabled:opacity-30"
+							class="join-item btn btn-sm border-none bg-bg-card/50 hover:bg-bg-card disabled:bg-transparent disabled:opacity-30"
 							:disabled="page >= pagination.totalPages"
 							@click="page++">
 							»

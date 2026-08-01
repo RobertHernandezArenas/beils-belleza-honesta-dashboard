@@ -51,7 +51,7 @@
 			pending: 'bg-orange-500/10 text-orange-700 border-none',
 			confirmed: 'bg-primary/10 text-primary border-none',
 			completed: 'bg-emerald-500/10 text-emerald-700 border-none',
-			cancelled: 'bg-stone-500/10 text-stone-700 border-none opacity-60',
+			cancelled: 'bg-text-muted/10 text-text-secondary border-none opacity-60',
 			no_show: 'bg-transparent border border-border-default text-text-muted',
 		}
 		return map[status] || map['pending']

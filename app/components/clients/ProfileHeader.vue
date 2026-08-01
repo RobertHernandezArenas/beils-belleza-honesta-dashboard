@@ -121,7 +121,7 @@ const getTierBadgeStyle = computed(() => {
 		return 'bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-600/30 text-amber-700 border-amber-500/40'
 	}
 	if (engagementTier.value === 'SILVER') {
-		return 'bg-slate-500/20 text-slate-700 border-slate-400/40'
+		return 'bg-text-muted/20 text-text-secondary border-border-strong/40'
 	}
 	return 'bg-amber-800/10 text-amber-900 border-amber-800/20'
 })

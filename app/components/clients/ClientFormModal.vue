@@ -375,7 +375,7 @@
 				</div>
 
 				<!-- Sección: Información Personal -->
-				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
 						<div class="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
 							<User class="h-4 w-4" />
@@ -393,7 +393,7 @@
 							<input
 								v-model="form.name"
 								type="text"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.name }"
 								@input="formatNameInput" />
 						</div>
@@ -407,7 +407,7 @@
 							<input
 								v-model="form.surname"
 								type="text"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.surname }"
 								@input="formatSurnameInput" />
 						</div>
@@ -420,7 +420,7 @@
 							</label>
 							<select
 								v-model="form.document_type"
-								class="select bg-white border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
 								<option value="DNI">DNI (España)</option>
 								<option value="NIE">NIE (España)</option>
 								<option value="PASSPORT">{{ t('catalog.clients.form.passport') }}</option>
@@ -436,7 +436,7 @@
 							<input
 								v-model="form.document_number"
 								type="text"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.document_number }"
 								@input="clearError('document_number')" />
 						</div>
@@ -450,7 +450,7 @@
 							<input
 								v-model="form.birth_date"
 								type="date"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all"
 								@input="clearError('birth_date')" />
 						</div>
 
@@ -462,7 +462,7 @@
 							</label>
 							<select
 								v-model="form.gender"
-								class="select bg-white border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
 								<option value="">{{ t('catalog.clients.form.selectGender') }}</option>
 								<option value="male">{{ t('catalog.clients.form.male') }}</option>
 								<option value="female">{{ t('catalog.clients.form.female') }}</option>
@@ -473,7 +473,7 @@
 				</div>
 
 				<!-- Sección: Contacto -->
-				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
 						<div class="bg-indigo-500/10 text-indigo-600 flex h-8 w-8 items-center justify-center rounded-lg">
 							<CreditCard class="h-4 w-4" />
@@ -491,7 +491,7 @@
 							<input
 								v-model="form.phone"
 								type="tel"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.phone }"
 								@input="clearError('phone')" />
 						</div>
@@ -505,7 +505,7 @@
 							<input
 								v-model="form.email"
 								type="email"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.email }"
 								@input="clearError('email')" />
 						</div>
@@ -518,7 +518,7 @@
 							</label>
 							<select
 								v-model="form.status"
-								class="select bg-white border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
+								class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
 								<option value="ON">Activo</option>
 								<option value="OFF">Inactivo</option>
 							</select>
@@ -527,7 +527,7 @@
 				</div>
 
 				<!-- Sección: Localización -->
-				<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
 						<div class="bg-amber-500/10 text-amber-600 flex h-8 w-8 items-center justify-center rounded-lg">
 							<Search class="h-4 w-4" />
@@ -545,7 +545,7 @@
 							<input
 								v-model="form.address"
 								type="text"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								@input="clearError('address')" />
 						</div>
 
@@ -558,7 +558,7 @@
 							<input
 								v-model="form.city"
 								type="text"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								@input="clearError('city')" />
 						</div>
 
@@ -571,7 +571,7 @@
 							<input
 								v-model="form.postal_code"
 								type="text"
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
 								@input="clearError('postal_code')" />
 						</div>
 					</div>

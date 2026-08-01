@@ -63,8 +63,10 @@ const nextBookingData = computed(() => {
 	return futureBookings[0] || null
 })
 
-// Spending Chart Options for ECharts
+// Spending Chart Options for ECharts (theme-aware)
+const chart = useChartTheme()
 const chartOptions = computed(() => {
+	const ct = chart.value
 	let rawHistory = kpis.value.spendingHistory || []
 	
 	if (timeframe.value === '3M') {
@@ -82,25 +84,25 @@ const chartOptions = computed(() => {
 		grid: { top: 25, right: 15, bottom: 25, left: 45, containLabel: true },
 		tooltip: {
 			trigger: 'axis',
-			backgroundColor: '#1a1a1a',
-			borderColor: '#404040',
-			textStyle: { color: '#ffffff', fontSize: 11, fontWeight: 'bold' },
+			backgroundColor: ct.tooltipBg,
+			borderColor: ct.tooltipBorder,
+			textStyle: { color: ct.tooltipText, fontSize: 11, fontWeight: 'bold' },
 			formatter: (params: any) => {
 				const item = params[0]
-				return `${item.name}: <b style="color: #dbd2c6">${item.value.toFixed(2)} €</b>`
+				return `${item.name}: <b style="color: ${ct.accent}">${item.value.toFixed(2)} €</b>`
 			}
 		},
 		xAxis: {
 			type: 'category',
 			data: dates.length ? dates : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-			axisLine: { lineStyle: { color: '#dbd2c6' } },
-			axisLabel: { color: '#666666', fontSize: 10, fontWeight: 'bold' }
+			axisLine: { lineStyle: { color: ct.axisLine } },
+			axisLabel: { color: ct.label, fontSize: 10, fontWeight: 'bold' }
 		},
 		yAxis: {
 			type: 'value',
 			axisLine: { show: false },
-			splitLine: { lineStyle: { color: '#f4f1ee', type: 'dashed' } },
-			axisLabel: { color: '#666666', fontSize: 10, formatter: '{value} €' }
+			splitLine: { lineStyle: { color: ct.grid, type: 'dashed' } },
+			axisLabel: { color: ct.label, fontSize: 10, formatter: '{value} €' }
 		},
 		series: [
 			{
@@ -108,15 +110,15 @@ const chartOptions = computed(() => {
 				type: 'line',
 				smooth: true,
 				symbolSize: 8,
-				itemStyle: { color: '#1a1a1a' },
-				lineStyle: { width: 3, color: '#1a1a1a' },
+				itemStyle: { color: ct.series },
+				lineStyle: { width: 3, color: ct.series },
 				areaStyle: {
 					color: {
 						type: 'linear',
 						x: 0, y: 0, x2: 0, y2: 1,
 						colorStops: [
-							{ offset: 0, color: 'rgba(26, 26, 26, 0.25)' },
-							{ offset: 1, color: 'rgba(26, 26, 26, 0.01)' }
+							{ offset: 0, color: ct.areaTop },
+							{ offset: 1, color: ct.areaBottom }
 						]
 					}
 				}

@@ -47,7 +47,7 @@
 						<NuxtLink to="/">
 							<img
 								src="/assets/images/beils_.svg"
-								class="relative w-25 brightness-0 drop-shadow-sm"
+								class="relative w-25 brightness-0 drop-shadow-sm dark:brightness-0 dark:invert"
 								alt="Logo" />
 						</NuxtLink>
 					</div>
@@ -114,6 +114,30 @@
 				<div
 					class="bg-bg-app relative z-10 mt-auto flex w-full flex-col gap-3 border-t border-transparent p-4">
 					<div v-if="authStore.user" class="flex flex-col gap-3">
+						<!-- Theme toggle (light / dark) -->
+						<button
+							type="button"
+							role="switch"
+							:aria-checked="theme === 'dark'"
+							aria-label="Cambiar tema claro/oscuro"
+							@click="toggleTheme"
+							class="group text-text-muted hover:text-text-secondary hover:bg-bg-muted flex w-full items-center justify-between gap-2 rounded-xl border border-border-default px-3 py-2 transition-colors">
+							<span class="flex items-center gap-2">
+								<Sun v-if="theme === 'light'" class="h-4 w-4" />
+								<Moon v-else class="h-4 w-4" />
+								<span class="text-[11px] font-bold tracking-wider uppercase">
+									{{ theme === 'dark' ? 'Modo oscuro' : 'Modo claro' }}
+								</span>
+							</span>
+							<span
+								class="relative h-4 w-7 shrink-0 rounded-full transition-colors"
+								:class="theme === 'dark' ? 'bg-primary' : 'bg-border-strong'">
+								<span
+									class="absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform"
+									:class="theme === 'dark' ? 'translate-x-3.5' : 'translate-x-0.5'"></span>
+							</span>
+						</button>
+
 						<div class="flex items-center gap-3">
 							<div class="avatar">
 								<div
@@ -142,7 +166,7 @@
 
 						<button
 							@click="handleLogout"
-							class="group hover:text-bg-card flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff0000]/30 bg-[#ff0000]/10 px-4 py-2 font-bold text-[#ff0000] transition-[background-color,border-color,color,transform,box-shadow] hover:border-[#ff0000] hover:bg-[#ff0000] hover:shadow-md">
+							class="group hover:text-white flex w-full items-center justify-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-2 font-bold text-error transition-[background-color,border-color,color,transform,box-shadow] hover:border-error hover:bg-error hover:shadow-md">
 							<LogOut class="h-4 w-4 group-hover:-translate-x-0.5" />
 							<span class="text-[11px] tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}
@@ -185,9 +209,12 @@
 		ShieldOff,
 		Image,
 		ChevronDown,
+		Sun,
+		Moon,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
+	const { theme, toggleTheme } = useTheme()
 	const localeCookie = useCookie('i18n_redirected')
 	const route = useRoute()
 	const authStore = useAuthStore()

@@ -1,87 +1,11 @@
 @import 'tailwindcss';
 @plugin 'daisyui';
 
-/* ============================================================
-   GOGO ADMIN THEME — DaisyUI component palette (light-only)
-   Single source of truth for every DaisyUI component in the app
-   (btn, badge, input, select, modal, menu, dropdown, tabs,
-   toast, loading, divider…). Set as the default theme.
-   ============================================================ */
-@plugin "daisyui/theme" {
-	name: "gogo";
-	default: true;
-	prefersdark: false;
-	color-scheme: light;
-
-	--color-base-100: #ffffff;   /* cards / raised surfaces */
-	--color-base-200: #f8f8f8;   /* app canvas */
-	--color-base-300: #f0f0f0;   /* wells / subtle fills */
-	--color-base-content: #4d4d4d;
-
-	--color-primary: #922c88;    /* Gogo purple accent */
-	--color-primary-content: #ffffff;
-	--color-secondary: #3d3d3d;  /* strong neutral (dark CTAs) */
-	--color-secondary-content: #ffffff;
-	--color-accent: #922c88;
-	--color-accent-content: #ffffff;
-	--color-neutral: #3d3d3d;
-	--color-neutral-content: #ffffff;
-
-	--color-info: #3b82f6;
-	--color-info-content: #ffffff;
-	--color-success: #16a34a;
-	--color-success-content: #ffffff;
-	--color-warning: #d97706;
-	--color-warning-content: #ffffff;
-	--color-error: #dc2626;
-	--color-error-content: #ffffff;
-
-	--radius-selector: 1rem;     /* pills, badges, toggles */
-	--radius-field: 0.75rem;     /* inputs, selects, buttons */
-	--radius-box: 1.125rem;      /* cards, modals */
-	--size-selector: 0.25rem;
-	--size-field: 0.25rem;
-	--border: 1px;
-	--depth: 1;
-	--noise: 0;
-}
-
-@theme {
-	/* Gogo primary typeface */
-	--font-sans:
-		'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-		'Segoe UI Symbol', 'Noto Color Emoji';
-	--font-condensed: 'Mulish', 'Roboto Condensed', ui-sans-serif, system-ui;
-
-	/* Gogo semantic surfaces (grey canvas, white cards) */
-	--color-bg-app: #f8f8f8;
-	--color-bg-card: #ffffff;
-	--color-bg-muted: #f4f4f4;
-	--color-bg-hover: #efefef;
-
-	/* Neutral grey borders (Gogo) */
-	--color-border-subtle: #f0f0f0;
-	--color-border-default: #e5e5e5;
-	--color-border-strong: #cccccc;
-
-	/* Gogo text greys — all AA on white except --text-light (decorative only) */
-	--color-text-primary: #4d4d4d;
-	--color-text-secondary: #3d3d3d;
-	--color-text-muted: #808080;
-	--color-text-light: #a3a3a3;
-
-	/* Premium Gradients (Gogo purple) */
-	--gradient-premium: linear-gradient(135deg, #922c88 0%, #b8479a 100%);
-	--gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
-}
+/* All theme colors (light + dark) live in one editable file */
+@import './theme.css';
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 @custom-variant light (&:where([data-theme=light], [data-theme=light] *));
-
-/* Force light theme colors on the root to override Daisy UI */
-:root {
-	color-scheme: light;
-}
 
 html {
 	margin: 0;
@@ -105,33 +29,115 @@ textarea {
 	touch-action: manipulation;
 }
 
-/* Base Accessibility Focus Rule */
-*:focus-visible {
-	outline: 2px solid var(--color-primary, #922c88) !important;
-	outline-offset: 2px !important;
+/* Base Accessibility Focus Rule (keyboard) — buttons, links, non-text controls */
+:focus-visible {
+	outline: 2px solid var(--color-primary, #922c88);
+	outline-offset: 2px;
+}
+/* Text fields use their own border / wrapper focus instead of a hard outline box */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+	outline: none;
 }
 
-/* Premium Glassmorphism Utilities (Trend 2026) */
+/* ============================================================
+   FORM CONTROLS — global baseline (light + dark aware)
+   Utility classes on individual elements still win, so this
+   only sets sane defaults + theming for placeholder/selection/
+   checked/autofill. Radius is centralized via @utility helpers.
+   ============================================================ */
+
+/* Centralized radius helpers — change --radius-* in theme.css.
+   (Named to avoid clashing with DaisyUI's own radius tokens.) */
+@utility rounded-ui {
+	border-radius: var(--radius-field, 0.75rem);
+}
+@utility rounded-panel {
+	border-radius: var(--radius-box, 1.125rem);
+}
+
+/* Placeholders follow the muted/light token in both themes */
+input::placeholder,
+textarea::placeholder {
+	color: var(--text-light);
+	opacity: 1;
+}
+
+/* Text selection uses the accent */
+::selection {
+	background: color-mix(in oklab, var(--accent) 25%, transparent);
+	color: var(--text-primary);
+}
+
+/* Native checkbox/radio/range checked state uses the accent */
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'] {
+	accent-color: var(--accent);
+}
+
+/* Text controls: subtle accent border on focus (no heavy ring/box) */
+input:not([type='checkbox']):not([type='radio']):not([type='range']):focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	border-color: var(--accent);
+}
+
+/* Native <select> dropdown options — consistent, themed colors in light AND dark
+   (normalizes inconsistent native rendering and keeps options readable in dark) */
+select option,
+select optgroup {
+	color: var(--text-primary);
+	background-color: var(--bg-card);
+}
+select option:checked,
+select option:hover {
+	background-color: color-mix(in oklab, var(--accent) 16%, var(--bg-card));
+	color: var(--text-primary);
+}
+
+/* Autofill: keep card background + primary text in both themes */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+	-webkit-text-fill-color: var(--text-primary);
+	-webkit-box-shadow: 0 0 0 1000px var(--bg-card) inset;
+	caret-color: var(--text-primary);
+	transition: background-color 9999s ease-out 0s;
+}
+
+/* Disabled controls read as inert in both themes */
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+	cursor: not-allowed;
+}
+
+/* Premium Glassmorphism Utilities (Trend 2026) — theme-aware (light + dark) */
 .glass-card {
-	background: rgba(255, 255, 255, 0.6);
+	background: color-mix(in oklab, var(--bg-card) 60%, transparent);
 	backdrop-filter: blur(24px) saturate(190%);
 	-webkit-backdrop-filter: blur(24px) saturate(190%);
-	border: 1px solid rgba(255, 255, 255, 0.4);
+	border: 1px solid color-mix(in oklab, var(--bg-card) 40%, transparent);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .glass-surface {
-	background: rgba(255, 255, 255, 0.3);
+	background: color-mix(in oklab, var(--bg-card) 30%, transparent);
 	backdrop-filter: blur(12px) saturate(160%);
 	-webkit-backdrop-filter: blur(12px) saturate(160%);
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	border: 1px solid color-mix(in oklab, var(--bg-card) 20%, transparent);
 }
 
 .glass-header {
-	background: rgba(255, 255, 255, 0.85);
+	background: color-mix(in oklab, var(--bg-card) 85%, transparent);
 	backdrop-filter: blur(20px) saturate(180%);
 	-webkit-backdrop-filter: blur(20px) saturate(180%);
-	border-bottom: 1px solid rgba(219, 210, 198, 0.4);
+	border-bottom: 1px solid var(--border-subtle);
 }
 
 .premium-shadow {
@@ -189,24 +195,23 @@ textarea {
 }
 
 /* ============================================
-   INPUT FOCUS GLOW — Micro-animation pulse
+   INPUT FOCUS — brief pulse only (no persistent ring/box)
+   Inputs get their focus feedback from their own border /
+   wrapper focus-within; this just adds a quick, subtle pulse.
    ============================================ */
 @keyframes focus-glow {
 	0% {
-		box-shadow: 0 0 0 0 rgba(26, 26, 26, 0.08);
-	}
-	50% {
-		box-shadow: 0 0 0 6px rgba(26, 26, 26, 0.04);
+		box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 20%, transparent);
 	}
 	100% {
-		box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.06);
+		box-shadow: 0 0 0 5px transparent;
 	}
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-	animation: focus-glow 0.6s ease-out forwards;
+input.input:focus-visible,
+textarea.textarea:focus-visible,
+select.select:focus-visible {
+	animation: focus-glow 0.45s ease-out;
 }
 
 /* ============================================
@@ -268,14 +273,14 @@ input[type='checkbox']:checked {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgba(0, 0, 0, 0.1);
+	background: color-mix(in oklab, var(--text-muted) 45%, transparent);
 	border-radius: 10px;
 	transition-property: background-color;
 	transition-duration: 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(0, 0, 0, 0.2);
+	background: color-mix(in oklab, var(--text-muted) 70%, transparent);
 }
 
 /* ============================================

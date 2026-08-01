@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Search, Filter, Download, Calendar, CreditCard } from 'lucide-vue-next'
+import AppSelect from '~/components/ui/AppSelect.vue'
 
 interface Props {
 	hasFilteredSales: boolean
@@ -7,6 +8,15 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const paymentMethodOptions = [
+	{ value: 'all', label: 'Métodos de pago' },
+	{ value: 'cash', label: 'Efectivo' },
+	{ value: 'card', label: 'Tarjeta' },
+	{ value: 'mixed', label: 'Mixto' },
+	{ value: 'transfer', label: 'Transferencia' },
+	{ value: 'stripe', label: 'Stripe' },
+]
 
 const emit = defineEmits<{
 	(e: 'download-csv'): void
@@ -63,17 +73,15 @@ const filterPaymentMethod = defineModel<string>('filterPaymentMethod', { require
 					<input type="checkbox" class="checkbox checkbox-xs checkbox-primary rounded-[4px]" :checked="filterDateMode === 'range'" @change="filterDateMode = filterDateMode === 'range' ? 'single' : 'range'" />
 				</label>
 			</div>
-			<div class="w-[45%] flex items-center bg-bg-card border border-border-default/85 rounded-xl px-3 h-10 shadow-[0_1px_2px_rgba(0,0,0,0.01)] relative">
-				<CreditCard class="w-3.5 h-3.5 text-text-muted mr-2 shrink-0" />
-				<select v-model="filterPaymentMethod" class="bg-transparent text-xs font-semibold border-none outline-none focus:ring-0 text-text-primary p-0 m-0 w-full cursor-pointer appearance-none">
-					<option value="all">Métodos de pago</option>
-					<option value="cash">Efectivo</option>
-					<option value="card">Tarjeta</option>
-					<option value="mixed">Mixto</option>
-					<option value="transfer">Transferencia</option>
-					<option value="stripe">Stripe</option>
-				</select>
-				<span class="absolute right-3.5 pointer-events-none text-text-muted/70 text-[10px]">▼</span>
+			<div class="w-[45%]">
+				<AppSelect
+					v-model="filterPaymentMethod"
+					aria-label="Filtrar por método de pago"
+					:options="paymentMethodOptions">
+					<template #icon>
+						<CreditCard class="w-3.5 h-3.5" />
+					</template>
+				</AppSelect>
 			</div>
 		</div>
 	</div>

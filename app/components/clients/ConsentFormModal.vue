@@ -231,7 +231,7 @@
 						</label>
 						<select
 							v-model="form.status"
-							class="select bg-white border-border-default focus:bg-white focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl shadow-inner transition-colors focus:ring-4">
+							class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl shadow-inner transition-colors focus:ring-4">
 							<option value="UNSIGNED">Sin Firmar</option>
 							<option value="SIGNED">Firmado</option>
 						</select>

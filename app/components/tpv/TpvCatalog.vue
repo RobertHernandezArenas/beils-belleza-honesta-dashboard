@@ -1,4 +1,6 @@
 <script setup lang="ts">
+	import { ref, watch, onMounted } from 'vue'
+	import gsap from 'gsap'
 	import {
 		Search,
 		Plus,
@@ -25,12 +27,44 @@
 	const activeTab = defineModel<'products' | 'services' | 'packages'>('activeTab', { required: true })
 	const searchQuery = defineModel<string>('searchQuery', { required: true })
 
-	// GPU Hardware-Accelerated Tab Pill Offset (3 tabs: services | products | packages)
-	const activePillStyle = computed(() => {
-		const index = activeTab.value === 'services' ? 0 : activeTab.value === 'products' ? 1 : 2
-		return {
-			transform: `translate3d(${index * 100}%, 0, 0)`,
+	// GSAP-driven tab pill + content transition (3 tabs: services | products | packages)
+	const pillRef = ref<HTMLElement | null>(null)
+	const gridRef = ref<HTMLElement | null>(null)
+
+	const tabIndex = (t: string) => (t === 'services' ? 0 : t === 'products' ? 1 : 2)
+	const prefersReducedMotion = () =>
+		typeof window !== 'undefined' &&
+		window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+	const movePill = (immediate = false) => {
+		if (!pillRef.value) return
+		const xPercent = tabIndex(activeTab.value) * 100
+		if (immediate || prefersReducedMotion()) {
+			gsap.set(pillRef.value, { xPercent })
+		} else {
+			gsap.to(pillRef.value, { xPercent, duration: 0.45, ease: 'back.out(1.5)' })
 		}
+	}
+
+	const animateContent = () => {
+		if (!gridRef.value || prefersReducedMotion()) return
+		const cards = gridRef.value.children
+		if (!cards.length) return
+		gsap.fromTo(
+			cards,
+			{ opacity: 0, y: 10 },
+			{ opacity: 1, y: 0, duration: 0.28, stagger: 0.015, ease: 'power2.out', overwrite: true },
+		)
+	}
+
+	watch(activeTab, () => {
+		movePill()
+		requestAnimationFrame(animateContent)
+	})
+
+	onMounted(() => {
+		movePill(true)
+		requestAnimationFrame(animateContent)
 	})
 </script>
 
@@ -51,11 +85,11 @@
 		<div class="mb-4 flex w-full flex-col gap-3 lg:flex-row lg:items-center">
 			<!-- DaisyUI Segmented Tabs Container -->
 			<div
-				class="bg-white/60 border-border-default/80 relative flex w-full flex-1 flex-nowrap items-center rounded-2xl border p-1 shadow-xs backdrop-blur-md overflow-hidden">
+				class="bg-bg-card/60 border-border-default/80 relative flex w-full flex-1 flex-nowrap items-center rounded-2xl border p-1 shadow-xs backdrop-blur-md overflow-hidden">
 				<!-- GPU Hardware-Accelerated Active Pill -->
 				<div
-					class="bg-text-primary absolute top-1 bottom-1 left-1 rounded-xl shadow-xs pointer-events-none transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] w-[calc((100%-8px)/3)]"
-					:style="activePillStyle"
+					ref="pillRef"
+					class="bg-text-primary absolute top-1 bottom-1 left-1 rounded-xl shadow-xs pointer-events-none w-[calc((100%-8px)/3)]"
 					style="z-index: 0"></div>
 
 				<button
@@ -88,7 +122,7 @@
 					v-model="searchQuery"
 					type="text"
 					placeholder="Buscar en el catálogo..."
-					class="input bg-white/70 border-border-default/80 focus:bg-bg-card focus:border-text-primary h-10 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
+					class="input bg-bg-card/70 border-border-default/80 focus:bg-bg-card focus:border-text-primary h-10 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
 				<button
 					v-if="searchQuery"
 					type="button"
@@ -147,7 +181,7 @@
 				Vender bono / paquete
 			</p>
 
-			<div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+			<div ref="gridRef" class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 				<button
 					v-for="item in filteredCatalog"
 					:key="item.product_id || item.service_id || item.package_id"

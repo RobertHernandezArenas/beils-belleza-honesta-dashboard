@@ -32,7 +32,7 @@ defineProps<Props>()
 	<!-- METRICS (Left Side - 4 columns) -->
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full xl:w-[65%] shrink-0">
 		<!-- Card 1 -->
-		<div class="bg-white border border-border-default/70 rounded-xl p-4.5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] relative h-[145px]">
+		<div class="bg-bg-card border border-border-default/70 rounded-xl p-4.5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] relative h-[145px]">
 			<div class="flex justify-between items-start">
 				<div class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
 					<span 
@@ -62,7 +62,7 @@ defineProps<Props>()
 		</div>
 
 		<!-- Card 2 -->
-		<div class="bg-white border border-border-default/70 rounded-xl p-4.5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] relative h-[145px]">
+		<div class="bg-bg-card border border-border-default/70 rounded-xl p-4.5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] relative h-[145px]">
 			<div class="flex justify-between items-start">
 				<div class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
 					<span 
@@ -92,7 +92,7 @@ defineProps<Props>()
 		</div>
 
 		<!-- Card 3 -->
-		<div class="bg-white border border-border-default/70 rounded-xl p-4.5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] relative h-[145px]">
+		<div class="bg-bg-card border border-border-default/70 rounded-xl p-4.5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] relative h-[145px]">
 			<div class="flex justify-between items-start">
 				<div class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
 					<span 
@@ -125,7 +125,7 @@ defineProps<Props>()
 			<!-- Subcontainer to absolute clip watermark arrow without overflow-hidden on parent -->
 			<div class="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
 				<!-- Big arrow watermark on the right -->
-				<div class="absolute right-[-2px] top-4 bottom-4 text-neutral-800 flex items-center justify-center opacity-65">
+				<div class="absolute right-[-2px] top-4 bottom-4 text-text-secondary flex items-center justify-center opacity-65">
 					<svg class="w-[90px] h-[90px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
 						<line x1="12" y1="19" x2="12" y2="5"></line>
 						<polyline points="5 12 12 5 19 12"></polyline>
@@ -135,13 +135,13 @@ defineProps<Props>()
 			<div class="relative z-10 flex flex-col h-full justify-between">
 				<div class="text-left">
 					<span 
-						class="text-[9px] font-bold text-neutral-400 tracking-wider uppercase tooltip tooltip-bottom tooltip-last cursor-help text-left inline-block"
+						class="text-[9px] font-bold text-text-muted tracking-wider uppercase tooltip tooltip-bottom tooltip-last cursor-help text-left inline-block"
 						data-tip="¿Qué es? Estimación de ventas al finalizar el mes en curso. &#xa;¿Para qué sirve? Evalúa la proyección de metas y objetivos mensuales. &#xa;¿Cómo se calcula? Multiplicando el promedio diario del mes por los días totales del mes.">
 						PROYECCIÓN<br/>MENSUAL
 					</span>
 					<h3 class="text-3xl font-black tabular-nums tracking-tight font-sans leading-none mb-1.5 mt-1">{{ formatCurrency(monthlyProjection.projected) }}</h3>
 				</div>
-				<p class="text-[10px] text-neutral-400 font-medium max-w-[80%] leading-snug">
+				<p class="text-[10px] text-text-muted font-medium max-w-[80%] leading-snug">
 					Superando el mes anterior en {{ Math.abs(monthlyProjection.changeVsLastMonth).toFixed(1) }}%
 				</p>
 			</div>

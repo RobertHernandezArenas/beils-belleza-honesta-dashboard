@@ -20,8 +20,11 @@ const paymentMethodsData = computed(() => {
   return props.client?.kpis?.paymentMethods || []
 })
 
-// ECharts Donut Chart Options
+const chart = useChartTheme()
+
+// ECharts Donut Chart Options (theme-aware)
 const chartOptions = computed(() => {
+  const ct = chart.value
   const data = paymentMethodsData.value.map((pm: any) => ({
     name: pm.method.toUpperCase(),
     value: pm.total
@@ -30,17 +33,17 @@ const chartOptions = computed(() => {
   return {
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#1a1a1a',
-      borderColor: '#404040',
-      textStyle: { color: '#ffffff', fontSize: 11, fontWeight: 'bold' },
+      backgroundColor: ct.tooltipBg,
+      borderColor: ct.tooltipBorder,
+      textStyle: { color: ct.tooltipText, fontSize: 11, fontWeight: 'bold' },
       formatter: '{b}: <b>{c} €</b> ({d}%)'
     },
     legend: {
       bottom: '0%',
       left: 'center',
-      textStyle: { color: '#666666', fontSize: 10, fontWeight: 'bold' }
+      textStyle: { color: ct.label, fontSize: 10, fontWeight: 'bold' }
     },
-    color: ['#1a1a1a', '#dbd2c6', '#666666', '#8c8c8c', '#bababa', '#ef4444'],
+    color: ct.palette,
     series: [
       {
         name: 'Método de Pago',
@@ -49,7 +52,7 @@ const chartOptions = computed(() => {
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 8,
-          borderColor: '#ffffff',
+          borderColor: ct.surface,
           borderWidth: 2
         },
         label: { show: false },
@@ -58,7 +61,7 @@ const chartOptions = computed(() => {
             show: true,
             fontSize: 12,
             fontWeight: 'bold',
-            color: '#1a1a1a'
+            color: ct.highlight
           }
         },
         labelLine: { show: false },

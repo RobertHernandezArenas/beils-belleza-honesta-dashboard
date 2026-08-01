@@ -56,7 +56,7 @@
 						v-model="clientSearch"
 						type="text"
 						placeholder="Asignar cliente..."
-						class="input bg-white/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
+						class="input bg-bg-card/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
 					<button
 						v-if="clientSearch"
 						type="button"

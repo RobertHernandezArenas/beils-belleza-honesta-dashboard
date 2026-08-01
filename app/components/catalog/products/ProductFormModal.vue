@@ -157,7 +157,7 @@
 					class="flex flex-col gap-6">
 					
 					<!-- Section: Basic Info -->
-					<div class="space-y-6 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+					<div class="space-y-6 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center justify-between border-b border-border-subtle/20 pb-4">
 							<div class="flex items-center gap-2">
 								<div class="bg-primary/10 text-primary flex h-7 w-7 items-center justify-center rounded-lg">
@@ -186,7 +186,7 @@
 									v-model="form.name"
 									type="text"
 									required
-									class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+									class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
 							</div>
 
 							<div class="grid grid-cols-2 gap-4">
@@ -198,7 +198,7 @@
 										v-model="form.sku"
 										type="text"
 										placeholder="P-001"
-										class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
 								</div>
 								<div class="form-control">
 									<label class="label pb-1">
@@ -207,7 +207,7 @@
 									<input
 										v-model="form.barcode"
 										type="text"
-										class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
 								</div>
 							</div>
 
@@ -218,13 +218,13 @@
 								<textarea
 									v-model="form.description"
 									rows="3"
-									class="textarea bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-bold shadow-xs transition-all"></textarea>
+									class="textarea bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-bold shadow-xs transition-all"></textarea>
 							</div>
 						</div>
 					</div>
 
 					<!-- Section: Inventory & Pricing -->
-					<div class="space-y-6 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+					<div class="space-y-6 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
 							<div class="bg-emerald-500/10 text-emerald-600 flex h-7 w-7 items-center justify-center rounded-lg">
 								<Euro class="h-4 w-4" />
@@ -244,7 +244,7 @@
 											v-model="form.price"
 											type="number"
 											step="0.01"
-											class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl pl-9 text-sm font-black tabular-nums shadow-xs transition-all" />
+											class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl pl-9 text-sm font-black tabular-nums shadow-xs transition-all" />
 									</div>
 								</div>
 								<div class="form-control">
@@ -254,7 +254,7 @@
 									<input
 										v-model="form.tax_rate"
 										type="number"
-										class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
 								</div>
 							</div>
 
@@ -266,7 +266,7 @@
 									<input
 										v-model="form.stock"
 										type="number"
-										class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
 								</div>
 								<div class="form-control">
 									<label class="label pb-1">
@@ -275,14 +275,14 @@
 									<input
 										v-model="form.min_stock"
 										type="number"
-										class="input bg-white/60 border-border-default focus:bg-white focus:ring-emerald-500/10 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
 								</div>
 							</div>
 						</div>
 					</div>
 
 					<!-- Section: Media -->
-					<div class="space-y-5 rounded-3xl bg-white/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
+					<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
 							<div class="bg-indigo-500/10 text-indigo-600 flex h-7 w-7 items-center justify-center rounded-lg">
 								<ImageIcon class="h-4 w-4" />
@@ -297,7 +297,7 @@
 								v-model="form.image_url"
 								type="url"
 								placeholder="https://..."
-								class="input bg-white/60 border-border-default focus:bg-white focus:ring-primary/20 hover:bg-white h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
 						</div>
 					</div>
 

@@ -137,7 +137,7 @@
 			class="bg-text-primary text-bg-card border-border-default/20 fixed bottom-4 left-4 right-4 z-40 flex items-center justify-between rounded-2xl p-3.5 shadow-2xl backdrop-blur-lg md:hidden animate-in fade-in slide-in-from-bottom-4 duration-300"
 			@click="mobileTab = 'cart'">
 			<div class="flex items-center gap-3">
-				<div class="bg-white/10 flex h-9 w-9 items-center justify-center rounded-xl font-mono text-xs font-black">
+				<div class="bg-bg-card/10 flex h-9 w-9 items-center justify-center rounded-xl font-mono text-xs font-black">
 					{{ totalCartCount }}
 				</div>
 				<div class="flex flex-col">
@@ -145,7 +145,7 @@
 					<span class="text-base font-black tabular-nums">{{ formatCurrency(cartTotal) }}</span>
 				</div>
 			</div>
-			<button class="btn btn-sm bg-white text-text-primary hover:bg-white/90 border-none rounded-xl font-extrabold uppercase text-[11px] flex items-center gap-1.5 shadow-sm">
+			<button class="btn btn-sm bg-bg-card text-text-primary hover:bg-bg-card/90 border-none rounded-xl font-extrabold uppercase text-[11px] flex items-center gap-1.5 shadow-sm">
 				Ver Ticket
 				<ArrowRight class="h-3.5 w-3.5" />
 			</button>

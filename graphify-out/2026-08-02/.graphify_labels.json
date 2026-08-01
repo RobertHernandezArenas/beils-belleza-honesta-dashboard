@@ -463,7 +463,14 @@
   "461": "prisma",
   "462": "@prisma/adapter-mariadb",
   "463": "@types/node",
+  "464": "Avoid Expensive Operations in Updated Hook",
   "465": "vite.config.ts",
   "466": "upload.post.ts",
-  "467": "vite.config.js"
+  "467": "vite.config.js",
+  "468": "@nuxtjs/google-fonts",
+  "469": "@nuxtjs/google-fonts",
+  "470": "theme.client.ts",
+  "471": "useChartTheme.ts",
+  "472": "dotenv",
+  "473": "vite"
 }
