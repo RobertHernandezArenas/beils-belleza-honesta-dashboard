@@ -11,6 +11,7 @@
 		ExternalLink,
 		Eye,
 		EyeOff,
+		X,
 	} from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AOS from 'aos'
@@ -24,9 +25,30 @@
 
 	const queryClient = useQueryClient()
 	const { t } = useI18n()
-	const searchQuery = useDebouncedRef('', 500)
-	const page = ref(1)
-	const limit = ref(7)
+
+	// Persisted directory state — survives navigating into a client detail and back
+	// (and browser back/forward), so the search + page are restored, not reset.
+	const directoryState = useState('clients-directory-state', () => ({
+		q: '',
+		page: 1,
+		limit: 7,
+	}))
+
+	// Immediate value drives the input + clear button; the debounced copy drives the API query.
+	const searchInput = ref(directoryState.value.q)
+	const searchQuery = useDebouncedRef(directoryState.value.q, 500)
+	const page = ref(directoryState.value.page)
+	const limit = ref(directoryState.value.limit)
+
+	// Debounce the typed value into the query
+	watch(searchInput, v => {
+		searchQuery.value = v
+	})
+
+	// Keep the persisted snapshot in sync with the live controls
+	watch([searchInput, page, limit], ([q, p, l]) => {
+		directoryState.value = { q: q as string, page: p as number, limit: l as number }
+	})
 
 	const {
 		data: clientsResponse,
@@ -130,10 +152,18 @@
 					<div class="relative w-full sm:w-3/4 lg:w-auto">
 						<Search class="text-text-muted absolute top-1/2 left-4 z-2 h-4 w-4 -translate-y-1/2" />
 						<input
-							v-model="searchQuery"
+							v-model="searchInput"
 							type="search"
 							placeholder="Buscar nombre o correo..."
-							class="border-text-secondary/30 placeholder:text-text-muted/50 h-12 w-full rounded-full border pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] ring-0! outline-0! transition-colors sm:w-full lg:w-64" />
+							class="bg-bg-card text-text-primary border-border-default placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15 h-12 w-full rounded-full border pr-11 pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] outline-none transition-[border-color,box-shadow] sm:w-full lg:w-64" />
+						<button
+							v-if="searchInput"
+							type="button"
+							aria-label="Limpiar búsqueda"
+							@click="searchInput = ''"
+							class="text-text-muted hover:text-text-primary hover:bg-bg-muted absolute top-1/2 right-3 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full transition-colors">
+							<X class="h-3.5 w-3.5" />
+						</button>
 					</div>
 					<button
 						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"

@@ -8,22 +8,28 @@ export default defineEventHandler(async event => {
 		requireAdmin(event)
 
 		const query = getQuery(event)
-		const search = query.search as string
+		const search = ((query.search as string) || '').trim()
 		const page = parseInt(query.page as string) || 1
 		const limit = parseInt(query.limit as string) || 10
 		const skip = (page - 1) * limit
 
-		let whereClause: any = { role: 'CLIENT' }
+		const whereClause: any = { role: 'CLIENT' }
 		if (search) {
-			whereClause = {
-				...whereClause,
+			// Multi-term search: split the query into words and require EVERY word to
+			// match at least one field (AND across words, OR across fields). This lets
+			// "antonella delli" match name="Antonella" + surname="Delli Gatti", and
+			// keeps digit-only terms matching the phone/document. Much more precise
+			// than a single OR-contains over the whole string.
+			const terms = search.split(/\s+/).filter(Boolean).slice(0, 6)
+			whereClause.AND = terms.map(term => ({
 				OR: [
-					{ name: { contains: search } },
-					{ surname: { contains: search } },
-					{ email: { contains: search } },
-					{ phone: { contains: search } },
+					{ name: { contains: term } },
+					{ surname: { contains: term } },
+					{ email: { contains: term } },
+					{ phone: { contains: term } },
+					{ document_number: { contains: term } },
 				],
-			}
+			}))
 		}
 
 		// Use transaction to get total and data in one go

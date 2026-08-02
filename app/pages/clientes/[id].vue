@@ -15,6 +15,7 @@ import { useI18n } from 'vue-i18n'
 
 import ProfileHeader from '~/components/clients/ProfileHeader.vue'
 import ProfileOverview from '~/components/clients/ProfileOverview.vue'
+import ProfileAppointmentHistory from '~/components/clients/ProfileAppointmentHistory.vue'
 import ProfileBilling from '~/components/clients/ProfileBilling.vue'
 import ProfileHealthSection from '~/components/clients/ProfileHealthSection.vue'
 import ProfilePackagesSection from '~/components/clients/ProfilePackagesSection.vue'
@@ -232,15 +233,17 @@ const handleNewBooking = () => {
         <!-- 3. Dynamic Tab Content -->
         <div class="pb-16">
           <Transition name="fade" mode="out-in">
-            <ProfileOverview 
-              v-if="activeTab === 'OVERVIEW'"
-              :client="client" 
-              :is-updating="isUpdating"
-              @update="handleFieldUpdate" 
-              @open-booking="handleNewBooking"
-              @open-purchase="purchaseDetailsModalRef?.open($event)"
-              @open-debt="debtDetailsModalRef?.open($event)"
-            />
+            <div v-if="activeTab === 'OVERVIEW'" key="overview" class="space-y-6">
+              <ProfileOverview
+                :client="client"
+                :is-updating="isUpdating"
+                @update="handleFieldUpdate"
+                @open-booking="handleNewBooking"
+                @open-purchase="purchaseDetailsModalRef?.open($event)"
+                @open-debt="debtDetailsModalRef?.open($event)"
+              />
+              <ProfileAppointmentHistory :client="client" />
+            </div>
 
             <ProfileHealthSection 
               v-else-if="activeTab === 'HEALTH'"
