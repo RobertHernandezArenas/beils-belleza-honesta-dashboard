@@ -2,22 +2,18 @@
 import {
 	Mail,
 	Phone,
-	Calendar,
-	BadgeCheck,
-	Plus,
-	TrendingUp,
-	CreditCard,
 	Camera,
-	ChevronDown,
+	MoreVertical,
+	CalendarPlus,
 	FileSignature,
 	FileText,
 	ShieldOff,
-	ImageUp,
 	AlertCircle,
 	Sparkles
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import ImageCropperModal from '~/components/shared/ImageCropperModal.vue'
+import EditableField from '~/components/shared/EditableField.vue'
 
 const props = defineProps({
 	client: {
@@ -126,7 +122,6 @@ const getTierBadgeStyle = computed(() => {
 	return 'bg-amber-800/10 text-amber-900 border-amber-800/20'
 })
 
-const getStatusBadgeClass = (status: string) => (status === 'ON' ? 'badge-success' : 'badge-error')
 const blurActiveElement = () => {
 	if (typeof document !== 'undefined') {
 		(document.activeElement as HTMLElement)?.blur()
@@ -143,15 +138,9 @@ const blurActiveElement = () => {
 			
 			<!-- 1. Identity & Avatar -->
 			<div class="flex items-center gap-6">
-				<!-- DaisyUI Avatar Component with Indicator -->
-				<div class="indicator relative">
-					<span 
-						class="indicator-item badge badge-sm p-2 shadow-md font-black tracking-wider uppercase text-[9px] border-none"
-						:class="getStatusBadgeClass(client.status)"
-					>
-						{{ client.status === 'ON' ? 'ACTIVO' : 'INACTIVO' }}
-					</span>
-					<div 
+				<!-- Avatar -->
+				<div class="relative">
+					<div
 						class="avatar cursor-pointer group relative overflow-hidden rounded-full ring-4 ring-primary/20 ring-offset-4 ring-offset-bg-card transition-all duration-300 hover:scale-105 shadow-xl w-20 h-20 lg:w-24 lg:h-24"
 						role="button"
 						:aria-label="$t('common.edit') + ' ' + $t('users.avatar')"
@@ -172,27 +161,55 @@ const blurActiveElement = () => {
 				</div>
 
 				<div class="space-y-1.5">
-					<div class="flex items-center gap-3 flex-wrap">
-						<h1 class="text-text-primary text-2xl lg:text-3xl font-black tracking-tight flex items-center gap-2">
-							{{ client.name }} {{ client.surname }}
-						</h1>
-						<!-- 3-Tier Commitment Badge -->
-						<div class="tooltip tooltip-bottom z-50" data-tip="Categoría de cliente según nivel de compromiso: Bronce (0-64 pts), Plata (65-89 pts) u Oro VIP (90-100 pts).">
-							<div 
-								class="badge border font-black text-[10px] tracking-wider uppercase px-3 py-2 flex items-center gap-1 shadow-xs cursor-help"
-								:class="getTierBadgeStyle"
-							>
-								<Sparkles class="w-3 h-3" />
-								<span>Cliente {{ engagementTierLabel }}</span>
-							</div>
+					<div class="flex items-center gap-x-2 gap-y-1 flex-wrap">
+						<!-- Name (click to edit) -->
+						<div class="w-fit max-w-full">
+							<EditableField
+								:model-value="client.name"
+								:is-mutating="isUpdating"
+								placeholder="Nombre..."
+								@save="$emit('update', 'name', $event)">
+								<template #display="{ value }">
+									<span class="text-text-primary text-2xl lg:text-3xl font-black tracking-tight">{{ value }}</span>
+								</template>
+							</EditableField>
+						</div>
+						<!-- Surname (click to edit) -->
+						<div class="w-fit max-w-full">
+							<EditableField
+								:model-value="client.surname || ''"
+								:is-mutating="isUpdating"
+								placeholder="Apellido..."
+								@save="$emit('update', 'surname', $event)">
+								<template #display="{ value }">
+									<span class="text-text-primary text-2xl lg:text-3xl font-black tracking-tight">{{ value || '—' }}</span>
+								</template>
+							</EditableField>
 						</div>
 					</div>
 					<div class="text-text-muted flex flex-col gap-1 text-xs font-semibold">
-						<div class="flex items-center gap-3 flex-wrap">
-							<span class="flex items-center gap-1.5"><Mail class="w-3.5 h-3.5 text-primary opacity-80" /> {{ client.email }}</span>
-							<span class="opacity-30">•</span>
-							<span class="flex items-center gap-1.5"><Phone class="w-3.5 h-3.5 text-primary opacity-80" /> {{ client.phone }}</span>
-						</div>
+						<!-- Email (click to edit) -->
+						<EditableField
+							:model-value="client.email"
+							type="email"
+							:is-mutating="isUpdating"
+							placeholder="Correo..."
+							@save="$emit('update', 'email', $event)">
+							<template #display="{ value }">
+								<span class="flex items-center gap-1.5"><Mail class="w-3.5 h-3.5 text-primary opacity-80" /> {{ value || 'Sin correo' }}</span>
+							</template>
+						</EditableField>
+						<!-- Phone (click to edit) -->
+						<EditableField
+							:model-value="client.phone"
+							type="tel"
+							:is-mutating="isUpdating"
+							placeholder="Teléfono..."
+							@save="$emit('update', 'phone', $event)">
+							<template #display="{ value }">
+								<span class="flex items-center gap-1.5"><Phone class="w-3.5 h-3.5 text-primary opacity-80" /> {{ value || 'Sin teléfono' }}</span>
+							</template>
+						</EditableField>
 						<div class="flex items-center gap-3 text-[11px] font-medium opacity-70 flex-wrap mt-0.5">
 							<span>Registrado: {{ new Date(client.created_at).toLocaleDateString() }}</span>
 							<span v-if="client.city" class="opacity-50">• {{ client.city }}, {{ client.country || 'España' }}</span>
@@ -238,47 +255,43 @@ const blurActiveElement = () => {
 				</div>
 			</div>
 
-			<!-- 3. Actions Row -->
-			<div class="flex items-center gap-3 shrink-0">
-				<button 
-					@click="$emit('new-booking')" 
-					class="btn btn-primary rounded-2xl px-6 font-black tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] transition-all"
-				>
-					<Plus class="w-4 h-4 mr-1 stroke-[3]" />
-					{{ $t('nav.agenda') === 'nav.agenda' ? 'Nueva Cita' : $t('nav.agenda') }}
-				</button>
-				
-				<!-- DaisyUI Dropdown -->
+			<!-- 3. Actions (kebab menu) -->
+			<div class="flex items-center gap-3 shrink-0 self-start lg:self-center">
 				<div class="dropdown dropdown-end relative z-50">
-					<div 
-						tabindex="0" 
-						role="button" 
-						class="btn btn-ghost bg-base-200/80 hover:bg-base-300/80 rounded-2xl px-5 font-bold border border-base-300/60"
+					<button
+						tabindex="0"
+						type="button"
+						class="btn btn-ghost btn-circle border border-base-300/60 bg-base-200/60 hover:bg-base-300/80"
 						aria-haspopup="menu"
 						:aria-label="$t('users.table.actions')"
 					>
-						{{ $t('users.table.actions') }} 
-						<ChevronDown class="ml-1 w-4 h-4 opacity-70" />
-					</div>
-					<ul 
-						tabindex="0" 
+						<MoreVertical class="w-5 h-5" />
+					</button>
+					<ul
+						tabindex="0"
 						class="dropdown-content menu bg-base-100/95 backdrop-blur-xl border border-base-300/80 z-50 mt-2 w-64 rounded-2xl p-2 shadow-2xl space-y-1"
 					>
 						<li>
+							<a @click="$emit('new-booking'); blurActiveElement()" class="py-3 font-bold rounded-xl active:bg-primary">
+								<CalendarPlus class="text-primary mr-2 h-4 w-4" />
+								Nueva Cita
+							</a>
+						</li>
+						<li class="border-t border-base-200/80 pt-1">
 							<a @click="$emit('add-consent'); blurActiveElement()" class="py-3 font-bold rounded-xl active:bg-primary">
-								<FileSignature class="text-success mr-2 h-4 w-4" /> 
+								<FileSignature class="text-success mr-2 h-4 w-4" />
 								{{ $t('catalog.clients.profile.compliance.consents') }}
 							</a>
 						</li>
 						<li>
 							<a @click="$emit('add-questionnaire'); blurActiveElement()" class="py-3 font-bold rounded-xl active:bg-primary">
-								<FileText class="text-info mr-2 h-4 w-4" /> 
+								<FileText class="text-info mr-2 h-4 w-4" />
 								{{ $t('catalog.clients.profile.compliance.questionnaires') }}
 							</a>
 						</li>
 						<li class="border-t border-base-200/80 pt-1">
 							<a @click="$emit('add-revoke'); blurActiveElement()" class="py-3 font-bold text-error rounded-xl hover:bg-error/10 active:bg-error">
-								<ShieldOff class="mr-2 h-4 w-4" /> 
+								<ShieldOff class="mr-2 h-4 w-4" />
 								{{ $t('catalog.clients.profile.compliance.revocations') }}
 							</a>
 						</li>
