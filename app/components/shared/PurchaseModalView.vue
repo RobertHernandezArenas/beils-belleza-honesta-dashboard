@@ -130,12 +130,12 @@ const formatCustomDate = (dateString: string) => {
              <div class="flex flex-col gap-1">
                 <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Fecha</label>
                 <div class="flex items-center gap-2 mt-1">
-                    <div v-if="!isEditingDate" class="flex items-center justify-between w-full group/date transition-all">
+                    <div v-if="!isEditingDate" class="flex items-center gap-2 group/date transition-all">
                         <span class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg flex items-center gap-1.5">
                             <Calendar class="w-3.5 h-3.5" />
                             {{ formatCustomDate(cart.created_at) }}
                         </span>
-                        <div class="flex gap-1 opacity-0 group-hover/date:opacity-100 transition-opacity">
+                        <div class="date-edit flex gap-1 opacity-0 transition-opacity group-hover/date:opacity-100">
                             <button @click="startEditingDate" class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Fecha">
                                 <Edit2 class="w-3 h-3" />
                             </button>
@@ -155,3 +155,13 @@ const formatCustomDate = (dateString: string) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+	/* Touch devices (no hover): the date edit button is always visible next to
+	   the input. On hover-capable devices it stays hover-revealed. */
+	@media (hover: none) {
+		.date-edit {
+			opacity: 1;
+		}
+	}
+</style>
