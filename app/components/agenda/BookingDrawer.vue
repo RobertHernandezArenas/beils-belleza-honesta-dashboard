@@ -7,6 +7,15 @@ import { useBookingForm } from '~/composables/useBookingForm'
 import BookingClientSelector from './BookingClientSelector.vue'
 import BookingItemSelector from './BookingItemSelector.vue'
 import BookingSelectedItems from './BookingSelectedItems.vue'
+import AppSelect from '~/components/ui/AppSelect.vue'
+
+const statusOptions = [
+    { value: 'PENDIENTE', label: 'PENDIENTE' },
+    { value: 'CONFIRMADA', label: 'CONFIRMADA' },
+    { value: 'CANCELADA', label: 'CANCELADA' },
+    { value: 'COMPLETADA', label: 'COMPLETADA' },
+    { value: 'AUSENTE', label: 'AUSENTE' },
+]
 
 const store = useAgendaStore()
 const { isBookingDrawerOpen, selectedBooking } = storeToRefs(store)
@@ -102,16 +111,11 @@ const closeDropdowns = () => {
                     <!-- Status -->
                     <div v-if="selectedBooking" class="form-control">
                         <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Estado</span></label>
-                        <select
+                        <AppSelect
                             v-model="form.status"
                             :disabled="form.status === 'COMPLETADA'"
-                            class="select bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl shadow-sm text-xs font-bold disabled:opacity-60">
-                            <option value="PENDIENTE">PENDIENTE</option>
-                            <option value="CONFIRMADA">CONFIRMADA</option>
-                            <option value="CANCELADA">CANCELADA</option>
-                            <option value="COMPLETADA">COMPLETADA</option>
-                            <option value="AUSENTE">AUSENTE</option>
-                        </select>
+                            aria-label="Estado de la cita"
+                            :options="statusOptions" />
                     </div>
 
                     <!-- Date & Time Row -->

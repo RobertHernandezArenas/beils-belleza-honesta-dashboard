@@ -4,6 +4,7 @@
 	import { UserPlus, Save, AlertCircle, Edit, User, CreditCard, Search, Camera, Trash2 } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
+	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -12,6 +13,22 @@
 
 	const emit = defineEmits(['update:modelValue', 'close', 'success'])
 	const { t } = useI18n()
+
+	const documentTypeOptions = computed(() => [
+		{ value: 'DNI', label: 'DNI (España)' },
+		{ value: 'NIE', label: 'NIE (España)' },
+		{ value: 'PASSPORT', label: t('catalog.clients.form.passport') },
+	])
+	const genderOptions = computed(() => [
+		{ value: '', label: t('catalog.clients.form.selectGender') },
+		{ value: 'male', label: t('catalog.clients.form.male') },
+		{ value: 'female', label: t('catalog.clients.form.female') },
+		{ value: 'other', label: t('catalog.clients.form.other') },
+	])
+	const clientStatusOptions = [
+		{ value: 'ON', label: 'Activo' },
+		{ value: 'OFF', label: 'Inactivo' },
+	]
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
@@ -418,13 +435,10 @@
 									{{ t('catalog.clients.form.documentType') }}
 								</span>
 							</label>
-							<select
+							<AppSelect
 								v-model="form.document_type"
-								class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
-								<option value="DNI">DNI (España)</option>
-								<option value="NIE">NIE (España)</option>
-								<option value="PASSPORT">{{ t('catalog.clients.form.passport') }}</option>
-							</select>
+								:aria-label="t('catalog.clients.form.documentType')"
+								:options="documentTypeOptions" />
 						</div>
 
 						<div class="form-control">
@@ -460,14 +474,11 @@
 									{{ t('catalog.clients.form.gender') }}
 								</span>
 							</label>
-							<select
+							<AppSelect
 								v-model="form.gender"
-								class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
-								<option value="">{{ t('catalog.clients.form.selectGender') }}</option>
-								<option value="male">{{ t('catalog.clients.form.male') }}</option>
-								<option value="female">{{ t('catalog.clients.form.female') }}</option>
-								<option value="other">{{ t('catalog.clients.form.other') }}</option>
-							</select>
+								:aria-label="t('catalog.clients.form.gender')"
+								:placeholder="t('catalog.clients.form.selectGender')"
+								:options="genderOptions" />
 						</div>
 					</div>
 				</div>
@@ -516,12 +527,10 @@
 									{{ t('catalog.clients.form.status') }}
 								</span>
 							</label>
-							<select
+							<AppSelect
 								v-model="form.status"
-								class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all">
-								<option value="ON">Activo</option>
-								<option value="OFF">Inactivo</option>
-							</select>
+								:aria-label="t('catalog.clients.form.status')"
+								:options="clientStatusOptions" />
 						</div>
 					</div>
 				</div>

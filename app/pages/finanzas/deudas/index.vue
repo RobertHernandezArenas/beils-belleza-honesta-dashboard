@@ -2,12 +2,24 @@
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Landmark, Search, MoreVertical, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
+	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	definePageMeta({ layout: 'default' })
 	const queryClient = useQueryClient()
 	const { notifySalesChanged } = useRealtimeSales()
 	const { t } = useI18n()
 	const searchQuery = ref('')
+
+	const debtStatusOptions = computed(() => [
+		{ value: '', label: t('finances.debts.filters.all') },
+		{ value: 'pending', label: t('finances.debts.filters.pending') },
+		{ value: 'paid', label: t('finances.debts.filters.paid') },
+	])
+	const debtPaymentOptions = [
+		{ value: 'card', label: 'Tarjeta' },
+		{ value: 'cash', label: 'Efectivo' },
+		{ value: 'transfer', label: 'Transferencia' },
+	]
 	const filterStatus = ref('pending')
 	const toastMessage = ref('')
 	const toastType = ref<'success' | 'error'>('success')
@@ -119,13 +131,13 @@
 							:placeholder="$t('finances.debts.searchPlaceholder')"
 							class="input bg-bg-card border-border-default focus:border-error focus:ring-error/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
 					</div>
-					<select
-						v-model="filterStatus"
-						class="select bg-bg-card border-border-default h-12 w-full shrink-0 rounded-2xl sm:w-1/4 lg:w-auto">
-						<option value="">{{ $t('finances.debts.filters.all') }}</option>
-						<option value="pending">{{ $t('finances.debts.filters.pending') }}</option>
-						<option value="paid">{{ $t('finances.debts.filters.paid') }}</option>
-					</select>
+					<div class="w-full shrink-0 sm:w-1/4 lg:w-44">
+						<AppSelect
+							v-model="filterStatus"
+							size="lg"
+							aria-label="Filtrar deudas por estado"
+							:options="debtStatusOptions" />
+					</div>
 				</div>
 			</div>
 
@@ -290,11 +302,11 @@
 							:max="selectedDebt.remaining"
 							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none mb-3" />
 							
-						<select v-model="paymentMethod" class="select bg-bg-muted border-border-default focus:border-primary text-text-primary h-12 w-full rounded-2xl shadow-sm">
-							<option value="card">Tarjeta</option>
-							<option value="cash">Efectivo</option>
-							<option value="transfer">Transferencia</option>
-						</select>
+						<AppSelect
+							v-model="paymentMethod"
+							size="lg"
+							aria-label="Método de pago"
+							:options="debtPaymentOptions" />
 					</div>
 
 					<div class="text-text-muted mt-2 px-4 text-center text-xs font-bold tracking-wider uppercase">

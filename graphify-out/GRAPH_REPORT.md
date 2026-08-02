@@ -1,16 +1,16 @@
 # Graph Report - beils-belleza-honesta-dashboard  (2026-08-02)
 
 ## Corpus Check
-- 583 files · ~578,728 words
+- 583 files · ~578,958 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3938 nodes · 4360 edges · 473 communities (386 shown, 87 thin omitted)
+- 3953 nodes · 4379 edges · 478 communities (391 shown, 87 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `22f57efa`
+- Built from commit: `8418404b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -427,6 +427,7 @@
 - daisyUI 5
 - SKILL.md
 - sync-skills.mjs
+- BookingDrawer.vue
 - PurchaseModalSearch.vue
 - Palabras caleñas: diccionario con expresiones típicas de Cali y el valle
 - mcp_excalidraw
@@ -440,10 +441,14 @@
 - @prisma/adapter-mariadb
 - @types/node
 - Avoid Expensive Operations in Updated Hook
+- format_ascii_box
+- BookingSelectedItems.vue
 - dotenv
 - vite
 - _generate_intelligent_overrides
 - @nuxtjs/google-fonts
+- nuxt
+- @vite-pwa/nuxt
 
 ## God Nodes (most connected - your core abstractions)
 1. `ensureCanvasRunning()` - 32 edges
@@ -472,11 +477,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (473 total, 87 thin omitted)
+## Communities (478 total, 87 thin omitted)
 
 ### Community 0 - "BookingDrawer.vue"
-Cohesion: 0.05
-Nodes (35): clientSearch, emit, filteredClients, isClientDropdownOpen, props, selectClient(), clientSelectorRef, emit (+27 more)
+Cohesion: 0.13
+Nodes (20): addIndividualPackageItem(), addMixedPackageSubItem(), addPackageSaleItem(), addServiceItem(), closeDropdown(), emit, expandedPackages, filteredItems (+12 more)
 
 ### Community 1 - "PurchaseDetailsModal.vue"
 Cohesion: 0.12
@@ -505,7 +510,7 @@ Nodes (7): consentUpdateSchema, TODO: Implement giftcards when added to Prisma s
 
 ### Community 3 - "ClientFormModal.vue"
 Cohesion: 0.07
-Nodes (21): { animateOpen, animateClose }, apiError, avatarError, avatarFile, avatarPreview, clearError(), clientDialog, clientSchema (+13 more)
+Nodes (24): { animateOpen, animateClose }, apiError, avatarError, avatarFile, avatarPreview, clearError(), clientDialog, clientSchema (+16 more)
 
 ### Community 4 - "[id].vue"
 Cohesion: 0.09
@@ -545,8 +550,8 @@ Nodes (14): avatarErrors, clients, {
 	}, limit, { mutate: deleteClient, isPending: deleting }, page, pagination, queryClient (+6 more)
 
 ### Community 10 - "index.vue"
-Cohesion: 0.10
-Nodes (18): { data: debts, isPending }, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, { notifySalesChanged }, paymentAmount, paymentMethod (+10 more)
+Cohesion: 0.09
+Nodes (20): { data: debts, isPending }, debtPaymentOptions, debtStatusOptions, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, { notifySalesChanged } (+12 more)
 
 ### Community 11 - "design_system.py"
 Cohesion: 0.15
@@ -561,8 +566,8 @@ Cohesion: 0.13
 Nodes (13): chart, chartOptions, emit, isSavingNotes, kpis, { locale }, nextBookingData, notesText (+5 more)
 
 ### Community 14 - "design_system.py"
-Cohesion: 0.15
-Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
+Cohesion: 0.19
+Nodes (14): _detect_page_type(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides(), persist_design_system(), Format a page-specific override file with intelligent AI-generated content. (+6 more)
 
 ### Community 15 - "DesignSystemGenerator"
 Cohesion: 0.14
@@ -585,8 +590,8 @@ Cohesion: 0.11
 Nodes (18): scripts, build, db:check, db:fix, db:push, db:reset-empty, dev, generate (+10 more)
 
 ### Community 20 - "default.vue"
-Cohesion: 0.11
-Nodes (13): activePill, authStore, currentActivePath, currentRouteTranslated, isDrawerOpen, localeCookie, navGroups, navRefs (+5 more)
+Cohesion: 0.12
+Nodes (12): activePill, authStore, currentActivePath, currentRouteTranslated, isDrawerOpen, localeCookie, navGroups, navRefs (+4 more)
 
 ### Community 21 - "index.vue"
 Cohesion: 0.12
@@ -601,8 +606,8 @@ Cohesion: 0.05
 Nodes (38): 1. Create a project, 2. Send a chat message, 3. Show the results, Chat: Cancel Run, Chat: Poll Run Status, Chat: Send Message, Common Mistakes, Components (+30 more)
 
 ### Community 23 - "BonusFormModal.vue"
-Cohesion: 0.12
-Nodes (9): { data: products }, { data: services }, editingId, emit, form, isEditing, isOpen, { mutate: savePackage, isPending: isSaving } (+1 more)
+Cohesion: 0.11
+Nodes (11): { data: products }, { data: services }, editingId, emit, form, isEditing, isOpen, { mutate: savePackage, isPending: isSaving } (+3 more)
 
 ### Community 24 - "MediaLibrary.vue"
 Cohesion: 0.05
@@ -638,7 +643,7 @@ Nodes (18): activeTab, closeMenu(), confirmDelete(), confirmDeletePackage(), { d
 
 ### Community 31 - "devDependencies"
 Cohesion: 0.13
-Nodes (15): daisyui, h3, devDependencies, daisyui, h3, prettier-plugin-tailwindcss, sharp, tailwindcss (+7 more)
+Nodes (15): daisyui, h3, @nuxtjs/google-fonts, devDependencies, daisyui, h3, @nuxtjs/google-fonts, prettier-plugin-tailwindcss (+7 more)
 
 ### Community 32 - "_sync_all.py"
 Cohesion: 0.29
@@ -681,8 +686,8 @@ Cohesion: 0.29
 Nodes (13): blend(), derive_row(), derive_ui_reasoning(), h2r(), is_dark(), lum(), on_color(), r2h() (+5 more)
 
 ### Community 41 - "auth.ts"
-Cohesion: 0.33
-Nodes (4): clientSchema, clientSchema, requireAdmin(), maskDocument()
+Cohesion: 0.27
+Nodes (5): clientSchema, clientSchema, paymentSchema, requireAdmin(), maskDocument()
 
 ### Community 42 - "AgendaGridView.vue"
 Cohesion: 0.17
@@ -749,8 +754,8 @@ Cohesion: 0.33
 Nodes (3): activePackages, assignModalRef, props
 
 ### Community 58 - "verifactu.ts"
-Cohesion: 0.35
-Nodes (6): paymentSchema, submitToAeat(), generateInvoiceHash(), generateQrUrl(), generateInvoiceNumber(), processVerifactuInvoice()
+Cohesion: 0.42
+Nodes (5): submitToAeat(), generateInvoiceHash(), generateQrUrl(), generateInvoiceNumber(), processVerifactuInvoice()
 
 ### Community 59 - "compilerOptions"
 Cohesion: 0.20
@@ -953,7 +958,7 @@ Nodes (3): {
 
 ### Community 107 - "dexie"
 Cohesion: 0.12
-Nodes (17): dexie, echarts, lucide-vue-next, nuxt, dependencies, dexie, echarts, lucide-vue-next (+9 more)
+Nodes (17): aos, dexie, echarts, lucide-vue-next, dependencies, aos, dexie, echarts (+9 more)
 
 ### Community 108 - "bcryptjs"
 Cohesion: 0.40
@@ -972,28 +977,28 @@ Cohesion: 0.50
 Nodes (4): applyTheme(), theme, ThemeMode, useTheme()
 
 ### Community 115 - "nuxt"
-Cohesion: 0.40
-Nodes (5): ApiResponse, ElementResponse, ElementsResponse, MermaidConversionResponse, SyncResponse
+Cohesion: 0.23
+Nodes (13): describe(), importCmd(), mermaid(), readTextFileOrStdin(), screenshot(), share(), requireBrowserClient(), exportImage() (+5 more)
 
 ### Community 123 - "@prisma/client"
-Cohesion: 0.09
-Nodes (26): ApiResponse, SyncResponse, convertTextToLabel(), ElementInput, sanitizeFilePath(), cleanElementsForShare(), concatBuffers(), exportToExcalidrawUrl() (+18 more)
+Cohesion: 0.12
+Nodes (30): ALIGNMENTS, arrange(), DIRECTIONS, parseIds(), getElementFromCanvas(), updateElementOnCanvas(), alignElements(), Alignment (+22 more)
 
 ### Community 126 - "@tailwindcss/vite"
 Cohesion: 0.07
 Nodes (27): cors, @excalidraw/excalidraw, @excalidraw/mermaid-to-excalidraw, express, mermaid, @modelcontextprotocol/sdk, react, react-dom (+19 more)
 
 ### Community 140 - "@types/jsonwebtoken"
-Cohesion: 0.19
-Nodes (24): start(), status(), stop(), foreignServiceError(), getHealth(), getSyncStatus(), markCanvasIdentityVerified(), pidFilePath() (+16 more)
+Cohesion: 0.24
+Nodes (20): start(), status(), stop(), foreignServiceError(), getHealth(), getSyncStatus(), markCanvasIdentityVerified(), readPidFile() (+12 more)
 
 ### Community 141 - "vite"
-Cohesion: 0.22
-Nodes (13): CliUsageError, FlagSpec, ParsedArgs, readStdin(), describe(), importCmd(), mermaid(), readTextFileOrStdin() (+5 more)
+Cohesion: 0.23
+Nodes (13): countFiles(), expandHome(), findSkillSource(), installSkill(), resolveSkillsRoot(), resolveTarget(), Command, COMMANDS (+5 more)
 
 ### Community 142 - "@vite-pwa/nuxt"
 Cohesion: 0.09
-Nodes (24): app, canConnect(), clients, computeEdgePoint(), CreateElementSchema, __dirname, __filename, findExistingLoopbackListener() (+16 more)
+Nodes (21): app, canConnect(), clients, computeEdgePoint(), CreateElementSchema, __dirname, __filename, findExistingLoopbackListener() (+13 more)
 
 ### Community 143 - "prettier-plugin-tailwindcss"
 Cohesion: 0.08
@@ -1032,12 +1037,12 @@ Cohesion: 0.14
 Nodes (20): ApiResponse, App(), cleanElementForExcalidraw(), convertElementsPreservingImageProps(), ExcalidrawAPIRefValue, isFreedrawElement(), isImageElement(), isShapeContainerType() (+12 more)
 
 ### Community 179 - "elements.ts"
-Cohesion: 0.23
-Nodes (22): parseArgs(), add(), apply(), coerce(), del(), get(), lookupPath(), normalizePatchUpdate() (+14 more)
+Cohesion: 0.21
+Nodes (22): CliUsageError, FlagSpec, parseArgs(), ParsedArgs, readStdin(), add(), apply(), coerce() (+14 more)
 
 ### Community 180 - "types.ts"
-Cohesion: 0.11
-Nodes (21): elements, EXCALIDRAW_ELEMENT_TYPES, ExcalidrawArrowElement, ExcalidrawBinding, ExcalidrawBoundElement, ExcalidrawDiamondElement, ExcalidrawElement, ExcalidrawElementBase (+13 more)
+Cohesion: 0.10
+Nodes (26): ApiResponse, ElementResponse, elements, ElementsResponse, EXCALIDRAW_ELEMENT_TYPES, ExcalidrawArrowElement, ExcalidrawBinding, ExcalidrawBoundElement (+18 more)
 
 ### Community 181 - "devDependencies"
 Cohesion: 0.10
@@ -1484,12 +1489,12 @@ Cohesion: 0.40
 Nodes (5): Example Workflow, Step 1: Analyze Requirements, Step 2: Generate Design System (REQUIRED), Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines
 
 ### Community 298 - "Best practices for `computed`"
-Cohesion: 0.08
-Nodes (23): author, email, name, bin, excalidraw-canvas, mcp-excalidraw-server, bugs, url (+15 more)
+Cohesion: 0.11
+Nodes (17): bin, excalidraw-canvas, mcp-excalidraw-server, bugs, url, description, engines, node (+9 more)
 
 ### Community 299 - "Avoid Expensive Operations in Updated Hook"
-Cohesion: 0.50
-Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
+Cohesion: 0.25
+Nodes (8): ansi_ljust(), format_ascii_box(), hex_to_ansi(), Convert hex color to ANSI True Color swatch (██) with fallback., Like str.ljust but accounts for zero-width ANSI escape sequences., Create a Unicode section separator: ├─── NAME ───...┤, Format design system as Unicode box with ANSI color swatches., section_header()
 
 ### Community 300 - "Alternative Solutions"
 Cohesion: 0.40
@@ -1551,17 +1556,21 @@ Nodes (3): For git commit hook, For native CLAUDE.md integration, graphify refer
 Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
+### Community 348 - "dotenv"
+Cohesion: 0.21
+Nodes (10): clientSearch, closeDropdown(), emit, filteredClients, isClientDropdownOpen, onDocPointer(), onKeydown(), props (+2 more)
+
 ### Community 351 - "scene.ts"
-Cohesion: 0.25
-Nodes (12): countFiles(), expandHome(), findSkillSource(), installSkill(), resolveSkillsRoot(), resolveTarget(), Command, COMMANDS (+4 more)
+Cohesion: 0.39
+Nodes (7): pidFilePath(), removePidFile(), stateDir(), writePidFile(), formatHostForUrl(), LOOPBACK_GUARD_HOSTS, startServer()
 
 ### Community 352 - "arrange.ts"
-Cohesion: 0.31
-Nodes (16): ALIGNMENTS, arrange(), DIRECTIONS, parseIds(), batchCreateElementsOnCanvas(), getElementFromCanvas(), updateElementOnCanvas(), alignElements() (+8 more)
+Cohesion: 0.39
+Nodes (7): convertTextToLabel(), ElementInput, normalizePoints(), prepareElement(), prepareElementUpdate(), generateId(), normalizeFontFamily()
 
 ### Community 353 - "canvas-client.ts"
-Cohesion: 0.24
-Nodes (15): snapshot(), assertCanvasIdentity(), batchCreateElementsStrict(), clearCanvas(), createElementOnCanvas(), deleteElementOnCanvas(), exportImage(), getSnapshot() (+7 more)
+Cohesion: 0.22
+Nodes (16): snapshot(), ApiResponse, assertCanvasIdentity(), batchCreateElementsOnCanvas(), clearCanvas(), createElementOnCanvas(), deleteElementOnCanvas(), getSnapshot() (+8 more)
 
 ### Community 354 - "Tailwind CSS Layout Patterns"
 Cohesion: 0.12
@@ -1584,12 +1593,12 @@ Cohesion: 0.13
 Nodes (15): scripts, build, build:frontend, build:server, build:types, canvas, cli, dev (+7 more)
 
 ### Community 359 - "run.ts"
-Cohesion: 0.18
-Nodes (6): model, open, Option, props, rootRef, selectedLabel
+Cohesion: 0.17
+Nodes (7): heightClass, model, open, Option, props, rootRef, selectedLabel
 
 ### Community 360 - "scene-io.ts"
-Cohesion: 0.23
-Nodes (13): getElements(), getFiles(), _decompress(), decompressFromBase64(), extractSceneJsonFromObsidianMd(), isObsidianExcalidrawMd(), nanoid8(), renameElementId() (+5 more)
+Cohesion: 0.20
+Nodes (16): exportCmd(), getElements(), getFiles(), postFiles(), sanitizeFilePath(), _decompress(), decompressFromBase64(), extractSceneJsonFromObsidianMd() (+8 more)
 
 ### Community 361 - "Tailwind CSS Accessibility Guidelines"
 Cohesion: 0.14
@@ -1947,6 +1956,24 @@ Nodes (4): Base modules, Customizing a component in CSS, daisyUI 5 usage rules, 
 Cohesion: 0.40
 Nodes (4): agentCopy, canonical, claudeLink, repoRoot
 
+### Community 450 - "BookingDrawer.vue"
+Cohesion: 0.17
+Nodes (8): clientSelectorRef, emit, {
+    form,
+    clients,
+    staff,
+    services,
+    clientPackages,
+    catalogPackages,
+    isSaving,
+    saveBooking,
+    proceedSaveBooking,
+    resetForm,
+    localError,
+    showLocalError,
+    updateDuration
+}, { isBookingDrawerOpen, selectedBooking }, itemSelectorRef, router, statusOptions, store
+
 ### Community 451 - "PurchaseModalSearch.vue"
 Cohesion: 0.50
 Nodes (3): emit, internalSearch, props
@@ -1971,29 +1998,41 @@ Nodes (12): Accessibility, Brand, Component Rule Expectations, Gogo Admin Templa
 Cohesion: 0.40
 Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
 
-### Community 474 - "_generate_intelligent_overrides"
+### Community 468 - "format_ascii_box"
 Cohesion: 0.50
 Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
 
+### Community 469 - "BookingSelectedItems.vue"
+Cohesion: 0.43
+Nodes (6): addGroupItem(), emit, groupedItems, props, removeGroup(), removeItem()
+
+### Community 474 - "_generate_intelligent_overrides"
+Cohesion: 0.67
+Nodes (3): author, email, name
+
+### Community 475 - "@nuxtjs/google-fonts"
+Cohesion: 0.67
+Nodes (3): repository, type, url
+
 ## Knowledge Gaps
-- **2325 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2320 more)
+- **2335 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2330 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dexie` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `html2pdf.js`, `dependencies`, `qrcode.vue`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `dotenv`, `bcryptjs`, `gsap`, `mariadb`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `qrcode.vue`, `soap`, `@tanstack/vue-query`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dexie` to `@types/aos`, `vue`, `vue-advanced-cropper`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `html2pdf.js`, `dependencies`, `qrcode.vue`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `nuxt`, `bcryptjs`, `gsap`, `mariadb`, `@nuxt/eslint`, `@nuxt/fonts`, `@nuxt/image`, `@nuxtjs/google-fonts`, `pinia`, `@pinia/nuxt`, `qrcode.vue`, `soap`, `@tanstack/vue-query`?**
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _2325 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2335 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `BookingDrawer.vue` be split into smaller, more focused modules?**
-  _Cohesion score 0.05365402405180388 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12648221343873517 - nodes in this community are weakly interconnected._
 - **Should `PurchaseDetailsModal.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `prisma.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
 - **Should `ClientFormModal.vue` be split into smaller, more focused modules?**
-  _Cohesion score 0.07389162561576355 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06653225806451613 - nodes in this community are weakly interconnected._
 - **Should `[id].vue` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._

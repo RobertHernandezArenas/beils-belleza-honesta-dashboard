@@ -449,7 +449,7 @@
   "447": "daisyUI 5",
   "448": "SKILL.md",
   "449": "sync-skills.mjs",
-  "450": "ApiResponse",
+  "450": "BookingDrawer.vue",
   "451": "PurchaseModalSearch.vue",
   "452": "Palabras caleñas: diccionario con expresiones típicas de Cali y el valle",
   "453": "mcp_excalidraw",
@@ -467,12 +467,15 @@
   "465": "vite.config.ts",
   "466": "upload.post.ts",
   "467": "vite.config.js",
-  "468": "@nuxtjs/google-fonts",
-  "469": "@nuxtjs/google-fonts",
+  "468": "format_ascii_box",
+  "469": "BookingSelectedItems.vue",
   "470": "theme.client.ts",
   "471": "useChartTheme.ts",
   "472": "dotenv",
   "473": "vite",
   "474": "_generate_intelligent_overrides",
-  "475": "@nuxtjs/google-fonts"
+  "475": "@nuxtjs/google-fonts",
+  "476": "daisyui",
+  "477": "nuxt",
+  "478": "@vite-pwa/nuxt"
 }

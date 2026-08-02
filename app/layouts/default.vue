@@ -114,15 +114,6 @@
 				<div
 					class="bg-bg-app relative z-10 mt-auto flex w-full flex-col gap-3 border-t border-transparent p-4">
 					<div v-if="authStore.user" class="flex flex-col gap-3">
-						<!-- Theme toggle (light / dark) -->
-						<div
-							class="text-text-muted flex w-full items-center justify-between gap-2 rounded-xl border border-border-default px-3 py-2">
-							<span class="text-[11px] font-bold tracking-wider uppercase">
-								{{ theme === 'dark' ? 'Modo oscuro' : 'Modo claro' }}
-							</span>
-							<ThemeToggle />
-						</div>
-
 						<div class="flex items-center gap-3">
 							<div class="avatar">
 								<div
@@ -197,7 +188,6 @@
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
-	const { theme } = useTheme()
 	const localeCookie = useCookie('i18n_redirected')
 	const route = useRoute()
 	const authStore = useAuthStore()

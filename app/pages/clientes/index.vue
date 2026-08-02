@@ -11,10 +11,10 @@
 		ExternalLink,
 		Eye,
 		EyeOff,
-		ChevronDown,
 	} from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AOS from 'aos'
+	import AppSelect from '~/components/ui/AppSelect.vue'
 	import ClientFormModal from '~/components/clients/ClientFormModal.vue'
 	import UserDeleteModal from '~/components/users/UserDeleteModal.vue'
 	import { useDataPrivacy } from '~/composables/useDataPrivacy'
@@ -327,25 +327,18 @@
 						</span>
 						<div class="flex items-center gap-3">
 							<span class="opacity-60">Filas:</span>
-							<div class="group relative">
-								<div
-									class="border-border-default/50 hover:bg-bg-hover flex h-9 items-center justify-between gap-2 rounded-xl border bg-bg-card px-3 shadow-sm transition-all">
-									<span class="text-text-primary shrink-0 text-xs font-bold tabular-nums">
-										{{ limit }}
-									</span>
-									<span class="text-text-muted pointer-events-none opacity-50">
-										<ChevronDown class="h-3 w-3" />
-									</span>
-								</div>
-								<select
-									v-model="limit"
-									class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
-									@change="page = 1">
-									<option :value="10">10</option>
-									<option :value="25">25</option>
-									<option :value="50">50</option>
-									<option :value="100">100</option>
-								</select>
+							<div class="w-20">
+								<AppSelect
+									:model-value="limit"
+									size="sm"
+									aria-label="Filas por página"
+									:options="[
+										{ value: 10, label: '10' },
+										{ value: 25, label: '25' },
+										{ value: 50, label: '50' },
+										{ value: 100, label: '100' },
+									]"
+									@update:model-value="(v) => { limit = Number(v); page = 1 }" />
 							</div>
 						</div>
 					</div>

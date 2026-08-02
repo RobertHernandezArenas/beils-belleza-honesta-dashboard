@@ -4,6 +4,7 @@
 	import { FileCheck, Save, AlertCircle, Edit, X } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import ClientAutocomplete from '~/components/shared/ClientAutocomplete.vue'
+	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	const props = defineProps<{
 		modelValue: boolean
@@ -229,12 +230,14 @@
 								Estado
 							</span>
 						</label>
-						<select
+						<AppSelect
 							v-model="form.status"
-							class="select bg-bg-card border-border-default focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl shadow-inner transition-colors focus:ring-4">
-							<option value="UNSIGNED">Sin Firmar</option>
-							<option value="SIGNED">Firmado</option>
-						</select>
+							size="lg"
+							aria-label="Estado del consentimiento"
+							:options="[
+								{ value: 'UNSIGNED', label: 'Sin Firmar' },
+								{ value: 'SIGNED', label: 'Firmado' },
+							]" />
 					</div>
 
 					<!-- Notas -->

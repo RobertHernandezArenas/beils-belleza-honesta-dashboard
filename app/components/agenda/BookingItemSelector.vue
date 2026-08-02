@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Search, Plus, Package, Sparkles, Scissors, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -120,10 +120,29 @@ const addMixedPackageSubItem = (pkg: any, subItem: any) => {
     isItemDropdownOpen.value = false
 }
 
+const rootRef = ref<HTMLElement | null>(null)
+
 const closeDropdown = () => {
     isItemDropdownOpen.value = false
     isPkgDropdownOpen.value = false
 }
+
+const onDocPointer = (e: PointerEvent) => {
+    if (!isItemDropdownOpen.value && !isPkgDropdownOpen.value) return
+    if (rootRef.value && !rootRef.value.contains(e.target as Node)) closeDropdown()
+}
+const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeDropdown()
+}
+
+onMounted(() => {
+    document.addEventListener('pointerdown', onDocPointer, true)
+    document.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+    document.removeEventListener('pointerdown', onDocPointer, true)
+    document.removeEventListener('keydown', onKeydown)
+})
 
 defineExpose({
     closeDropdown
@@ -131,8 +150,8 @@ defineExpose({
 </script>
 
 <template>
-    <div class="flex flex-col gap-3">
-        
+    <div ref="rootRef" class="flex flex-col gap-3">
+
         <!-- BANNER DE BONOS / PAQUETES DISPONIBLES DEL CLIENTE -->
         <div v-if="clientPackages && clientPackages.length > 0" class="bg-primary/10 border border-primary/30 rounded-xl p-3 space-y-2">
             <div class="flex items-center justify-between">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Search, Package as PackageIcon } from 'lucide-vue-next'
 import type { ClientItem } from '~/composables/useBookingForm'
 
@@ -47,9 +47,28 @@ watch(
 
 const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 
+const rootRef = ref<HTMLElement | null>(null)
+
 const closeDropdown = () => {
     isClientDropdownOpen.value = false
 }
+
+const onDocPointer = (e: PointerEvent) => {
+    if (!isClientDropdownOpen.value) return
+    if (rootRef.value && !rootRef.value.contains(e.target as Node)) closeDropdown()
+}
+const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeDropdown()
+}
+
+onMounted(() => {
+    document.addEventListener('pointerdown', onDocPointer, true)
+    document.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+    document.removeEventListener('pointerdown', onDocPointer, true)
+    document.removeEventListener('keydown', onKeydown)
+})
 
 defineExpose({
     closeDropdown
@@ -57,7 +76,7 @@ defineExpose({
 </script>
 
 <template>
-    <div>
+    <div ref="rootRef">
         <!-- Client Selection -->
         <div class="form-control">
             <label class="label pb-1"><span class="label-text text-primary text-[10px] font-bold uppercase tracking-widest">Cliente *</span></label>

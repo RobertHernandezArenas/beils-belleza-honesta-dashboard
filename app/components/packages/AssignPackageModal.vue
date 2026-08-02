@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Package, X, Check, Calendar, Sparkles } from 'lucide-vue-next'
+import AppSelect from '~/components/ui/AppSelect.vue'
 
 const props = defineProps<{
 	clientId: string
@@ -121,12 +122,15 @@ defineExpose({ openModal, closeModal })
 				<!-- Expiry Months -->
 				<div>
 					<label class="block text-xs font-bold uppercase text-text-muted mb-1">Validez (Meses)</label>
-					<select v-model.number="expiryMonths" class="select select-bordered w-full rounded-xl bg-bg-muted text-text-primary text-xs font-bold">
-						<option :value="3">3 meses</option>
-						<option :value="6">6 meses (Recomendado)</option>
-						<option :value="12">12 meses (1 Año)</option>
-						<option :value="24">24 meses (2 Años)</option>
-					</select>
+					<AppSelect
+						v-model.number="expiryMonths"
+						aria-label="Validez del bono en meses"
+						:options="[
+							{ value: 3, label: '3 meses' },
+							{ value: 6, label: '6 meses (Recomendado)' },
+							{ value: 12, label: '12 meses (1 Año)' },
+							{ value: 24, label: '24 meses (2 Años)' },
+						]" />
 				</div>
 
 				<!-- Actions -->

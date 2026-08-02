@@ -3,17 +3,26 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Check, ChevronDown } from 'lucide-vue-next'
 
 interface Option {
-	value: string
+	value: string | number
 	label: string
 }
 
-const props = defineProps<{
-	options: Option[]
-	placeholder?: string
-	ariaLabel?: string
-}>()
+const props = withDefaults(
+	defineProps<{
+		options: Option[]
+		placeholder?: string
+		ariaLabel?: string
+		disabled?: boolean
+		size?: 'sm' | 'md' | 'lg'
+	}>(),
+	{ size: 'md' },
+)
 
-const model = defineModel<string>({ required: true })
+const model = defineModel<string | number>({ required: true })
+
+const heightClass = computed(
+	() => ({ sm: 'h-10', md: 'h-11', lg: 'h-12' })[props.size],
+)
 
 const open = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
@@ -22,7 +31,10 @@ const selectedLabel = computed(
 	() => props.options.find(o => o.value === model.value)?.label ?? props.placeholder ?? 'Seleccionar',
 )
 
-const toggle = () => (open.value = !open.value)
+const toggle = () => {
+	if (props.disabled) return
+	open.value = !open.value
+}
 const select = (value: string) => {
 	model.value = value
 	open.value = false
@@ -55,8 +67,10 @@ defineExpose({ close: () => (open.value = false) })
 			:aria-label="ariaLabel"
 			:aria-haspopup="true"
 			:aria-expanded="open"
+			:disabled="disabled"
 			@click="toggle"
-			class="bg-bg-card border-border-default/85 hover:border-text-primary/25 flex h-10 w-full items-center gap-2 rounded-xl border px-3 text-xs font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.01)] transition-colors">
+			class="bg-bg-card border-border-default/85 hover:border-text-primary/25 flex w-full items-center gap-2 rounded-xl border px-3 text-xs font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.01)] transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+			:class="heightClass">
 			<span class="text-text-muted shrink-0 flex items-center">
 				<slot name="icon" />
 			</span>

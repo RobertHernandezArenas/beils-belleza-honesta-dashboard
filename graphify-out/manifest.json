@@ -95,8 +95,8 @@
     "semantic_hash": "52cbca79096919003a6bfd49aec33a10"
   },
   "app/components/agenda/BookingDrawer.vue": {
-    "mtime": 1785582898.1899967,
-    "ast_hash": "6f495a34c217016ee4aedae50588798a",
+    "mtime": 1785630194.2082593,
+    "ast_hash": "14da5600da9d743be8d61d5517a6b9d0",
     "semantic_hash": ""
   },
   "app/components/agenda/DaySummaryModal.vue": {
@@ -135,13 +135,13 @@
     "semantic_hash": ""
   },
   "app/components/clients/ClientFormModal.vue": {
-    "mtime": 1785626989.9390385,
-    "ast_hash": "36ae27d3a430e78048eb588e73e8d743",
+    "mtime": 1785630244.1543481,
+    "ast_hash": "aace970cbdef5b636600d6cf61663254",
     "semantic_hash": ""
   },
   "app/components/clients/ConsentFormModal.vue": {
-    "mtime": 1785627013.570919,
-    "ast_hash": "51f18b2541de0a861e24d47340158328",
+    "mtime": 1785630271.1012592,
+    "ast_hash": "8f12a60ed52fac16e446003a76341df9",
     "semantic_hash": ""
   },
   "app/components/clients/DebtDetailsModal.vue": {
@@ -190,14 +190,14 @@
     "semantic_hash": "b8a6e6026c64f3700ca40d7562136fd9"
   },
   "app/components/marketing/CouponFormModal.vue": {
-    "mtime": 1773700158.742206,
-    "ast_hash": "5d6aa02c5541f79e351f8ef59d98e162",
-    "semantic_hash": "5d6aa02c5541f79e351f8ef59d98e162"
+    "mtime": 1785630296.3165393,
+    "ast_hash": "4eced8d8d13dd08b8d79b1d3603b628d",
+    "semantic_hash": ""
   },
   "app/components/marketing/GiftcardFormModal.vue": {
-    "mtime": 1773700158.742206,
-    "ast_hash": "14f78cd695d58992dea471a563cd25c9",
-    "semantic_hash": "14f78cd695d58992dea471a563cd25c9"
+    "mtime": 1785630306.6498425,
+    "ast_hash": "7dca420cf846b2ef7c2be69eb4ad6dc8",
+    "semantic_hash": ""
   },
   "app/components/services/ServiceFormModal.vue": {
     "mtime": 1782941883.3646696,
@@ -350,8 +350,8 @@
     "semantic_hash": "cd51d9168e7b0da00b8975d731198c73"
   },
   "app/layouts/default.vue": {
-    "mtime": 1785629214.83495,
-    "ast_hash": "2cd98cc272618469aa061df7e65db399",
+    "mtime": 1785630097.8458884,
+    "ast_hash": "913be19113d3de59993d5864e17fdfa1",
     "semantic_hash": ""
   },
   "app/locales/en.json": {
@@ -405,8 +405,8 @@
     "semantic_hash": "ffb81f4734278c3000b5ef90692c2398"
   },
   "app/pages/clientes/index.vue": {
-    "mtime": 1785626989.8528183,
-    "ast_hash": "5d26f4c2950909440d0495080992d949",
+    "mtime": 1785630504.7376504,
+    "ast_hash": "37181d6c263200ea90faa58c84e0834b",
     "semantic_hash": ""
   },
   "app/pages/clientes/revocaciones/index.vue": {
@@ -420,8 +420,8 @@
     "semantic_hash": ""
   },
   "app/pages/finanzas/deudas/index.vue": {
-    "mtime": 1785552425.1641383,
-    "ast_hash": "2cd87096c715be22323e70af8fabd9da",
+    "mtime": 1785630363.0072637,
+    "ast_hash": "c6f5841452fda7740c2ddb89840fcc6f",
     "semantic_hash": ""
   },
   "app/pages/index.vue": {
@@ -865,13 +865,13 @@
     "semantic_hash": "cf81f393c46c783ae6995bccdcebb5a6"
   },
   "app/components/agenda/BookingClientSelector.vue": {
-    "mtime": 1785547986.7474756,
-    "ast_hash": "23497581e487813a68852ab22b70352e",
+    "mtime": 1785629637.2919562,
+    "ast_hash": "e85005946d2e95eda0e12ac6346c4c15",
     "semantic_hash": ""
   },
   "app/components/agenda/BookingItemSelector.vue": {
-    "mtime": 1785582949.554604,
-    "ast_hash": "0008cacba35f249cd514157f8fe8951d",
+    "mtime": 1785629600.2905998,
+    "ast_hash": "e55bc23b788c951becb496dbd834f291",
     "semantic_hash": ""
   },
   "app/components/agenda/BookingSelectedItems.vue": {
@@ -3230,13 +3230,13 @@
     "semantic_hash": ""
   },
   "app/components/packages/AssignPackageModal.vue": {
-    "mtime": 1785621025.8642087,
-    "ast_hash": "4482aedd26b83417906496dfbda628f8",
+    "mtime": 1785630341.5604067,
+    "ast_hash": "b9a979b496630b47619e126a88f04ff8",
     "semantic_hash": ""
   },
   "app/components/packages/PackageFormModal.vue": {
-    "mtime": 1785621021.1663017,
-    "ast_hash": "581e612e980b4ae629cb78d659b210c3",
+    "mtime": 1785630443.968373,
+    "ast_hash": "2624c3392ab22700a920b52e82134160",
     "semantic_hash": ""
   },
   "app/composables/useRealtimeSales.ts": {
@@ -3310,8 +3310,8 @@
     "semantic_hash": ""
   },
   "app/components/ui/AppSelect.vue": {
-    "mtime": 1785628617.5336773,
-    "ast_hash": "9f8c66b596c289e429795258455a2534",
+    "mtime": 1785630171.7319984,
+    "ast_hash": "71ad25dcf565352bccb76bf85b755fcc",
     "semantic_hash": ""
   },
   "app/components/ui/ThemeToggle.vue": {

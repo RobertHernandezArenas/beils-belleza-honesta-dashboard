@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Package, Plus, Trash2, X, Sparkles, Box, Scissors, Clock } from 'lucide-vue-next'
+import AppSelect from '~/components/ui/AppSelect.vue'
 
 const emit = defineEmits(['saved'])
 
@@ -34,6 +35,35 @@ const { data: products } = useQuery<any[]>({
 	queryKey: ['products-catalog'],
 	queryFn: () => $fetch('/api/catalog/products')
 })
+
+// Options for the themed AppSelect dropdowns
+const serviceOptions = computed(() => [
+	{ value: '', label: 'Selecciona servicio...' },
+	...(services.value || []).map((s: any) => ({
+		value: s.service_id,
+		label: `${s.name} (${s.duration || 45} min)`,
+	})),
+])
+const productOptions = computed(() => [
+	{ value: '', label: 'Seleccionar Producto...' },
+	...(products.value || []).map((p: any) => ({ value: p.product_id, label: p.name })),
+])
+
+const onCatalogServiceSelect = (value: string | number) => {
+	form.service_id = String(value)
+	const svc = (services.value || []).find((s: any) => s.service_id === value)
+	if (svc) {
+		form.items = [
+			{
+				item_type: 'SERVICE',
+				item_id: svc.service_id,
+				name: svc.name,
+				quantity: form.total_sessions,
+				duration: svc.duration || 45,
+			},
+		]
+	}
+}
 
 const queryClient = useQueryClient()
 
@@ -236,26 +266,12 @@ defineExpose({ openModal, closeModal })
 						</div>
 						<div>
 							<label class="block text-xs font-bold uppercase text-text-muted mb-1">Servicio del Catálogo</label>
-							<select
-								v-model="form.service_id"
-								class="select select-bordered w-full rounded-xl bg-bg-card text-text-primary text-xs font-medium"
-								@change="(e: any) => {
-									const svc = (services || []).find((s: any) => s.service_id === e.target.value)
-									if (svc) {
-										form.items = [{
-											item_type: 'SERVICE',
-											item_id: svc.service_id,
-											name: svc.name,
-											quantity: form.total_sessions,
-											duration: svc.duration || 45
-										}]
-									}
-								}">
-								<option value="">Selecciona servicio...</option>
-								<option v-for="s in services" :key="s.service_id" :value="s.service_id">
-									{{ s.name }} ({{ s.duration || 45 }} min)
-								</option>
-							</select>
+							<AppSelect
+								:model-value="form.service_id"
+								aria-label="Servicio del catálogo"
+								placeholder="Selecciona servicio..."
+								:options="serviceOptions"
+								@update:model-value="onCatalogServiceSelect" />
 						</div>
 					</div>
 				</div>
@@ -287,26 +303,22 @@ defineExpose({ openModal, closeModal })
 
 						<!-- Selector -->
 						<div class="flex-1 min-w-0">
-							<select
+							<AppSelect
 								v-if="item.item_type === 'SERVICE'"
-								:value="item.item_id"
-								class="select select-sm select-bordered w-full rounded-lg text-xs font-medium"
-								@change="(e: any) => onServiceSelect(idx, e.target.value)">
-								<option value="">Seleccionar Servicio...</option>
-								<option v-for="s in services" :key="s.service_id" :value="s.service_id">
-									{{ s.name }} ({{ s.duration || 45 }} min)
-								</option>
-							</select>
-							<select
+								:model-value="item.item_id"
+								size="sm"
+								aria-label="Seleccionar servicio"
+								placeholder="Seleccionar Servicio..."
+								:options="serviceOptions"
+								@update:model-value="(v) => onServiceSelect(idx, String(v))" />
+							<AppSelect
 								v-else
-								:value="item.item_id"
-								class="select select-sm select-bordered w-full rounded-lg text-xs font-medium"
-								@change="(e: any) => onProductSelect(idx, e.target.value)">
-								<option value="">Seleccionar Producto...</option>
-								<option v-for="p in products" :key="p.product_id" :value="p.product_id">
-									{{ p.name }}
-								</option>
-							</select>
+								:model-value="item.item_id"
+								size="sm"
+								aria-label="Seleccionar producto"
+								placeholder="Seleccionar Producto..."
+								:options="productOptions"
+								@update:model-value="(v) => onProductSelect(idx, String(v))" />
 						</div>
 
 						<!-- Quantity -->

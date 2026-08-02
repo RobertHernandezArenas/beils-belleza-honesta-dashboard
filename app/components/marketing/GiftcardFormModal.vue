@@ -2,6 +2,7 @@
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { RefreshCcw } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
+	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingCard = ref<any | null>(null)
@@ -128,13 +129,15 @@
 						<span class="text-text-muted text-sm font-bold tracking-wider uppercase">
 							Estado de Tarjeta
 						</span>
-						<select
+						<AppSelect
 							v-model="form.status"
-							class="select select-sm bg-bg-muted border-border-default focus:bg-bg-card h-9 rounded-lg px-3 text-sm font-bold">
-							<option value="active">Activa</option>
-							<option value="used">Agotada</option>
-							<option value="expired">Expirada</option>
-						</select>
+							size="sm"
+							aria-label="Estado de tarjeta"
+							:options="[
+								{ value: 'active', label: 'Activa' },
+								{ value: 'used', label: 'Agotada' },
+								{ value: 'expired', label: 'Expirada' },
+							]" />
 					</div>
 
 					<div class="form-control">
