@@ -27,32 +27,35 @@
 		queryFn: () => $fetch('/api/reports'),
 	})
 
-	// Line Chart Options (Revenue Trend)
+	const chart = useChartTheme()
+
+	// Line Chart Options (Revenue Trend) — theme-aware
 	const revenueTrendOptions = computed(() => {
 		if (!reports.value?.revenueTrend) return null
+		const ct = chart.value
 		const data = reports.value.revenueTrend
 		return {
-			tooltip: { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 8 },
+			tooltip: { trigger: 'axis', backgroundColor: ct.tooltipBg, borderColor: ct.tooltipBorder, textStyle: { color: ct.tooltipText }, borderRadius: 8 },
 			grid: { top: 30, right: 20, bottom: 30, left: 50 },
 			xAxis: {
 				type: 'category',
 				data: data.map((d: any) => d.month),
 				axisLine: { show: false },
 				axisTick: { show: false },
-				axisLabel: { color: '#8c8c8c' },
+				axisLabel: { color: ct.axis },
 			},
 			yAxis: {
 				type: 'value',
-				splitLine: { lineStyle: { color: '#f2f0eb', type: 'dashed' } },
-				axisLabel: { color: '#8c8c8c', formatter: '€{value}' },
+				splitLine: { lineStyle: { color: ct.grid, type: 'dashed' } },
+				axisLabel: { color: ct.axis, formatter: '€{value}' },
 			},
 			series: [
 				{
 					data: data.map((d: any) => d.revenue),
 					type: 'line',
 					smooth: true,
-					lineStyle: { color: '#1a1a1a', width: 3 },
-					itemStyle: { color: '#1a1a1a' },
+					lineStyle: { color: ct.series, width: 3 },
+					itemStyle: { color: ct.series },
 					areaStyle: {
 						color: {
 							type: 'linear',
@@ -61,8 +64,8 @@
 							x2: 0,
 							y2: 1,
 							colorStops: [
-								{ offset: 0, color: 'rgba(26,26,26,0.1)' },
-								{ offset: 1, color: 'rgba(26,26,26,0)' },
+								{ offset: 0, color: ct.areaTop },
+								{ offset: 1, color: ct.areaBottom },
 							],
 						},
 					},
@@ -71,12 +74,13 @@
 		}
 	})
 
-	// Pie Chart Options (Payment Methods)
+	// Pie Chart Options (Payment Methods) — theme-aware
 	const paymentMethodsOptions = computed(() => {
 		if (!reports.value?.paymentMethods) return null
+		const ct = chart.value
 		return {
-			tooltip: { trigger: 'item', borderRadius: 8 },
-			legend: { bottom: 0, icon: 'circle', textStyle: { color: '#666666' } },
+			tooltip: { trigger: 'item', backgroundColor: ct.tooltipBg, borderColor: ct.tooltipBorder, textStyle: { color: ct.tooltipText }, borderRadius: 8 },
+			legend: { bottom: 0, icon: 'circle', textStyle: { color: ct.label } },
 			series: [
 				{
 					type: 'pie',
@@ -84,7 +88,7 @@
 					avoidLabelOverlap: false,
 					itemStyle: {
 						borderRadius: 10,
-						borderColor: '#fff',
+						borderColor: ct.surface,
 						borderWidth: 2,
 					},
 					label: { show: false, position: 'center' },
@@ -92,16 +96,17 @@
 					data: reports.value.paymentMethods,
 				},
 			],
-			color: ['#1a1a1a', '#8c8c8c', '#d3cdc2', '#f4f1ee'],
+			color: ct.palette,
 		}
 	})
 
-	// Bar Chart Options (Top Items)
+	// Bar Chart Options (Top Items) — theme-aware
 	const topItemsOptions = computed(() => {
 		if (!reports.value?.topItems) return null
+		const ct = chart.value
 		const data = [...reports.value.topItems].reverse() // Display highest at the top in horizontal
 		return {
-			tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, borderRadius: 8 },
+			tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: ct.tooltipBg, borderColor: ct.tooltipBorder, textStyle: { color: ct.tooltipText }, borderRadius: 8 },
 			grid: { top: 20, right: 30, bottom: 20, left: 120 },
 			xAxis: { type: 'value', show: false },
 			yAxis: {
@@ -109,15 +114,15 @@
 				data: data.map((d: any) => d.name),
 				axisLine: { show: false },
 				axisTick: { show: false },
-				axisLabel: { color: '#404040', fontWeight: 'bold' },
+				axisLabel: { color: ct.text, fontWeight: 'bold' },
 			},
 			series: [
 				{
 					type: 'bar',
 					data: data.map((d: any) => d.quantity),
-					itemStyle: { borderRadius: [0, 8, 8, 0], color: '#1a1a1a' },
+					itemStyle: { borderRadius: [0, 8, 8, 0], color: ct.series },
 					barWidth: '50%',
-					label: { show: true, position: 'right', valueAnimation: true, color: '#1a1a1a' },
+					label: { show: true, position: 'right', valueAnimation: true, color: ct.text },
 				},
 			],
 		}

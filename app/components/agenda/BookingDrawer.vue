@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Trash2, X } from 'lucide-vue-next'
 import { useAgendaStore } from '~/stores/useAgendaStore'
@@ -7,6 +7,15 @@ import { useBookingForm } from '~/composables/useBookingForm'
 import BookingClientSelector from './BookingClientSelector.vue'
 import BookingItemSelector from './BookingItemSelector.vue'
 import BookingSelectedItems from './BookingSelectedItems.vue'
+import AppSelect from '~/components/ui/AppSelect.vue'
+
+const statusOptions = [
+    { value: 'PENDIENTE', label: 'PENDIENTE' },
+    { value: 'CONFIRMADA', label: 'CONFIRMADA' },
+    { value: 'CANCELADA', label: 'CANCELADA' },
+    { value: 'COMPLETADA', label: 'COMPLETADA' },
+    { value: 'AUSENTE', label: 'AUSENTE' },
+]
 
 const store = useAgendaStore()
 const { isBookingDrawerOpen, selectedBooking } = storeToRefs(store)
@@ -18,13 +27,11 @@ const {
     clients,
     staff,
     services,
-    bonuses,
-    clientWallet,
+    clientPackages,
+    catalogPackages,
     isSaving,
     saveBooking,
     proceedSaveBooking,
-    bonusWarningType,
-    availableClientBonuses,
     resetForm,
     localError,
     showLocalError,
@@ -33,13 +40,21 @@ const {
 
 const clientSelectorRef = ref<InstanceType<typeof BookingClientSelector> | null>(null)
 const itemSelectorRef = ref<InstanceType<typeof BookingItemSelector> | null>(null)
+const router = useRouter()
 
-// Watch pinia state to reset form
-watch(isBookingDrawerOpen, (isOpen) => {
-    if (isOpen) {
-        resetForm()
+const handlePayInTpv = async () => {
+    if (!selectedBooking.value?.booking_id) return
+    const bId = selectedBooking.value.booking_id
+    try {
+        await proceedSaveBooking()
+    } catch (e) {
+        console.error('Error auto-saving booking before TPV:', e)
     }
-})
+    store.closeBookingDrawer()
+    router.push(`/tpv?booking_id=${bId}`)
+}
+
+
 
 const handleAddItem = (item: any) => {
     form.items.push(item)
@@ -96,16 +111,11 @@ const closeDropdowns = () => {
                     <!-- Status -->
                     <div v-if="selectedBooking" class="form-control">
                         <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Estado</span></label>
-                        <select
+                        <AppSelect
                             v-model="form.status"
                             :disabled="form.status === 'COMPLETADA'"
-                            class="select bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl shadow-sm text-xs font-bold disabled:opacity-60">
-                            <option value="PENDIENTE">PENDIENTE</option>
-                            <option value="CONFIRMADA">CONFIRMADA</option>
-                            <option value="CANCELADA">CANCELADA</option>
-                            <option value="COMPLETADA">COMPLETADA</option>
-                            <option value="AUSENTE">AUSENTE</option>
-                        </select>
+                            aria-label="Estado de la cita"
+                            :options="statusOptions" />
                     </div>
 
                     <!-- Date & Time Row -->
@@ -120,13 +130,10 @@ const closeDropdowns = () => {
                         </div>
                     </div>
 
-                    <!-- Client Selection -->
                     <BookingClientSelector 
                         ref="clientSelectorRef"
                         v-model="form.client_id" 
                         :clients="clients" 
-                        :client-wallet="clientWallet" 
-                        :available-bonuses="availableClientBonuses"
                         :disabled="form.status === 'COMPLETADA'"
                     />
 
@@ -141,13 +148,12 @@ const closeDropdowns = () => {
                             <span class="text-text-muted text-[10px] font-bold tabular-nums">{{ form.duration }} min total</span>
                         </div>
                         
-                        <!-- Item Selector Component -->
                         <BookingItemSelector 
                             ref="itemSelectorRef"
                             :services="services"
-                            :bonuses="bonuses"
-                            :available-bonuses="availableClientBonuses"
-                            :client-wallet="clientWallet"
+                            :client-packages="clientPackages"
+                            :catalog-packages="catalogPackages"
+                            :selected-items="form.items"
                             :disabled="form.status === 'COMPLETADA'"
                             @add="handleAddItem"
                         />
@@ -173,13 +179,15 @@ const closeDropdowns = () => {
 
             <!-- Footer -->
             <div class="border-border-subtle shrink-0 border-t bg-bg-card/90 px-6 py-5 backdrop-blur-md space-y-3">
-                <NuxtLink 
+                <button 
                     v-if="selectedBooking && selectedBooking.booking_id && form.status !== 'COMPLETADA'" 
-                    :to="`/tpv?booking_id=${selectedBooking.booking_id}`" 
+                    type="button"
                     class="btn btn-primary btn-outline w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-sm"
-                    @click="store.closeBookingDrawer()">
-                    Cobrar en TPV
-                </NuxtLink>
+                    :disabled="isSaving"
+                    @click="handlePayInTpv">
+                    <span v-if="isSaving" class="loading loading-spinner"></span>
+                    <span v-else>Cobrar en TPV</span>
+                </button>
                 <button v-if="form.status !== 'COMPLETADA'" type="submit" form="drawerBookingForm" class="btn text-bg-card hover:bg-text-secondary/90 bg-text-secondary w-full h-12 rounded-xl border-none font-black uppercase tracking-widest shadow-lg" :disabled="isSaving">
                     <span v-if="isSaving" class="loading loading-spinner"></span>
                     <span v-else>{{ selectedBooking ? 'Guardar Cambios' : 'Confirmar Reserva' }}</span>
@@ -190,27 +198,6 @@ const closeDropdowns = () => {
             </div>
         </div>
     </Transition>
-
-    <!-- Last Session Warning Modal -->
-    <div class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': bonusWarningType !== 'NONE' }">
-        <div class="modal-box bg-bg-app border border-border-subtle shadow-2xl">
-            <h3 class="font-black uppercase tracking-wider text-lg text-primary">
-                {{ bonusWarningType === 'FINISHED' ? '¡Bono Finalizado!' : '¡Última Sesión de Bono!' }}
-            </h3>
-            <p class="py-4 text-text-primary text-sm font-medium">
-                <span v-if="bonusWarningType === 'FINISHED'">
-                    Al confirmar esta cita, <strong>no le quedarán sesiones disponibles</strong> al cliente y el bono finalizará. Por favor, <strong>informa al cliente</strong> de esta situación.
-                </span>
-                <span v-else>
-                    Has seleccionado un bono que se encuentra en su <strong>última sesión restante</strong>. Por favor, <strong>informa al cliente</strong> de que este bono se agotará próximamente.
-                </span>
-            </p>
-            <div class="modal-action">
-                <button type="button" class="btn btn-ghost hover:bg-bg-muted text-text-muted" @click="bonusWarningType = 'NONE'">Cancelar</button>
-                <button type="button" class="btn bg-primary text-white hover:bg-primary/90 font-black uppercase tracking-widest border-none" @click="proceedSaveBooking()">Entendido, Confirmar Cita</button>
-            </div>
-        </div>
-    </div>
 </template>
 
 <style scoped>

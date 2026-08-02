@@ -1,0 +1,168 @@
+/* =============================================================================
+   BEILS · GOGO THEME — SINGLE SOURCE OF TRUTH FOR COLORS
+   -----------------------------------------------------------------------------
+   ✏️  TO CHANGE COLORS, EDIT ONLY THIS FILE.
+       · Accent + status + component colors → the two @plugin "daisyui/theme"
+         blocks below ("light" and "dark"). Controls DaisyUI components AND
+         the `*-primary / *-success / *-error …` utilities.
+       · App surfaces / text / borders → the :root (light) and
+         [data-theme='dark'] (dark) blocks. Controls `bg-bg-*`, `text-text-*`,
+         `border-border-*` utilities.
+   Light is the default. Dark activates when <html data-theme="dark">.
+   ============================================================================= */
+
+/* ---------------------------------------------------------------------------
+   1) DAISYUI THEMES — accent + status + component palette (edit hex here)
+   --------------------------------------------------------------------------- */
+@plugin "daisyui/theme" {
+	name: "light";
+	default: true;
+	prefersdark: false;
+	color-scheme: light;
+
+	--color-base-100: #ffffff;   /* cards / raised surfaces */
+	--color-base-200: #f8f8f8;   /* app canvas */
+	--color-base-300: #f0f0f0;   /* wells / subtle fills */
+	--color-base-content: #4d4d4d;
+
+	--color-primary: #922c88;    /* accent */
+	--color-primary-content: #ffffff;
+	--color-secondary: #3d3d3d;  /* strong neutral (dark CTAs) */
+	--color-secondary-content: #ffffff;
+	--color-accent: #922c88;
+	--color-accent-content: #ffffff;
+	--color-neutral: #3d3d3d;
+	--color-neutral-content: #ffffff;
+
+	--color-info: #3b82f6;
+	--color-info-content: #ffffff;
+	--color-success: #16a34a;
+	--color-success-content: #ffffff;
+	--color-warning: #d97706;
+	--color-warning-content: #ffffff;
+	--color-error: #dc2626;
+	--color-error-content: #ffffff;
+
+	--radius-selector: 1rem;     /* pills, badges, toggles */
+	--radius-field: 0.75rem;     /* inputs, selects, buttons */
+	--radius-box: 1.125rem;      /* cards, modals */
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}
+
+@plugin "daisyui/theme" {
+	name: "dark";
+	default: false;
+	prefersdark: true;
+	color-scheme: dark;
+
+	--color-base-100: #1f1f24;   /* cards */
+	--color-base-200: #17171b;   /* app canvas */
+	--color-base-300: #26262c;   /* wells */
+	--color-base-content: #e6e6e9;
+
+	--color-primary: #c05bb4;    /* accent (lighter for dark bg) */
+	--color-primary-content: #1a1a1e;
+	--color-secondary: #e6e6e9;
+	--color-secondary-content: #1a1a1e;
+	--color-accent: #c05bb4;
+	--color-accent-content: #1a1a1e;
+	--color-neutral: #e6e6e9;
+	--color-neutral-content: #1a1a1e;
+
+	--color-info: #60a5fa;
+	--color-info-content: #10131a;
+	--color-success: #22c55e;
+	--color-success-content: #08130b;
+	--color-warning: #f59e0b;
+	--color-warning-content: #1a1205;
+	--color-error: #ef4444;
+	--color-error-content: #1a0808;
+
+	--radius-selector: 1rem;
+	--radius-field: 0.75rem;
+	--radius-box: 1.125rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   2) APP SURFACES / TEXT / BORDERS — light defaults (edit hex here)
+   --------------------------------------------------------------------------- */
+:root {
+	--bg-app: #f8f8f8;
+	--bg-card: #ffffff;
+	--bg-muted: #f4f4f4;
+	--bg-hover: #efefef;
+
+	--border-subtle: #f0f0f0;
+	--border-default: #e5e5e5;
+	--border-strong: #cccccc;
+
+	--text-primary: #4d4d4d;
+	--text-secondary: #3d3d3d;
+	--text-muted: #808080;
+	--text-light: #a3a3a3;
+
+	--accent: #922c88;
+
+	/* Central radius scale (change once, applies via rounded-field/box helpers) */
+	--radius-field: 0.75rem;   /* inputs, buttons */
+	--radius-box: 1.125rem;    /* cards, modals */
+	--radius-pill: 9999px;
+}
+
+/* ---------------------------------------------------------------------------
+   3) DARK OVERRIDES — same tokens flipped (edit hex here)
+   --------------------------------------------------------------------------- */
+[data-theme='dark'] {
+	--bg-app: #17171b;
+	--bg-card: #1f1f24;
+	--bg-muted: #26262c;
+	--bg-hover: #2d2d34;
+
+	--border-subtle: #26262c;
+	--border-default: #33333b;
+	--border-strong: #45454f;
+
+	--text-primary: #e6e6e9;
+	--text-secondary: #f2f2f4;
+	--text-muted: #9a9aa2;
+	--text-light: #63636c;
+
+	--accent: #c05bb4;
+}
+
+/* ---------------------------------------------------------------------------
+   4) TAILWIND TOKEN BINDING — maps the CSS vars above to Tailwind utilities.
+      (Generally no need to edit this section.)
+   --------------------------------------------------------------------------- */
+@theme {
+	--font-sans:
+		'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Segoe UI Symbol', 'Noto Color Emoji';
+	--font-condensed: 'Mulish', 'Roboto Condensed', ui-sans-serif, system-ui;
+
+	--color-bg-app: var(--bg-app);
+	--color-bg-card: var(--bg-card);
+	--color-bg-muted: var(--bg-muted);
+	--color-bg-hover: var(--bg-hover);
+
+	--color-border-subtle: var(--border-subtle);
+	--color-border-default: var(--border-default);
+	--color-border-strong: var(--border-strong);
+
+	--color-text-primary: var(--text-primary);
+	--color-text-secondary: var(--text-secondary);
+	--color-text-muted: var(--text-muted);
+	--color-text-light: var(--text-light);
+
+	--gradient-premium: linear-gradient(135deg, var(--accent) 0%, #b8479a 100%);
+	--gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+}

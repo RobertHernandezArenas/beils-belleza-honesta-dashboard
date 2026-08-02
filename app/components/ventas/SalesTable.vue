@@ -71,7 +71,7 @@ const emit = defineEmits<{
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-border-default/60 bg-bg-card">
-				<tr v-for="sale in paginatedSales" :key="sale.cart_id" @click.stop.prevent="emit('open-details', sale)" class="hover:bg-neutral-50/70 transition-colors cursor-pointer group">
+				<tr v-for="sale in paginatedSales" :key="sale.cart_id" @click.stop.prevent="emit('open-details', sale)" class="hover:bg-bg-hover transition-colors cursor-pointer group">
 					<td class="py-4 pl-6">
 						<div class="text-[11px] font-bold text-text-muted tracking-wider uppercase font-mono">
 							{{ getTicketDisplay(sale) }}

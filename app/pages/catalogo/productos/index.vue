@@ -148,12 +148,12 @@
 							<tr
 								v-for="(product, index) in products"
 								:key="product.product_id"
-								class="premium-lift group hover:bg-white/60 cursor-pointer transition-all duration-300"
+								class="premium-lift group hover:bg-bg-card/60 cursor-pointer transition-all duration-300"
 								@click="openEditModal(product)">
 								<td class="pl-6 py-4">
 									<div class="flex items-center gap-4">
 										<div
-											class="bg-white border-border-default/50 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
+											class="bg-bg-card border-border-default/50 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
 											<ImageIcon
 												v-if="!product.image_url"
 												class="text-text-muted/30 h-6 w-6" />
@@ -198,7 +198,7 @@
 										:class="
 											product.status === 'activo'
 												? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
-												: 'bg-stone-500/10 text-stone-700 border-stone-500/20'
+												: 'bg-text-muted/10 text-text-secondary border-text-muted/20'
 										">
 										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"></span>
 										{{ product.status }}

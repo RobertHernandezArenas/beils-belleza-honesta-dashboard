@@ -3,11 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 export function useTpv() {
 	const queryClient = useQueryClient()
 	const { emitSync } = useSync()
+	const { notifySalesChanged } = useRealtimeSales()
 	const route = useRoute()
 	const router = useRouter()
 
 	// Tab control
-	const activeTab = ref<'products' | 'services' | 'bonuses'>('services')
+	const activeTab = ref<'products' | 'services' | 'packages'>('services')
 	const searchQuery = ref('')
 	const clientSearch = ref('')
 
@@ -22,7 +23,7 @@ export function useTpv() {
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
 
-	// Manejo de errores de avatar
+	// Avatar Error Handling
 	const avatarError = ref(false)
 	const handleAvatarError = () => {
 		avatarError.value = true
@@ -50,49 +51,39 @@ export function useTpv() {
 		queryFn: () => $fetch('/api/services'),
 	})
 
+	// Sellable bonos/packages catalog
+	const { data: packages } = useQuery<any[]>({
+		queryKey: ['packages-tpv'],
+		queryFn: () => $fetch('/api/packages'),
+	})
 
-	const { data: bonuses } = useQuery<any[]>({
-		queryKey: ['bonuses-tpv'],
-		queryFn: () => $fetch('/api/marketing/bonuses'),
+	// Active bonos/packages owned by the selected client (for consuming sessions)
+	const { data: clientPackages } = useQuery<any[]>({
+		queryKey: ['client-packages-tpv', computed(() => selectedClient.value?.user_id)],
+		queryFn: async () => {
+			const id = selectedClient.value?.user_id
+			if (!id) return []
+			return await $fetch<any[]>(`/api/clients/${id}/packages`)
+		},
+		enabled: computed(() => !!selectedClient.value?.user_id),
 	})
 
 	const processedBookingId = ref<string | null>(null)
 
-	// Promotions & Marketing State
-	const clientBonuses = ref<any[]>([])
-
-
-	const fetchClientBonuses = async (clientId: string) => {
-		try {
-			const data: any = await $fetch(`/api/clients/${clientId}/bonuses`)
-			clientBonuses.value = data || []
-		} catch (error) {
-			console.error('Error fetching client bonuses:', error)
-			clientBonuses.value = []
-		}
-	}
-
-	watch(selectedClient, (newClient) => {
-		avatarError.value = false
-		if (newClient) {
-			fetchClientBonuses(newClient.user_id)
-		} else {
-			clientBonuses.value = []
-		}
-	})
-
-
-
-	// Watcher for booking param from URL
 	watch([
 		() => route.query.booking_id,
 		() => services.value,
-		() => bonuses.value,
 		() => products.value,
+		() => packages.value,
 		() => clients.value
-	], async ([bookingId, svcs, bns, prds, cls]) => {
+	], async ([bookingId, svcs, prds, pkgs, cls]) => {
 		if (!bookingId || typeof bookingId !== 'string' || processedBookingId.value === bookingId) return
-		if (!svcs || !cls) return // Wait for crucial catalogs to load
+
+		// Wait until the catalog is loaded before resolving booking items. Prices come
+		// exclusively from the live catalog (booking_items store no price), so processing
+		// too early would set every unit_price to 0 and produce a 0,00 € ticket.
+		// The watch re-fires when services/products/packages arrive, so we simply defer.
+		if (!svcs || !prds || !pkgs) return
 
 		processedBookingId.value = bookingId
 
@@ -100,85 +91,70 @@ export function useTpv() {
 			const bookingData: any = await $fetch(`/api/agenda/bookings/${bookingId}`)
 			if (!bookingData) return
 
-			const client = cls.find((c: any) => c.user_id === bookingData.client_id)
-			let currentClientBonuses: any[] = []
-			if (client) {
-				selectedClient.value = client
-				try {
-					currentClientBonuses = await $fetch(`/api/clients/${client.user_id}/bonuses`)
-				} catch (e) {}
+			// 1. Set Selected Client (Reliably!)
+			if (bookingData.client && (bookingData.client.user_id || bookingData.client_id)) {
+				selectedClient.value = {
+					user_id: bookingData.client.user_id || bookingData.client_id,
+					name: bookingData.client.name || 'Cliente',
+					surname: bookingData.client.surname || '',
+					email: bookingData.client.email || '',
+					phone: bookingData.client.phone || '',
+					avatar: bookingData.client.avatar || null
+				}
+			} else if (bookingData.client_id) {
+				const found = (cls || []).find((c: any) => c.user_id === bookingData.client_id)
+				if (found) {
+					selectedClient.value = found
+				} else {
+					try {
+						const directClient: any = await $fetch(`/api/clients/${bookingData.client_id}`)
+						if (directClient) selectedClient.value = directClient
+					} catch (e) {
+						console.error('Failed fallback client fetch:', e)
+					}
+				}
 			}
 
+			// 2. Set Cart Items from Booking Items
 			const itemsToAdd: any[] = []
 			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
 				for (const it of bookingData.booking_items) {
 					let foundItem: any = null
-					let type = it.item_type.toLowerCase()
-					let appliedBonusId: string | undefined = undefined
+					let type = (it.item_type || 'service').toLowerCase()
 					
 					if (type === 'service') {
-						foundItem = svcs.find((s: any) => s.service_id === it.item_id)
-						// Check if client has a bonus for this service
-						if (foundItem) {
-							const matchingBonus = currentClientBonuses.find(b => b.bonus?.service?.service_id === foundItem.service_id && b.remaining_sessions > 0)
-							if (matchingBonus) {
-								appliedBonusId = matchingBonus.client_bonus_id
-								matchingBonus.remaining_sessions--
-							}
-						}
-					} else if (type === 'bonus') {
-						foundItem = bns?.find((b: any) => b.bonus_id === it.item_id)
-						// Fallback: If not a template, it might be an explicit ClientBonus from Agenda
-						if (!foundItem && currentClientBonuses.length > 0) {
-							const explicitBonus = currentClientBonuses.find(b => b.client_bonus_id === it.item_id)
-							if (explicitBonus) {
-								foundItem = explicitBonus.bonus?.service || {
-									service_id: explicitBonus.client_bonus_id, // Fallback ID
-									name: explicitBonus.bonus?.name || it.name,
-									price: 0,
-									tax_rate: 21.0
-								}
-								appliedBonusId = explicitBonus.client_bonus_id
-								type = 'service'
-								explicitBonus.remaining_sessions--
-							}
-						}
+						foundItem = (svcs || []).find((s: any) => s.service_id === it.item_id)
 					} else if (type === 'product') {
-						foundItem = prds?.find((p: any) => p.product_id === it.item_id)
+						foundItem = (prds || []).find((p: any) => p.product_id === it.item_id)
+					} else if (type === 'package_sale') {
+						foundItem = (pkgs || []).find((p: any) => p.package_id === it.item_id)
 					}
 
-					if (foundItem) {
-						const matchingId = foundItem.product_id || foundItem.service_id || foundItem.bonus_id || it.item_id
-						const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId && i.applied_client_bonus_id === appliedBonusId)
-						
-						if (existingCartItem) {
-							existingCartItem.quantity++
-						} else {
-							itemsToAdd.push({
-								item_id: matchingId,
-								item_type: type,
-								name: foundItem.name || it.name,
-								unit_price: foundItem.price,
-								tax_rate: foundItem.tax_rate || 21.0,
-								quantity: 1,
-								applied_client_bonus_id: appliedBonusId
-							})
-						}
+					let unitPrice = 0
+					if (type === 'package' || (it.name && (it.name.includes('[SESIÓN BONO]') || it.name.includes('[BONO MIXTO]')))) {
+						unitPrice = 0 // Package session is 0 EUR in TPV
+					} else if (foundItem) {
+						unitPrice = Number(foundItem.price || 0)
 					} else {
-						const existingCartItem = itemsToAdd.find(i => i.item_id === it.item_id && i.applied_client_bonus_id === appliedBonusId)
-						if (existingCartItem) {
-							existingCartItem.quantity++
-						} else {
-							itemsToAdd.push({
-								item_id: it.item_id,
-								item_type: type,
-								name: it.name,
-								unit_price: 0,
-								tax_rate: 21.0,
-								quantity: 1,
-								applied_client_bonus_id: appliedBonusId
-							})
-						}
+						unitPrice = 0
+					}
+
+					const itemName = it.name || foundItem?.name || 'Servicio'
+					const matchingId = it.item_id || foundItem?.product_id || foundItem?.service_id || 'item'
+
+					const existingCartItem = itemsToAdd.find(i => i.item_id === matchingId && i.name === itemName)
+					
+					if (existingCartItem) {
+						existingCartItem.quantity++
+					} else {
+						itemsToAdd.push({
+							item_id: matchingId,
+							item_type: type,
+							name: itemName,
+							unit_price: unitPrice,
+							tax_rate: foundItem?.tax_rate || 21.0,
+							quantity: 1
+						})
 					}
 				}
 			}
@@ -195,7 +171,7 @@ export function useTpv() {
 		}
 	}, { immediate: true })
 
-	// Process checkout mutation
+	// Process Checkout Mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
 		mutationFn: async (payload: any) => {
 			const res: any = await $fetch('/api/sales/carts', {
@@ -227,10 +203,13 @@ export function useTpv() {
 				})
 			}
 			
-			queryClient.invalidateQueries({ queryKey: ['sales', 'completed'] })
-			queryClient.invalidateQueries({ queryKey: ['debts'] })
+			// Real-time refresh of every sales/collection view (this tab + broadcast to others)
+			notifySalesChanged()
+			// Client-specific caches touched by a sale
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
-			queryClient.invalidateQueries({ queryKey: ['bookings'] })
+			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
+			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
+			queryClient.invalidateQueries({ queryKey: ['client-packages-tpv'] })
 			clearCart()
 		},
 		onError: (error: any) => {
@@ -252,9 +231,10 @@ export function useTpv() {
 				(s: any) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
 			)
 		}
-
-		if (activeTab.value === 'bonuses' && bonuses.value) {
-			return bonuses.value.filter((b: any) => b.name.toLowerCase().includes(q))
+		if (activeTab.value === 'packages' && packages.value) {
+			return packages.value.filter(
+				(p: any) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
+			)
 		}
 		return []
 	})
@@ -275,14 +255,19 @@ export function useTpv() {
 
 	// Cart Operations
 	const addToCart = (item: any, type: string) => {
+		// A catalog package is SOLD (item_type 'package_sale'), not consumed.
+		if (type === 'package') {
+			addPackageSale(item)
+			return
+		}
+
 		let itemId = ''
-		if (type === 'bonus') itemId = item.bonus_id
-		else if (type === 'service') itemId = item.service_id
+		if (type === 'service') itemId = item.service_id
 		else if (type === 'product') itemId = item.product_id
-		else itemId = item.product_id || item.service_id || item.bonus_id
+		else itemId = item.product_id || item.service_id
 
 		const existing = cartItems.value.find(
-			i => i.item_id === itemId && !i.applied_client_bonus_id,
+			i => i.item_id === itemId
 		)
 
 		if (existing) {
@@ -292,7 +277,7 @@ export function useTpv() {
 				item_id: itemId,
 				item_type: type,
 				name: item.name,
-				unit_price: item.price,
+				unit_price: Number(item.price || 0),
 				tax_rate: item.tax_rate || 21.0,
 				quantity: 1,
 			})
@@ -300,17 +285,66 @@ export function useTpv() {
 		searchQuery.value = ''
 	}
 
+	// Sell a bono/package from the catalog (assigned to the client on checkout)
+	const addPackageSale = (pkg: any) => {
+		const existing = cartItems.value.find(
+			i => i.item_id === pkg.package_id && i.item_type === 'package_sale',
+		)
+		if (existing) {
+			existing.quantity++
+		} else {
+			cartItems.value.push({
+				item_id: pkg.package_id,
+				item_type: 'package_sale',
+				name: pkg.name,
+				unit_price: Number(pkg.price || 0),
+				tax_rate: pkg.tax_rate || 21.0,
+				quantity: 1,
+			})
+		}
+		searchQuery.value = ''
+	}
+
+	// Consume one session of a bono/package the client already owns (0 € line)
+	const consumeClientPackage = (pkg: any) => {
+		const remaining = Number(pkg.remaining_sessions || 0)
+		const alreadyInCart = cartItems.value
+			.filter(i => i.item_id === pkg.client_package_id && i.item_type === 'package')
+			.reduce((sum, i) => sum + i.quantity, 0)
+		if (remaining - alreadyInCart <= 0) {
+			displayToast('Este bono no tiene sesiones disponibles', 'error')
+			return
+		}
+
+		const existing = cartItems.value.find(
+			i => i.item_id === pkg.client_package_id && i.item_type === 'package',
+		)
+		if (existing) {
+			existing.quantity++
+		} else {
+			cartItems.value.push({
+				item_id: pkg.client_package_id,
+				item_type: 'package',
+				name: `[SESIÓN BONO] ${pkg.name}`,
+				unit_price: 0,
+				tax_rate: 0,
+				quantity: 1,
+			})
+		}
+	}
+
 	const increaseItemQty = (index: number) => {
 		const item = cartItems.value[index]
-		if (item.applied_client_bonus_id) {
-			const cb = clientBonuses.value.find((b: any) => b.client_bonus_id === item.applied_client_bonus_id)
-			if (cb && item.quantity < cb.remaining_sessions) {
-				item.quantity++
-			} else {
-				displayToast('No quedan más sesiones disponibles en este bono', 'error')
-			}
+		if (item) item.quantity++
+	}
+
+	const decreaseItemQty = (index: number) => {
+		const item = cartItems.value[index]
+		if (!item) return
+		if (item.quantity > 1) {
+			item.quantity--
 		} else {
-			item.quantity++
+			cartItems.value.splice(index, 1)
 		}
 	}
 
@@ -334,8 +368,7 @@ export function useTpv() {
 	// Computed Totals
 	const cartSubtotal = computed(() => {
 		return cartItems.value.reduce((acc, item) => {
-			if (item.applied_client_bonus_id) return acc
-			return acc + item.unit_price * item.quantity
+			return acc + (item.unit_price || 0) * item.quantity
 		}, 0)
 	})
 
@@ -350,6 +383,13 @@ export function useTpv() {
 
 		if (paymentMethod.value === 'debt' && !selectedClient.value) {
 			displayToast('Selecciona un cliente para dejar a deber.', 'error')
+			return
+		}
+
+		// Selling a bono/package assigns it to a person -> a registered client is required
+		const hasPackageSale = cartItems.value.some(i => i.item_type === 'package_sale')
+		if (hasPackageSale && !selectedClient.value?.user_id) {
+			displayToast('Selecciona un cliente registrado para vender un bono o paquete', 'error')
 			return
 		}
 
@@ -388,13 +428,15 @@ export function useTpv() {
 		avatarError,
 		filteredCatalog,
 		filteredClients,
+		clientPackages,
 		cartSubtotal,
 		cartTotal,
 		isCheckingOut,
-		clientBonuses,
 		addToCart,
+		consumeClientPackage,
 		removeFromCart,
 		increaseItemQty,
+		decreaseItemQty,
 		clearCart,
 		selectClient,
 		handleCheckout,

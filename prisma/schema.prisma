@@ -37,6 +37,7 @@ model User {
   debts           Debt[]
   questionnaires  Questionnaire[]
   revokes         Revoke[]
+  client_packages ClientPackage[]
 
   @@index([role])
   @@index([status])
@@ -116,42 +117,8 @@ model Service {
   status      String   @default("activo") @db.VarChar(20)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  bonuses     Bonus[]
 
   @@map("services")
-}
-
-model Bonus {
-  bonus_id       String        @id @default(uuid()) @db.Char(100)
-  name           String        @db.VarChar(150)
-  description    String?       @db.Text
-  total_sessions Int
-  price          Float
-  status         String        @default("activo") @db.VarChar(20)
-  service_id     String?       @db.Char(100)
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
-  service        Service?      @relation(fields: [service_id], references: [service_id])
-  client_bonuses ClientBonus[]
-
-  @@index([service_id], map: "bonuses_service_id_fkey")
-  @@map("bonuses")
-}
-
-model ClientBonus {
-  client_bonus_id    String    @id @default(uuid()) @db.Char(100)
-  client_id          String    @db.Char(100)
-  bonus_id           String    @db.Char(100)
-  remaining_sessions Int
-  purchase_date      DateTime  @default(now())
-  expiration_date    DateTime?
-  status             String    @default("activo") @db.VarChar(20)
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
-  bonus              Bonus     @relation(fields: [bonus_id], references: [bonus_id], onDelete: NoAction)
-
-  @@index([bonus_id], map: "client_bonuses_bonus_id_fkey")
-  @@map("client_bonuses")
 }
 
 model Sequence {
@@ -310,3 +277,81 @@ enum DocumentType {
   PASSPORT
   NIE
 }
+
+model Package {
+  package_id      String          @id @default(uuid()) @db.Char(100)
+  name            String          @db.VarChar(150)
+  description     String?         @db.Text
+  type            PackageType     @default(INDIVIDUAL)
+  price           Float
+  total_sessions  Int             @default(1)
+  service_id      String?         @db.Char(100)
+  status          String          @default("activo") @db.VarChar(20)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  client_packages ClientPackage[]
+  items           PackageItem[]
+
+  @@map("packages")
+}
+
+model PackageItem {
+  package_item_id      String              @id @default(uuid()) @db.Char(100)
+  package_id           String              @db.Char(100)
+  item_type            String              @default("SERVICE") @db.VarChar(20)
+  item_id              String              @db.Char(100)
+  name                 String              @db.VarChar(150)
+  quantity             Int                 @default(1)
+  duration             Int                 @default(30)
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  package              Package             @relation(fields: [package_id], references: [package_id], onDelete: Cascade)
+  client_package_items ClientPackageItem[]
+
+  @@index([package_id])
+  @@map("package_items")
+}
+
+model ClientPackage {
+  client_package_id  String              @id @default(uuid()) @db.Char(100)
+  user_id            String              @db.Char(100)
+  package_id         String              @db.Char(100)
+  total_sessions     Int
+  remaining_sessions Int
+  expiry_date        DateTime?
+  status             String              @default("ACTIVE") @db.VarChar(20)
+  created_at         DateTime            @default(now())
+  updated_at         DateTime            @updatedAt
+  user               User                @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  package            Package             @relation(fields: [package_id], references: [package_id], onDelete: Cascade)
+  items              ClientPackageItem[]
+
+  @@index([user_id])
+  @@index([package_id])
+  @@map("client_packages")
+}
+
+model ClientPackageItem {
+  client_package_item_id String        @id @default(uuid()) @db.Char(100)
+  client_package_id      String        @db.Char(100)
+  package_item_id        String        @db.Char(100)
+  name                   String        @db.VarChar(150)
+  item_type              String        @default("SERVICE") @db.VarChar(20)
+  quantity_total         Int           @default(1)
+  quantity_remaining     Int           @default(1)
+  duration               Int           @default(30)
+  created_at             DateTime      @default(now())
+  updated_at             DateTime      @updatedAt
+  client_package         ClientPackage @relation(fields: [client_package_id], references: [client_package_id], onDelete: Cascade)
+  package_item           PackageItem   @relation(fields: [package_item_id], references: [package_item_id], onDelete: Cascade)
+
+  @@index([client_package_id])
+  @@index([package_item_id])
+  @@map("client_package_items")
+}
+
+enum PackageType {
+  INDIVIDUAL
+  MIXTO
+}
+

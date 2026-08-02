@@ -11,8 +11,7 @@
 		ShoppingBag,
 		Smartphone,
 		ArrowRightLeft,
-		X,
-		AlertTriangle
+		X
 	} from 'lucide-vue-next'
 
 	interface Props {
@@ -24,7 +23,6 @@
 		isCheckingOut: boolean
 		avatarError: boolean
 		formatCurrency: (val: number) => string
-		clientBonuses: any[]
 	}
 
 	const props = defineProps<Props>()
@@ -42,38 +40,6 @@
 	const clientSearch = defineModel<string>('clientSearch', { required: true })
 	const discountAmount = defineModel<number>('discountAmount', { required: true })
 	const paymentMethod = defineModel<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('paymentMethod', { required: true })
-
-	const isConfirmingLastSession = ref(false)
-
-	const handleAttemptCheckout = () => {
-		let hasLastSession = false
-		const appliedCounts: Record<string, number> = {}
-
-		for (const item of props.cartItems) {
-			if (item.applied_client_bonus_id) {
-				appliedCounts[item.applied_client_bonus_id] = (appliedCounts[item.applied_client_bonus_id] || 0) + item.quantity
-			}
-		}
-
-		for (const [bonusId, count] of Object.entries(appliedCounts)) {
-			const cb = props.clientBonuses.find(b => b.client_bonus_id === bonusId)
-			if (cb && (cb.remaining_sessions - count === 0)) {
-				hasLastSession = true
-				break
-			}
-		}
-
-		if (hasLastSession) {
-			isConfirmingLastSession.value = true
-		} else {
-			emit('checkout')
-		}
-	}
-
-	const confirmLastSession = () => {
-		isConfirmingLastSession.value = false
-		emit('checkout')
-	}
 </script>
 
 <template>
@@ -90,7 +56,7 @@
 						v-model="clientSearch"
 						type="text"
 						placeholder="Asignar cliente..."
-						class="input bg-white/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
+						class="input bg-bg-card/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
 					<button
 						v-if="clientSearch"
 						type="button"
@@ -148,17 +114,6 @@
 						class="btn btn-ghost btn-circle btn-xs text-white/70 hover:bg-white/15 hover:text-white border-none">
 						<Trash2 class="h-3.5 w-3.5" />
 					</button>
-				</div>
-			</div>
-
-			<!-- Active Client Bonuses Notice -->
-			<div v-if="selectedClient && clientBonuses.length > 0" class="mt-2.5 flex flex-wrap gap-1.5">
-				<div
-					v-for="bonus in clientBonuses"
-					:key="bonus.client_bonus_id"
-					class="badge badge-accent badge-sm gap-1 font-mono text-[9px] font-bold py-2">
-					<Tag class="h-3 w-3" />
-					{{ bonus.bonus?.name }}: {{ bonus.remaining_sessions }} ses.
 				</div>
 			</div>
 		</div>
@@ -220,11 +175,8 @@
 
 							<!-- Bonus Badge or Unit Price -->
 							<div class="flex items-center gap-2">
-								<div v-if="item.applied_client_bonus_id" class="badge badge-success badge-sm text-[9px] font-black uppercase tracking-wider">
-									Bono Aplicado
-								</div>
 								<span class="text-xs font-black tabular-nums text-text-primary">
-									{{ formatCurrency(item.applied_client_bonus_id ? 0 : item.unit_price * item.quantity) }}
+									{{ formatCurrency(item.unit_price * item.quantity) }}
 								</span>
 							</div>
 						</div>
@@ -328,7 +280,7 @@
 			<!-- Main Action Button -->
 			<button
 				type="button"
-				@click="handleAttemptCheckout"
+				@click="emit('checkout')"
 				:disabled="cartItems.length === 0 || isCheckingOut"
 				class="btn h-12 sm:h-14 w-full rounded-2xl border-none text-xs sm:text-sm font-black tracking-widest uppercase shadow-md transition-all active:scale-[0.98]"
 				:class="cartItems.length > 0 ? 'bg-text-primary hover:bg-text-primary/95 text-bg-card' : 'bg-bg-muted text-text-muted/60 opacity-50 cursor-not-allowed'">
@@ -337,37 +289,4 @@
 			</button>
 		</div>
 	</div>
-
-	<!-- DaisyUI Modal: Confirmation for Last Session of Bonus -->
-	<dialog :class="{ 'modal-open': isConfirmingLastSession }" class="modal modal-bottom sm:modal-middle">
-		<div class="modal-box bg-bg-card border-border-default border rounded-3xl p-6 shadow-2xl">
-			<div class="flex flex-col items-center text-center">
-				<div class="bg-warning/20 text-warning mb-4 flex h-14 w-14 items-center justify-center rounded-2xl">
-					<AlertTriangle class="h-7 w-7" />
-				</div>
-				<h3 class="text-text-primary text-lg font-black tracking-tight">Última Sesión del Bono</h3>
-				<p class="text-text-muted mt-2 text-xs font-medium leading-relaxed">
-					Estás a punto de consumir la <strong class="text-text-primary">última sesión</strong> disponible de uno de los bonos aplicados. ¿Deseas procesar el cobro?
-				</p>
-			</div>
-
-			<div class="modal-action flex gap-3 mt-6">
-				<button
-					type="button"
-					@click="isConfirmingLastSession = false"
-					class="btn bg-bg-muted text-text-primary hover:bg-bg-muted/80 flex-1 rounded-xl border-none font-bold text-xs uppercase">
-					Cancelar
-				</button>
-				<button
-					type="button"
-					@click="confirmLastSession"
-					class="btn btn-warning text-warning-content hover:bg-warning/90 flex-1 rounded-xl border-none font-bold text-xs uppercase shadow-md">
-					Sí, Cobrar
-				</button>
-			</div>
-		</div>
-		<form method="dialog" class="modal-backdrop bg-black/60 backdrop-blur-xs">
-			<button @click="isConfirmingLastSession = false">close</button>
-		</form>
-	</dialog>
 </template>

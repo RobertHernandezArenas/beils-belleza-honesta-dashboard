@@ -31,6 +31,16 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const { user_id, items, booking_id, ...cartData } = body
 
+		// Selling a bono/package assigns it to a person, so a registered client is required.
+		const hasPackageSale = Array.isArray(items) &&
+			items.some((it: any) => (it.item_type || '').toLowerCase() === 'package_sale')
+		if (hasPackageSale && !user_id) {
+			throw createError({
+				statusCode: 400,
+				statusMessage: 'Selecciona un cliente registrado para vender un bono o paquete',
+			})
+		}
+
 		// Wrap in transaction to ensure consistency
 		const cart = await prisma.$transaction(async tx => {
 			if (booking_id) {
@@ -55,10 +65,8 @@ export default defineEventHandler(async event => {
 					total: 0, 
 					items: {
 						create: items.map((item: any) => {
-							const isBonusApplied = !!item.applied_client_bonus_id;
 							const itemSubtotal = item.quantity * item.unit_price;
-							// If a bonus is applied, the item total is 0
-							const itemTotal = isBonusApplied ? 0 : itemSubtotal;
+							const itemTotal = itemSubtotal;
 
 							subtotal = Number((subtotal + itemSubtotal).toFixed(2));
 							total = Number((total + itemTotal).toFixed(2));
@@ -78,43 +86,148 @@ export default defineEventHandler(async event => {
 				},
 			})
 
-			// Process post-creation actions for each item
+			// Process post-creation actions for each item (deduct package sessions)
 			for (const item of items) {
-				// 1. Deduct Bonus Session
-				if (item.applied_client_bonus_id) {
-					const cb = await tx.clientBonus.findUnique({ where: { client_bonus_id: item.applied_client_bonus_id } });
-					if (cb && cb.remaining_sessions > 0) {
-						const newRemaining = cb.remaining_sessions - item.quantity;
-						await tx.clientBonus.update({
-							where: { client_bonus_id: item.applied_client_bonus_id },
+				const isPackageItem = (item.item_type || '').toLowerCase() === 'package' || 
+					(item.name && (item.name.includes('[SESIÓN BONO]') || item.name.includes('[BONO MIXTO]')))
+
+				if (isPackageItem) {
+					const qtyToDeduct = Math.max(1, Number(item.quantity) || 1)
+
+					// 1. Try to find and update ClientPackageItem directly
+					const clientPkgItem = await tx.clientPackageItem.findUnique({
+						where: { client_package_item_id: item.item_id }
+					}).catch(() => null)
+
+					if (clientPkgItem) {
+						await tx.clientPackageItem.update({
+							where: { client_package_item_id: clientPkgItem.client_package_item_id },
 							data: {
-								remaining_sessions: newRemaining,
-								status: newRemaining <= 0 ? 'agotado' : 'activo'
+								quantity_remaining: { decrement: Math.min(clientPkgItem.quantity_remaining, qtyToDeduct) }
 							}
-						});
-					}
-				}
+						})
 
+						await tx.clientPackage.update({
+							where: { client_package_id: clientPkgItem.client_package_id },
+							data: {
+								remaining_sessions: { decrement: Math.min(clientPkgItem.quantity_remaining, qtyToDeduct) }
+							}
+						})
+					} else {
+						// 2. Try to find and update ClientPackage directly
+						const clientPkg = await tx.clientPackage.findUnique({
+							where: { client_package_id: item.item_id }
+						}).catch(() => null)
 
-
-				// 3. Generar nuevo Bono (ClientBonus) si se está comprando
-				if ((item.item_type === 'bonus' || item.item_type === 'BONUS') && !item.applied_client_bonus_id && user_id) {
-					const bonusTemplate = await tx.bonus.findUnique({ where: { bonus_id: item.item_id } });
-					if (bonusTemplate) {
-						// Si compra cantidad > 1, creamos múltiples bonos
-						for (let i = 0; i < item.quantity; i++) {
-							await tx.clientBonus.create({
+						if (clientPkg) {
+							await tx.clientPackage.update({
+								where: { client_package_id: clientPkg.client_package_id },
 								data: {
-									client_id: user_id,
-									bonus_id: item.item_id,
-									remaining_sessions: bonusTemplate.total_sessions,
-									status: 'activo'
+									remaining_sessions: { decrement: Math.min(clientPkg.remaining_sessions, qtyToDeduct) }
 								}
-							});
+							})
+						} else if (user_id) {
+							// 3. Fallback: Search matching active ClientPackageItem or ClientPackage by user_id
+							const cleanName = item.name ? item.name.replace(/\[.*?\]\s*/g, '').trim() : ''
+							
+							const matchingSubItem = await tx.clientPackageItem.findFirst({
+								where: {
+									client_package: { user_id },
+									quantity_remaining: { gt: 0 },
+									OR: [
+										{ package_item_id: item.item_id },
+										{ name: { contains: cleanName } }
+									]
+								}
+							})
+
+							if (matchingSubItem) {
+								await tx.clientPackageItem.update({
+									where: { client_package_item_id: matchingSubItem.client_package_item_id },
+									data: {
+										quantity_remaining: { decrement: Math.min(matchingSubItem.quantity_remaining, qtyToDeduct) }
+									}
+								})
+
+								await tx.clientPackage.update({
+									where: { client_package_id: matchingSubItem.client_package_id },
+									data: {
+										remaining_sessions: { decrement: Math.min(matchingSubItem.quantity_remaining, qtyToDeduct) }
+									}
+								})
+							} else {
+								const matchingPkg = await tx.clientPackage.findFirst({
+									where: {
+										user_id,
+										remaining_sessions: { gt: 0 },
+										OR: [
+											{ package_id: item.item_id },
+											{ package: { name: { contains: cleanName } } }
+										]
+									}
+								})
+
+								if (matchingPkg) {
+									await tx.clientPackage.update({
+										where: { client_package_id: matchingPkg.client_package_id },
+										data: {
+											remaining_sessions: { decrement: Math.min(matchingPkg.remaining_sessions, qtyToDeduct) }
+										}
+									})
+								}
+							}
 						}
 					}
 				}
+			}
 
+			// Sell bonos/packages: create a ClientPackage for the client for each catalog package sold.
+			// (Consumption items use item_type 'package' and are handled by the deduction loop above.)
+			for (const item of items) {
+				if ((item.item_type || '').toLowerCase() !== 'package_sale') continue
+
+				const catalogPkg = await tx.package.findUnique({
+					where: { package_id: item.item_id },
+					include: { items: true },
+				})
+				if (!catalogPkg) continue
+
+				const totalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items?.length
+					? catalogPkg.items
+							.filter(it => it.item_type === 'SERVICE')
+							.reduce((sum, it) => sum + (it.quantity || 0), 0)
+					: catalogPkg.total_sessions
+
+				const expiryDate = new Date()
+				expiryDate.setMonth(expiryDate.getMonth() + 6)
+
+				const units = Math.max(1, Number(item.quantity) || 1)
+				for (let i = 0; i < units; i++) {
+					const cp = await tx.clientPackage.create({
+						data: {
+							user_id,
+							package_id: catalogPkg.package_id,
+							total_sessions: totalServiceSessions,
+							remaining_sessions: totalServiceSessions,
+							expiry_date: expiryDate,
+							status: 'ACTIVE',
+						},
+					})
+
+					if (catalogPkg.items?.length) {
+						await tx.clientPackageItem.createMany({
+							data: catalogPkg.items.map(it => ({
+								client_package_id: cp.client_package_id,
+								package_item_id: it.package_item_id,
+								name: it.name,
+								item_type: it.item_type,
+								quantity_total: it.quantity,
+								quantity_remaining: it.quantity,
+								duration: it.duration,
+							})),
+						})
+					}
+				}
 			}
 
 			total = Number((total - discount).toFixed(2))

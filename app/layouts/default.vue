@@ -5,7 +5,7 @@
 		<!-- NAVBAR (Glassmorphism) -->
 		<div class="drawer-content relative z-10 flex h-dvh flex-col">
 			<nav
-				class="bg-bg-card/90 sticky top-0 z-50 h-[73px] w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
+				class="bg-bg-card/90 sticky top-0 z-50 h-18.25 w-full border-b border-transparent px-4 py-3 shadow-xs backdrop-blur-2xl">
 				<div class="flex w-full items-center justify-between">
 					<div class="flex items-center gap-4">
 						<div class="lg:hidden">
@@ -42,12 +42,12 @@
 
 				<!-- LOGO SPACE -->
 				<div
-					class="relative z-10 flex h-[73px] min-h-[73px] w-full items-center justify-start gap-3 border-b border-transparent p-6">
+					class="relative z-10 flex h-18.25 min-h-18.25 w-full items-center justify-start gap-3 border-b border-transparent p-6">
 					<div class="group relative shrink-0">
 						<NuxtLink to="/">
 							<img
 								src="/assets/images/beils_.svg"
-								class="relative w-25 brightness-0 drop-shadow-sm"
+								class="relative w-25 brightness-0 drop-shadow-sm dark:brightness-0 dark:invert"
 								alt="Logo" />
 						</NuxtLink>
 					</div>
@@ -142,7 +142,7 @@
 
 						<button
 							@click="handleLogout"
-							class="group hover:text-bg-card flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff0000]/30 bg-[#ff0000]/10 px-4 py-2 font-bold text-[#ff0000] transition-[background-color,border-color,color,transform,box-shadow] hover:border-[#ff0000] hover:bg-[#ff0000] hover:shadow-md">
+							class="group hover:text-white flex w-full items-center justify-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-2 font-bold text-error transition-[background-color,border-color,color,transform,box-shadow] hover:border-error hover:bg-error hover:shadow-md">
 							<LogOut class="h-4 w-4 group-hover:-translate-x-0.5" />
 							<span class="text-[11px] tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}
@@ -177,7 +177,6 @@
 		Scissors,
 		PackageSearch,
 		Ticket,
-		Repeat,
 		CreditCard,
 		Store,
 		Landmark,
@@ -314,7 +313,6 @@
 				{ to: '/ventas', label: 'catalog.menu.sales', icon: ShoppingBag },
 				{ to: '/catalogo/productos', label: 'catalog.menu.products', icon: Package },
 				{ to: '/servicios', label: 'catalog.menu.services', icon: Scissors },
-				{ to: '/marketing/bonos', label: 'catalog.menu.bonuses', icon: Repeat },
 			]
 		},
 		{

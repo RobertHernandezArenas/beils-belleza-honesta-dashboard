@@ -4,14 +4,20 @@ import { useRoute } from 'vue-router'
 import {
   ArrowLeft,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  UserCheck,
+  LayoutGrid,
+  Activity,
+  Receipt,
+  Package
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
 import ProfileHeader from '~/components/clients/ProfileHeader.vue'
 import ProfileOverview from '~/components/clients/ProfileOverview.vue'
 import ProfileBilling from '~/components/clients/ProfileBilling.vue'
-
+import ProfileHealthSection from '~/components/clients/ProfileHealthSection.vue'
+import ProfilePackagesSection from '~/components/clients/ProfilePackagesSection.vue'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useAgendaStore } from '~/stores/useAgendaStore'
@@ -22,6 +28,9 @@ const route = useRoute()
 const clientId = route.params.id as string
 const queryClient = useQueryClient()
 const agendaStore = useAgendaStore()
+
+// Navigation Tabs State
+const activeTab = ref<'OVERVIEW' | 'HEALTH' | 'BILLING' | 'PACKAGES'>('OVERVIEW')
 
 // Toast State
 const toastMessage = ref('')
@@ -57,7 +66,6 @@ const {
 } = useQuery<any, any>({
   queryKey: ['client', clientId],
   queryFn: () => $fetch(`/api/clients/${clientId}`),
-  refetchInterval: 3000,
 })
 
 useHead({
@@ -65,28 +73,6 @@ useHead({
     client.value ? `${client.value.name} ${client.value.surname} | ${locale.value === 'es' ? 'Perfil CRM' : 'CRM Profile'}` : t('catalog.clients.profile.status.loading'),
   ),
 })
-
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return 'N/A'
-  return new Intl.DateTimeFormat(locale.value, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(dateStr))
-}
-
-const formatDateTime = (dateStr: string) => {
-  if (!dateStr) return 'N/A'
-  return new Intl.DateTimeFormat(locale.value, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateStr))
-}
-
-
 
 // Modal States
 const isConsentModalOpen = ref(false)
@@ -124,58 +110,75 @@ const handleFieldUpdate = (field: string, value: any) => {
 const handleNewBooking = () => {
   agendaStore.openBookingDrawer(null, new Date(), null, clientId)
 }
-
-const handleEditBooking = (b: any) => {
-  agendaStore.openBookingDrawer(b)
-}
 </script>
 
 <template>
-  <div class="bg-bg-app overflow-x-clip min-h-screen w-full p-4 font-sans lg:p-10 3xl:p-16 transition-all duration-500">
-    <div class="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1800px]">
-      <!-- Breadcrumbs / Back button -->
-      <div class="mb-8 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+  <div class="bg-bg-app min-h-screen w-full p-4 font-sans lg:p-8 2xl:p-12 transition-colors duration-500">
+    <div class="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] space-y-6">
+      
+      <!-- Navigation Bar & Breadcrumbs -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
           <NuxtLink
             to="/clientes"
-            class="btn btn-circle btn-ghost bg-bg-card border-border-subtle hover:border-text-secondary border shadow-sm transition-all hover:scale-105"
+            class="btn btn-circle btn-ghost bg-bg-card border border-border-default hover:bg-bg-muted shadow-xs transition-all hover:scale-105"
+            aria-label="Volver"
           >
             <ArrowLeft class="text-text-primary h-5 w-5" />
           </NuxtLink>
-          <div class="flex flex-col">
-            <h1 class="text-text-primary text-2xl font-bold tracking-tight">{{ $t('catalog.clients.profile.title') }}</h1>
-            <p class="text-text-muted text-xs font-medium uppercase tracking-widest">{{ $t('catalog.clients.profile.subtitle') }}</p>
+
+          <!-- Breadcrumbs -->
+          <div class="breadcrumbs text-sm">
+            <ul>
+              <li>
+                <NuxtLink to="/clientes" class="text-text-muted font-semibold hover:text-primary">
+                  {{ $t('nav.clients') || 'Clientes' }}
+                </NuxtLink>
+              </li>
+              <li>
+                <span class="font-black text-text-primary flex items-center gap-1">
+                  <UserCheck class="w-4 h-4 text-primary" />
+                  {{ client ? `${client.name} ${client.surname}` : $t('catalog.clients.profile.title') }}
+                </span>
+              </li>
+            </ul>
           </div>
+        </div>
+
+        <div v-if="isFetching && !isPending" class="badge badge-neutral badge-sm gap-1 animate-pulse font-bold">
+          {{ locale === 'es' ? 'Sincronizando...' : 'Syncing...' }}
         </div>
       </div>
 
       <!-- Loading State -->
-      <div v-if="isPending" class="space-y-8">
-        <div class="animate-pulse bg-bg-card h-64 w-full rounded-3xl"></div>
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_2.5fr]">
-          <div class="animate-pulse bg-bg-card h-96 rounded-3xl"></div>
-          <div class="animate-pulse bg-bg-card h-96 rounded-3xl"></div>
+      <div v-if="isPending" class="space-y-6">
+        <div class="skeleton h-64 w-full rounded-3xl"></div>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div class="skeleton h-96 rounded-3xl"></div>
+          <div class="skeleton h-96 rounded-3xl"></div>
+          <div class="skeleton h-96 rounded-3xl"></div>
         </div>
       </div>
 
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="bg-error/10 text-error flex flex-col items-center justify-center rounded-3xl p-20 text-center shadow-inner"
+        class="alert alert-error shadow-xl rounded-3xl p-12 flex flex-col items-center justify-center text-center"
       >
-        <AlertCircle class="mb-4 h-16 w-16 opacity-50" />
-        <h2 class="text-2xl font-bold">{{ $t('catalog.clients.profile.status.error') }}</h2>
-        <p class="mt-2 text-sm font-medium opacity-80 max-w-md">
+        <AlertCircle class="h-16 w-16 mb-2 text-white" />
+        <h2 class="text-2xl font-black text-white">{{ $t('catalog.clients.profile.status.error') }}</h2>
+        <p class="mt-1 text-sm font-semibold text-white/80 max-w-md">
           {{ error.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
         </p>
-        <NuxtLink to="/clientes" class="btn btn-error btn-sm mt-8 rounded-xl font-bold">
+        <NuxtLink to="/clientes" class="btn btn-outline btn-neutral btn-sm mt-6 rounded-xl font-bold">
           {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
         </NuxtLink>
       </div>
 
-      <!-- Content -->
-      <div v-else-if="client" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <!-- 1. Full Width Header -->
+      <!-- Main Profile Content -->
+      <div v-else-if="client" class="space-y-8 animate-in fade-in duration-500">
+        
+        <!-- 1. Full Width Profile Header -->
         <ProfileHeader 
           :client="client" 
           :is-updating="isUpdating"
@@ -187,29 +190,79 @@ const handleEditBooking = (b: any) => {
           @toast="addToast"
         />
 
+        <!-- 2. Awwwards 2027 Navigation Bar Tabs -->
+        <div class="flex items-center justify-center sm:justify-start gap-2 bg-bg-card p-1.5 border border-border-default/80 rounded-2xl shadow-xs overflow-x-auto">
+          <button
+            @click="activeTab = 'OVERVIEW'"
+            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
+            :class="activeTab === 'OVERVIEW' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+          >
+            <LayoutGrid class="w-4 h-4" />
+            Visión General & Bento
+          </button>
 
+          <button
+            @click="activeTab = 'HEALTH'"
+            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
+            :class="activeTab === 'HEALTH' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+          >
+            <Activity class="w-4 h-4" />
+            Salud Estética (Indiba & Láser)
+          </button>
 
-        <!-- 2. Continuous Content (Overview + Billing) -->
-        <div class="space-y-8 lg:space-y-12 pb-20">
-            <!-- Strategic Overview -->
-            <ProfileOverview 
-                :client="client" 
-                @update="handleFieldUpdate" 
-                @open-booking="handleEditBooking"
-                @open-purchase="purchaseDetailsModalRef?.open($event)"
-                @open-debt="debtDetailsModalRef?.open($event)"
-            />
+          <button
+            @click="activeTab = 'BILLING'"
+            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
+            :class="activeTab === 'BILLING' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+          >
+            <Receipt class="w-4 h-4" />
+            Ventas & Métodos de Pago
+          </button>
 
-            <!-- Divider -->
-            <div class="border-t border-border-subtle/20 my-8"></div>
-
-            <!-- Billing & Financial History -->
-            <ProfileBilling 
-                :client="client" 
-                @open-debt="debtDetailsModalRef?.open($event)" 
-                @open-purchase="purchaseDetailsModalRef?.open($event)" 
-            />
+          <button
+            @click="activeTab = 'PACKAGES'"
+            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
+            :class="activeTab === 'PACKAGES' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+          >
+            <Package class="w-4 h-4" />
+            Paquetes & Servicios
+          </button>
         </div>
+
+        <!-- 3. Dynamic Tab Content -->
+        <div class="pb-16">
+          <Transition name="fade" mode="out-in">
+            <ProfileOverview 
+              v-if="activeTab === 'OVERVIEW'"
+              :client="client" 
+              :is-updating="isUpdating"
+              @update="handleFieldUpdate" 
+              @open-booking="handleNewBooking"
+              @open-purchase="purchaseDetailsModalRef?.open($event)"
+              @open-debt="debtDetailsModalRef?.open($event)"
+            />
+
+            <ProfileHealthSection 
+              v-else-if="activeTab === 'HEALTH'"
+              :client="client"
+              @add-consent="isConsentModalOpen = true"
+              @add-questionnaire="isQuestionnaireModalOpen = true"
+            />
+
+            <ProfileBilling 
+              v-else-if="activeTab === 'BILLING'"
+              :client="client" 
+              @open-debt="debtDetailsModalRef?.open($event)" 
+              @open-purchase="purchaseDetailsModalRef?.open($event)" 
+            />
+
+            <ProfilePackagesSection 
+              v-else-if="activeTab === 'PACKAGES'"
+              :client="client"
+            />
+          </Transition>
+        </div>
+
       </div>
 
       <!-- Modals -->
@@ -220,36 +273,29 @@ const handleEditBooking = (b: any) => {
       <LazyClientsDebtDetailsModal ref="debtDetailsModalRef" @payment-success="() => { queryClient.invalidateQueries({ queryKey: ['client', clientId] }); queryClient.invalidateQueries({ queryKey: ['sales'] }); }" @toast="addToast" />
       <LazySharedPurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
-      <!-- Toast -->
-      <div v-if="showToast" class="toast toast-end toast-bottom z-100">
-        <div class="alert text-white shadow-lg" :class="toastType === 'success' ? 'bg-success' : 'bg-error'">
-          <span class="font-medium">{{ toastMessage }}</span>
+      <!-- Toast Notification Container -->
+      <div v-if="showToast" class="toast toast-end toast-bottom z-50">
+        <div 
+          class="alert shadow-xl font-bold flex items-center gap-2"
+          :class="toastType === 'success' ? 'alert-success text-white' : 'alert-error text-white'"
+        >
+          <component :is="toastType === 'success' ? CheckCircle2 : AlertCircle" class="w-5 h-5 shrink-0" />
+          <span>{{ toastMessage }}</span>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <style scoped>
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-/* Animations for tab transition */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.page-enter-from {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  transform: translateY(10px);
-}
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
+	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
 	const editingCoupon = ref<any | null>(null)
@@ -174,14 +175,13 @@
 									Tipo *
 								</span>
 							</label>
-							<select
-								id="coup-type"
+							<AppSelect
 								v-model="form.discount_type"
-								required
-								class="select bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition focus:shadow-md focus:outline-none">
-								<option value="percentage">Porcentaje (%)</option>
-								<option value="fixed_amount">Monto Fijo (€)</option>
-							</select>
+								aria-label="Tipo de descuento"
+								:options="[
+									{ value: 'percentage', label: 'Porcentaje (%)' },
+									{ value: 'fixed_amount', label: 'Monto Fijo (€)' },
+								]" />
 						</div>
 
 						<div class="form-control">

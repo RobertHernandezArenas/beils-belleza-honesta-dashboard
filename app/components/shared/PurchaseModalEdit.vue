@@ -59,11 +59,11 @@ const emit = defineEmits<{
                 
                 <div class="flex items-center gap-3 shrink-0">
                     <div class="flex items-center gap-2 bg-bg-muted/50 rounded-xl p-1">
-                        <button @click="emit('updateQuantity', idx, -1)" class="btn btn-xs btn-circle bg-white border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
+                        <button @click="emit('updateQuantity', idx, -1)" class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
                             <Minus class="w-3 h-3" />
                         </button>
                         <span class="w-6 text-center text-sm font-black tabular-nums">{{ item.quantity }}</span>
-                        <button @click="emit('updateQuantity', idx, 1)" class="btn btn-xs btn-circle bg-white border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
+                        <button @click="emit('updateQuantity', idx, 1)" class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
                             <Plus class="w-3 h-3" />
                         </button>
                     </div>

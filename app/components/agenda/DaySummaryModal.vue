@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Clock, Scissors, User as UserIcon, Ticket, Package, Gift, X } from 'lucide-vue-next'
+import { Clock, Scissors, User as UserIcon, Package, Gift, X } from 'lucide-vue-next'
 
 const isOpen = ref(false)
 const selectedDate = ref(new Date())
@@ -27,8 +27,8 @@ const getStatusColorClip = (status: string) => {
         confirmada: 'bg-primary/10 text-primary border border-primary/30',
         completed: 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30',
         completada: 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30',
-        cancelled: 'bg-stone-500/10 text-stone-500 opacity-60 border border-stone-500/30',
-        cancelada: 'bg-stone-500/10 text-stone-500 opacity-60 border border-stone-500/30',
+        cancelled: 'bg-text-muted/10 text-text-muted opacity-60 border border-text-muted/30',
+        cancelada: 'bg-text-muted/10 text-text-muted opacity-60 border border-text-muted/30',
     }
     return map[key] || 'bg-bg-muted text-text-muted border border-border-default'
 }
@@ -76,9 +76,8 @@ defineExpose({ openModal, closeModal })
                     </div>
 
                     <div v-if="booking.booking_items?.length" class="mt-2 flex flex-wrap gap-1">
-                        <span v-for="it in booking.booking_items" :key="it.item_id" class="text-[9px] bg-white/40 px-1.5 py-0.5 rounded flex items-center gap-1 font-bold">
+                        <span v-for="it in booking.booking_items" :key="it.item_id" class="text-[9px] bg-bg-card/40 px-1.5 py-0.5 rounded flex items-center gap-1 font-bold">
                             <Scissors v-if="it.item_type === 'SERVICE'" class="h-2 w-2" />
-                            <Ticket v-else-if="it.item_type === 'BONUS'" class="h-2 w-2" />
                             <Gift v-else class="h-2 w-2" />
                             {{ it.name }}
                         </span>

@@ -5,6 +5,8 @@ import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()
 
+const { notifySalesChanged } = useRealtimeSales()
+
 const modalRef = ref<HTMLDialogElement | null>(null)
 const debt = ref<any>(null)
 const amountToPay = ref<number | null>(null)
@@ -186,6 +188,8 @@ const processPayment = async () => {
       }
     })
     
+    // Paying a debt can settle its cart (status -> completed), so refresh sales/overview live
+    notifySalesChanged()
     emit('toast', 'Pago registrado correctamente', 'success')
     emit('payment-success')
     close()

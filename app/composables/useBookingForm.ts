@@ -66,24 +66,22 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         queryKey: ['services-agenda'],
         queryFn: () => $fetch<any[]>('/api/services'),
     })
-    const { data: bonuses } = useQuery({
-        queryKey: ['bonuses-agenda'],
-        queryFn: () => $fetch<any[]>('/api/marketing/bonuses'),
-    })
-    // Auto-fill client if not set and fallback exists
-    watch(clients, (newClients) => {
-        if (newClients && newClients.length > 0 && !form.client_id) {
-            const fallback = newClients.find((c: any) => 
-                c.name?.toLowerCase().includes('no registrado') || 
-                c.name?.toLowerCase().includes('mostrador')
-            )
-            if (fallback) {
-                form.client_id = fallback.user_id
-            }
-        }
-    }, { immediate: true })
 
-    // Auto-fill staff (Alexandra Victoria as default)
+    // Sellable bonos/packages catalog (to sell a bono within an appointment)
+    const { data: catalogPackages } = useQuery({
+        queryKey: ['packages-agenda'],
+        queryFn: () => $fetch<any[]>('/api/packages'),
+    })
+
+    const { data: clientPackages } = useQuery({
+        queryKey: ['client-packages-agenda', computed(() => form.client_id)],
+        queryFn: async () => {
+            if (!form.client_id) return []
+            return await $fetch<any[]>(`/api/clients/${form.client_id}/packages`)
+        },
+        enabled: computed(() => !!form.client_id)
+    })
+    // Auto-fill staff (Alexandra Victoria as default) — only runs once at mount
     watch(staff, (newStaff) => {
         if (newStaff && !form.staff_id) {
             const alexandra = newStaff.find((s: StaffItem) => s.name === 'Alexandra' && s.surname === 'Victoria')
@@ -95,43 +93,16 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         }
     }, { immediate: true })
 
-    // Client Wallet State
-    const clientWallet = reactive({
-        bonuses: [] as any[],
+    // Reset form every time the drawer opens, reading all prefill values at once
+    // flush:'post' ensures all store mutations from openBookingDrawer() are settled
+    watch(
+        () => store.isBookingDrawerOpen,
+        (isOpen) => {
+            if (isOpen) resetForm()
+        },
+        { flush: 'post' }
+    )
 
-        isLoading: false
-    })
-
-    watch(() => form.client_id, async (newClientId) => {
-        if (!newClientId) {
-            clientWallet.bonuses = []
-
-            return
-        }
-        
-        clientWallet.isLoading = true
-        try {
-            const b = await $fetch(`/api/clients/${newClientId}/bonuses`)
-            clientWallet.bonuses = (b as any[]) || []
-        } catch (error) {
-            console.error('Error fetching client wallet:', error)
-        } finally {
-            clientWallet.isLoading = false
-        }
-    })
-
-    const availableClientBonuses = computed(() => {
-        if (!clientWallet.bonuses) return []
-        return clientWallet.bonuses.map(b => {
-            const usedCount = form.items.filter(it => it.item_type === 'BONUS' && it.item_id === b.client_bonus_id).length
-            return {
-                ...b,
-                current_remaining: b.remaining_sessions - usedCount
-            }
-        })
-    })
-
-    const bonusWarningType = ref<'NONE' | 'ONE_LEFT' | 'FINISHED'>('NONE')
     // Mutation
     const { mutate: performSave, isPending: isSaving } = useMutation({
         mutationFn: async (payload: any) => {
@@ -175,29 +146,10 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         if (form.items.length === 0) return emit('toast', 'Añade al menos un servicio', 'error')
         
         // Date/Time validation for NEW bookings has been removed to allow scheduling past bookings        
-        // Check for last session or finished of a bono (for both NEW and EDIT)
-        let highestWarning: 'NONE' | 'ONE_LEFT' | 'FINISHED' = 'NONE'
-        if (clientWallet.bonuses) {
-            for (const b of clientWallet.bonuses) {
-                const used = form.items.filter(it => it.item_type === 'BONUS' && it.item_id === b.client_bonus_id).length
-                if (used > 0) {
-                    const left = b.remaining_sessions - used
-                    if (left === 0) highestWarning = 'FINISHED'
-                    else if (left === 1 && highestWarning !== 'FINISHED') highestWarning = 'ONE_LEFT'
-                }
-            }
-        }
-        
-        if (highestWarning !== 'NONE') {
-            bonusWarningType.value = highestWarning
-            return
-        }
-        
         proceedSaveBooking()
     }
 
     const proceedSaveBooking = () => {
-        bonusWarningType.value = 'NONE'
         performSave({
             ...form,
             duration: Number(form.duration),
@@ -227,6 +179,9 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
                 form.items = []
             }
         } else {
+            // New booking: preselect the client only when opened from a client profile.
+            // Otherwise leave the field empty (the "no registrado / mostrador" walk-in
+            // fallback is still applied at save time in saveBooking()).
             form.client_id = prefillClientId.value || ''
             form.items = []
             form.status = 'PENDIENTE'
@@ -257,13 +212,11 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         clients,
         staff,
         services,
-        bonuses,
-        clientWallet,
+        clientPackages,
+        catalogPackages,
         isSaving,
         saveBooking,
         proceedSaveBooking,
-        bonusWarningType,
-        availableClientBonuses,
         resetForm,
         localError,
         showLocalError,

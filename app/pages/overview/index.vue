@@ -16,6 +16,10 @@
 
 	const authStore = useAuthStore()
 
+	// Live-refresh KPIs (Total Ventas Hoy, deudas…) when a sale/debt is collected anywhere
+	const { listenSalesChanged } = useRealtimeSales()
+	listenSalesChanged()
+
 	// Queries
 	const { data: carts, isPending: loadingCarts } = useQuery<any[]>({
 		queryKey: ['carts-overview'],

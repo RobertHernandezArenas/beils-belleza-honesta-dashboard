@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { Search, Ticket, Package as PackageIcon } from 'lucide-vue-next'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { Search, Package as PackageIcon } from 'lucide-vue-next'
 import type { ClientItem } from '~/composables/useBookingForm'
 
 const props = defineProps<{
     modelValue: string
     clients: ClientItem[] | undefined
-    clientWallet: {
-        bonuses: any[]
-        isLoading: boolean
-    }
-    availableBonuses: any[]
     disabled?: boolean
 }>()
 
@@ -37,20 +32,43 @@ const selectClient = (client: ClientItem) => {
     isClientDropdownOpen.value = false
 }
 
-watch(() => props.modelValue, (newVal) => {
-    if (newVal && props.clients) {
-        const c = props.clients.find(x => x.user_id === newVal)
-        if (c) clientSearch.value = `${c.name} ${c.surname || ''}`.trim()
-    } else {
-        clientSearch.value = ''
-    }
-}, { immediate: true })
+watch(
+    [() => props.modelValue, () => props.clients],
+    ([newVal, newClients]) => {
+        if (newVal && newClients && newClients.length > 0) {
+            const c = (newClients as ClientItem[]).find(x => x.user_id === newVal)
+            if (c) clientSearch.value = `${c.name} ${c.surname || ''}`.trim()
+        } else if (!newVal) {
+            clientSearch.value = ''
+        }
+    },
+    { immediate: true }
+)
 
 const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
+
+const rootRef = ref<HTMLElement | null>(null)
 
 const closeDropdown = () => {
     isClientDropdownOpen.value = false
 }
+
+const onDocPointer = (e: PointerEvent) => {
+    if (!isClientDropdownOpen.value) return
+    if (rootRef.value && !rootRef.value.contains(e.target as Node)) closeDropdown()
+}
+const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeDropdown()
+}
+
+onMounted(() => {
+    document.addEventListener('pointerdown', onDocPointer, true)
+    document.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+    document.removeEventListener('pointerdown', onDocPointer, true)
+    document.removeEventListener('keydown', onKeydown)
+})
 
 defineExpose({
     closeDropdown
@@ -58,7 +76,7 @@ defineExpose({
 </script>
 
 <template>
-    <div>
+    <div ref="rootRef">
         <!-- Client Selection -->
         <div class="form-control">
             <label class="label pb-1"><span class="label-text text-primary text-[10px] font-bold uppercase tracking-widest">Cliente *</span></label>
@@ -81,15 +99,5 @@ defineExpose({
             </div>
         </div>
 
-        <!-- Client Wallet Indicator -->
-        <div v-if="props.modelValue && (!clientWallet.isLoading) && (clientWallet.bonuses.length > 0)" class="rounded-xl border border-primary/20 bg-primary/5 p-4 mt-2">
-            <h4 class="mb-3 text-[10px] font-bold uppercase tracking-widest text-primary">Disponibles del Cliente</h4>
-            <div class="flex flex-col gap-2">
-                <div v-for="b in availableBonuses" :key="b.client_bonus_id" class="flex items-center gap-2 text-[10px] font-bold bg-white/50 px-2 py-1 rounded border border-primary/10">
-                    <Ticket class="h-3 w-3 text-primary" />
-                    <span>{{ b.bonus?.name || 'Bono' }} (Quedan {{ b.current_remaining }})</span>
-                </div>
-            </div>
-        </div>
     </div>
 </template>

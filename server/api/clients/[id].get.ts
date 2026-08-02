@@ -27,6 +27,13 @@ export default defineEventHandler(async event => {
 					orderBy: { created_at: 'desc' },
 					include: { items: true }
 				},
+				client_packages: {
+					include: {
+						package: true,
+						items: true
+					},
+					orderBy: { created_at: 'desc' }
+				},
 				debts: {
 					where: { status: { in: ['pending', 'partial'] } },
 					include: {
@@ -45,37 +52,61 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado' })
 		}
 
-		// KPI Calculation
-		const topServices = await prisma.cartItem.groupBy({
-			by: ['name'],
-			where: { cart: { user_id: id, status: 'completed' }, item_type: 'service' },
-			_sum: { quantity: true, total: true },
-			orderBy: { _sum: { quantity: 'desc' } },
-			take: 3
-		})
+		// KPI Calculation in Parallel
+		const [topServices, topProducts, cartStats, bookings, paymentMethodsRaw, spendingHistoryRaw, nextBooking] = await Promise.all([
+			prisma.cartItem.groupBy({
+				by: ['name'],
+				where: { cart: { user_id: id, status: 'completed' }, item_type: 'service' },
+				_sum: { quantity: true, total: true },
+				orderBy: { _sum: { quantity: 'desc' } },
+				take: 3
+			}),
+			prisma.cartItem.groupBy({
+				by: ['name'],
+				where: { cart: { user_id: id, status: 'completed' }, item_type: 'product' },
+				_sum: { quantity: true, total: true },
+				orderBy: { _sum: { quantity: 'desc' } },
+				take: 3
+			}),
+			prisma.cart.aggregate({
+				where: { user_id: id, status: 'completed' },
+				_sum: { total: true },
+				_count: { cart_id: true }
+			}),
+			prisma.booking.findMany({
+				where: { client_id: id },
+				orderBy: { booking_date: 'asc' },
+				select: { booking_date: true, status: true }
+			}),
+			prisma.cart.groupBy({
+				by: ['payment_method'],
+				where: { user_id: id, status: 'completed' },
+				_sum: { total: true },
+				_count: { cart_id: true }
+			}),
+			prisma.cart.findMany({
+				where: { user_id: id, status: 'completed' },
+				orderBy: { created_at: 'asc' },
+				select: { created_at: true, total: true, payment_method: true }
+			}),
+			prisma.booking.findFirst({
+				where: {
+					client_id: id,
+					status: { in: ['PENDIENTE', 'CONFIRMADA'] },
+					booking_date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) }
+				},
+				orderBy: [{ booking_date: 'asc' }, { start_time: 'asc' }],
+				include: {
+					booking_items: true,
+					staff: { select: { name: true, surname: true } }
+				}
+			})
+		])
 
-		const topProducts = await prisma.cartItem.groupBy({
-			by: ['name'],
-			where: { cart: { user_id: id, status: 'completed' }, item_type: 'product' },
-			_sum: { quantity: true, total: true },
-			orderBy: { _sum: { quantity: 'desc' } },
-			take: 3
-		})
-
-		const cartStats = await prisma.cart.aggregate({
-			where: { user_id: id, status: 'completed' },
-			_sum: { total: true },
-			_count: { cart_id: true }
-		})
 		const ltv = cartStats._sum.total || 0
 		const totalPurchases = cartStats._count.cart_id || 0
 		const aov = totalPurchases > 0 ? ltv / totalPurchases : 0
 
-		const bookings = await prisma.booking.findMany({
-			where: { client_id: id },
-			orderBy: { booking_date: 'asc' },
-			select: { booking_date: true }
-		})
 		let bookingFrequencyDays = 0
 		if (bookings.length > 1) {
 			const firstDate = new Date(bookings[0]?.booking_date || new Date()).getTime()
@@ -84,11 +115,11 @@ export default defineEventHandler(async event => {
 			bookingFrequencyDays = Math.round(diffDays / (bookings.length - 1))
 		}
 
-		// Engagement Score Calculation (Simple Algorithm)
-		let engagementScore = 60 // Base score
-		engagementScore += Math.min(20, bookings.length * 2) // Frequency
-		engagementScore += Math.min(20, Math.floor(ltv / 50)) // Spending
-		if (client.consents.length >= 3) engagementScore += 10 // Compliance
+		// Engagement Score Calculation (0 - 100)
+		let engagementScore = 50 // Base score
+		engagementScore += Math.min(25, bookings.length * 5) // Frequency
+		engagementScore += Math.min(25, Math.floor(ltv / 30)) // Spending
+		if (client.consents.length >= 2) engagementScore += 10 // Compliance
 		
 		const hasRecent = client.client_bookings.some(b => {
 			const d = new Date(b.booking_date)
@@ -97,9 +128,40 @@ export default defineEventHandler(async event => {
 		})
 		if (hasRecent) engagementScore += 10
 		
-		const noShows = client.client_bookings.filter(b => b.status === 'no_show').length
+		const noShows = client.client_bookings.filter(b => b.status === 'no_show' || b.status === 'AUSENTE').length
 		engagementScore -= (noShows * 15)
 		engagementScore = Math.max(0, Math.min(100, engagementScore))
+
+		// 3-Tier Client Category Classification (Bronce, Plata, Oro VIP)
+		let engagementTier: 'BRONZE' | 'SILVER' | 'GOLD_VIP' = 'BRONZE'
+		let engagementTierLabel = 'Bronce'
+		if (engagementScore >= 90) {
+			engagementTier = 'GOLD_VIP'
+			engagementTierLabel = 'Oro VIP'
+		} else if (engagementScore >= 65) {
+			engagementTier = 'SILVER'
+			engagementTierLabel = 'Plata'
+		}
+
+		// Formatting Payment Methods Chart Data
+		const paymentMethodsFormatted = paymentMethodsRaw.map(pm => ({
+			method: pm.payment_method || 'Otros',
+			total: pm._sum.total || 0,
+			count: pm._count.cart_id || 0
+		}))
+
+		// Formatting Monthly Spending History
+		const monthlySpendingMap = new Map<string, number>()
+		spendingHistoryRaw.forEach(item => {
+			const date = new Date(item.created_at)
+			const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+			monthlySpendingMap.set(monthKey, (monthlySpendingMap.get(monthKey) || 0) + (item.total || 0))
+		})
+
+		const spendingHistoryFormatted = Array.from(monthlySpendingMap.entries()).map(([period, total]) => ({
+			period,
+			total
+		}))
 
 		const kpis = {
 			topServices: topServices.map(ts => ({ name: ts.name, qty: ts._sum.quantity || 0, total: ts._sum.total || 0 })),
@@ -108,7 +170,12 @@ export default defineEventHandler(async event => {
 			aov,
 			bookingFrequencyDays,
 			totalBookings: bookings.length,
-			engagementScore
+			engagementScore,
+			engagementTier,
+			engagementTierLabel,
+			paymentMethods: paymentMethodsFormatted,
+			spendingHistory: spendingHistoryFormatted,
+			nextBooking
 		}
 
 		// Remove password from response and mask document number if not revealed
@@ -119,10 +186,11 @@ export default defineEventHandler(async event => {
 			document_number: reveal ? client.document_number : maskDocument(client.document_number),
 		}
 	} catch (error: any) {
+		console.error('Error in GET /api/clients/[id]:', error)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error al obtener el cliente',
+			statusMessage: error.message || 'Error al obtener el cliente',
 		})
 	}
 })

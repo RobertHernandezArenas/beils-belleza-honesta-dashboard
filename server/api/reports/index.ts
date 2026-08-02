@@ -1,30 +1,23 @@
 export default defineEventHandler(async event => {
-	// 1. KPIs
-	// Assuming clients are users with role 'CLIENT'.
-	let totalClients = 0
-	try {
-		totalClients = await prisma.user.count({ where: { role: 'CLIENT' } })
-	} catch (e) {
-		// Fallback if role doesn't exist
-		totalClients = await prisma.user.count()
-	}
-
-	const totalProducts = await prisma.product.count()
-
-	const completedSales = await prisma.cart.findMany({
-		where: { status: 'completed' },
-		select: {
-			total: true,
-			payment_method: true,
-			created_at: true,
-			items: {
-				select: {
-					name: true,
-					quantity: true,
+	// Execute initial queries in parallel for zero latency waste
+	const [totalClients, totalProducts, completedSales] = await Promise.all([
+		prisma.user.count({ where: { role: 'CLIENT' } }).catch(() => prisma.user.count()),
+		prisma.product.count(),
+		prisma.cart.findMany({
+			where: { status: 'completed' },
+			select: {
+				total: true,
+				payment_method: true,
+				created_at: true,
+				items: {
+					select: {
+						name: true,
+						quantity: true,
+					},
 				},
 			},
-		},
-	})
+		})
+	])
 
 	const totalRevenue = completedSales.reduce((sum, sale) => sum + sale.total, 0)
 	const totalSalesCount = completedSales.length

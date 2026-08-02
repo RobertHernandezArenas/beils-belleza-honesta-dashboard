@@ -29,7 +29,7 @@
 			pending: 'bg-orange-500/10 text-orange-700 border-none',
 			confirmed: 'bg-primary/10 text-primary border-none',
 			completed: 'bg-emerald-500/10 text-emerald-700 border-none',
-			cancelled: 'bg-stone-500/10 text-stone-700 border-none',
+			cancelled: 'bg-text-muted/10 text-text-secondary border-none',
 			no_show: 'bg-bg-muted text-text-muted border-none',
 		}
 		return map[status] || map['pending']
@@ -40,8 +40,8 @@
 			pending: 'bg-black/20 shadow-none',
 			confirmed: 'bg-black/20 shadow-none',
 			completed: 'bg-black/20 shadow-none',
-			cancelled: 'bg-white/20 shadow-none',
-			no_show: 'bg-white/10 shadow-none',
+			cancelled: 'bg-bg-card/20 shadow-none',
+			no_show: 'bg-bg-card/10 shadow-none',
 		}
 		return map[status] || map['pending']
 	}

@@ -6,16 +6,26 @@ type SyncEvent = {
   payload?: any
 }
 
-export const useSync = () => {
-  const channel = typeof window !== 'undefined' ? new BroadcastChannel('beils-sync-channel') : null
+let sharedChannel: BroadcastChannel | null = null
 
+const getChannel = () => {
+  if (typeof window === 'undefined') return null
+  if (!sharedChannel) {
+    sharedChannel = new BroadcastChannel('beils-sync-channel')
+  }
+  return sharedChannel
+}
+
+export const useSync = () => {
   const emitSync = (event: SyncEvent) => {
+    const channel = getChannel()
     if (channel) {
       channel.postMessage(JSON.parse(JSON.stringify(event)))
     }
   }
 
   const onSync = (callback: (event: SyncEvent) => void) => {
+    const channel = getChannel()
     if (!channel) return
 
     const handler = (e: MessageEvent) => {

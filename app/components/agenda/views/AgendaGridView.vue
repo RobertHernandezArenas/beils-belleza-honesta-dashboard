@@ -176,8 +176,8 @@ const getStatusColor = (status: string) => {
         confirmada: 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20',
         completed: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20',
         completada: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20',
-        cancelled: 'bg-stone-500/10 text-stone-500 border-stone-500/30 opacity-60',
-        cancelada: 'bg-stone-500/10 text-stone-500 border-stone-500/30 opacity-60',
+        cancelled: 'bg-text-muted/10 text-text-muted border-text-muted/30 opacity-60',
+        cancelada: 'bg-text-muted/10 text-text-muted border-text-muted/30 opacity-60',
     }
     return map[key] || 'bg-bg-muted text-text-muted border-border-default'
 }
@@ -191,8 +191,8 @@ const getStatusStrip = (status: string) => {
         confirmada: 'bg-primary',
         completed: 'bg-emerald-500',
         completada: 'bg-emerald-500',
-        cancelled: 'bg-stone-500',
-        cancelada: 'bg-stone-500',
+        cancelled: 'bg-text-muted',
+        cancelada: 'bg-text-muted',
     }
     return map[key] || 'bg-border-default'
 }

@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	css: ['~/assets/css/main.css'],
-	devtools: { enabled: false },
+	devtools: { enabled: true },
 	eslint: {
 		checker: false,
 	},
@@ -31,6 +31,7 @@ export default defineNuxtConfig({
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'layout', mode: 'out-in' },
 		head: {
+			htmlAttrs: { 'data-theme': 'light' },
 			link: [
 				{ rel: 'apple-touch-icon', href: '/images/apple-touch-icon.png' },
 				{ rel: 'apple-touch-icon', sizes: '152x152', href: '/images/apple-touch-icon-152x152.png' },
@@ -56,6 +57,8 @@ export default defineNuxtConfig({
 
 	googleFonts: {
 		families: {
+			// Gogo Admin Template primary typeface
+			Mulish: [300, 400, 500, 600, 700, 800],
 			Roboto: [300, 400, 500, 700],
 			'Roboto Condensed': [300, 400, 700],
 		},
