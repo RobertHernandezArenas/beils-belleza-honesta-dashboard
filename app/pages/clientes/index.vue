@@ -24,9 +24,23 @@
 
 	const queryClient = useQueryClient()
 	const { t } = useI18n()
-	const searchQuery = useDebouncedRef('', 500)
-	const page = ref(1)
-	const limit = ref(7)
+
+	// Persisted directory state — survives navigating into a client detail and back
+	// (and browser back/forward), so the search + page are restored, not reset.
+	const directoryState = useState('clients-directory-state', () => ({
+		q: '',
+		page: 1,
+		limit: 7,
+	}))
+
+	const searchQuery = useDebouncedRef(directoryState.value.q, 500)
+	const page = ref(directoryState.value.page)
+	const limit = ref(directoryState.value.limit)
+
+	// Keep the persisted snapshot in sync with the live controls
+	watch([searchQuery, page, limit], ([q, p, l]) => {
+		directoryState.value = { q: q as string, page: p as number, limit: l as number }
+	})
 
 	const {
 		data: clientsResponse,

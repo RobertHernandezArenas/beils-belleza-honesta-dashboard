@@ -57,6 +57,7 @@ export default defineEventHandler(async event => {
 			const createdCart = await tx.cart.create({
 				data: {
 					user_id: user_id || null,
+					booking_id: booking_id || null,
 					status: cartData.status || 'pending',
 					payment_method: cartData.payment_method || 'cash',
 					notes: cartData.notes,

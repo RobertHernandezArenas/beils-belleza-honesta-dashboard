@@ -135,6 +135,7 @@ model Sequence {
 model Cart {
   cart_id        String     @id @default(uuid()) @db.Char(100)
   user_id        String?    @db.Char(100)
+  booking_id     String?    @db.Char(100)
   status         String     @default("pending") @db.VarChar(20)
   subtotal       Float      @default(0)
   discount       Float      @default(0)
@@ -151,9 +152,11 @@ model Cart {
   updated_at     DateTime   @updatedAt
   items          CartItem[]
   user           User?      @relation(fields: [user_id], references: [user_id])
+  booking        Booking?   @relation(fields: [booking_id], references: [booking_id], onDelete: SetNull)
   debts          Debt[]
 
   @@index([user_id])
+  @@index([booking_id])
   @@index([status])
   @@index([created_at])
   @@map("carts")
@@ -230,6 +233,7 @@ model Booking {
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
   booking_items BookingItem[]
+  carts         Cart[]
   client        User          @relation("ClientBookings", fields: [client_id], references: [user_id], onDelete: NoAction)
   staff         User?         @relation("StaffBookings", fields: [staff_id], references: [user_id])
 
