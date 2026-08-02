@@ -115,28 +115,13 @@
 					class="bg-bg-app relative z-10 mt-auto flex w-full flex-col gap-3 border-t border-transparent p-4">
 					<div v-if="authStore.user" class="flex flex-col gap-3">
 						<!-- Theme toggle (light / dark) -->
-						<button
-							type="button"
-							role="switch"
-							:aria-checked="theme === 'dark'"
-							aria-label="Cambiar tema claro/oscuro"
-							@click="toggleTheme"
-							class="group text-text-muted hover:text-text-secondary hover:bg-bg-muted flex w-full items-center justify-between gap-2 rounded-xl border border-border-default px-3 py-2 transition-colors">
-							<span class="flex items-center gap-2">
-								<Sun v-if="theme === 'light'" class="h-4 w-4" />
-								<Moon v-else class="h-4 w-4" />
-								<span class="text-[11px] font-bold tracking-wider uppercase">
-									{{ theme === 'dark' ? 'Modo oscuro' : 'Modo claro' }}
-								</span>
+						<div
+							class="text-text-muted flex w-full items-center justify-between gap-2 rounded-xl border border-border-default px-3 py-2">
+							<span class="text-[11px] font-bold tracking-wider uppercase">
+								{{ theme === 'dark' ? 'Modo oscuro' : 'Modo claro' }}
 							</span>
-							<span
-								class="relative h-4 w-7 shrink-0 rounded-full transition-colors"
-								:class="theme === 'dark' ? 'bg-primary' : 'bg-border-strong'">
-								<span
-									class="absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform"
-									:class="theme === 'dark' ? 'translate-x-3.5' : 'translate-x-0.5'"></span>
-							</span>
-						</button>
+							<ThemeToggle />
+						</div>
 
 						<div class="flex items-center gap-3">
 							<div class="avatar">
@@ -209,12 +194,10 @@
 		ShieldOff,
 		Image,
 		ChevronDown,
-		Sun,
-		Moon,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
-	const { theme, toggleTheme } = useTheme()
+	const { theme } = useTheme()
 	const localeCookie = useCookie('i18n_redirected')
 	const route = useRoute()
 	const authStore = useAuthStore()

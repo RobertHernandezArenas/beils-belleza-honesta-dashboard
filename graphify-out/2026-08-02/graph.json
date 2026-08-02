@@ -1088,8 +1088,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_hex_to_ansi",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "hex_to_ansi()"
     },
     {
@@ -1099,8 +1099,8 @@
       "source_location": "L347",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_ansi_ljust",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "ansi_ljust()"
     },
     {
@@ -1110,8 +1110,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_section_header",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "section_header()"
     },
     {
@@ -1121,8 +1121,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_format_ascii_box",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "format_ascii_box()"
     },
     {
@@ -1187,8 +1187,8 @@
       "source_location": "L1176",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_generate_intelligent_overrides",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 474,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "_generate_intelligent_overrides()"
     },
     {
@@ -1198,8 +1198,8 @@
       "source_location": "L1282",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_detect_page_type",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 474,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "_detect_page_type()"
     },
     {
@@ -1308,8 +1308,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_334",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "convert hex color to ansi true color swatch (\u2588\u2588) with fallback."
     },
     {
@@ -1319,8 +1319,8 @@
       "source_location": "L348",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_348",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "like str.ljust but accounts for zero-width ansi escape sequences."
     },
     {
@@ -1330,8 +1330,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_356",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "create a unicode section separator: \u251c\u2500\u2500\u2500 name \u2500\u2500\u2500...\u2524"
     },
     {
@@ -1341,8 +1341,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_363",
-      "community": 141,
-      "community_name": "vite",
+      "community": 11,
+      "community_name": "design_system.py",
       "norm_label": "format design system as unicode box with ansi color swatches."
     },
     {
@@ -1407,8 +1407,8 @@
       "source_location": "L1177",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_1177",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 474,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "generate intelligent overrides based on page type using layered search."
     },
     {
@@ -1418,8 +1418,8 @@
       "source_location": "L1283",
       "_origin": "ast",
       "id": "agents_skills_ui_ux_pro_max_scripts_design_system_rationale_1283",
-      "community": 11,
-      "community_name": "design_system.py",
+      "community": 474,
+      "community_name": "_generate_intelligent_overrides",
       "norm_label": "detect page type from context and search results."
     },
     {
@@ -7803,6 +7803,127 @@
       "norm_label": "setpage()"
     },
     {
+      "label": "AppSelect.vue",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "appselect.vue"
+    },
+    {
+      "label": "Option",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_option",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "option"
+    },
+    {
+      "label": "props",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_props",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "props"
+    },
+    {
+      "label": "model",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_model",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "model"
+    },
+    {
+      "label": "open",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_open",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "open"
+    },
+    {
+      "label": "rootRef",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_rootref",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "rootref"
+    },
+    {
+      "label": "selectedLabel",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_selectedlabel",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "selectedlabel"
+    },
+    {
+      "label": "toggle()",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_toggle",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "toggle()"
+    },
+    {
+      "label": "select()",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_select",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "select()"
+    },
+    {
+      "label": "onDocPointer()",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_ondocpointer",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "ondocpointer()"
+    },
+    {
+      "label": "onKey()",
+      "file_type": "code",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "app_components_ui_appselect_onkey",
+      "community": 359,
+      "community_name": "run.ts",
+      "norm_label": "onkey()"
+    },
+    {
       "label": "LanguageSelector.vue",
       "file_type": "code",
       "source_file": "app/components/ui/LanguageSelector.vue",
@@ -8224,7 +8345,7 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L4",
+      "source_location": "L5",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_props",
       "community": 66,
@@ -8232,10 +8353,21 @@
       "norm_label": "props"
     },
     {
+      "label": "paymentMethodOptions",
+      "file_type": "code",
+      "source_file": "app/components/ventas/SalesFilters.vue",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "app_components_ventas_salesfilters_paymentmethodoptions",
+      "community": 66,
+      "community_name": "SalesFilters.vue",
+      "norm_label": "paymentmethodoptions"
+    },
+    {
       "label": "emit",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L11",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_emit",
       "community": 66,
@@ -8246,7 +8378,7 @@
       "label": "searchQuery",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L16",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_searchquery",
       "community": 66,
@@ -8257,7 +8389,7 @@
       "label": "filterDateMode",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L17",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_filterdatemode",
       "community": 66,
@@ -8268,7 +8400,7 @@
       "label": "filterDateSingle",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L18",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_filterdatesingle",
       "community": 66,
@@ -8279,7 +8411,7 @@
       "label": "filterDateRange",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L19",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_filterdaterange",
       "community": 66,
@@ -8290,7 +8422,7 @@
       "label": "filterPaymentMethod",
       "file_type": "code",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L20",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "app_components_ventas_salesfilters_filterpaymentmethod",
       "community": 66,
@@ -13122,8 +13254,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "package_devdependencies_nuxtjs_google_fonts",
-      "community": 31,
-      "community_name": "devDependencies",
+      "community": 475,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "@nuxtjs/google-fonts"
     },
     {
@@ -13133,8 +13265,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "nuxtjs_google_fonts",
-      "community": 31,
-      "community_name": "devDependencies",
+      "community": 475,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "@nuxtjs/google-fonts"
     },
     {
@@ -13298,8 +13430,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "package_devdependencies_sharp",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 31,
+      "community_name": "devDependencies",
       "norm_label": "sharp"
     },
     {
@@ -13309,8 +13441,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "sharp",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 31,
+      "community_name": "devDependencies",
       "norm_label": "sharp"
     },
     {
@@ -14299,8 +14431,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_api_debts_id_pay_post",
-      "community": 41,
-      "community_name": "auth.ts",
+      "community": 58,
+      "community_name": "verifactu.ts",
       "norm_label": "pay.post.ts"
     },
     {
@@ -14310,8 +14442,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "server_api_debts_id_pay_post_paymentschema",
-      "community": 41,
-      "community_name": "auth.ts",
+      "community": 58,
+      "community_name": "verifactu.ts",
       "norm_label": "paymentschema"
     },
     {
@@ -16720,8 +16852,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "args.ts"
     },
     {
@@ -16731,8 +16863,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_cliusageerror",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "cliusageerror"
     },
     {
@@ -16742,8 +16874,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_flagspec",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "flagspec"
     },
     {
@@ -16753,8 +16885,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_parsedargs",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "parsedargs"
     },
     {
@@ -16775,8 +16907,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_readstdin",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "readstdin()"
     },
     {
@@ -17028,8 +17160,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "scene.ts"
     },
     {
@@ -17039,8 +17171,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_readtextfileorstdin",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "readtextfileorstdin()"
     },
     {
@@ -17050,8 +17182,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_describe",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "describe()"
     },
     {
@@ -17061,8 +17193,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_screenshot",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "screenshot()"
     },
     {
@@ -17072,8 +17204,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_exportcmd",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 360,
+      "community_name": "scene-io.ts",
       "norm_label": "exportcmd()"
     },
     {
@@ -17083,8 +17215,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_importcmd",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "importcmd()"
     },
     {
@@ -17094,8 +17226,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_mermaid",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "mermaid()"
     },
     {
@@ -17105,8 +17237,8 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_share",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "share()"
     },
     {
@@ -17193,8 +17325,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_run",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "run.ts"
     },
     {
@@ -17204,8 +17336,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_run_command",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "command"
     },
     {
@@ -17215,8 +17347,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_run_commands",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "commands"
     },
     {
@@ -17226,8 +17358,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_run_printhelp",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "printhelp()"
     },
     {
@@ -17237,8 +17369,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_run_exitcodefor",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "exitcodefor()"
     },
     {
@@ -17248,8 +17380,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_run_runcli",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "runcli()"
     },
     {
@@ -17259,8 +17391,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_util",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "util.ts"
     },
     {
@@ -17292,8 +17424,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_util_requirebrowserclient",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "requirebrowserclient()"
     },
     {
@@ -17325,8 +17457,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_apiresponse",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "apiresponse"
     },
     {
@@ -17336,8 +17468,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_syncresponse",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "syncresponse"
     },
     {
@@ -17391,8 +17523,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_batchcreateelementsoncanvas",
-      "community": 352,
-      "community_name": "arrange.ts",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "batchcreateelementsoncanvas()"
     },
     {
@@ -17468,8 +17600,8 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_postfiles",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 360,
+      "community_name": "scene-io.ts",
       "norm_label": "postfiles()"
     },
     {
@@ -17479,8 +17611,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_exportimage",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "exportimage()"
     },
     {
@@ -17534,8 +17666,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_sendmermaid",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "sendmermaid()"
     },
     {
@@ -17589,8 +17721,8 @@
       "source_location": "L260",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_batchcreateelementsstrict",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "batchcreateelementsstrict()"
     },
     {
@@ -17666,8 +17798,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_config",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "config.ts"
     },
     {
@@ -17677,8 +17809,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_describe",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "describe.ts"
     },
     {
@@ -17688,8 +17820,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_describe_describescene",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "describescene()"
     },
     {
@@ -17853,8 +17985,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "normalize.ts"
     },
     {
@@ -17875,8 +18007,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_normalizepoints",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "normalizepoints()"
     },
     {
@@ -17886,8 +18018,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_converttexttolabel",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "converttexttolabel()"
     },
     {
@@ -17897,8 +18029,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_elementinput",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "elementinput"
     },
     {
@@ -17908,8 +18040,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_prepareelement",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "prepareelement()"
     },
     {
@@ -17919,8 +18051,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_prepareelementupdate",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "prepareelementupdate()"
     },
     {
@@ -18018,8 +18150,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "pidfile.ts"
     },
     {
@@ -18029,8 +18161,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_statedir",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "statedir()"
     },
     {
@@ -18040,8 +18172,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_pidfilepath",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "pidfilepath()"
     },
     {
@@ -18051,8 +18183,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_writepidfile",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "writepidfile()"
     },
     {
@@ -18073,8 +18205,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_removepidfile",
-      "community": 140,
-      "community_name": "@types/jsonwebtoken",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "removepidfile()"
     },
     {
@@ -18139,8 +18271,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "share-url.ts"
     },
     {
@@ -18150,8 +18282,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url_concatbuffers",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "concatbuffers()"
     },
     {
@@ -18161,8 +18293,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url_cleanelementsforshare",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "cleanelementsforshare()"
     },
     {
@@ -18172,8 +18304,8 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url_exporttoexcalidrawurl",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "exporttoexcalidrawurl()"
     },
     {
@@ -18326,8 +18458,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_version",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "version.ts"
     },
     {
@@ -18337,8 +18469,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_version_packageversion",
-      "community": 359,
-      "community_name": "run.ts",
+      "community": 351,
+      "community_name": "scene.ts",
       "norm_label": "packageversion()"
     },
     {
@@ -18777,8 +18909,8 @@
       "source_location": "L1298",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_server_loopback_guard_hosts",
-      "community": 142,
-      "community_name": "@vite-pwa/nuxt",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "loopback_guard_hosts"
     },
     {
@@ -18799,8 +18931,8 @@
       "source_location": "L1301",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_server_formathostforurl",
-      "community": 142,
-      "community_name": "@vite-pwa/nuxt",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "formathostforurl()"
     },
     {
@@ -18832,8 +18964,8 @@
       "source_location": "L1345",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_server_startserver",
-      "community": 142,
-      "community_name": "@vite-pwa/nuxt",
+      "community": 468,
+      "community_name": "@nuxtjs/google-fonts",
       "norm_label": "startserver()"
     },
     {
@@ -18975,8 +19107,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_excalidrawelementtype",
-      "community": 180,
-      "community_name": "types.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "excalidrawelementtype"
     },
     {
@@ -18997,8 +19129,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_serverelement",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "serverelement"
     },
     {
@@ -19008,8 +19140,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_apiresponse",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 180,
+      "community_name": "types.ts",
       "norm_label": "apiresponse"
     },
     {
@@ -19019,8 +19151,8 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_elementsresponse",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 180,
+      "community_name": "types.ts",
       "norm_label": "elementsresponse"
     },
     {
@@ -19030,8 +19162,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_elementresponse",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 180,
+      "community_name": "types.ts",
       "norm_label": "elementresponse"
     },
     {
@@ -19041,8 +19173,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_syncresponse",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 180,
+      "community_name": "types.ts",
       "norm_label": "syncresponse"
     },
     {
@@ -19173,8 +19305,8 @@
       "source_location": "L247",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_mermaidconversionresponse",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 180,
+      "community_name": "types.ts",
       "norm_label": "mermaidconversionresponse"
     },
     {
@@ -19283,8 +19415,8 @@
       "source_location": "L319",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_generateid",
-      "community": 352,
-      "community_name": "arrange.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "generateid()"
     },
     {
@@ -19294,8 +19426,8 @@
       "source_location": "L326",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_normalizefontfamily",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 450,
+      "community_name": "ApiResponse",
       "norm_label": "normalizefontfamily()"
     },
     {
@@ -51992,6 +52124,116 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_ondocpointer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_onkey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_open",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_option",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_rootref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_select",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_selectedlabel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/AppSelect.vue",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_appselect",
+      "target": "app_components_ui_appselect_toggle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/components/ui/LanguageSelector.vue",
       "source_location": "L38",
       "weight": 1.0,
@@ -52359,7 +52601,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L11",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",
@@ -52370,7 +52612,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L17",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",
@@ -52381,7 +52623,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L19",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",
@@ -52392,7 +52634,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L18",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",
@@ -52403,7 +52645,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L20",
+      "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",
@@ -52414,7 +52656,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L4",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ventas_salesfilters",
+      "target": "app_components_ventas_salesfilters_paymentmethodoptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ventas/SalesFilters.vue",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",
@@ -52425,7 +52678,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/components/ventas/SalesFilters.vue",
-      "source_location": "L16",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_components_ventas_salesfilters",

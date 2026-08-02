@@ -1957,8 +1957,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_hex_to_ansi",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "hex_to_ansi()"
     },
     {
@@ -1968,8 +1968,8 @@
       "source_location": "L347",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_ansi_ljust",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "ansi_ljust()"
     },
     {
@@ -1979,8 +1979,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_section_header",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "section_header()"
     },
     {
@@ -1990,8 +1990,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_format_ascii_box",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "format_ascii_box()"
     },
     {
@@ -2056,8 +2056,8 @@
       "source_location": "L1176",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_generate_intelligent_overrides",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 299,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "_generate_intelligent_overrides()"
     },
     {
@@ -2067,8 +2067,8 @@
       "source_location": "L1282",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_detect_page_type",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 299,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "_detect_page_type()"
     },
     {
@@ -2177,8 +2177,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_334",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "convert hex color to ansi true color swatch (\u2588\u2588) with fallback."
     },
     {
@@ -2188,8 +2188,8 @@
       "source_location": "L348",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_348",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "like str.ljust but accounts for zero-width ansi escape sequences."
     },
     {
@@ -2199,8 +2199,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_356",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "create a unicode section separator: \u251c\u2500\u2500\u2500 name \u2500\u2500\u2500...\u2524"
     },
     {
@@ -2210,8 +2210,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_363",
-      "community": 310,
-      "community_name": "_generate_intelligent_overrides",
+      "community": 14,
+      "community_name": "design_system.py",
       "norm_label": "format design system as unicode box with ansi color swatches."
     },
     {
@@ -2276,8 +2276,8 @@
       "source_location": "L1177",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_1177",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 299,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "generate intelligent overrides based on page type using layered search."
     },
     {
@@ -2287,8 +2287,8 @@
       "source_location": "L1283",
       "_origin": "ast",
       "id": "claude_skills_ui_ux_pro_max_scripts_design_system_rationale_1283",
-      "community": 14,
-      "community_name": "design_system.py",
+      "community": 299,
+      "community_name": "Avoid Expensive Operations in Updated Hook",
       "norm_label": "detect page type from context and search results."
     },
     {
@@ -8034,6 +8034,39 @@
       "norm_label": "selectlanguage()"
     },
     {
+      "label": "ThemeToggle.vue",
+      "file_type": "code",
+      "source_file": "app/components/ui/ThemeToggle.vue",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_components_ui_themetoggle",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
+      "norm_label": "themetoggle.vue"
+    },
+    {
+      "label": "{ theme, toggleTheme }",
+      "file_type": "code",
+      "source_file": "app/components/ui/ThemeToggle.vue",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "app_components_ui_themetoggle_theme_toggletheme",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
+      "norm_label": "{ theme, toggletheme }"
+    },
+    {
+      "label": "isDark",
+      "file_type": "code",
+      "source_file": "app/components/ui/ThemeToggle.vue",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "app_components_ui_themetoggle_isdark",
+      "community": 310,
+      "community_name": "_generate_intelligent_overrides",
+      "norm_label": "isdark"
+    },
+    {
       "label": "UserDeleteModal.vue",
       "file_type": "code",
       "source_file": "app/components/users/UserDeleteModal.vue",
@@ -9049,7 +9082,7 @@
       "label": "{ t, locale }",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L216",
+      "source_location": "L199",
       "_origin": "ast",
       "id": "app_layouts_default_t_locale",
       "community": 20,
@@ -9057,21 +9090,21 @@
       "norm_label": "{ t, locale }"
     },
     {
-      "label": "{ theme, toggleTheme }",
+      "label": "{ theme }",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L217",
+      "source_location": "L200",
       "_origin": "ast",
-      "id": "app_layouts_default_theme_toggletheme",
+      "id": "app_layouts_default_theme",
       "community": 20,
       "community_name": "default.vue",
-      "norm_label": "{ theme, toggletheme }"
+      "norm_label": "{ theme }"
     },
     {
       "label": "localeCookie",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L218",
+      "source_location": "L201",
       "_origin": "ast",
       "id": "app_layouts_default_localecookie",
       "community": 20,
@@ -9082,7 +9115,7 @@
       "label": "route",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L219",
+      "source_location": "L202",
       "_origin": "ast",
       "id": "app_layouts_default_route",
       "community": 20,
@@ -9093,7 +9126,7 @@
       "label": "authStore",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L220",
+      "source_location": "L203",
       "_origin": "ast",
       "id": "app_layouts_default_authstore",
       "community": 20,
@@ -9104,7 +9137,7 @@
       "label": "router",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L221",
+      "source_location": "L204",
       "_origin": "ast",
       "id": "app_layouts_default_router",
       "community": 20,
@@ -9115,7 +9148,7 @@
       "label": "handleLogout()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L223",
+      "source_location": "L206",
       "_origin": "ast",
       "id": "app_layouts_default_handlelogout",
       "community": 20,
@@ -9126,7 +9159,7 @@
       "label": "isDrawerOpen",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L231",
+      "source_location": "L214",
       "_origin": "ast",
       "id": "app_layouts_default_isdraweropen",
       "community": 20,
@@ -9137,7 +9170,7 @@
       "label": "closeDrawerMobile()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L232",
+      "source_location": "L215",
       "_origin": "ast",
       "id": "app_layouts_default_closedrawermobile",
       "community": 20,
@@ -9148,7 +9181,7 @@
       "label": "sidebarNav",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L237",
+      "source_location": "L220",
       "_origin": "ast",
       "id": "app_layouts_default_sidebarnav",
       "community": 20,
@@ -9159,7 +9192,7 @@
       "label": "activePill",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L238",
+      "source_location": "L221",
       "_origin": "ast",
       "id": "app_layouts_default_activepill",
       "community": 20,
@@ -9170,7 +9203,7 @@
       "label": "navRefs",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L239",
+      "source_location": "L222",
       "_origin": "ast",
       "id": "app_layouts_default_navrefs",
       "community": 20,
@@ -9181,7 +9214,7 @@
       "label": "currentActivePath",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L241",
+      "source_location": "L224",
       "_origin": "ast",
       "id": "app_layouts_default_currentactivepath",
       "community": 20,
@@ -9192,7 +9225,7 @@
       "label": "setNavRef()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L258",
+      "source_location": "L241",
       "_origin": "ast",
       "id": "app_layouts_default_setnavref",
       "community": 20,
@@ -9203,7 +9236,7 @@
       "label": "updateActivePill()",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L264",
+      "source_location": "L247",
       "_origin": "ast",
       "id": "app_layouts_default_updateactivepill",
       "community": 20,
@@ -9214,7 +9247,7 @@
       "label": "navGroups",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L327",
+      "source_location": "L310",
       "_origin": "ast",
       "id": "app_layouts_default_navgroups",
       "community": 20,
@@ -9225,7 +9258,7 @@
       "label": "currentRouteTranslated",
       "file_type": "code",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L356",
+      "source_location": "L339",
       "_origin": "ast",
       "id": "app_layouts_default_currentroutetranslated",
       "community": 20,
@@ -10476,15 +10509,48 @@
       "norm_label": "index.vue"
     },
     {
-      "label": "{ t }",
+      "label": "{ theme }",
       "file_type": "code",
       "source_file": "app/pages/configuracion/index.vue",
-      "source_location": "L8",
+      "source_location": "L10",
       "_origin": "ast",
-      "id": "app_pages_configuracion_index_t",
+      "id": "app_pages_configuracion_index_theme",
       "community": 102,
       "community_name": "index.vue",
-      "norm_label": "{ t }"
+      "norm_label": "{ theme }"
+    },
+    {
+      "label": "sections",
+      "file_type": "code",
+      "source_file": "app/pages/configuracion/index.vue",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "app_pages_configuracion_index_sections",
+      "community": 102,
+      "community_name": "index.vue",
+      "norm_label": "sections"
+    },
+    {
+      "label": "activeSection",
+      "file_type": "code",
+      "source_file": "app/pages/configuracion/index.vue",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "app_pages_configuracion_index_activesection",
+      "community": 102,
+      "community_name": "index.vue",
+      "norm_label": "activesection"
+    },
+    {
+      "label": "isDark",
+      "file_type": "code",
+      "source_file": "app/pages/configuracion/index.vue",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "app_pages_configuracion_index_isdark",
+      "community": 102,
+      "community_name": "index.vue",
+      "norm_label": "isdark"
     },
     {
       "label": "index.vue",
@@ -12715,8 +12781,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "package_dependencies_aos",
-      "community": 107,
-      "community_name": "dexie",
+      "community": 348,
+      "community_name": "dotenv",
       "norm_label": "aos"
     },
     {
@@ -12726,8 +12792,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "aos",
-      "community": 107,
-      "community_name": "dexie",
+      "community": 348,
+      "community_name": "dotenv",
       "norm_label": "aos"
     },
     {
@@ -12957,8 +13023,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "package_dependencies_nuxt",
-      "community": 115,
-      "community_name": "nuxt",
+      "community": 107,
+      "community_name": "dexie",
       "norm_label": "nuxt"
     },
     {
@@ -12968,8 +13034,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "nuxt",
-      "community": 115,
-      "community_name": "nuxt",
+      "community": 107,
+      "community_name": "dexie",
       "norm_label": "nuxt"
     },
     {
@@ -15455,8 +15521,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_bin",
-      "community": 469,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "bin"
     },
     {
@@ -15466,8 +15532,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_bin_mcp_excalidraw_server",
-      "community": 469,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "mcp-excalidraw-server"
     },
     {
@@ -15477,8 +15543,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_bin_excalidraw_canvas",
-      "community": 469,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "excalidraw-canvas"
     },
     {
@@ -16379,8 +16445,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author",
-      "community": 348,
-      "community_name": "dotenv",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "author"
     },
     {
@@ -16390,8 +16456,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author_name",
-      "community": 348,
-      "community_name": "dotenv",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "name"
     },
     {
@@ -16401,8 +16467,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_package_author_email",
-      "community": 348,
-      "community_name": "dotenv",
+      "community": 298,
+      "community_name": "Best practices for `computed`",
       "norm_label": "email"
     },
     {
@@ -16852,8 +16918,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "args.ts"
     },
     {
@@ -16863,8 +16929,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_cliusageerror",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "cliusageerror"
     },
     {
@@ -16874,8 +16940,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_flagspec",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "flagspec"
     },
     {
@@ -16885,8 +16951,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_parsedargs",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "parsedargs"
     },
     {
@@ -16907,8 +16973,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_args_readstdin",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "readstdin()"
     },
     {
@@ -17204,8 +17270,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_exportcmd",
-      "community": 360,
-      "community_name": "scene-io.ts",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "exportcmd()"
     },
     {
@@ -17237,8 +17303,8 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_commands_scene_share",
-      "community": 141,
-      "community_name": "vite",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "share()"
     },
     {
@@ -17391,8 +17457,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_util",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "util.ts"
     },
     {
@@ -17413,8 +17479,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_cli_util_note",
-      "community": 351,
-      "community_name": "scene.ts",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "note()"
     },
     {
@@ -17457,8 +17523,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_apiresponse",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "apiresponse"
     },
     {
@@ -17468,8 +17534,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_syncresponse",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "syncresponse"
     },
     {
@@ -17523,8 +17589,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_batchcreateelementsoncanvas",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 352,
+      "community_name": "arrange.ts",
       "norm_label": "batchcreateelementsoncanvas()"
     },
     {
@@ -17600,8 +17666,8 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_postfiles",
-      "community": 360,
-      "community_name": "scene-io.ts",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "postfiles()"
     },
     {
@@ -17611,8 +17677,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_exportimage",
-      "community": 141,
-      "community_name": "vite",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "exportimage()"
     },
     {
@@ -17721,8 +17787,8 @@
       "source_location": "L260",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_canvas_client_batchcreateelementsstrict",
-      "community": 179,
-      "community_name": "elements.ts",
+      "community": 353,
+      "community_name": "canvas-client.ts",
       "norm_label": "batchcreateelementsstrict()"
     },
     {
@@ -17798,8 +17864,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_config",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 141,
+      "community_name": "vite",
       "norm_label": "config.ts"
     },
     {
@@ -17985,8 +18051,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "normalize.ts"
     },
     {
@@ -17996,8 +18062,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_sanitizefilepath",
-      "community": 360,
-      "community_name": "scene-io.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "sanitizefilepath()"
     },
     {
@@ -18007,8 +18073,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_normalizepoints",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "normalizepoints()"
     },
     {
@@ -18018,8 +18084,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_converttexttolabel",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "converttexttolabel()"
     },
     {
@@ -18029,8 +18095,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_elementinput",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "elementinput"
     },
     {
@@ -18040,8 +18106,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_prepareelement",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "prepareelement()"
     },
     {
@@ -18051,8 +18117,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_normalize_prepareelementupdate",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 179,
+      "community_name": "elements.ts",
       "norm_label": "prepareelementupdate()"
     },
     {
@@ -18150,8 +18216,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "pidfile.ts"
     },
     {
@@ -18161,8 +18227,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_statedir",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "statedir()"
     },
     {
@@ -18172,8 +18238,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_pidfilepath",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "pidfilepath()"
     },
     {
@@ -18183,8 +18249,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_writepidfile",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "writepidfile()"
     },
     {
@@ -18205,8 +18271,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_pidfile_removepidfile",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 140,
+      "community_name": "@types/jsonwebtoken",
       "norm_label": "removepidfile()"
     },
     {
@@ -18271,8 +18337,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url",
-      "community": 141,
-      "community_name": "vite",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "share-url.ts"
     },
     {
@@ -18282,8 +18348,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url_concatbuffers",
-      "community": 141,
-      "community_name": "vite",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "concatbuffers()"
     },
     {
@@ -18293,8 +18359,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url_cleanelementsforshare",
-      "community": 141,
-      "community_name": "vite",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "cleanelementsforshare()"
     },
     {
@@ -18304,8 +18370,8 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_core_share_url_exporttoexcalidrawurl",
-      "community": 141,
-      "community_name": "vite",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "exporttoexcalidrawurl()"
     },
     {
@@ -18909,8 +18975,8 @@
       "source_location": "L1298",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_server_loopback_guard_hosts",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 142,
+      "community_name": "@vite-pwa/nuxt",
       "norm_label": "loopback_guard_hosts"
     },
     {
@@ -18931,8 +18997,8 @@
       "source_location": "L1301",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_server_formathostforurl",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 142,
+      "community_name": "@vite-pwa/nuxt",
       "norm_label": "formathostforurl()"
     },
     {
@@ -18964,8 +19030,8 @@
       "source_location": "L1345",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_server_startserver",
-      "community": 468,
-      "community_name": "@nuxtjs/google-fonts",
+      "community": 142,
+      "community_name": "@vite-pwa/nuxt",
       "norm_label": "startserver()"
     },
     {
@@ -19107,8 +19173,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_excalidrawelementtype",
-      "community": 123,
-      "community_name": "@prisma/client",
+      "community": 180,
+      "community_name": "types.ts",
       "norm_label": "excalidrawelementtype"
     },
     {
@@ -19129,8 +19195,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_serverelement",
-      "community": 353,
-      "community_name": "canvas-client.ts",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "serverelement"
     },
     {
@@ -19140,8 +19206,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_apiresponse",
-      "community": 180,
-      "community_name": "types.ts",
+      "community": 115,
+      "community_name": "nuxt",
       "norm_label": "apiresponse"
     },
     {
@@ -19151,8 +19217,8 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_elementsresponse",
-      "community": 180,
-      "community_name": "types.ts",
+      "community": 115,
+      "community_name": "nuxt",
       "norm_label": "elementsresponse"
     },
     {
@@ -19162,8 +19228,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_elementresponse",
-      "community": 180,
-      "community_name": "types.ts",
+      "community": 115,
+      "community_name": "nuxt",
       "norm_label": "elementresponse"
     },
     {
@@ -19173,8 +19239,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_syncresponse",
-      "community": 180,
-      "community_name": "types.ts",
+      "community": 115,
+      "community_name": "nuxt",
       "norm_label": "syncresponse"
     },
     {
@@ -19305,8 +19371,8 @@
       "source_location": "L247",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_mermaidconversionresponse",
-      "community": 180,
-      "community_name": "types.ts",
+      "community": 115,
+      "community_name": "nuxt",
       "norm_label": "mermaidconversionresponse"
     },
     {
@@ -19415,8 +19481,8 @@
       "source_location": "L319",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_generateid",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 352,
+      "community_name": "arrange.ts",
       "norm_label": "generateid()"
     },
     {
@@ -19426,8 +19492,8 @@
       "source_location": "L326",
       "_origin": "ast",
       "id": "tmp_excalidraw_mcp_src_types_normalizefontfamily",
-      "community": 450,
-      "community_name": "ApiResponse",
+      "community": 123,
+      "community_name": "@prisma/client",
       "norm_label": "normalizefontfamily()"
     },
     {
@@ -35948,8 +36014,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_skill",
-      "community": 198,
-      "community_name": "SKILL.md",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "skill.md"
     },
     {
@@ -37279,8 +37345,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_directives",
-      "community": 200,
-      "community_name": "Directive Best Practices",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "directives.md"
     },
     {
@@ -38302,8 +38368,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_updated_hook_performance",
-      "community": 299,
-      "community_name": "Avoid Expensive Operations in Updated Hook",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "updated-hook-performance.md"
     },
     {
@@ -38313,8 +38379,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_updated_hook_performance_avoid_expensive_operations_in_updated_hook",
-      "community": 299,
-      "community_name": "Avoid Expensive Operations in Updated Hook",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "avoid expensive operations in updated hook"
     },
     {
@@ -38324,8 +38390,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_updated_hook_performance_task_list",
-      "community": 299,
-      "community_name": "Avoid Expensive Operations in Updated Hook",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "task list"
     },
     {
@@ -38335,8 +38401,8 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_updated_hook_performance_valid_use_cases_for_updated_hook",
-      "community": 299,
-      "community_name": "Avoid Expensive Operations in Updated Hook",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "valid use cases for updated hook"
     },
     {
@@ -38346,8 +38412,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "claude_skills_vue_best_practices_references_updated_hook_performance_prefer_computed_properties_for_derived_data",
-      "community": 299,
-      "community_name": "Avoid Expensive Operations in Updated Hook",
+      "community": 275,
+      "community_name": "State Management Strategy",
       "norm_label": "prefer computed properties for derived data"
     },
     {
@@ -52333,6 +52399,28 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/ThemeToggle.vue",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_themetoggle",
+      "target": "app_components_ui_themetoggle_isdark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/components/ui/ThemeToggle.vue",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_components_ui_themetoggle",
+      "target": "app_components_ui_themetoggle_theme_toggletheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/components/users/UserDeleteModal.vue",
       "source_location": "L58",
       "weight": 1.0,
@@ -53157,7 +53245,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L238",
+      "source_location": "L221",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53168,7 +53256,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L220",
+      "source_location": "L203",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53179,7 +53267,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L232",
+      "source_location": "L215",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53190,7 +53278,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L241",
+      "source_location": "L224",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53201,7 +53289,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L356",
+      "source_location": "L339",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53212,7 +53300,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L223",
+      "source_location": "L206",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53223,7 +53311,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L231",
+      "source_location": "L214",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53234,7 +53322,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L218",
+      "source_location": "L201",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53245,7 +53333,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L327",
+      "source_location": "L310",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53256,7 +53344,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L239",
+      "source_location": "L222",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53267,7 +53355,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L219",
+      "source_location": "L202",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53278,7 +53366,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L221",
+      "source_location": "L204",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53289,7 +53377,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L258",
+      "source_location": "L241",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53300,7 +53388,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L237",
+      "source_location": "L220",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53311,7 +53399,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L216",
+      "source_location": "L199",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -53322,18 +53410,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L217",
+      "source_location": "L200",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
-      "target": "app_layouts_default_theme_toggletheme",
+      "target": "app_layouts_default_theme",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/layouts/default.vue",
-      "source_location": "L264",
+      "source_location": "L247",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_layouts_default",
@@ -54488,11 +54576,44 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/pages/configuracion/index.vue",
-      "source_location": "L8",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_pages_configuracion_index",
-      "target": "app_pages_configuracion_index_t",
+      "target": "app_pages_configuracion_index_activesection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/configuracion/index.vue",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_configuracion_index",
+      "target": "app_pages_configuracion_index_isdark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/configuracion/index.vue",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_configuracion_index",
+      "target": "app_pages_configuracion_index_sections",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/pages/configuracion/index.vue",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_pages_configuracion_index",
+      "target": "app_pages_configuracion_index_theme",
       "confidence_score": 1.0
     },
     {
@@ -92053,5 +92174,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "47b1b7cfdd5b315dbb515387794cdbb7d92fc9b8"
+  "built_at_commit": "22f57efa61e06098c519cc399691a0c5d62dba71"
 }

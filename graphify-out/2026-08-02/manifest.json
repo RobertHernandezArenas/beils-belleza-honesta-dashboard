@@ -280,9 +280,9 @@
     "semantic_hash": "577334cd35cfdec1605b0e771552b969"
   },
   "app/components/ventas/SalesFilters.vue": {
-    "mtime": 1783380986.65734,
-    "ast_hash": "2de3076ac23273b559ae05b960a45308",
-    "semantic_hash": "2de3076ac23273b559ae05b960a45308"
+    "mtime": 1785628633.2928061,
+    "ast_hash": "e652e395024f75e104237c20abadf565",
+    "semantic_hash": ""
   },
   "app/components/ventas/SalesMetrics.vue": {
     "mtime": 1785627082.099875,
@@ -3307,6 +3307,11 @@
   "app/composables/useChartTheme.ts": {
     "mtime": 1785628217.843806,
     "ast_hash": "ef3d86b57a6ddea00cb762687781dc85",
+    "semantic_hash": ""
+  },
+  "app/components/ui/AppSelect.vue": {
+    "mtime": 1785628617.5336773,
+    "ast_hash": "9f8c66b596c289e429795258455a2534",
     "semantic_hash": ""
   }
 }

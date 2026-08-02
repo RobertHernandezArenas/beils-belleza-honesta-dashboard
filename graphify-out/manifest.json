@@ -350,8 +350,8 @@
     "semantic_hash": "cd51d9168e7b0da00b8975d731198c73"
   },
   "app/layouts/default.vue": {
-    "mtime": 1785626475.381168,
-    "ast_hash": "a1e13a2eb974548678986530c94d3412",
+    "mtime": 1785629214.83495,
+    "ast_hash": "2cd98cc272618469aa061df7e65db399",
     "semantic_hash": ""
   },
   "app/locales/en.json": {
@@ -415,9 +415,9 @@
     "semantic_hash": "bfe7386b581e249de806f3e89b75fc1a"
   },
   "app/pages/configuracion/index.vue": {
-    "mtime": 1773092213.9575782,
-    "ast_hash": "9d9f8c05f5d6447428cab36c4b35908f",
-    "semantic_hash": "9d9f8c05f5d6447428cab36c4b35908f"
+    "mtime": 1785629249.8103938,
+    "ast_hash": "b68d07404810d302e1bb6ed3b755ce1b",
+    "semantic_hash": ""
   },
   "app/pages/finanzas/deudas/index.vue": {
     "mtime": 1785552425.1641383,
@@ -3312,6 +3312,11 @@
   "app/components/ui/AppSelect.vue": {
     "mtime": 1785628617.5336773,
     "ast_hash": "9f8c66b596c289e429795258455a2534",
+    "semantic_hash": ""
+  },
+  "app/components/ui/ThemeToggle.vue": {
+    "mtime": 1785629191.211216,
+    "ast_hash": "1ec13ef38425297a0749ffd59caec41b",
     "semantic_hash": ""
   }
 }
