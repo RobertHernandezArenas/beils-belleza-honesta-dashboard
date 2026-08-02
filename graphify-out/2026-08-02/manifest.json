@@ -390,8 +390,8 @@
     "semantic_hash": ""
   },
   "app/pages/clientes/[id].vue": {
-    "mtime": 1785631486.968032,
-    "ast_hash": "bdd34c2e3ece8b694a3c2b616866ec2d",
+    "mtime": 1785668170.932995,
+    "ast_hash": "baa9807f84576f0913f72801f40c2528",
     "semantic_hash": ""
   },
   "app/pages/clientes/consentimientos/index.vue": {
@@ -405,8 +405,8 @@
     "semantic_hash": "ffb81f4734278c3000b5ef90692c2398"
   },
   "app/pages/clientes/index.vue": {
-    "mtime": 1785667807.3624535,
-    "ast_hash": "2ed4d31b300e431712377e6e2c7e46e4",
+    "mtime": 1785686968.0841997,
+    "ast_hash": "14578db22b0c58d3fd2660a060eea3f9",
     "semantic_hash": ""
   },
   "app/pages/clientes/revocaciones/index.vue": {
@@ -625,8 +625,8 @@
     "semantic_hash": "acd71a2ac11c7b11a3dd14d060d32dab"
   },
   "server/api/clients/[id].get.ts": {
-    "mtime": 1785631487.170876,
-    "ast_hash": "c62ad158a4057cfb59b01553399c65c7",
+    "mtime": 1785668067.3477962,
+    "ast_hash": "840e5c3527411329603b0456def69a76",
     "semantic_hash": ""
   },
   "server/api/clients/[id].put.ts": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "server/api/sales/carts/index.ts": {
-    "mtime": 1785631487.1789064,
-    "ast_hash": "eea3b27cdd807d79b66f9929abdebc15",
+    "mtime": 1785668058.7504294,
+    "ast_hash": "4def5d1936cab28272917c6332ddef9c",
     "semantic_hash": ""
   },
   "server/api/sales/debts/[id].ts": {
@@ -3310,13 +3310,23 @@
     "semantic_hash": ""
   },
   "app/components/ui/AppSelect.vue": {
-    "mtime": 1785631486.9488423,
-    "ast_hash": "b755c8830bf5ad20a2e778175d14ce57",
+    "mtime": 1785684290.4192917,
+    "ast_hash": "ab7d3a40c8cd46cd8f41d7be0055018c",
     "semantic_hash": ""
   },
   "app/components/ui/ThemeToggle.vue": {
     "mtime": 1785631486.9488423,
     "ast_hash": "f9bfa0338adc8eae0fbaaed0b6330f3a",
+    "semantic_hash": ""
+  },
+  "app/components/clients/ProfileAppointmentHistory.vue": {
+    "mtime": 1785668138.983283,
+    "ast_hash": "b601d71df7fcc3e4d37d3165f05838aa",
+    "semantic_hash": ""
+  },
+  "scripts/merge-client.ts": {
+    "mtime": 1785685925.4448216,
+    "ast_hash": "fb5788c60aa377a692418641fc424b66",
     "semantic_hash": ""
   }
 }

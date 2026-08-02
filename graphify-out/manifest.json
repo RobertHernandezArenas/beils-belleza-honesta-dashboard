@@ -405,8 +405,8 @@
     "semantic_hash": "ffb81f4734278c3000b5ef90692c2398"
   },
   "app/pages/clientes/index.vue": {
-    "mtime": 1785667807.3624535,
-    "ast_hash": "2ed4d31b300e431712377e6e2c7e46e4",
+    "mtime": 1785687503.8376927,
+    "ast_hash": "cd855a8de68ef09d8640ca9c540b4c5e",
     "semantic_hash": ""
   },
   "app/pages/clientes/revocaciones/index.vue": {
@@ -3310,8 +3310,8 @@
     "semantic_hash": ""
   },
   "app/components/ui/AppSelect.vue": {
-    "mtime": 1785631486.9488423,
-    "ast_hash": "b755c8830bf5ad20a2e778175d14ce57",
+    "mtime": 1785684290.4192917,
+    "ast_hash": "ab7d3a40c8cd46cd8f41d7be0055018c",
     "semantic_hash": ""
   },
   "app/components/ui/ThemeToggle.vue": {
@@ -3322,6 +3322,11 @@
   "app/components/clients/ProfileAppointmentHistory.vue": {
     "mtime": 1785668138.983283,
     "ast_hash": "b601d71df7fcc3e4d37d3165f05838aa",
+    "semantic_hash": ""
+  },
+  "scripts/merge-client.ts": {
+    "mtime": 1785685925.4448216,
+    "ast_hash": "fb5788c60aa377a692418641fc424b66",
     "semantic_hash": ""
   }
 }

@@ -1,16 +1,16 @@
 # Graph Report - beils-belleza-honesta-dashboard  (2026-08-02)
 
 ## Corpus Check
-- 583 files · ~579,104 words
+- 585 files · ~580,849 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4612 nodes · 5025 edges · 568 communities (481 shown, 87 thin omitted)
+- 4638 nodes · 5057 edges · 563 communities (478 shown, 85 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `968a9075`
+- Built from commit: `2fa0ec02`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -344,7 +344,6 @@
 - check-local-bind.mjs
 - SKILL.md
 - Dark Mode
-- WebSocketMessage
 - Tailwind CSS Animations & Transitions
 - SKILL.md
 - Tailwind CSS Performance Optimization
@@ -435,7 +434,6 @@
 - author
 - repository
 - bin.ts
-- qrcode.vue
 - @peculiar/webcrypto
 - prisma
 - @prisma/adapter-mariadb
@@ -533,10 +531,7 @@
 - daisyUI 5
 - SKILL.md
 - Avoid Expensive Operations in Updated Hook
-- ApiResponse
 - aos
-- @nuxtjs/google-fonts
-- vite
 
 ## God Nodes (most connected - your core abstractions)
 1. `ensureCanvasRunning()` - 32 edges
@@ -556,16 +551,16 @@
 - `main()` --references--> `@prisma/client`  [EXTRACTED]
   scripts/create-missing-tables.ts → package.json
 - `main()` --references--> `@prisma/client`  [EXTRACTED]
+  scripts/merge-client.ts → package.json
+- `main()` --references--> `@prisma/client`  [EXTRACTED]
   scripts/sync-exact-client-packages.ts → package.json
 - `main()` --references--> `@prisma/client`  [EXTRACTED]
   scripts/test-db-connection.ts → package.json
-- `_generate_intelligent_overrides()` --calls--> `search()`  [INFERRED]
-  .agents/skills/ui-ux-pro-max/scripts/design_system.py → .agents/skills/ui-ux-pro-max/scripts/core.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (568 total, 87 thin omitted)
+## Communities (563 total, 85 thin omitted)
 
 ### Community 0 - "BookingDrawer.vue"
 Cohesion: 0.13
@@ -642,8 +637,8 @@ Cohesion: 0.09
 Nodes (20): { data: debts, isPending }, debtPaymentOptions, debtStatusOptions, displayToast(), filteredDebts, filterStatus, { mutate: updateDebt }, { notifySalesChanged } (+12 more)
 
 ### Community 11 - "design_system.py"
-Cohesion: 0.15
-Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
+Cohesion: 0.17
+Nodes (16): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), generate_design_system(), hex_to_ansi(), persist_design_system(), Convert hex color to ANSI True Color swatch (██) with fallback. (+8 more)
 
 ### Community 12 - "DesignSystemGenerator"
 Cohesion: 0.14
@@ -654,8 +649,8 @@ Cohesion: 0.13
 Nodes (13): chart, chartOptions, emit, isSavingNotes, kpis, { locale }, nextBookingData, notesText (+5 more)
 
 ### Community 14 - "design_system.py"
-Cohesion: 0.19
-Nodes (14): _detect_page_type(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides(), persist_design_system(), Format a page-specific override file with intelligent AI-generated content. (+6 more)
+Cohesion: 0.15
+Nodes (18): ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+10 more)
 
 ### Community 15 - "DesignSystemGenerator"
 Cohesion: 0.14
@@ -1045,8 +1040,8 @@ Nodes (3): {
 	}, mobileTab, totalCartCount
 
 ### Community 107 - "dexie"
-Cohesion: 0.12
-Nodes (17): bcryptjs, dexie, echarts, lucide-vue-next, dependencies, bcryptjs, dexie, echarts (+9 more)
+Cohesion: 0.10
+Nodes (21): aos, dexie, echarts, lucide-vue-next, @nuxt/fonts, dependencies, aos, dexie (+13 more)
 
 ### Community 108 - "bcryptjs"
 Cohesion: 0.40
@@ -1065,32 +1060,40 @@ Cohesion: 0.50
 Nodes (4): applyTheme(), theme, ThemeMode, useTheme()
 
 ### Community 115 - "nuxt"
-Cohesion: 0.22
-Nodes (13): CliUsageError, FlagSpec, ParsedArgs, readStdin(), describe(), importCmd(), mermaid(), readTextFileOrStdin() (+5 more)
+Cohesion: 0.33
+Nodes (5): Async Component Best Practices, Delay Guidelines, Prevent Loading Spinner Flicker, Task List, Use Lazy Hydration Strategies in SSR
+
+### Community 117 - "@nuxt/fonts"
+Cohesion: 0.47
+Nodes (5): arg(), CONFIRM, main(), prisma, resolveClient()
 
 ### Community 119 - "@nuxtjs/google-fonts"
 Cohesion: 0.05
 Nodes (41): 1. Use Modern Layout Methods, 2. Handle Edge Cases, 3. Use Semantic Sizing, 4. Test All Breakpoints, Advanced Flexbox Patterns, Advanced Spacing, Aspect Ratio and Object Fit, Auto-Fill and Auto-Fit Grids (+33 more)
 
 ### Community 123 - "@prisma/client"
-Cohesion: 0.09
-Nodes (26): ApiResponse, SyncResponse, convertTextToLabel(), ElementInput, sanitizeFilePath(), cleanElementsForShare(), concatBuffers(), exportToExcalidrawUrl() (+18 more)
+Cohesion: 0.07
+Nodes (41): ApiResponse, batchCreateElementsOnCanvas(), SyncResponse, convertTextToLabel(), ElementInput, normalizePoints(), prepareElement(), prepareElementUpdate() (+33 more)
 
 ### Community 126 - "@tailwindcss/vite"
 Cohesion: 0.07
 Nodes (27): cors, @excalidraw/excalidraw, @excalidraw/mermaid-to-excalidraw, express, mermaid, @modelcontextprotocol/sdk, react, react-dom (+19 more)
 
+### Community 128 - "@types/aos"
+Cohesion: 0.40
+Nodes (5): Best practices for `computed`, Keep computed getters pure (no side effects) and put side effects in watchers instead, Keep filtered/sorted derivations out of templates, Prefer `computed` over watcher-assigned derived refs, Use `computed` for reusable class/style logic
+
 ### Community 140 - "@types/jsonwebtoken"
-Cohesion: 0.19
-Nodes (24): start(), status(), stop(), foreignServiceError(), getHealth(), getSyncStatus(), markCanvasIdentityVerified(), pidFilePath() (+16 more)
+Cohesion: 0.18
+Nodes (22): start(), status(), stop(), foreignServiceError(), getHealth(), markCanvasIdentityVerified(), pidFilePath(), readPidFile() (+14 more)
 
 ### Community 141 - "vite"
-Cohesion: 0.25
-Nodes (12): countFiles(), expandHome(), findSkillSource(), installSkill(), resolveSkillsRoot(), resolveTarget(), Command, COMMANDS (+4 more)
+Cohesion: 0.17
+Nodes (16): CliUsageError, FlagSpec, ParsedArgs, countFiles(), expandHome(), findSkillSource(), installSkill(), resolveSkillsRoot() (+8 more)
 
 ### Community 142 - "@vite-pwa/nuxt"
-Cohesion: 0.09
-Nodes (24): app, canConnect(), clients, computeEdgePoint(), CreateElementSchema, __dirname, __filename, findExistingLoopbackListener() (+16 more)
+Cohesion: 0.05
+Nodes (61): app, canConnect(), clients, computeEdgePoint(), CreateElementSchema, __dirname, __filename, findExistingLoopbackListener() (+53 more)
 
 ### Community 143 - "prettier-plugin-tailwindcss"
 Cohesion: 0.08
@@ -1110,7 +1113,7 @@ Nodes (24): For /graphify add and --watch, For /graphify query, For the commit h
 
 ### Community 149 - "[id].put.ts"
 Cohesion: 0.11
-Nodes (16): Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `computed`, Best practices for `reactive`, Best practices for watchers, Choose the correct reactive declaration method for objects/arrays/map/set, Clean up async effects for watchers, Declare reactive state correctly (+8 more)
+Nodes (16): Async Component Best Practices, Delay Guidelines, Prevent Loading Spinner Flicker, Task List, Use Lazy Hydration Strategies in SSR, Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance., Avoid destructuring from `reactive()` directly, Best practices for `reactive` (+8 more)
 
 ### Community 157 - "index.vue"
 Cohesion: 0.08
@@ -1129,12 +1132,8 @@ Cohesion: 0.14
 Nodes (20): ApiResponse, App(), cleanElementForExcalidraw(), convertElementsPreservingImageProps(), ExcalidrawAPIRefValue, isFreedrawElement(), isImageElement(), isShapeContainerType() (+12 more)
 
 ### Community 179 - "elements.ts"
-Cohesion: 0.23
-Nodes (22): parseArgs(), add(), apply(), coerce(), del(), get(), lookupPath(), normalizePatchUpdate() (+14 more)
-
-### Community 180 - "types.ts"
-Cohesion: 0.11
-Nodes (21): elements, EXCALIDRAW_ELEMENT_TYPES, ExcalidrawArrowElement, ExcalidrawBinding, ExcalidrawBoundElement, ExcalidrawDiamondElement, ExcalidrawElement, ExcalidrawElementBase (+13 more)
+Cohesion: 0.20
+Nodes (30): parseArgs(), readStdin(), add(), apply(), coerce(), del(), get(), lookupPath() (+22 more)
 
 ### Community 181 - "devDependencies"
 Cohesion: 0.10
@@ -1441,8 +1440,8 @@ Cohesion: 0.29
 Nodes (7): How to Use This Skill, Step 1: Analyze User Requirements, Step 2: Generate Design System (REQUIRED), Step 2b: Persist Design System (Master + Overrides Pattern), Step 2c: Design Dials (optional), Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines (match your framework)
 
 ### Community 262 - "Teleport Component Best Practices"
-Cohesion: 0.29
-Nodes (6): Logical Hierarchy Is Preserved, Multiple Teleports to the Same Target, Responsive Layouts with `disabled`, Task List, Teleport Component Best Practices, Teleport Overlays Out of Transformed Containers
+Cohesion: 0.17
+Nodes (6): bookings, close(), onKey(), props, selected, selectedTicket
 
 ### Community 263 - "Transition Component Best Practices"
 Cohesion: 0.29
@@ -1528,10 +1527,6 @@ Nodes (6): Accessibility, Interaction, Layout, Light/Dark Mode, Pre-Delivery Che
 Cohesion: 0.33
 Nodes (5): 1. Component Architecture (architecture), 2. State Management (state), 3. Implementation Patterns (patterns), 4. React 19 APIs (react19), Sections
 
-### Community 284 - "Async Component Best Practices"
-Cohesion: 0.33
-Nodes (5): Async Component Best Practices, Delay Guidelines, Prevent Loading Spinner Flicker, Task List, Use Lazy Hydration Strategies in SSR
-
 ### Community 285 - "graphify reference: query, path, explain"
 Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
@@ -1545,8 +1540,8 @@ Cohesion: 0.33
 Nodes (5): 1. Component Architecture (architecture), 2. State Management (state), 3. Implementation Patterns (patterns), 4. React 19 APIs (react19), Sections
 
 ### Community 288 - "Async Component Best Practices"
-Cohesion: 0.33
-Nodes (5): Async Component Best Practices, Delay Guidelines, Prevent Loading Spinner Flicker, Task List, Use Lazy Hydration Strategies in SSR
+Cohesion: 0.29
+Nodes (6): Logical Hierarchy Is Preserved, Multiple Teleports to the Same Target, Responsive Layouts with `disabled`, Task List, Teleport Component Best Practices, Teleport Overlays Out of Transformed Containers
 
 ### Community 289 - "graphify reference: query, path, explain"
 Cohesion: 0.33
@@ -1585,8 +1580,8 @@ Cohesion: 0.08
 Nodes (23): author, email, name, bin, excalidraw-canvas, mcp-excalidraw-server, bugs, url (+15 more)
 
 ### Community 299 - "Avoid Expensive Operations in Updated Hook"
-Cohesion: 0.25
-Nodes (8): ansi_ljust(), format_ascii_box(), hex_to_ansi(), Convert hex color to ANSI True Color swatch (██) with fallback., Like str.ljust but accounts for zero-width ANSI escape sequences., Create a Unicode section separator: ├─── NAME ───...┤, Format design system as Unicode box with ANSI color swatches., section_header()
+Cohesion: 0.50
+Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
 
 ### Community 300 - "Alternative Solutions"
 Cohesion: 0.40
@@ -1657,12 +1652,12 @@ Cohesion: 0.08
 Nodes (25): 1. Forgetting to Map in @theme inline, 2. Wrong Opacity Syntax, 3. Mixing Approaches, 4. Not Testing Dark Mode, Common Pitfalls, Example: Badge Component, Further Customization, Migration Guide: Hardcoded Colors → CSS Variables (+17 more)
 
 ### Community 352 - "arrange.ts"
-Cohesion: 0.31
-Nodes (16): ALIGNMENTS, arrange(), DIRECTIONS, parseIds(), batchCreateElementsOnCanvas(), getElementFromCanvas(), updateElementOnCanvas(), alignElements() (+8 more)
+Cohesion: 0.35
+Nodes (14): ALIGNMENTS, arrange(), DIRECTIONS, parseIds(), getElementFromCanvas(), updateElementOnCanvas(), alignElements(), Alignment (+6 more)
 
 ### Community 353 - "canvas-client.ts"
-Cohesion: 0.24
-Nodes (15): snapshot(), assertCanvasIdentity(), batchCreateElementsStrict(), clearCanvas(), createElementOnCanvas(), deleteElementOnCanvas(), exportImage(), getSnapshot() (+7 more)
+Cohesion: 0.20
+Nodes (18): snapshot(), assertCanvasIdentity(), batchCreateElementsStrict(), clearCanvas(), createElementOnCanvas(), deleteElementOnCanvas(), exportImage(), getFiles() (+10 more)
 
 ### Community 354 - "Tailwind CSS Layout Patterns"
 Cohesion: 0.12
@@ -1685,12 +1680,8 @@ Cohesion: 0.13
 Nodes (15): scripts, build, build:frontend, build:server, build:types, canvas, cli, dev (+7 more)
 
 ### Community 359 - "run.ts"
-Cohesion: 0.17
-Nodes (7): heightClass, model, open, Option, props, rootRef, selectedLabel
-
-### Community 360 - "scene-io.ts"
-Cohesion: 0.23
-Nodes (13): getElements(), getFiles(), _decompress(), decompressFromBase64(), extractSceneJsonFromObsidianMd(), isObsidianExcalidrawMd(), nanoid8(), renameElementId() (+5 more)
+Cohesion: 0.13
+Nodes (15): heightClass, model, onReflow(), open, openPanel(), Option, panelRef, panelStyle (+7 more)
 
 ### Community 361 - "Tailwind CSS Accessibility Guidelines"
 Cohesion: 0.14
@@ -1715,10 +1706,6 @@ Nodes (7): Class names, mockup-window, Syntax, Config, CDN, daisyUI 5 install no
 ### Community 366 - "Dark Mode"
 Cohesion: 0.18
 Nodes (10): Basic Dark Mode Support, Container Queries (v4.1+), Dark Mode, Dark Mode Best Practices, Dark Mode Toggle (React), Mobile-First Responsive Layout, Responsive Card Component, Responsive Design Patterns (+2 more)
-
-### Community 367 - "WebSocketMessage"
-Cohesion: 0.18
-Nodes (11): BatchCreatedMessage, CanvasClearedMessage, ElementCreatedMessage, ElementDeletedMessage, ElementUpdatedMessage, ExportImageRequestMessage, InitialElementsMessage, MermaidConvertMessage (+3 more)
 
 ### Community 368 - "Tailwind CSS Animations & Transitions"
 Cohesion: 0.20
@@ -2091,8 +2078,8 @@ Cohesion: 0.40
 Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
 
 ### Community 468 - "format_ascii_box"
-Cohesion: 0.50
-Nodes (4): _detect_page_type(), _generate_intelligent_overrides(), Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
+Cohesion: 0.33
+Nodes (6): _detect_page_type(), format_page_override_md(), _generate_intelligent_overrides(), Format a page-specific override file with intelligent AI-generated content., Generate intelligent overrides based on page type using layered search., Detect page type from context and search results.
 
 ### Community 469 - "BookingSelectedItems.vue"
 Cohesion: 0.43
@@ -2450,22 +2437,18 @@ Nodes (4): Base modules, Customizing a component in CSS, daisyUI 5 usage rules, 
 Cohesion: 0.40
 Nodes (4): Avoid Expensive Operations in Updated Hook, Prefer Computed Properties for Derived Data, Task List, Valid Use Cases for Updated Hook
 
-### Community 562 - "ApiResponse"
-Cohesion: 0.40
-Nodes (5): ApiResponse, ElementResponse, ElementsResponse, MermaidConversionResponse, SyncResponse
-
 ## Knowledge Gaps
-- **2763 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2758 more)
+- **2772 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+2767 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **85 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `daisyUI 5` connect `daisyUI 5` to `SKILL.md`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dexie` to `vue`, `vue-echarts`, `@vueuse/core`, `workbox-window`, `@xmldom/xmldom`, `zod`, `Async Component Best Practices`, `html2pdf.js`, `dependencies`, `aos`, `types.ts`, `@peculiar/webcrypto`, `prisma`, `@prisma/adapter-mariadb`, `package.json`, `dotenv`, `nuxt`, `bcryptjs`, `gsap`, `mariadb`, `@nuxt/eslint`, `@nuxt/image`, `pinia`, `@pinia/nuxt`, `qrcode.vue`, `soap`, `@tanstack/vue-query`?**
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _2763 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2772 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `BookingDrawer.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.12648221343873517 - nodes in this community are weakly interconnected._
 - **Should `PurchaseDetailsModal.vue` be split into smaller, more focused modules?**

@@ -366,7 +366,7 @@
   "364": "check-local-bind.mjs",
   "365": "SKILL.md",
   "366": "Dark Mode",
-  "367": "WebSocketMessage",
+  "367": "scene.ts",
   "368": "Tailwind CSS Animations & Transitions",
   "369": "SKILL.md",
   "370": "Tailwind CSS Performance Optimization",
@@ -458,7 +458,7 @@
   "456": "repository",
   "457": "bin.ts",
   "458": "utils.ts",
-  "459": "qrcode.vue",
+  "459": "scene-io.ts",
   "460": "@peculiar/webcrypto",
   "461": "prisma",
   "462": "@prisma/adapter-mariadb",
@@ -561,11 +561,9 @@
   "559": "daisyUI 5",
   "560": "SKILL.md",
   "561": "Avoid Expensive Operations in Updated Hook",
-  "562": "ApiResponse",
+  "562": "Async Component Best Practices",
   "563": "utils.ts",
   "564": "aos",
-  "565": "@nuxtjs/google-fonts",
-  "566": "vite",
-  "567": "vite.config.ts",
-  "568": "@vite-pwa/nuxt"
+  "565": "aos",
+  "567": "vite.config.ts"
 }
