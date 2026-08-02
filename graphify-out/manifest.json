@@ -390,7 +390,7 @@
     "semantic_hash": ""
   },
   "app/pages/clientes/[id].vue": {
-    "mtime": 1785668170.932995,
+    "mtime": 1785688096.9707706,
     "ast_hash": "baa9807f84576f0913f72801f40c2528",
     "semantic_hash": ""
   },
@@ -405,7 +405,7 @@
     "semantic_hash": "ffb81f4734278c3000b5ef90692c2398"
   },
   "app/pages/clientes/index.vue": {
-    "mtime": 1785687503.8376927,
+    "mtime": 1785688096.971769,
     "ast_hash": "cd855a8de68ef09d8640ca9c540b4c5e",
     "semantic_hash": ""
   },
@@ -525,9 +525,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785633608.1233442,
-    "ast_hash": "a0ffc31693b9ac8a635c6cd93897198a",
-    "semantic_hash": "a0ffc31693b9ac8a635c6cd93897198a"
+    "mtime": 1785688090.8801632,
+    "ast_hash": "443e1243e1d9fdac930436309a09204b",
+    "semantic_hash": ""
   },
   "prisma.config.ts": {
     "mtime": 1774566811.3142967,
@@ -620,12 +620,12 @@
     "semantic_hash": "dc10cacbefc82e9274554a407d07876c"
   },
   "server/api/clients/[id].delete.ts": {
-    "mtime": 1773700173.8445184,
-    "ast_hash": "acd71a2ac11c7b11a3dd14d060d32dab",
-    "semantic_hash": "acd71a2ac11c7b11a3dd14d060d32dab"
+    "mtime": 1785689372.0518947,
+    "ast_hash": "bee9e7ca35fdedfd74d8a7d7bd3d5f9f",
+    "semantic_hash": ""
   },
   "server/api/clients/[id].get.ts": {
-    "mtime": 1785668067.3477962,
+    "mtime": 1785688097.1167672,
     "ast_hash": "840e5c3527411329603b0456def69a76",
     "semantic_hash": ""
   },
@@ -665,7 +665,7 @@
     "semantic_hash": "0ca1cd7867831e0ab16154d2219ca357"
   },
   "server/api/clients/index.get.ts": {
-    "mtime": 1785667830.7996135,
+    "mtime": 1785688097.1187665,
     "ast_hash": "6cd98dc7c36745210a52cff09c538caa",
     "semantic_hash": ""
   },
@@ -740,7 +740,7 @@
     "semantic_hash": ""
   },
   "server/api/sales/carts/index.ts": {
-    "mtime": 1785668058.7504294,
+    "mtime": 1785688097.1197698,
     "ast_hash": "4def5d1936cab28272917c6332ddef9c",
     "semantic_hash": ""
   },
@@ -3310,8 +3310,8 @@
     "semantic_hash": ""
   },
   "app/components/ui/AppSelect.vue": {
-    "mtime": 1785684290.4192917,
-    "ast_hash": "ab7d3a40c8cd46cd8f41d7be0055018c",
+    "mtime": 1785688096.9687667,
+    "ast_hash": "83e17e94b91cc8c5750ffae0ae838a46",
     "semantic_hash": ""
   },
   "app/components/ui/ThemeToggle.vue": {
@@ -3320,13 +3320,18 @@
     "semantic_hash": ""
   },
   "app/components/clients/ProfileAppointmentHistory.vue": {
-    "mtime": 1785668138.983283,
-    "ast_hash": "b601d71df7fcc3e4d37d3165f05838aa",
+    "mtime": 1785688096.9677658,
+    "ast_hash": "31878868582f6adf4c544a88ebff94d1",
     "semantic_hash": ""
   },
   "scripts/merge-client.ts": {
-    "mtime": 1785685925.4448216,
-    "ast_hash": "fb5788c60aa377a692418641fc424b66",
+    "mtime": 1785688097.1147695,
+    "ast_hash": "352e47843a9b434fa1ffbf66f9236c5d",
+    "semantic_hash": ""
+  },
+  "scripts/delete-client.sql": {
+    "mtime": 1785690157.035395,
+    "ast_hash": "3a8d89980e66e346166c4400426c2ee7",
     "semantic_hash": ""
   }
 }
