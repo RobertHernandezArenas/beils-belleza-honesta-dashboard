@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "app/components/clients/ProfileHeader.vue": {
-    "mtime": 1785710617.2112274,
-    "ast_hash": "803f25095c79a830370e8329836ab96c",
+    "mtime": 1785631486.934612,
+    "ast_hash": "da9d375e285853111978b167ebc125f8",
     "semantic_hash": ""
   },
   "app/components/clients/ProfileInfoSidebar.vue": {
@@ -210,7 +210,7 @@
     "semantic_hash": "a2446e59de6a2aa0e5ae577ced54cdc1"
   },
   "app/components/shared/EditableField.vue": {
-    "mtime": 1785710155.3315566,
+    "mtime": 1785631486.9441707,
     "ast_hash": "66f130e5488d2ff4ec5b5720bef16fa5",
     "semantic_hash": ""
   },
@@ -525,7 +525,7 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785710225.511056,
+    "mtime": 1785688090.8801632,
     "ast_hash": "443e1243e1d9fdac930436309a09204b",
     "semantic_hash": ""
   },
@@ -620,8 +620,8 @@
     "semantic_hash": "dc10cacbefc82e9274554a407d07876c"
   },
   "server/api/clients/[id].delete.ts": {
-    "mtime": 1785707321.578332,
-    "ast_hash": "978e35a3eb4f555bfb023160c416997e",
+    "mtime": 1785689372.0518947,
+    "ast_hash": "bee9e7ca35fdedfd74d8a7d7bd3d5f9f",
     "semantic_hash": ""
   },
   "server/api/clients/[id].get.ts": {
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "app/components/shared/PurchaseModalEdit.vue": {
-    "mtime": 1785787583.4723432,
-    "ast_hash": "00e191f5f7c976c52482bf564b30a890",
+    "mtime": 1785631486.9452045,
+    "ast_hash": "5b3696782c5c60456fb34f566610e5f2",
     "semantic_hash": ""
   },
   "app/components/shared/PurchaseModalHeader.vue": {
@@ -895,8 +895,8 @@
     "semantic_hash": ""
   },
   "app/components/shared/PurchaseModalView.vue": {
-    "mtime": 1785787421.1826928,
-    "ast_hash": "f1c473db9367493cd4d0039ff4242b55",
+    "mtime": 1785277284.077734,
+    "ast_hash": "f219f1e01a1f4df2b51277b75a054ac2",
     "semantic_hash": ""
   },
   "app/composables/useBookingForm.ts": {
@@ -905,8 +905,8 @@
     "semantic_hash": ""
   },
   "app/composables/usePurchaseModal.ts": {
-    "mtime": 1785787578.2511616,
-    "ast_hash": "e6a70ec28b556344a8c81d14b6ac71c7",
+    "mtime": 1785631486.9558947,
+    "ast_hash": "0f9690762f08d290df0024f1e6caabe7",
     "semantic_hash": ""
   },
   "app/utils/printHelpers.ts": {
@@ -3330,8 +3330,8 @@
     "semantic_hash": ""
   },
   "scripts/delete-client.sql": {
-    "mtime": 1785707321.57733,
-    "ast_hash": "f276b9d0a6b7c0bc8e07d9fc7fb9fb06",
+    "mtime": 1785690157.035395,
+    "ast_hash": "3a8d89980e66e346166c4400426c2ee7",
     "semantic_hash": ""
   }
 }

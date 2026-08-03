@@ -220,7 +220,7 @@ const blurActiveElement = () => {
 			</div>
 
 			<!-- 2. Commitment Level Stat Card (0 - 100) -->
-			<div class="stats overflow-visible bg-bg-muted/30 border border-border-default/80 shadow-xs rounded-2xl p-2 min-w-[280px] sm:min-w-[340px]">
+			<div class="stats overflow-visible bg-bg-muted/30 border border-border-default/80 shadow-xs rounded-2xl p-2 w-full sm:w-auto sm:min-w-[340px]">
 				<div class="stat overflow-visible p-3 flex items-center justify-between gap-4">
 					<div class="space-y-1">
 						<div class="stat-title text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-text-muted">
@@ -255,8 +255,8 @@ const blurActiveElement = () => {
 				</div>
 			</div>
 
-			<!-- 3. Actions (kebab menu) -->
-			<div class="flex items-center gap-3 shrink-0 self-start lg:self-center">
+			<!-- 3. Actions (kebab menu) — corner on mobile, inline on desktop -->
+			<div class="absolute right-5 top-5 flex items-center gap-3 shrink-0 lg:static lg:right-auto lg:top-auto lg:self-center">
 				<div class="dropdown dropdown-end relative z-50">
 					<button
 						tabindex="0"
