@@ -54,7 +54,7 @@ const formatCustomDate = (dateString: string) => {
             @click="emit('editItems')" 
             class="btn btn-xs btn-ghost text-primary gap-1"
           >
-            <Edit2 class="w-3 h-3" /> Editar Ítems
+            <Edit2 class="w-3 h-3" /> Editar compra
           </button>
        </div>
        <div v-if="cart.items?.length > 0" class="space-y-3">

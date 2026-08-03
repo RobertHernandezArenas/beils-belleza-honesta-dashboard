@@ -29,17 +29,20 @@ export function usePurchaseModal(emit: any) {
   const { data: catalogResults, isPending: isSearchingItems } = useQuery<any>({
     queryKey: ['catalog-search', searchQuery],
     queryFn: async () => {
-      const [prods, servs] = await Promise.all([
+      const [prods, servs, packs] = await Promise.all([
         $fetch<any[]>('/api/catalog/products'),
-        $fetch<any[]>('/api/services')
+        $fetch<any[]>('/api/services'),
+        $fetch<any[]>('/api/packages')
       ])
-      
+
       const q = searchQuery.value.toLowerCase()
       const all = [
         ...(prods || []).map(p => ({ ...p, item_type: 'product', item_id: p.product_id })),
-        ...(servs || []).map(s => ({ ...s, item_type: 'service', item_id: s.service_id }))
+        ...(servs || []).map(s => ({ ...s, item_type: 'service', item_id: s.service_id })),
+        // Bonos / paquetes (item_type 'package_sale' matches the TPV bono-sale flow)
+        ...(packs || []).map(pk => ({ ...pk, item_type: 'package_sale', item_id: pk.package_id, code: 'BONO' }))
       ]
-      
+
       if (!q) return all.slice(0, 10)
       return all.filter(i => i.name.toLowerCase().includes(q) || i.sku?.toLowerCase().includes(q) || i.code?.toLowerCase().includes(q))
     },

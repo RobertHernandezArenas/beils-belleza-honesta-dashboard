@@ -23,7 +23,7 @@ const emit = defineEmits<{
             <button @click="emit('cancel')" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
                 <ArrowLeft class="w-4 h-4" />
             </button>
-            <h3 class="text-text-primary font-bold text-lg">Editando Ítems</h3>
+            <h3 class="text-text-primary font-bold text-lg">Editando compra</h3>
         </div>
         <button @click="emit('searchItems')" class="btn btn-sm btn-primary rounded-xl gap-2 font-bold shadow-sm shadow-primary/20">
             <Plus class="w-4 h-4" /> Añadir Concepto
