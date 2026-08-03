@@ -79,6 +79,10 @@ export function usePurchaseModal(emit: any) {
       }),
     onSuccess: (updatedCart: any) => {
       queryClient.invalidateQueries({ queryKey: ['sales'] })
+      // A bono line may have provisioned a ClientPackage — refresh everywhere it's shown
+      queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
+      queryClient.invalidateQueries({ queryKey: ['client-packages-tpv'] })
+      queryClient.invalidateQueries({ queryKey: ['client'] })
       cart.value = { ...cart.value, ...updatedCart }
       isEditingItems.value = false
       emit('success')
