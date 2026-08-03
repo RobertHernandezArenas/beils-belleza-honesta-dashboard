@@ -84,6 +84,63 @@ export default defineEventHandler(async event => {
 					data: newItems.map((item: any) => ({ ...item, cart_id: id })),
 				})
 
+				// Provision a ClientPackage for each NEWLY added bono/paquete line
+				// (item_type 'package_sale'). We compare against the cart's previous
+				// bono lines so re-saving an edit never duplicates existing bonos.
+				const provisionUserId = body.user_id ?? currentCart.user_id
+				const countPkg = (items: any[]) => {
+					const m = new Map<string, number>()
+					for (const it of items || []) {
+						if ((it.item_type || '').toLowerCase() === 'package_sale') {
+							m.set(it.item_id, (m.get(it.item_id) || 0) + (Number(it.quantity) || 1))
+						}
+					}
+					return m
+				}
+				const prevPkg = countPkg(currentCart.items)
+				const nextPkg = countPkg(body.items)
+				if (provisionUserId) {
+					for (const [pkgId, nextCount] of nextPkg) {
+						const toCreate = nextCount - (prevPkg.get(pkgId) || 0)
+						if (toCreate <= 0) continue
+						const catalogPkg = await tx.package.findUnique({
+							where: { package_id: pkgId },
+							include: { items: true },
+						})
+						if (!catalogPkg) continue
+						const totalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items?.length
+							? catalogPkg.items.filter(i => i.item_type === 'SERVICE').reduce((s, i) => s + (i.quantity || 0), 0)
+							: catalogPkg.total_sessions
+						const expiryDate = new Date()
+						expiryDate.setMonth(expiryDate.getMonth() + 6)
+						for (let n = 0; n < toCreate; n++) {
+							const cp = await tx.clientPackage.create({
+								data: {
+									user_id: provisionUserId,
+									package_id: catalogPkg.package_id,
+									total_sessions: totalServiceSessions,
+									remaining_sessions: totalServiceSessions,
+									expiry_date: expiryDate,
+									status: 'ACTIVE',
+								},
+							})
+							if (catalogPkg.items?.length) {
+								await tx.clientPackageItem.createMany({
+									data: catalogPkg.items.map(i => ({
+										client_package_id: cp.client_package_id,
+										package_item_id: i.package_item_id,
+										name: i.name,
+										item_type: i.item_type,
+										quantity_total: i.quantity,
+										quantity_remaining: i.quantity,
+										duration: i.duration,
+									})),
+								})
+							}
+						}
+					}
+				}
+
 				total = Number((total - discount).toFixed(2))
 				if (total < 0) total = 0
 			} else if (body.discount !== undefined) {
