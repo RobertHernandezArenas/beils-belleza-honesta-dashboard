@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type { Booking } from '~~/shared/types/domain'
 
 export const useAgendaStore = defineStore('agenda', () => {
     // --- State ---
@@ -11,7 +12,7 @@ export const useAgendaStore = defineStore('agenda', () => {
     const isBookingDetailsOpen = ref(false)
     
     // Current payload
-    const selectedBooking = ref<any | null>(null)
+    const selectedBooking = ref<Booking | null>(null)
     const prefillDate = ref<Date | null>(null)
     const prefillTime = ref<string | null>(null)
     const prefillClientId = ref<string | null>(null)
@@ -28,7 +29,7 @@ export const useAgendaStore = defineStore('agenda', () => {
         viewMode.value = mode
     }
 
-    function openBookingDrawer(booking: any = null, defaultDate: Date | null = null, defaultTime: string | null = null, defaultClientId: string | null = null) {
+    function openBookingDrawer(booking: Booking | null = null, defaultDate: Date | null = null, defaultTime: string | null = null, defaultClientId: string | null = null) {
         selectedBooking.value = booking
         prefillDate.value = defaultDate
         prefillTime.value = defaultTime
@@ -46,7 +47,7 @@ export const useAgendaStore = defineStore('agenda', () => {
         }, 300) // Clear after animation
     }
 
-    function openBookingDetails(booking: any) {
+    function openBookingDetails(booking: Booking) {
         selectedBooking.value = booking
         isBookingDetailsOpen.value = true
     }
