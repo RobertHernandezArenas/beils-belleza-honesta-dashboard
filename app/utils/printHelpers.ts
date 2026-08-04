@@ -1,8 +1,10 @@
-export const printReceipt = (cart: any) => {
+import type { Sale, SaleItem } from '~~/shared/types/domain'
+
+export const printReceipt = (cart: Sale) => {
   if (!cart) return
 
   const dateStr = new Date(cart.created_at).toLocaleString()
-  const itemsHtml = cart.items?.map((item: any) => `
+  const itemsHtml = cart.items?.map((item: SaleItem) => `
     <tr>
       <td style="text-align: left;">${item.name} <br><small style="color:#666">IVA aplicado: ${item.tax_rate}%</small></td>
       <td style="text-align: center;">${item.quantity}</td>
@@ -35,7 +37,7 @@ export const printReceipt = (cart: any) => {
         <div class="center bold">TICKET DE COMPRA</div>
         <div class="divider"></div>
         <div><strong>Fecha:</strong> ${dateStr}</div>
-        <div><strong>Ticket:</strong> #${cart.cart_id.split('-')[0].toUpperCase()}</div>
+        <div><strong>Ticket:</strong> #${(cart.cart_id.split('-')[0] ?? '').toUpperCase()}</div>
         <div class="divider"></div>
 
         <div class="bold">Conceptos de Compra:</div>
@@ -104,17 +106,16 @@ export const printReceipt = (cart: any) => {
   }, 250)
 }
 
-export const printInvoice = (cart: any) => {
+export const printInvoice = (cart: Sale) => {
   if (!cart) return
   
   const dateStr = new Date(cart.created_at).toLocaleString()
   
   // Calculate Base Imponible by Tax Rate
   const taxes: Record<number, { base: number, quota: number }> = {}
-  let totalBase = 0
-  let totalQuota = 0
+  let totalBase = 0
 
-  cart.items?.forEach((item: any) => {
+  cart.items?.forEach((item: SaleItem) => {
     const rate = item.tax_rate || 0
     if (!taxes[rate]) taxes[rate] = { base: 0, quota: 0 }
     
@@ -123,12 +124,11 @@ export const printInvoice = (cart: any) => {
     
     taxes[rate].base += baseObj
     taxes[rate].quota += quotaObj
-    totalBase += baseObj
-    totalQuota += quotaObj
+    totalBase += baseObj
   })
 
   // Format Items
-  const itemsHtml = cart.items?.map((item: any) => {
+  const itemsHtml = cart.items?.map((item: SaleItem) => {
     const rate = item.tax_rate || 0
     const itemUnitPriceBase = item.unit_price / (1 + (rate / 100))
     return `
@@ -164,7 +164,7 @@ export const printInvoice = (cart: any) => {
   const clientDoc = cart.user?.document_number ? `<br>NIF/NIE: ${cart.user.document_number}` : ''
   const clientEmail = cart.user?.email ? `<br>Email: ${cart.user.email}` : ''
   
-  const invoiceNumber = cart.invoice_number || `#${cart.cart_id.split('-')[0].toUpperCase()}`
+  const invoiceNumber = cart.invoice_number || `#${(cart.cart_id.split('-')[0] ?? '').toUpperCase()}`
   const invoiceTitle = cart.invoice_type === 'F1' ? 'FACTURA' : cart.invoice_type === 'F2' ? 'FACTURA SIMPLIFICADA' : 'FACTURA / TICKET'
 
   const html = `
