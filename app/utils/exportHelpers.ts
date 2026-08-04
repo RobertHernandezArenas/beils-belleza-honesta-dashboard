@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
-import type { TicketSeriesRow } from '~/composables/useSales'
+import type { TicketSeriesRow, SalesMonthGroup } from '~/composables/useSales'
+import type { Sale } from '~~/shared/types/domain'
 
 export function exportVentasCsv({
 	filteredSales,
@@ -12,14 +13,14 @@ export function exportVentasCsv({
 	getPaymentMethodBadge,
 	displayToast
 }: {
-	filteredSales: any[]
-	reportData: { months: any[]; grandTotal: number }
+	filteredSales: Sale[]
+	reportData: { months: SalesMonthGroup[]; grandTotal: number }
 	dailySeries: TicketSeriesRow[]
 	weeklySeries: TicketSeriesRow[]
 	monthlySeries: TicketSeriesRow[]
-	getTicketDisplay: (sale: any) => string
+	getTicketDisplay: (sale: Sale) => string
 	formatCustomDate: (dateString: string) => string
-	getPaymentMethodBadge: (method: string) => { label: string; class: string }
+	getPaymentMethodBadge: (method: string | null | undefined) => { label: string; class: string }
 	displayToast: (msg: string, type: 'success' | 'error') => void
 }) {
 	if (!filteredSales.length) return
@@ -29,7 +30,7 @@ export function exportVentasCsv({
 			.map(([method, count]) => `${count} ${method}`)
 			.join(', ')
 
-	const escapeCsvValue = (value: any) => {
+	const escapeCsvValue = (value: unknown) => {
 		const str = String(value ?? '')
 		if (/[";\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`
 		return str
@@ -48,7 +49,7 @@ export function exportVentasCsv({
 
 	try {
 		const header = ['ID Ticket', 'Fecha y hora', 'Método de pago', 'Total (€)']
-		const rows = filteredSales.map((s: any) => [
+		const rows = filteredSales.map((s: Sale) => [
 			getTicketDisplay(s),
 			formatCustomDate(s.created_at),
 			getPaymentMethodBadge(s.payment_method).label,
@@ -76,7 +77,7 @@ export function exportVentasCsv({
 			lines.push([title])
 			lines.push(seriesHeader)
 			rows.forEach(row => {
-				lines.push([row.label, `${row.firstTicket} - ${row.lastTicket}`, row.count, formatMethodBreakdown(row.methodCounts), row.total.toFixed(2).replace('.', ',')])
+				lines.push([row.label, `${row.firstTicket} - ${row.lastTicket}`, String(row.count), formatMethodBreakdown(row.methodCounts), row.total.toFixed(2).replace('.', ',')])
 			})
 		}
 
@@ -106,15 +107,15 @@ export async function exportVentasPdf({
 	formatCurrency,
 	displayToast
 }: {
-	filteredSales: any[]
-	reportData: { months: any[]; grandTotal: number }
+	filteredSales: Sale[]
+	reportData: { months: SalesMonthGroup[]; grandTotal: number }
 	dailySeries: TicketSeriesRow[]
 	weeklySeries: TicketSeriesRow[]
 	monthlySeries: TicketSeriesRow[]
 	isGeneratingPdf: Ref<boolean>
-	getTicketDisplay: (sale: any) => string
+	getTicketDisplay: (sale: Sale) => string
 	formatCustomDate: (dateString: string) => string
-	getPaymentMethodBadge: (method: string) => { label: string; class: string }
+	getPaymentMethodBadge: (method: string | null | undefined) => { label: string; class: string }
 	formatCurrency: (val: number) => string
 	displayToast: (msg: string, type: 'success' | 'error') => void
 }) {
@@ -180,7 +181,7 @@ export async function exportVentasPdf({
 
 		const totalColWidth = columns[3]!.width
 
-		filteredSales.forEach((s: any) => {
+		filteredSales.forEach((s: Sale) => {
 			ensureSpace(6)
 			const cells = [getTicketDisplay(s), formatCustomDate(s.created_at), getPaymentMethodBadge(s.payment_method).label]
 

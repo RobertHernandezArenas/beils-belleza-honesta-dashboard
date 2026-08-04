@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import type { Booking, Client, Sale, CatalogItem } from '~~/shared/types/domain'
+import type { IncomingLineItem } from '~~/shared/types/line-item'
 
 export function useTpv() {
 	const queryClient = useQueryClient()
@@ -13,8 +15,8 @@ export function useTpv() {
 	const clientSearch = ref('')
 
 	// Cart State
-	const cartItems = ref<any[]>([])
-	const selectedClient = ref<any | null>(null)
+	const cartItems = ref<IncomingLineItem[]>([])
+	const selectedClient = ref<Partial<Client> | null>(null)
 	const discountAmount = ref<number>(0)
 	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('card')
 
@@ -34,36 +36,36 @@ export function useTpv() {
 	})
 
 	// Fetch Data
-	const { data: clientsResponse } = useQuery<any>({
+	const { data: clientsResponse } = useQuery<{ data: Client[] }>({
 		queryKey: ['clients-tpv'],
-		queryFn: () => $fetch('/api/clients', { query: { limit: 500 } }),
+		queryFn: () => $fetch<{ data: Client[] }>('/api/clients', { query: { limit: 500 } }),
 	})
 
 	const clients = computed(() => clientsResponse.value?.data || [])
 
-	const { data: products } = useQuery<any[]>({
+	const { data: products } = useQuery<CatalogItem[]>({
 		queryKey: ['products-tpv'],
 		queryFn: () => $fetch('/api/catalog/products'),
 	})
 
-	const { data: services } = useQuery<any[]>({
+	const { data: services } = useQuery<CatalogItem[]>({
 		queryKey: ['services-tpv'],
 		queryFn: () => $fetch('/api/services'),
 	})
 
 	// Sellable bonos/packages catalog
-	const { data: packages } = useQuery<any[]>({
+	const { data: packages } = useQuery<CatalogItem[]>({
 		queryKey: ['packages-tpv'],
 		queryFn: () => $fetch('/api/packages'),
 	})
 
 	// Active bonos/packages owned by the selected client (for consuming sessions)
-	const { data: clientPackages } = useQuery<any[]>({
+	const { data: clientPackages } = useQuery<CatalogItem[]>({
 		queryKey: ['client-packages-tpv', computed(() => selectedClient.value?.user_id)],
 		queryFn: async () => {
 			const id = selectedClient.value?.user_id
 			if (!id) return []
-			return await $fetch<any[]>(`/api/clients/${id}/packages`)
+			return await $fetch<CatalogItem[]>(`/api/clients/${id}/packages`)
 		},
 		enabled: computed(() => !!selectedClient.value?.user_id),
 	})
@@ -88,7 +90,7 @@ export function useTpv() {
 		processedBookingId.value = bookingId
 
 		try {
-			const bookingData: any = await $fetch(`/api/agenda/bookings/${bookingId}`)
+			const bookingData = await $fetch<Booking>(`/api/agenda/bookings/${bookingId}`)
 			if (!bookingData) return
 
 			// 1. Set Selected Client (Reliably!)
@@ -99,15 +101,15 @@ export function useTpv() {
 					surname: bookingData.client.surname || '',
 					email: bookingData.client.email || '',
 					phone: bookingData.client.phone || '',
-					avatar: bookingData.client.avatar || null
+					avatar: bookingData.client.avatar || undefined
 				}
 			} else if (bookingData.client_id) {
-				const found = (cls || []).find((c: any) => c.user_id === bookingData.client_id)
+				const found = (cls || []).find((c: Client) => c.user_id === bookingData.client_id)
 				if (found) {
 					selectedClient.value = found
 				} else {
 					try {
-						const directClient: any = await $fetch(`/api/clients/${bookingData.client_id}`)
+						const directClient = await $fetch<Client>(`/api/clients/${bookingData.client_id}`)
 						if (directClient) selectedClient.value = directClient
 					} catch (e) {
 						console.error('Failed fallback client fetch:', e)
@@ -116,18 +118,18 @@ export function useTpv() {
 			}
 
 			// 2. Set Cart Items from Booking Items
-			const itemsToAdd: any[] = []
+			const itemsToAdd: IncomingLineItem[] = []
 			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
 				for (const it of bookingData.booking_items) {
-					let foundItem: any = null
+					let foundItem: CatalogItem | null | undefined = null
 					const type = (it.item_type || 'service').toLowerCase()
 					
 					if (type === 'service') {
-						foundItem = (svcs || []).find((s: any) => s.service_id === it.item_id)
+						foundItem = (svcs || []).find((s: CatalogItem) => s.service_id === it.item_id)
 					} else if (type === 'product') {
-						foundItem = (prds || []).find((p: any) => p.product_id === it.item_id)
+						foundItem = (prds || []).find((p: CatalogItem) => p.product_id === it.item_id)
 					} else if (type === 'package_sale') {
-						foundItem = (pkgs || []).find((p: any) => p.package_id === it.item_id)
+						foundItem = (pkgs || []).find((p: CatalogItem) => p.package_id === it.item_id)
 					}
 
 					let unitPrice = 0
@@ -173,8 +175,8 @@ export function useTpv() {
 
 	// Process Checkout Mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
-		mutationFn: async (payload: any) => {
-			const res: any = await $fetch('/api/sales/carts', {
+		mutationFn: async (payload: { user_id?: string; status: string; payment_method: string; discount: number; items: IncomingLineItem[]; booking_id?: string }) => {
+			const res = await $fetch<Sale>('/api/sales/carts', {
 				method: 'POST',
 				body: payload,
 			})
@@ -212,7 +214,7 @@ export function useTpv() {
 			queryClient.invalidateQueries({ queryKey: ['client-packages-tpv'] })
 			clearCart()
 		},
-		onError: (error: any) => {
+		onError: (error: { data?: { statusMessage?: string } }) => {
 			displayToast(error.data?.statusMessage || 'Error al procesar la venta', 'error')
 		},
 	})
@@ -223,17 +225,17 @@ export function useTpv() {
 
 		if (activeTab.value === 'products' && products.value) {
 			return products.value.filter(
-				(p: any) => p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q),
+				(p: CatalogItem) => p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q),
 			)
 		}
 		if (activeTab.value === 'services' && services.value) {
 			return services.value.filter(
-				(s: any) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
+				(s: CatalogItem) => s.name.toLowerCase().includes(q) || s.code?.toLowerCase().includes(q),
 			)
 		}
 		if (activeTab.value === 'packages' && packages.value) {
 			return packages.value.filter(
-				(p: any) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
+				(p: CatalogItem) => p.name.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q),
 			)
 		}
 		return []
@@ -244,7 +246,7 @@ export function useTpv() {
 		const q = clientSearch.value.toLowerCase()
 		return clients.value
 			.filter(
-				(c: any) =>
+				(c: Client) =>
 					c.name.toLowerCase().includes(q) ||
 					c.surname.toLowerCase().includes(q) ||
 					c.phone?.includes(q) ||
@@ -254,7 +256,7 @@ export function useTpv() {
 	})
 
 	// Cart Operations
-	const addToCart = (item: any, type: string) => {
+	const addToCart = (item: CatalogItem, type: string) => {
 		// A catalog package is SOLD (item_type 'package_sale'), not consumed.
 		if (type === 'package') {
 			addPackageSale(item)
@@ -262,9 +264,9 @@ export function useTpv() {
 		}
 
 		let itemId = ''
-		if (type === 'service') itemId = item.service_id
-		else if (type === 'product') itemId = item.product_id
-		else itemId = item.product_id || item.service_id
+		if (type === 'service') itemId = item.service_id || ''
+		else if (type === 'product') itemId = item.product_id || ''
+		else itemId = item.product_id || item.service_id || ''
 
 		const existing = cartItems.value.find(
 			i => i.item_id === itemId
@@ -286,7 +288,7 @@ export function useTpv() {
 	}
 
 	// Sell a bono/package from the catalog (assigned to the client on checkout)
-	const addPackageSale = (pkg: any) => {
+	const addPackageSale = (pkg: CatalogItem) => {
 		const existing = cartItems.value.find(
 			i => i.item_id === pkg.package_id && i.item_type === 'package_sale',
 		)
@@ -294,7 +296,7 @@ export function useTpv() {
 			existing.quantity++
 		} else {
 			cartItems.value.push({
-				item_id: pkg.package_id,
+				item_id: pkg.package_id || '',
 				item_type: 'package_sale',
 				name: pkg.name,
 				unit_price: Number(pkg.price || 0),
@@ -306,7 +308,7 @@ export function useTpv() {
 	}
 
 	// Consume one session of a bono/package the client already owns (0 € line)
-	const consumeClientPackage = (pkg: any) => {
+	const consumeClientPackage = (pkg: CatalogItem) => {
 		const remaining = Number(pkg.remaining_sessions || 0)
 		const alreadyInCart = cartItems.value
 			.filter(i => i.item_id === pkg.client_package_id && i.item_type === 'package')
@@ -323,7 +325,7 @@ export function useTpv() {
 			existing.quantity++
 		} else {
 			cartItems.value.push({
-				item_id: pkg.client_package_id,
+				item_id: pkg.client_package_id || '',
 				item_type: 'package',
 				name: `[SESIÓN BONO] ${pkg.name}`,
 				unit_price: 0,
@@ -360,7 +362,7 @@ export function useTpv() {
 		processedBookingId.value = null
 	}
 
-	const selectClient = (client: any) => {
+	const selectClient = (client: Client) => {
 		selectedClient.value = client
 		clientSearch.value = ''
 	}

@@ -1,7 +1,15 @@
 import { ref, computed, watch } from 'vue'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
+import type { Sale, SaleItem } from '~~/shared/types/domain'
 import { useSalesAnalytics } from './useSalesAnalytics'
 import { exportVentasCsv, exportVentasPdf } from '~/utils/exportHelpers'
+
+export interface SalesMonthGroup {
+	key: string
+	label: string
+	methods: Map<string, number>
+	total: number
+}
 
 export interface TicketSeriesRow {
 	start: Date
@@ -14,8 +22,6 @@ export interface TicketSeriesRow {
 }
 
 export function useSales() {
-	const queryClient = useQueryClient()
-
 	const searchQuery = ref('')
 	const filterDateMode = ref<'single' | 'range'>('single')
 	const filterDateSingle = ref('')
@@ -44,14 +50,14 @@ export function useSales() {
 		}, 4000)
 	}
 
-	const getTicketDisplay = (sale: any) => {
-		return sale.invoice_number ? sale.invoice_number : `BBH-${new Date(sale.created_at).getFullYear()}-${sale.cart_id.split('-')[0].substring(0, 4)}`
+	const getTicketDisplay = (sale: Sale) => {
+		return sale.invoice_number ? sale.invoice_number : `BBH-${new Date(sale.created_at).getFullYear()}-${(sale.cart_id.split('-')[0] ?? '').substring(0, 4)}`
 	}
 
 	// Fetch sales
-	const { data: sales, isPending } = useQuery<any[]>({
+	const { data: sales, isPending } = useQuery<Sale[]>({
 		queryKey: ['sales', 'completed'],
-		queryFn: () => $fetch('/api/sales/carts', { query: { status: 'completed' } }),
+		queryFn: () => $fetch<Sale[]>('/api/sales/carts', { query: { status: 'completed' } }),
 	})
 
 	const filteredSales = computed(() => {
@@ -60,14 +66,14 @@ export function useSales() {
 
 		if (searchQuery.value) {
 			const query = searchQuery.value.toLowerCase()
-			result = result.filter((s: any) => {
+			result = result.filter((s: Sale) => {
 				const clientName = s.user ? `${s.user.name} ${s.user.surname}`.toLowerCase() : ''
 				return clientName.includes(query) || s.cart_id.toLowerCase().includes(query)
 			})
 		}
 
 		if (filterDateMode.value === 'single' && filterDateSingle.value) {
-			result = result.filter((s: any) => {
+			result = result.filter((s: Sale) => {
 				const saleDate = new Date(s.created_at).toISOString().split('T')[0]
 				return saleDate === filterDateSingle.value
 			})
@@ -76,7 +82,7 @@ export function useSales() {
 			const end = filterDateRange.value.end ? new Date(filterDateRange.value.end) : null
 			if (end) end.setHours(23, 59, 59, 999)
 
-			result = result.filter((s: any) => {
+			result = result.filter((s: Sale) => {
 				const saleDate = new Date(s.created_at)
 				if (start && saleDate < start) return false
 				if (end && saleDate > end) return false
@@ -85,11 +91,11 @@ export function useSales() {
 		}
 
 		if (filterPaymentMethod.value !== 'all') {
-			result = result.filter((s: any) => s.payment_method === filterPaymentMethod.value)
+			result = result.filter((s: Sale) => s.payment_method === filterPaymentMethod.value)
 		}
 
 		// Sorting
-		result = [...result].sort((a: any, b: any) => {
+		result = [...result].sort((a: Sale, b: Sale) => {
 			const modifier = sortOrder.value === 'asc' ? 1 : -1
 			if (sortKey.value === 'date') {
 				return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * modifier
@@ -143,7 +149,7 @@ export function useSales() {
 		}
 	}
 
-	const getPaymentMethodBadge = (method: string) => {
+	const getPaymentMethodBadge = (method: string | null | undefined) => {
 		const methods: Record<string, { label: string; class: string }> = {
 			cash: { label: 'EFECTIVO', class: 'bg-emerald-100 text-emerald-800' },
 			card: { label: 'TARJETA', class: 'bg-[#F6EFEA] text-[#9D7D62] border-[#E8DACD]' },
@@ -152,12 +158,13 @@ export function useSales() {
 			stripe: { label: 'STRIPE', class: 'bg-indigo-100 text-indigo-800' },
 			bizum: { label: 'BIZUM', class: 'bg-sky-100 text-sky-800' },
 		}
-		return methods[method] || { label: method.toUpperCase(), class: 'bg-neutral text-neutral-content' }
+		const key = method || ''
+		return methods[key] || { label: key.toUpperCase(), class: 'bg-neutral text-neutral-content' }
 	}
 
-	const getTotalItems = (items: any[]) => {
+	const getTotalItems = (items: SaleItem[]) => {
 		if (!items) return 0
-		return items.reduce((acc: number, item: any) => acc + item.quantity, 0)
+		return items.reduce((acc: number, item: SaleItem) => acc + item.quantity, 0)
 	}
 
 	const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
@@ -173,10 +180,10 @@ export function useSales() {
 	}
 
 	const reportData = computed(() => {
-		const monthGroups = new Map<string, { key: string; label: string; methods: Map<string, number>; total: number }>()
+		const monthGroups = new Map<string, SalesMonthGroup>()
 		let grandTotal = 0
 
-		filteredSales.value.forEach((s: any) => {
+		filteredSales.value.forEach((s: Sale) => {
 			grandTotal += s.total
 
 			const d = new Date(s.created_at)
@@ -201,9 +208,9 @@ export function useSales() {
 	})
 
 	const buildTicketSeries = (periodStart: (d: Date) => Date, formatLabel: (start: Date) => string): TicketSeriesRow[] => {
-		const groups = new Map<number, { start: Date; sales: any[] }>()
+		const groups = new Map<number, { start: Date; sales: Sale[] }>()
 
-		filteredSales.value.forEach((s: any) => {
+		filteredSales.value.forEach((s: Sale) => {
 			const start = periodStart(new Date(s.created_at))
 			const key = start.getTime()
 			if (!groups.has(key)) groups.set(key, { start, sales: [] })
@@ -223,8 +230,8 @@ export function useSales() {
 			return {
 				start: group.start,
 				label: formatLabel(group.start),
-				firstTicket: getTicketDisplay(sorted[0]),
-				lastTicket: getTicketDisplay(sorted[sorted.length - 1]),
+				firstTicket: getTicketDisplay(sorted[0]!),
+				lastTicket: getTicketDisplay(sorted[sorted.length - 1]!),
 				count: sorted.length,
 				methodCounts,
 				total,

@@ -98,6 +98,22 @@ export interface ClientPackageItem {
 	duration: number
 }
 
+// Permissive shape for a catalog row as consumed by the TPV/purchase UIs,
+// where products, services and packages are handled polymorphically (each has
+// its own *_id). Fields are optional so a single handler can accept any of them.
+export interface CatalogItem {
+	product_id?: string
+	service_id?: string
+	package_id?: string
+	client_package_id?: string
+	name: string
+	price?: number
+	tax_rate?: number
+	sku?: string | null
+	code?: string | null
+	remaining_sessions?: number
+}
+
 export interface ClientPackage {
 	client_package_id: string
 	user_id: string

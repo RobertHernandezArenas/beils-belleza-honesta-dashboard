@@ -36,6 +36,7 @@
 		formatCurrency,
 		displayToast,
 		increaseItemQty,
+		decreaseItemQty,
 	} = useTpv()
 
 	// Mobile navigation tab: 'catalog' | 'cart'
@@ -124,7 +125,7 @@
 				@select-client="selectClient"
 				@remove-client="selectedClient = null"
 				@remove-item="removeFromCart"
-				@decrease-item-qty="(idx) => cartItems[idx].quantity > 1 ? cartItems[idx].quantity-- : removeFromCart(idx)"
+				@decrease-item-qty="decreaseItemQty"
 				@increase-item-qty="increaseItemQty"
 				@checkout="handleCheckout"
 				@avatar-error="handleAvatarError"
