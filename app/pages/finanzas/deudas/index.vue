@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { Landmark, Search, MoreVertical, CheckCircle2, AlertCircle } from 'lucide-vue-next'
+	import { Landmark, Search, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AppSelect from '~/components/ui/AppSelect.vue'
 

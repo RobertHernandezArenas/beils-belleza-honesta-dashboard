@@ -2,7 +2,6 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import {
     CalendarDays,
-    Search,
     ChevronLeft,
     ChevronRight,
     PanelLeftClose,
@@ -21,7 +20,6 @@ const {
     store,
     selectedDate,
     viewMode,
-    searchQuery,
     deleteModalOpen,
     bookingToDelete,
     toastMessage,
@@ -31,7 +29,6 @@ const {
     isDeletingBooking,
     prevPeriod,
     nextPeriod,
-    setToday,
     displayBookings,
     confirmDelete,
     handleActualDelete,

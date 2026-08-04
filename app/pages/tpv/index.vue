@@ -29,12 +29,10 @@
 		addToCart,
 		consumeClientPackage,
 		removeFromCart,
-		clearCart,
 		selectClient,
 		handleCheckout,
 		handleAvatarError,
 		formatCurrency,
-		displayToast,
 		increaseItemQty,
 		decreaseItemQty,
 	} = useTpv()

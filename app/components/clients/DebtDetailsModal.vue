@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { X, Receipt, CheckCircle, Clock, CreditCard, Banknote, Printer } from 'lucide-vue-next'
+import { X, Receipt, CheckCircle, CreditCard, Banknote, Printer } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()

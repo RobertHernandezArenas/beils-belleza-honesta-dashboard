@@ -7,7 +7,6 @@
 		Wallet,
 		Tag,
 		ChevronRight,
-		Check,
 		ShoppingBag,
 		Smartphone,
 		ArrowRightLeft,
@@ -25,7 +24,7 @@
 		formatCurrency: (val: number) => string
 	}
 
-	const props = defineProps<Props>()
+	defineProps<Props>()
 
 	const emit = defineEmits<{
 		(e: 'select-client', client: any): void

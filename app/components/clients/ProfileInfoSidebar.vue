@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { 
   MapPin, 
-  UserCircle, 
   FileSignature, 
   Calendar,
   Eye,
@@ -13,7 +12,7 @@ import EditableField from '~/components/shared/EditableField.vue'
 import { useI18n } from 'vue-i18n'
 
 
-const props = defineProps({
+defineProps({
   client: {
     type: Object as PropType<any>,
     required: true

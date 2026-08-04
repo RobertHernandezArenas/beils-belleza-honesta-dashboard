@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { Search, User as UserIcon, Trash2, FileCheck } from 'lucide-vue-next'
 
-const props = defineProps<{
+defineProps<{
 	modelValue: string | null // Client ID
 	selectedClient: any | null
 	disabled?: boolean

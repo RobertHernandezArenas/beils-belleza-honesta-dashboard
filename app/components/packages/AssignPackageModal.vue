@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { Package, X, Check, Calendar, Sparkles } from 'lucide-vue-next'
+import { Package, X, Check, Sparkles } from 'lucide-vue-next'
 import AppSelect from '~/components/ui/AppSelect.vue'
 
 const props = defineProps<{

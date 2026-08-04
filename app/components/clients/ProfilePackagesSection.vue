@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Package as PackageIcon, AlertCircle, ChevronRight, Scissors, ShoppingBag, Plus } from 'lucide-vue-next'
+import { Package as PackageIcon, AlertCircle, Scissors, ShoppingBag, Plus } from 'lucide-vue-next'
 import AssignPackageModal from '~/components/packages/AssignPackageModal.vue'
 
 const props = defineProps({
