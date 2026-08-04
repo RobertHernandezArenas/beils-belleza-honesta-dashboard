@@ -1,7 +1,8 @@
 import { computed, type Ref } from 'vue'
+import type { Sale } from '~~/shared/types/domain'
 
 export function useSalesAnalytics(
-	sales: Ref<any[] | undefined>,
+	sales: Ref<Sale[] | undefined>,
 	summaryTimeframe: Ref<'day' | 'week' | 'month' | 'year'>
 ) {
 	const getStartOfDate = (type: 'day' | 'week' | 'month' | 'year') => {
@@ -64,13 +65,13 @@ export function useSalesAnalytics(
 		const startDate = getStartOfDate(summaryTimeframe.value)
 		const elapsed = now.getTime() - startDate.getTime()
 
-		const current = sales.value.filter((s: any) => {
+		const current = sales.value.filter((s: Sale) => {
 			const d = new Date(s.created_at)
 			return d >= startDate && d <= now
 		})
 
 		const { start: prevStart, end: prevEnd } = getPreviousPeriodBounds(summaryTimeframe.value, startDate, elapsed)
-		const previous = sales.value.filter((s: any) => {
+		const previous = sales.value.filter((s: Sale) => {
 			const d = new Date(s.created_at)
 			return d >= prevStart && d <= prevEnd
 		})
@@ -113,7 +114,7 @@ export function useSalesAnalytics(
 			const end = getEndOfDate(summaryTimeframe.value, start)
 			const bucketMs = (end.getTime() - start.getTime()) / buckets
 
-			sales.value.forEach((s: any) => {
+			sales.value.forEach((s: Sale) => {
 				const t = new Date(s.created_at).getTime()
 				if (t >= start.getTime() && t < end.getTime()) {
 					const idx = Math.min(buckets - 1, Math.floor((t - start.getTime()) / bucketMs))
@@ -172,7 +173,7 @@ export function useSalesAnalytics(
 		const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
 
 		const monthTotal = sales.value
-			.filter((s: any) => new Date(s.created_at) >= startMonth && new Date(s.created_at) <= now)
+			.filter((s: Sale) => new Date(s.created_at) >= startMonth && new Date(s.created_at) <= now)
 			.reduce((sum, s) => sum + s.total, 0)
 
 		const projected = (monthTotal / daysElapsed) * daysInMonth
@@ -181,7 +182,7 @@ export function useSalesAnalytics(
 		lastMonthStart.setMonth(lastMonthStart.getMonth() - 1)
 		const lastMonthEnd = new Date(startMonth)
 		const lastMonthTotal = sales.value
-			.filter((s: any) => new Date(s.created_at) >= lastMonthStart && new Date(s.created_at) < lastMonthEnd)
+			.filter((s: Sale) => new Date(s.created_at) >= lastMonthStart && new Date(s.created_at) < lastMonthEnd)
 			.reduce((sum, s) => sum + s.total, 0)
 
 		return { projected, changeVsLastMonth: pctChange(projected, lastMonthTotal) }
