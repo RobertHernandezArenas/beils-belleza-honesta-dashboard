@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 import { computed } from 'vue'
 import { ArrowLeft, Search, Check, Plus, Scissors, Package, Ticket } from 'lucide-vue-next'
 
@@ -6,19 +7,18 @@ const props = defineProps<{
     searchQuery: string
     isEditingItems: boolean
     isSearchingClients: boolean
-    clients: any[]
-    selectedClientToAssign: any
+    clients: ClientDTO[]
+    selectedClientToAssign: Partial<ClientDTO> | null
     isSearchingItems: boolean
-    catalogItems: any[]
+    catalogItems: CatalogItem[]
     isAssigningClient: boolean
 }>()
 
 const emit = defineEmits<{
     (e: 'update:searchQuery', value: string): void
-    (e: 'cancel'): void
-    (e: 'selectClient', client: any): void
-    (e: 'assignClient'): void
-    (e: 'addNewItem', item: any): void
+    (e: 'cancel' | 'assignClient'): void
+    (e: 'selectClient', client: ClientDTO): void
+    (e: 'addNewItem', item: CatalogItem): void
 }>()
 
 const internalSearch = computed({
@@ -93,7 +93,7 @@ const internalSearch = computed({
                         <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">{{ item.sku || item.code }}</span>
                     </div>
                     <div class="z-10 flex items-end justify-between">
-                        <span class="text-lg font-black tabular-nums">{{ item.price.toFixed(2) }}€</span>
+                        <span class="text-lg font-black tabular-nums">{{ (item.price || 0).toFixed(2) }}€</span>
                         <div class="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-lg p-1.5 transition-colors">
                             <Plus class="w-4 h-4" />
                         </div>

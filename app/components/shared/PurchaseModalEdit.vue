@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import type { IncomingLineItem } from '~~/shared/types/line-item'
+import type { Sale } from '~~/shared/types/domain'
 import { ArrowLeft, Plus, ShieldOff, ShoppingBag, Minus } from 'lucide-vue-next'
 
 defineProps<{
-    cart: any
-    tempItems: any[]
+    cart: Sale
+    tempItems: IncomingLineItem[]
     tempTotal: number
     isSavingItems: boolean
 }>()
 
 const emit = defineEmits<{
-    (e: 'cancel'): void
-    (e: 'searchItems'): void
+    (e: 'cancel' | 'searchItems' | 'confirmChanges'): void
     (e: 'updateQuantity', index: number, delta: number): void
-    (e: 'confirmChanges'): void
 }>()
 </script>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 	import { ref, watch, onMounted } from 'vue'
 	import gsap from 'gsap'
 	import {
@@ -11,17 +12,17 @@
 	} from 'lucide-vue-next'
 
 	interface Props {
-		filteredCatalog: any[]
+		filteredCatalog: CatalogItem[]
 		formatCurrency: (val: number) => string
-		clientPackages?: any[]
-		selectedClient?: any | null
+		clientPackages?: CatalogItem[]
+		selectedClient?: Partial<ClientDTO> | null
 	}
 
 	defineProps<Props>()
 
 	const emit = defineEmits<{
-		(e: 'add-to-cart', item: any, type: string): void
-		(e: 'consume-package', pkg: any): void
+		(e: 'add-to-cart', item: CatalogItem, type: string): void
+		(e: 'consume-package', pkg: CatalogItem): void
 	}>()
 
 	const activeTab = defineModel<'products' | 'services' | 'packages'>('activeTab', { required: true })
@@ -201,7 +202,7 @@
 
 					<div class="z-10 mt-auto flex items-end justify-between w-full">
 						<span class="text-xs sm:text-sm font-black tabular-nums font-sans text-text-primary">
-							{{ formatCurrency(item.price) }}
+							{{ formatCurrency(item.price || 0) }}
 						</span>
 						<div
 							class="bg-bg-muted text-text-muted group-hover:bg-text-primary group-hover:text-bg-card flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-border-default/40 transition-all duration-200">

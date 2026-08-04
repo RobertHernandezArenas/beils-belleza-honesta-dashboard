@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { Sale } from '~~/shared/types/domain'
 import { X, Receipt, Printer, FileText } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { printReceipt, printInvoice } from '~/utils/printHelpers'
 
 const props = defineProps<{
-  cart: any
+  cart: Sale
 }>()
 
 const emit = defineEmits<{
