@@ -20,12 +20,12 @@ const emit = defineEmits<{
   <div class="space-y-6 animate-slide-right min-h-[450px] flex flex-col">
     <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-            <button @click="emit('cancel')" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
+            <button class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted" @click="emit('cancel')">
                 <ArrowLeft class="w-4 h-4" />
             </button>
             <h3 class="text-text-primary font-bold text-lg">Editando compra</h3>
         </div>
-        <button @click="emit('searchItems')" class="btn btn-sm btn-primary rounded-xl gap-2 font-bold shadow-sm shadow-primary/20">
+        <button class="btn btn-sm btn-primary rounded-xl gap-2 font-bold shadow-sm shadow-primary/20" @click="emit('searchItems')">
             <Plus class="w-4 h-4" /> Añadir Concepto
         </button>
     </div>
@@ -59,11 +59,11 @@ const emit = defineEmits<{
                 
                 <div class="flex items-center gap-3 shrink-0">
                     <div class="flex items-center gap-2 bg-bg-muted/50 rounded-xl p-1">
-                        <button @click="emit('updateQuantity', idx, -1)" class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
+                        <button class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs" @click="emit('updateQuantity', idx, -1)">
                             <Minus class="w-3 h-3" />
                         </button>
                         <span class="w-6 text-center text-sm font-black tabular-nums">{{ item.quantity }}</span>
-                        <button @click="emit('updateQuantity', idx, 1)" class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs">
+                        <button class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs" @click="emit('updateQuantity', idx, 1)">
                             <Plus class="w-3 h-3" />
                         </button>
                     </div>
@@ -80,17 +80,17 @@ const emit = defineEmits<{
                 <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">Previsualización de Total</span>
                 <div class="flex items-end gap-2">
                     <span class="text-text-primary text-2xl font-black tabular-nums leading-none">{{ tempTotal.toFixed(2) }}€</span>
-                    <span class="text-text-muted text-xs mb-0.5 line-through opacity-50" v-if="tempTotal !== cart.total">{{ cart.total.toFixed(2) }}€</span>
+                    <span v-if="tempTotal !== cart.total" class="text-text-muted text-xs mb-0.5 line-through opacity-50">{{ cart.total.toFixed(2) }}€</span>
                 </div>
             </div>
             <div class="flex gap-3">
-                <button @click="emit('cancel')" class="btn btn-ghost rounded-xl">Descartar</button>
+                <button class="btn btn-ghost rounded-xl" @click="emit('cancel')">Descartar</button>
                 <button 
-                    @click="emit('confirmChanges')" 
                     :disabled="isSavingItems" 
-                    class="btn btn-primary rounded-2xl px-10 h-12 font-black tracking-wider uppercase shadow-xl shadow-primary/30"
+                    class="btn btn-primary rounded-2xl px-10 h-12 font-black tracking-wider uppercase shadow-xl shadow-primary/30" 
+                    @click="emit('confirmChanges')"
                 >
-                    <span v-if="isSavingItems" class="loading loading-spinner loading-xs"></span>
+                    <span v-if="isSavingItems" class="loading loading-spinner loading-xs"/>
                     Guardar Cambios
                 </button>
             </div>

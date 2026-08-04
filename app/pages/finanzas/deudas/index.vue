@@ -86,7 +86,7 @@
 	const processPayment = () => {
 		if (!selectedDebt.value || !paymentAmount.value) return
 
-		let amount = Number(paymentAmount.value)
+		const amount = Number(paymentAmount.value)
 		if (amount <= 0 || amount > selectedDebt.value.remaining) {
 			displayToast(t('finances.debts.messages.invalidAmount'), 'error')
 			return
@@ -129,7 +129,7 @@
 							v-model="searchQuery"
 							type="text"
 							:placeholder="$t('finances.debts.searchPlaceholder')"
-							class="input bg-bg-card border-border-default focus:border-error focus:ring-error/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
+							class="input bg-bg-card border-border-default focus:border-error focus:ring-error/20 h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" >
 					</div>
 					<div class="w-full shrink-0 sm:w-1/4 lg:w-44">
 						<AppSelect
@@ -144,7 +144,7 @@
 			<!-- Loading State -->
 			<div
 				v-if="isPending"
-				class="bg-bg-card border-border-default h-96 w-full animate-pulse rounded-3xl border opacity-50 mix-blend-multiply"></div>
+				class="bg-bg-card border-border-default h-96 w-full animate-pulse rounded-3xl border opacity-50 mix-blend-multiply"/>
 
 			<!-- List -->
 			<div
@@ -229,8 +229,8 @@
 								<td class="pr-6 text-right">
 									<button
 										v-if="debt.status !== 'paid'"
-										@click="openPaymentModal(debt)"
-										class="btn btn-sm bg-text-primary text-bg-card hover:bg-text-secondary rounded-lg border-none font-bold shadow-sm">
+										class="btn btn-sm bg-text-primary text-bg-card hover:bg-text-secondary rounded-lg border-none font-bold shadow-sm"
+										@click="openPaymentModal(debt)">
 										{{ $t('finances.debts.actions.pay') }}
 									</button>
 									<div
@@ -275,7 +275,7 @@
 					</button>
 				</div>
 
-				<div class="flex flex-col gap-5 p-6" v-if="selectedDebt">
+				<div v-if="selectedDebt" class="flex flex-col gap-5 p-6">
 					<div
 						class="bg-error/5 border-error/10 mb-2 flex flex-col items-center rounded-2xl border p-4 text-center">
 						<AlertCircle class="text-error mb-2 h-8 w-8 opacity-80" />
@@ -300,7 +300,7 @@
 							step="0.01"
 							min="0.01"
 							:max="selectedDebt.remaining"
-							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none mb-3" />
+							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:border-primary text-primary focus:ring-primary/20 hover:bg-bg-hover h-14 w-full rounded-2xl px-4 text-center text-2xl font-black tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none mb-3" >
 							
 						<AppSelect
 							v-model="paymentMethod"
@@ -324,8 +324,8 @@
 					</button>
 					<button
 						type="button"
-						@click="processPayment"
-						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 flex-1 rounded-xl border-none font-bold shadow-md">
+						class="btn text-bg-card hover:bg-text-secondary/80 bg-text-primary h-12 flex-1 rounded-xl border-none font-bold shadow-md"
+						@click="processPayment">
 						{{ $t('finances.debts.paymentModal.confirm') }}
 					</button>
 				</div>

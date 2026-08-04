@@ -1,7 +1,7 @@
 <template>
 	<div class="bg-bg-card relative overflow-hidden rounded-4xl p-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 		<!-- Glow interno del contenedor -->
-		<div class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-b to-transparent"></div>
+		<div class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-b to-transparent"/>
 
 		<div class="relative z-10 w-full overflow-hidden overflow-x-auto rounded-[1.75rem]">
 			<table class="table w-full border-collapse">
@@ -17,16 +17,16 @@
 				<tbody v-if="pending" class="min-h-[400px]">
 					<tr v-for="i in 5" :key="i" class="border-b border-transparent/60">
 						<td class="px-6 py-4">
-							<div class="skeleton bg-bg-hover h-12 w-48 rounded"></div>
+							<div class="skeleton bg-bg-hover h-12 w-48 rounded"/>
 						</td>
 						<td class="px-6 py-4">
-							<div class="skeleton bg-bg-hover h-6 w-24 rounded"></div>
+							<div class="skeleton bg-bg-hover h-6 w-24 rounded"/>
 						</td>
 						<td class="px-6 py-4">
-							<div class="skeleton bg-bg-hover h-6 w-20 rounded"></div>
+							<div class="skeleton bg-bg-hover h-6 w-20 rounded"/>
 						</td>
 						<td class="px-6 py-4 text-right">
-							<div class="skeleton bg-bg-hover ml-auto h-8 w-32 rounded"></div>
+							<div class="skeleton bg-bg-hover ml-auto h-8 w-32 rounded"/>
 						</td>
 					</tr>
 				</tbody>
@@ -46,7 +46,7 @@
 											alt="Avatar"
 											width="48"
 											height="48"
-											class="object-cover brightness-110 saturate-0" />
+											class="object-cover brightness-110 saturate-0" >
 									</div>
 								</div>
 								<div>
@@ -81,7 +81,7 @@
 									class="h-1.5 w-1.5 rounded-full"
 									:class="
 										user.status === 'ON' ? 'animate-pulse bg-green-500' : 'bg-border-strong'
-									"></div>
+									"/>
 								{{ $t('users.constants.status.' + user.status) }}
 							</div>
 						</td>
@@ -133,14 +133,14 @@
 
 					<!-- Filas vacías para mantener la altura cuando hay menos de 5 usuarios -->
 					<tr
-						v-if="users.length > 0 && users.length < itemsPerPage"
 						v-for="i in itemsPerPage - users.length"
+						v-if="users.length > 0 && users.length < itemsPerPage"
 						:key="`empty-${i}`"
 						class="pointer-events-none h-[81px] border-b border-transparent">
-						<td class="px-6 py-4"></td>
-						<td class="px-6 py-4"></td>
-						<td class="px-6 py-4"></td>
-						<td class="px-6 py-4"></td>
+						<td class="px-6 py-4"/>
+						<td class="px-6 py-4"/>
+						<td class="px-6 py-4"/>
+						<td class="px-6 py-4"/>
 					</tr>
 				</tbody>
 			</table>

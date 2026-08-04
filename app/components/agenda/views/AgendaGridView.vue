@@ -67,7 +67,7 @@ const processedDays = computed(() => {
         const offset1 = date.getTimezoneOffset() * 60000;
         const dateStr = new Date(date.getTime() - offset1).toISOString().split('T')[0]
         
-        let dayBookings = props.bookings.filter(b => {
+        const dayBookings = props.bookings.filter(b => {
             const bObj = new Date(b.booking_date)
             const offset2 = bObj.getTimezoneOffset() * 60000;
             const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
@@ -222,7 +222,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
         <div class="flex min-w-[800px] flex-col min-h-full">
             <!-- Header Row -->
             <div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/90 backdrop-blur-md">
-                <div class="border-border-subtle w-16 shrink-0 border-r"></div>
+                <div class="border-border-subtle w-16 shrink-0 border-r"/>
                 <div 
                     v-for="dayObj in processedDays" 
                     :key="dayObj.date.toISOString()"
@@ -262,7 +262,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                         @click="(e) => handleGridClick(e, dayObj.date)">
                         
                         <!-- Grid Lines -->
-                        <div v-for="hour in hours" :key="hour" class="border-border-subtle h-24 border-b border-dashed opacity-50"></div>
+                        <div v-for="hour in hours" :key="hour" class="border-border-subtle h-24 border-b border-dashed opacity-50"/>
 
                         <!-- Empty State Indicator for Debugging -->
                         <div v-if="dayObj.bookings.length === 0" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
@@ -273,15 +273,15 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                         <button
                             v-for="booking in dayObj.bookings"
                             :key="booking.booking_id"
-                            @click.stop="emit('edit', booking)"
                             class="grid-booking-card group absolute ml-0.5 cursor-pointer overflow-hidden rounded-lg border p-1.5 transition-all hover:z-50 hover:shadow-md"
                             :class="getStatusColor(booking.status)"
-                            :style="getBookingStyle(booking)">
+                            :style="getBookingStyle(booking)"
+                            @click.stop="emit('edit', booking)">
                             
                             <!-- Left Status Strip -->
                             <div
                                 class="absolute top-0 bottom-0 left-0 w-1 opacity-80"
-                                :class="getStatusStrip(booking.status)"></div>
+                                :class="getStatusStrip(booking.status)"/>
 
                             <div class="flex h-full flex-col text-left pl-1.5 overflow-hidden">
                                 <div class="truncate text-[9px] font-bold tracking-tight leading-tight shrink-0">
@@ -291,7 +291,8 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                                     <Clock class="h-2 w-2 shrink-0" /> {{ booking.start_time }}
                                 </div>
                                 <div v-if="booking.booking_items?.length" class="mt-px flex-1 min-h-0 overflow-hidden">
-                                    <div v-for="item in booking.booking_items.slice(0, 1)" :key="item.id" 
+                                    <div
+v-for="item in booking.booking_items.slice(0, 1)" :key="item.id" 
                                         class="text-[8px] font-medium opacity-80 truncate mt-px">
                                         {{ item.name }}
                                     </div>

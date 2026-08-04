@@ -4,7 +4,7 @@
 			class="modal-box relative w-full max-w-md rounded-[2.5rem] border border-red-200 bg-bg-card p-8 text-center text-text-primary shadow-lg backdrop-blur-md">
 			<!-- Glow rojo intenso -->
 			<div
-				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"></div>
+				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"/>
 
 			<div class="relative z-10 flex flex-col items-center">
 				<div class="mb-5 rounded-full bg-red-100 p-5 text-red-600 shadow-sm ring-1 ring-red-200">
@@ -26,7 +26,7 @@
 					<button
 						class="btn h-12 flex-1 rounded-xl border-none bg-red-600 font-bold text-bg-card shadow-md hover:bg-red-700 hover:shadow-lg"
 						@click.prevent="executeDelete">
-						<span v-if="isDeleting" class="loading loading-spinner"></span>
+						<span v-if="isDeleting" class="loading loading-spinner"/>
 						{{ $t('users.delete.confirm') }}
 					</button>
 				</div>

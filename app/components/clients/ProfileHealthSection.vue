@@ -62,7 +62,7 @@ const laserContraindications = [
 				</div>
 
 				<div class="flex items-center gap-3">
-					<button @click="$emit('add-questionnaire')" class="btn btn-neutral btn-sm rounded-xl font-bold uppercase tracking-wider shadow-xs">
+					<button class="btn btn-neutral btn-sm rounded-xl font-bold uppercase tracking-wider shadow-xs" @click="$emit('add-questionnaire')">
 						<Plus class="w-4 h-4 mr-1" />
 						Nuevo Cuestionario
 					</button>
@@ -114,7 +114,7 @@ const laserContraindications = [
 
 					<div class="pt-2 flex items-center justify-between text-xs text-text-muted font-medium border-t border-border-subtle">
 						<span>Última revisión: {{ indibaQuestionnaire ? new Date(indibaQuestionnaire.created_at).toLocaleDateString() : 'No realizada' }}</span>
-						<button @click="$emit('add-questionnaire')" class="btn btn-ghost btn-xs font-bold text-primary">
+						<button class="btn btn-ghost btn-xs font-bold text-primary" @click="$emit('add-questionnaire')">
 							Ver Detalles <ChevronRight class="w-3.5 h-3.5" />
 						</button>
 					</div>
@@ -165,7 +165,7 @@ const laserContraindications = [
 
 					<div class="pt-2 flex items-center justify-between text-xs text-text-muted font-medium border-t border-border-subtle">
 						<span>Última revisión: {{ laserQuestionnaire ? new Date(laserQuestionnaire.created_at).toLocaleDateString() : 'No realizada' }}</span>
-						<button @click="$emit('add-questionnaire')" class="btn btn-ghost btn-xs font-bold text-primary">
+						<button class="btn btn-ghost btn-xs font-bold text-primary" @click="$emit('add-questionnaire')">
 							Ver Detalles <ChevronRight class="w-3.5 h-3.5" />
 						</button>
 					</div>

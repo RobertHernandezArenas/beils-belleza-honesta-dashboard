@@ -77,13 +77,13 @@ defineExpose({ openModal, closeModal })
 			</div>
 
 			<!-- Body -->
-			<form @submit.prevent="() => assignPackage()" class="mt-4 space-y-4">
+			<form class="mt-4 space-y-4" @submit.prevent="() => assignPackage()">
 				<!-- Package Selector -->
 				<div>
 					<label class="block text-xs font-bold uppercase text-text-muted mb-2">Selecciona un Paquete del Catálogo</label>
 					
 					<div v-if="isLoadingPackages" class="flex justify-center py-6">
-						<span class="loading loading-spinner text-primary"></span>
+						<span class="loading loading-spinner text-primary"/>
 					</div>
 
 					<div v-else-if="!catalogPackages || catalogPackages.length === 0" class="text-center py-6 text-xs text-text-muted border border-dashed border-border-default rounded-2xl">
@@ -139,7 +139,7 @@ defineExpose({ openModal, closeModal })
 						Cancelar
 					</button>
 					<button type="submit" class="btn btn-primary rounded-xl font-black uppercase text-xs shadow-md" :disabled="isAssigning || !selectedPackageId">
-						<span v-if="isAssigning" class="loading loading-spinner"></span>
+						<span v-if="isAssigning" class="loading loading-spinner"/>
 						<span v-else>Confirmar Asignación</span>
 					</button>
 				</div>

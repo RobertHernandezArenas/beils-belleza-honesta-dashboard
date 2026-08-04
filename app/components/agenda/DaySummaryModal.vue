@@ -59,9 +59,9 @@ defineExpose({ openModal, closeModal })
                 <button
                     v-for="booking in dayBookings"
                     :key="booking.booking_id"
-                    @click="closeModal(); emit('edit', booking)"
                     class="flex flex-col w-full text-left p-3 rounded-xl transition-all hover:scale-[1.02] hover:shadow-md"
-                    :class="getStatusColorClip(booking.status)">
+                    :class="getStatusColorClip(booking.status)"
+                    @click="closeModal(); emit('edit', booking)">
                     
                     <div class="flex items-start justify-between w-full">
                         <div class="flex items-center gap-2">
@@ -92,8 +92,8 @@ defineExpose({ openModal, closeModal })
             <!-- Footer -->
             <div class="p-4 border-t border-border-subtle bg-bg-muted/10">
                 <button 
-                    @click="closeModal(); emit('create', selectedDate, '10:00')"
-                    class="btn bg-text-primary text-bg-card w-full h-12 rounded-xl font-bold uppercase tracking-widest shadow-md">
+                    class="btn bg-text-primary text-bg-card w-full h-12 rounded-xl font-bold uppercase tracking-widest shadow-md"
+                    @click="closeModal(); emit('create', selectedDate, '10:00')">
                     Crear nueva cita aquí
                 </button>
             </div>

@@ -219,7 +219,7 @@ defineExpose({ open, close })
             </p>
           </div>
         </div>
-        <button @click.prevent="close" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
+        <button class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted" @click.prevent="close">
           <X class="text-text-primary h-4 w-4" />
         </button>
       </div>
@@ -262,20 +262,20 @@ defineExpose({ open, close })
                      
                      <div class="flex flex-col gap-2">
                         <label class="text-text-primary text-xs font-black uppercase tracking-widest ml-1">Abonar Importe (€)</label>
-                        <input v-model.number="amountToPay" @blur="formatAmount" type="number" step="0.01" :max="debt.remaining" class="input bg-bg-card border-border-subtle focus:border-primary focus:ring-primary text-text-primary w-full rounded-xl font-black shadow-sm text-lg outline-none transition-all h-14" />
+                        <input v-model.number="amountToPay" type="number" step="0.01" :max="debt.remaining" class="input bg-bg-card border-border-subtle focus:border-primary focus:ring-primary text-text-primary w-full rounded-xl font-black shadow-sm text-lg outline-none transition-all h-14" @blur="formatAmount" >
                      </div>
 
                      <div class="flex gap-2 pt-2">
-                        <button @click="paymentMethod = 'cash'" class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'cash' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'">
+                        <button class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'cash' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = 'cash'">
                           <Banknote class="w-4 h-4 mr-1" /> Efectivo
                         </button>
-                        <button @click="paymentMethod = 'card'" class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'card' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'">
+                        <button class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'card' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = 'card'">
                           <CreditCard class="w-4 h-4 mr-1" /> Tarjeta
                         </button>
                      </div>
 
-                     <button @click="processPayment" :disabled="isProcessing || !isValidPayment" class="btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all border-0">
-                        <span v-if="isProcessing" class="loading loading-spinner loading-sm"></span>
+                     <button :disabled="isProcessing || !isValidPayment" class="btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all border-0" @click="processPayment">
+                        <span v-if="isProcessing" class="loading loading-spinner loading-sm"/>
                         Abonar {{ amountToPay ? amountToPay.toFixed(2) : '0.00' }}€
                      </button>
                   </div>
@@ -297,7 +297,7 @@ defineExpose({ open, close })
                         </div>
                         <div class="flex flex-col items-end gap-1">
                            <div class="flex items-center gap-2">
-                              <button @click="printReceipt(pay)" class="btn btn-ghost btn-xs text-text-muted hover:text-primary p-1 h-auto min-h-0" :aria-label="locale === 'es' ? 'Imprimir Recibo' : 'Print Receipt'" title="Imprimir Recibo">
+                              <button class="btn btn-ghost btn-xs text-text-muted hover:text-primary p-1 h-auto min-h-0" :aria-label="locale === 'es' ? 'Imprimir Recibo' : 'Print Receipt'" title="Imprimir Recibo" @click="printReceipt(pay)">
                                  <Printer class="w-3.5 h-3.5" />
                               </button>
                               <span class="text-success text-sm font-black tabular-nums">-{{ pay.amount.toFixed(2) }}€</span>

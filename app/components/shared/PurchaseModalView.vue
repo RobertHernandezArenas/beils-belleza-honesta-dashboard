@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Edit2, CheckCircle, Trash2, UserPlus, CreditCard, Banknote, Calendar } from 'lucide-vue-next'
 
+import { ref } from 'vue'
+
 const props = defineProps<{
     cart: any
 }>()
@@ -12,8 +14,6 @@ const emit = defineEmits<{
     (e: 'editClient'): void
     (e: 'updateDate', newDate: string): void
 }>()
-
-import { ref } from 'vue'
 
 const isEditingDate = ref(false)
 const editableDate = ref('')
@@ -51,8 +51,8 @@ const formatCustomDate = (dateString: string) => {
        <div class="flex items-center justify-between">
           <h4 class="text-text-primary text-sm font-bold uppercase tracking-wider">Desglose de Conceptos</h4>
           <button 
-            @click="emit('editItems')" 
-            class="btn btn-xs btn-ghost text-primary gap-1"
+            class="btn btn-xs btn-ghost text-primary gap-1" 
+            @click="emit('editItems')"
           >
             <Edit2 class="w-3 h-3" /> Editar compra
           </button>
@@ -98,10 +98,10 @@ const formatCustomDate = (dateString: string) => {
                       <span class="text-text-muted text-[10px] font-medium">{{ cart.user.email || 'Sin email' }}</span>
                    </div>
                    <div class="flex gap-1 opacity-0 group-hover/client:opacity-100 transition-opacity">
-                      <button @click="emit('editClient')" class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Cliente">
+                      <button class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Cliente" @click="emit('editClient')">
                          <Edit2 class="w-3 h-3" />
                       </button>
-                      <button @click="emit('removeClient')" class="btn btn-xs btn-circle btn-ghost text-rose-500 hover:bg-rose-500/10" title="Quitar Cliente">
+                      <button class="btn btn-xs btn-circle btn-ghost text-rose-500 hover:bg-rose-500/10" title="Quitar Cliente" @click="emit('removeClient')">
                          <Trash2 class="w-3 h-3" />
                       </button>
                    </div>
@@ -109,7 +109,7 @@ const formatCustomDate = (dateString: string) => {
                 <div v-else class="mt-1">
                     <div class="flex flex-col gap-2">
                         <span class="text-text-muted text-[10px] font-bold italic uppercase tracking-wider">Mostrador / No registrado</span>
-                        <button @click="emit('searchClient')" class="btn btn-sm btn-ghost bg-primary/10 text-primary hover:bg-primary/20 rounded-xl border-none">
+                        <button class="btn btn-sm btn-ghost bg-primary/10 text-primary hover:bg-primary/20 rounded-xl border-none" @click="emit('searchClient')">
                             <UserPlus class="w-4 h-4 mr-1" /> Asignar Cliente
                         </button>
                     </div>
@@ -136,16 +136,16 @@ const formatCustomDate = (dateString: string) => {
                             {{ formatCustomDate(cart.created_at) }}
                         </span>
                         <div class="date-edit flex gap-1 opacity-0 transition-opacity group-hover/date:opacity-100">
-                            <button @click="startEditingDate" class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Fecha">
+                            <button class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Fecha" @click="startEditingDate">
                                 <Edit2 class="w-3 h-3" />
                             </button>
                         </div>
                     </div>
                     <div v-else class="flex flex-col gap-2 w-full">
-                        <input type="datetime-local" v-model="editableDate" class="input input-sm input-bordered w-full text-xs font-bold bg-bg-card" />
+                        <input v-model="editableDate" type="datetime-local" class="input input-sm input-bordered w-full text-xs font-bold bg-bg-card" >
                         <div class="flex gap-2 justify-end">
-                            <button @click="isEditingDate = false" class="btn btn-xs btn-ghost rounded-lg">Cancelar</button>
-                            <button @click="saveDate" class="btn btn-xs btn-primary rounded-lg">Guardar</button>
+                            <button class="btn btn-xs btn-ghost rounded-lg" @click="isEditingDate = false">Cancelar</button>
+                            <button class="btn btn-xs btn-primary rounded-lg" @click="saveDate">Guardar</button>
                         </div>
                     </div>
                 </div>

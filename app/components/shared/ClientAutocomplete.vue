@@ -68,7 +68,7 @@ const removeClient = () => {
 					:placeholder="placeholder || 'Buscar por nombre, teléfono o DNI...'"
 					class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent pl-12 font-medium shadow-inner transition-colors focus:ring-4"
 					:class="{ 'border-error focus:border-error focus:ring-error/20': error }"
-				/>
+				>
 				
 				<!-- Suggestions Dropdown -->
 				<ul
@@ -77,8 +77,8 @@ const removeClient = () => {
 					<li v-for="c in filteredClients" :key="c.user_id">
 						<button
 							type="button"
-							@click="selectClient(c)"
-							class="hover:bg-bg-muted border-border-default/50 flex w-full items-center justify-between border-b p-4 text-left transition-colors last:border-0">
+							class="hover:bg-bg-muted border-border-default/50 flex w-full items-center justify-between border-b p-4 text-left transition-colors last:border-0"
+							@click="selectClient(c)">
 							<div class="flex flex-col">
 								<span class="text-text-primary text-sm font-bold">{{ c.name }} {{ c.surname }}</span>
 								<span class="text-text-muted text-xs">{{ c.phone }} — {{ c.document_number }}</span>
@@ -110,8 +110,8 @@ const removeClient = () => {
 				<button
 					v-if="!disabled"
 					type="button"
-					@click="removeClient"
-					class="btn btn-ghost btn-circle btn-sm text-text-muted hover:bg-error/10 hover:text-error">
+					class="btn btn-ghost btn-circle btn-sm text-text-muted hover:bg-error/10 hover:text-error"
+					@click="removeClient">
 					<Trash2 class="h-4 w-4" />
 				</button>
 			</div>

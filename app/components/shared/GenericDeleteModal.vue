@@ -42,7 +42,7 @@
 			class="modal-box bg-bg-card text-text-primary relative w-full max-w-md rounded-[2.5rem] border border-red-200 p-8 text-center shadow-lg backdrop-blur-md">
 			<!-- Glow rojo intenso -->
 			<div
-				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"></div>
+				class="pointer-events-none absolute inset-0 z-0 rounded-[2.5rem] bg-linear-to-b from-red-50 to-transparent"/>
 
 			<div class="relative z-10 flex flex-col items-center">
 				<div class="mb-5 rounded-full bg-red-100 p-5 text-red-600 shadow-sm ring-1 ring-red-200">
@@ -62,15 +62,15 @@
 				<div class="mt-8 flex w-full gap-3">
 					<button
 						class="btn btn-ghost border-border-default text-text-muted hover:bg-bg-hover hover:text-text-primary h-12 flex-1 rounded-xl border"
-						@click.prevent="closeModal"
-						:disabled="isDeleting">
+						:disabled="isDeleting"
+						@click.prevent="closeModal">
 						Cancelar
 					</button>
 					<button
 						class="btn text-bg-card h-12 flex-1 rounded-xl border-none bg-red-600 font-bold shadow-md hover:bg-red-700 hover:shadow-lg"
-						@click.prevent="confirmDelete"
-						:disabled="isDeleting">
-						<span v-if="isDeleting" class="loading loading-spinner"></span>
+						:disabled="isDeleting"
+						@click.prevent="confirmDelete">
+						<span v-if="isDeleting" class="loading loading-spinner"/>
 						Confirmar Eliminar
 					</button>
 				</div>

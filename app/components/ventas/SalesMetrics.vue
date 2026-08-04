@@ -38,7 +38,7 @@ defineProps<Props>()
 					<span 
 						class="tooltip tooltip-bottom tooltip-first cursor-help text-left inline-block"
 						data-tip="¿Qué es? Ingreso total facturado del periodo. &#xa;¿Para qué sirve? Mide el volumen financiero y la facturación en tiempo real. &#xa;¿Cómo se calcula? Sumando el importe total de las ventas completadas.">
-						TOTAL<br/>VENTAS {{ timeframeLabels[summaryTimeframe] }}
+						TOTAL<br>VENTAS {{ timeframeLabels[summaryTimeframe] }}
 					</span>
 				</div>
 				<span
@@ -68,7 +68,7 @@ defineProps<Props>()
 					<span 
 						class="tooltip tooltip-bottom cursor-help text-left inline-block"
 						data-tip="¿Qué es? Cantidad de comprobantes emitidos. &#xa;¿Para qué sirve? Evalúa el flujo de clientes y transacciones procesadas. &#xa;¿Cómo se calcula? Contando las ventas con estado completado en el periodo.">
-						TICKETS<br/>EMITIDOS
+						TICKETS<br>EMITIDOS
 					</span>
 				</div>
 				<span
@@ -98,7 +98,7 @@ defineProps<Props>()
 					<span 
 						class="tooltip tooltip-bottom cursor-help text-left inline-block"
 						data-tip="¿Qué es? Gasto promedio por cada ticket emitido. &#xa;¿Para qué sirve? Ayuda a entender el consumo medio de los clientes. &#xa;¿Cómo se calcula? Dividiendo el total de ventas del periodo por el total de tickets.">
-						PROM. POR<br/>VENTA
+						PROM. POR<br>VENTA
 					</span>
 				</div>
 				<span
@@ -110,7 +110,7 @@ defineProps<Props>()
 			<div class="mt-1">
 				<h3 class="text-2xl font-black text-text-primary tabular-nums tracking-tight font-sans leading-none mb-1">{{ formatCurrency(summaryStats.average) }}</h3>
 				<!-- Empty placeholder to match heights of Card 1 and 2 -->
-				<div class="h-3"></div>
+				<div class="h-3"/>
 			</div>
 			<div class="h-8 w-full -mx-1 -mb-1 opacity-90">
 				<svg viewBox="0 0 100 20" class="w-full h-full" :class="summaryStats.averageChange >= 0 ? 'text-text-primary' : 'text-[#C53030]'" preserveAspectRatio="none">
@@ -127,8 +127,8 @@ defineProps<Props>()
 				<!-- Big arrow watermark on the right -->
 				<div class="absolute right-[-2px] top-4 bottom-4 text-text-secondary flex items-center justify-center opacity-65">
 					<svg class="w-[90px] h-[90px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="12" y1="19" x2="12" y2="5"></line>
-						<polyline points="5 12 12 5 19 12"></polyline>
+						<line x1="12" y1="19" x2="12" y2="5"/>
+						<polyline points="5 12 12 5 19 12"/>
 					</svg>
 				</div>
 			</div>
@@ -137,7 +137,7 @@ defineProps<Props>()
 					<span 
 						class="text-[9px] font-bold text-text-muted tracking-wider uppercase tooltip tooltip-bottom tooltip-last cursor-help text-left inline-block"
 						data-tip="¿Qué es? Estimación de ventas al finalizar el mes en curso. &#xa;¿Para qué sirve? Evalúa la proyección de metas y objetivos mensuales. &#xa;¿Cómo se calcula? Multiplicando el promedio diario del mes por los días totales del mes.">
-						PROYECCIÓN<br/>MENSUAL
+						PROYECCIÓN<br>MENSUAL
 					</span>
 					<h3 class="text-3xl font-black tabular-nums tracking-tight font-sans leading-none mb-1.5 mt-1">{{ formatCurrency(monthlyProjection.projected) }}</h3>
 				</div>

@@ -111,7 +111,7 @@
 
 			<!-- Body -->
 			<div class="custom-scrollbar max-h-[70vh] overflow-y-auto px-8 py-6">
-				<form id="serviceForm" @submit.prevent="saveService" class="flex flex-col gap-5">
+				<form id="serviceForm" class="flex flex-col gap-5" @submit.prevent="saveService">
 					<div class="flex items-center justify-between">
 						<span class="text-text-muted text-sm font-bold tracking-wider uppercase">
 							Estado del Servicio
@@ -122,7 +122,7 @@
 								type="checkbox"
 								class="toggle toggle-success toggle-sm"
 								:checked="form.status === 'activo'"
-								@change="form.status = form.status === 'activo' ? 'inactivo' : 'activo'" />
+								@change="form.status = form.status === 'activo' ? 'inactivo' : 'activo'" >
 						</div>
 					</div>
 
@@ -137,7 +137,7 @@
 							v-model="form.name"
 							type="text"
 							required
-							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+							class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 					</div>
 
 					<div class="form-control">
@@ -150,10 +150,10 @@
 							id="svc-desc"
 							v-model="form.description"
 							rows="3"
-							class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none"></textarea>
+							class="textarea bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none"/>
 					</div>
 
-					<div class="divider my-0 opacity-50"></div>
+					<div class="divider my-0 opacity-50"/>
 					<span class="text-text-muted text-sm font-bold tracking-wider uppercase">
 						Facturación y Agenda
 					</span>
@@ -172,7 +172,7 @@
 								step="0.01"
 								min="0"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 						</div>
 
 						<div class="form-control">
@@ -188,7 +188,7 @@
 								step="0.1"
 								min="0"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 						</div>
 
 						<div class="form-control">
@@ -203,7 +203,7 @@
 								type="number"
 								min="1"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover text-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover text-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 						</div>
 					</div>
 				</form>
@@ -223,7 +223,7 @@
 					form="serviceForm"
 					class="btn text-bg-card hover:bg-text-secondary/80 bg-text-secondary h-12 rounded-xl border-none px-8 font-bold shadow-md"
 					:disabled="isSaving">
-					<span v-if="isSaving" class="loading loading-spinner"></span>
+					<span v-if="isSaving" class="loading loading-spinner"/>
 					{{ editingService ? 'Guardar Cambios' : 'Crear Servicio' }}
 				</button>
 			</div>

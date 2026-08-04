@@ -51,7 +51,7 @@ export default defineEventHandler(async event => {
 			}
 			// Calculate totals from items to prevent client tampering
 			let subtotal = 0
-			let discount = cartData.discount || 0
+			const discount = cartData.discount || 0
 			let total = 0
 
 			const createdCart = await tx.cart.create({

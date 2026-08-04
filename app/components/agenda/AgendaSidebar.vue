@@ -84,8 +84,8 @@ const monthName = computed(() => {
         <!-- New Booking Button -->
         <div class="p-5 pb-2">
             <button 
-                @click="store.openBookingDrawer(null, selectedDate)"
-                class="flex w-full items-center justify-center gap-2 rounded-xl bg-text-primary text-bg-card h-12 shadow-md hover:shadow-lg transition-all active:scale-[0.98]">
+                class="flex w-full items-center justify-center gap-2 rounded-xl bg-text-primary text-bg-card h-12 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
+                @click="store.openBookingDrawer(null, selectedDate)">
                 <Plus class="h-4 w-4" />
                 <span class="text-xs font-bold uppercase tracking-widest">Nueva Cita</span>
             </button>
@@ -96,10 +96,10 @@ const monthName = computed(() => {
             <div class="flex items-center justify-between mb-4">
                 <span class="text-xs font-bold uppercase tracking-wider text-text-primary">{{ monthName }}</span>
                 <div class="flex gap-1">
-                    <button @click="prevMonth" class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary">
+                    <button class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary" @click="prevMonth">
                         <ChevronLeft class="h-4 w-4" />
                     </button>
-                    <button @click="nextMonth" class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary">
+                    <button class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary" @click="nextMonth">
                         <ChevronRight class="h-4 w-4" />
                     </button>
                 </div>
@@ -117,13 +117,13 @@ const monthName = computed(() => {
                 <button
                     v-for="(day, idx) in calendarDays"
                     :key="idx"
-                    @click="selectDate(day.date)"
                     class="h-8 w-8 mx-auto flex items-center justify-center rounded-full text-xs transition-all relative group"
                     :class="[
                         !day.isCurrentMonth ? 'text-text-muted/40' : 'text-text-primary hover:bg-bg-muted',
                         isSelected(day.date) && !isToday(day.date) ? 'bg-primary/10 text-primary font-bold' : '',
                         isToday(day.date) ? 'bg-primary text-white font-bold shadow-sm' : ''
                     ]"
+                    @click="selectDate(day.date)"
                 >
                     {{ day.date.getDate() }}
                 </button>
@@ -131,7 +131,7 @@ const monthName = computed(() => {
         </div>
 
         <!-- Divider -->
-        <div class="mx-5 h-px bg-border-subtle my-2"></div>
+        <div class="mx-5 h-px bg-border-subtle my-2"/>
 
         <!-- Search & Filters -->
         <div class="p-5 flex-1 flex flex-col gap-4">
@@ -144,7 +144,7 @@ const monthName = computed(() => {
                         type="text" 
                         placeholder="Cliente, tel..." 
                         class="w-full h-10 pl-9 pr-3 rounded-xl bg-bg-muted/50 border border-border-subtle focus:border-primary/50 text-xs transition-all focus:bg-bg-card focus:outline-none"
-                    />
+                    >
                 </div>
             </div>
 

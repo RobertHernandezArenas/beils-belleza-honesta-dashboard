@@ -35,11 +35,11 @@ const setActiveTab = (id: string) => {
     <button
       v-for="tab in tabs"
       :key="tab.id"
-      @click="setActiveTab(tab.id)"
       class="group relative flex items-center gap-2 border-b-2 py-5 px-4 text-sm font-bold transition-all duration-300 whitespace-nowrap"
       :class="modelValue === tab.id 
         ? 'border-primary text-primary' 
         : 'border-transparent text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+      @click="setActiveTab(tab.id)"
     >
       <component :is="tab.icon" class="h-4 w-4" />
       {{ tab.name }}
@@ -58,7 +58,7 @@ const setActiveTab = (id: string) => {
       <div 
         v-if="modelValue === tab.id"
         class="bg-primary absolute bottom-0 left-0 h-0.5 w-full rounded-full shadow-[0_-2px_8px_rgba(var(--color-primary-rgb),0.3)]"
-      ></div>
+      />
     </button>
   </div>
 </template>

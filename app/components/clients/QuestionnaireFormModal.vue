@@ -167,7 +167,7 @@
 						</p>
 					</div>
 				</div>
-				<button @click="localVisible = false" class="btn btn-ghost btn-circle btn-sm text-text-muted">
+				<button class="btn btn-ghost btn-circle btn-sm text-text-muted" @click="localVisible = false">
 					<X class="h-5 w-5" />
 				</button>
 			</div>
@@ -181,7 +181,7 @@
 			</div>
 
 			<!-- Formulario -->
-			<form id="questionnaireForm" @submit.prevent="onSubmit" class="flex-1 space-y-5 overflow-y-auto p-6 scroll-smooth">
+			<form id="questionnaireForm" class="flex-1 space-y-5 overflow-y-auto p-6 scroll-smooth" @submit.prevent="onSubmit">
 				<div class="grid grid-cols-1 gap-5">
 					<!-- Client Selection (Autocomplete) -->
 					<div>
@@ -207,7 +207,7 @@
 							placeholder="Cuestionario de alergias..."
 							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"
 							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.title }"
-							@input="clearError('title')" />
+							@input="clearError('title')" >
 						<span v-if="errors.title" class="text-error mt-1.5 ml-1 text-xs font-bold">
 							{{ errors.title }}
 						</span>
@@ -226,7 +226,7 @@
 							placeholder='{ "pregunta_1": "respuesta", ... }'
 							class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 w-full rounded-xl border-transparent font-mono text-sm shadow-inner transition-colors focus:ring-4"
 							:class="{ 'border-error focus:border-error focus:ring-error/20': errors.data }"
-							@input="clearError('data')"></textarea>
+							@input="clearError('data')"/>
 						<span v-if="errors.data" class="text-error mt-1.5 ml-1 text-xs font-bold">
 							{{ errors.data }}
 						</span>
@@ -239,8 +239,8 @@
 				<button
 					type="button"
 					class="btn btn-ghost hover:bg-bg-muted text-text-muted h-12 flex-1 rounded-xl border-transparent font-bold transition-colors"
-					@click="localVisible = false"
-					:disabled="isPending">
+					:disabled="isPending"
+					@click="localVisible = false">
 					Cancelar
 				</button>
 				<button
@@ -248,7 +248,7 @@
 					form="questionnaireForm"
 					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
 					:disabled="isPending">
-					<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
+					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
 						<Save class="h-4 w-4" />
 						<span class="font-bold tracking-wide">

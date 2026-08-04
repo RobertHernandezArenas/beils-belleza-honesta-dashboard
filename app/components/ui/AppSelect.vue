@@ -114,9 +114,9 @@ defineExpose({ close: () => (open.value = false) })
 			:aria-haspopup="true"
 			:aria-expanded="open"
 			:disabled="disabled"
-			@click="toggle"
 			class="bg-bg-card border-border-default/85 hover:border-text-primary/25 flex w-full items-center gap-2 rounded-xl border px-3 text-xs font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.01)] transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-			:class="heightClass">
+			:class="heightClass"
+			@click="toggle">
 			<span class="text-text-muted flex shrink-0 items-center">
 				<slot name="icon" />
 			</span>
@@ -148,13 +148,13 @@ defineExpose({ close: () => (open.value = false) })
 							type="button"
 							role="option"
 							:aria-selected="opt.value === model"
-							@click="select(opt.value)"
 							class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold transition-colors"
 							:class="
 								opt.value === model
 									? 'bg-primary/10 text-primary'
 									: 'text-text-secondary hover:bg-bg-muted'
-							">
+							"
+							@click="select(opt.value)">
 							<span class="truncate">{{ opt.label }}</span>
 							<Check v-if="opt.value === model" class="text-primary h-3.5 w-3.5 shrink-0" />
 						</button>

@@ -168,3 +168,6 @@ prisma/prisma/generated/prisma
 /prisma/prisma/generated
 
 /prisma/generated
+
+# Excalidraw MCP temporal (repo embebido accidental)
+tmp-excalidraw-mcp/

@@ -13,13 +13,13 @@ export default defineNuxtPlugin(nuxtApp => {
 	})
 	nuxtApp.vueApp.use(VueQueryPlugin, { queryClient })
 
-	if (process.server) {
+	if (import.meta.server) {
 		nuxtApp.hooks.hook('app:rendered', () => {
 			// hydration handling if needed, usually handled by hydrate option or dehydrate
 		})
 	}
 
-	if (process.client) {
+	if (import.meta.client) {
 		nuxtApp.hooks.hook('app:created', () => {
 			// client side init
 		})

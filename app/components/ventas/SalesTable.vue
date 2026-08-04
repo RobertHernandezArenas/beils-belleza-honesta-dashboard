@@ -71,7 +71,7 @@ const emit = defineEmits<{
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-border-default/60 bg-bg-card">
-				<tr v-for="sale in paginatedSales" :key="sale.cart_id" @click.stop.prevent="emit('open-details', sale)" class="hover:bg-bg-hover transition-colors cursor-pointer group">
+				<tr v-for="sale in paginatedSales" :key="sale.cart_id" class="hover:bg-bg-hover transition-colors cursor-pointer group" @click.stop.prevent="emit('open-details', sale)">
 					<td class="py-4 pl-6">
 						<div class="text-[11px] font-bold text-text-muted tracking-wider uppercase font-mono">
 							{{ getTicketDisplay(sale) }}
@@ -135,7 +135,7 @@ const emit = defineEmits<{
 				<template v-if="isPending">
 					<tr v-for="i in 5" :key="'loading-' + i">
 						<td colspan="7" class="py-4.5 px-6">
-							<div class="h-11 bg-bg-muted/40 animate-pulse rounded-xl w-full"></div>
+							<div class="h-11 bg-bg-muted/40 animate-pulse rounded-xl w-full"/>
 						</td>
 					</tr>
 				</template>

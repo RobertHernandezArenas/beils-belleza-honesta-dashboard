@@ -127,7 +127,7 @@
 			<div 
 				class="flex w-full items-center justify-center pt-3 pb-3 sm:hidden cursor-pointer active:scale-95 transition-transform"
 				@click="closeModal">
-				<div class="bg-border-default h-1.5 w-12 rounded-full opacity-40 hover:opacity-60 transition-opacity"></div>
+				<div class="bg-border-default h-1.5 w-12 rounded-full opacity-40 hover:opacity-60 transition-opacity"/>
 			</div>
 
 			<!-- Modal Header -->
@@ -153,8 +153,8 @@
 				@scroll.passive="handleScroll">
 				<form
 					id="productForm"
-					@submit.prevent="saveProduct"
-					class="flex flex-col gap-6">
+					class="flex flex-col gap-6"
+					@submit.prevent="saveProduct">
 					
 					<!-- Section: Basic Info -->
 					<div class="space-y-6 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
@@ -171,7 +171,7 @@
 									type="checkbox"
 									class="toggle toggle-success toggle-xs"
 									:checked="form.status === 'activo'"
-									@change="form.status = form.status === 'activo' ? 'inactivo' : 'activo'" />
+									@change="form.status = form.status === 'activo' ? 'inactivo' : 'activo'" >
 							</div>
 						</div>
 
@@ -186,7 +186,7 @@
 									v-model="form.name"
 									type="text"
 									required
-									class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+									class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" >
 							</div>
 
 							<div class="grid grid-cols-2 gap-4">
@@ -198,7 +198,7 @@
 										v-model="form.sku"
 										type="text"
 										placeholder="P-001"
-										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" >
 								</div>
 								<div class="form-control">
 									<label class="label pb-1">
@@ -207,7 +207,7 @@
 									<input
 										v-model="form.barcode"
 										type="text"
-										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" >
 								</div>
 							</div>
 
@@ -218,7 +218,7 @@
 								<textarea
 									v-model="form.description"
 									rows="3"
-									class="textarea bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-bold shadow-xs transition-all"></textarea>
+									class="textarea bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card custom-scrollbar w-full rounded-xl px-4 py-3 text-sm font-bold shadow-xs transition-all"/>
 							</div>
 						</div>
 					</div>
@@ -244,7 +244,7 @@
 											v-model="form.price"
 											type="number"
 											step="0.01"
-											class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl pl-9 text-sm font-black tabular-nums shadow-xs transition-all" />
+											class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl pl-9 text-sm font-black tabular-nums shadow-xs transition-all" >
 									</div>
 								</div>
 								<div class="form-control">
@@ -254,7 +254,7 @@
 									<input
 										v-model="form.tax_rate"
 										type="number"
-										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" >
 								</div>
 							</div>
 
@@ -266,7 +266,7 @@
 									<input
 										v-model="form.stock"
 										type="number"
-										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" >
 								</div>
 								<div class="form-control">
 									<label class="label pb-1">
@@ -275,7 +275,7 @@
 									<input
 										v-model="form.min_stock"
 										type="number"
-										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" />
+										class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-emerald-500/10 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-black tabular-nums shadow-xs transition-all" >
 								</div>
 							</div>
 						</div>
@@ -297,7 +297,7 @@
 								v-model="form.image_url"
 								type="url"
 								placeholder="https://..."
-								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" />
+								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all" >
 						</div>
 					</div>
 
@@ -319,7 +319,7 @@
 					form="productForm"
 					class="btn text-bg-card hover:bg-text-secondary/80 bg-text-secondary h-11 rounded-xl border-none px-8 font-bold shadow-md sm:h-12 sm:px-10"
 					:disabled="isSaving">
-					<span v-if="isSaving" class="loading loading-spinner"></span>
+					<span v-if="isSaving" class="loading loading-spinner"/>
 					{{ editingProduct ? $t('common.save') : 'Crear Producto' }}
 				</button>
 			</div>

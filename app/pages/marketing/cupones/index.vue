@@ -86,7 +86,7 @@
 							v-model="searchQuery"
 							type="text"
 							placeholder="Buscar código..."
-							class="input bg-bg-card border-border-default focus:border-border-strong focus:ring-border-subtle h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" />
+							class="input bg-bg-card border-border-default focus:border-border-strong focus:ring-border-subtle h-12 w-full rounded-2xl pl-10 text-sm shadow-sm transition-[border-color,box-shadow]" >
 					</div>
 					<button
 						class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-12 flex w-full shrink-0 items-center justify-center rounded-2xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
@@ -102,7 +102,7 @@
 				<div
 					v-for="i in 6"
 					:key="i"
-					class="bg-bg-card border-border-default h-40 w-full animate-pulse rounded-3xl border opacity-50 mix-blend-multiply"></div>
+					class="bg-bg-card border-border-default h-40 w-full animate-pulse rounded-3xl border opacity-50 mix-blend-multiply"/>
 			</div>
 
 			<!-- Grid List -->
@@ -140,15 +140,15 @@
 									tabindex="0"
 									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-10 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 									<li>
-										<a @click="openEditModal(coupon)" class="hover:bg-bg-muted font-medium">
+										<a class="hover:bg-bg-muted font-medium" @click="openEditModal(coupon)">
 											<Edit2 class="h-4 w-4" />
 											Editar
 										</a>
 									</li>
 									<li>
 										<a
-											@click="confirmDelete(coupon.coupon_id)"
-											class="text-error hover:bg-error/10 font-medium">
+											class="text-error hover:bg-error/10 font-medium"
+											@click="confirmDelete(coupon.coupon_id)">
 											<Trash2 class="h-4 w-4" />
 											Eliminar
 										</a>

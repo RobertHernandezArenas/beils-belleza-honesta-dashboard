@@ -248,7 +248,7 @@ onUnmounted(() => {
         <div class="flex flex-col min-h-full">
             <!-- Top Header -->
             <div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/90 backdrop-blur-md">
-                <div class="border-border-subtle w-16 shrink-0 border-r p-2"></div>
+                <div class="border-border-subtle w-16 shrink-0 border-r p-2"/>
                 <div class="flex-1 py-3 px-4 flex items-center gap-4">
                     <div class="text-text-primary text-4xl font-black tracking-tighter tabular-nums">
                         {{ selectedDate.getDate() }}
@@ -284,15 +284,15 @@ onUnmounted(() => {
                     <div
                         v-for="hour in hours"
                         :key="'grid-'+hour"
-                        class="border-border-subtle h-24 border-b border-dashed w-full opacity-50"></div>
+                        class="border-border-subtle h-24 border-b border-dashed w-full opacity-50"/>
 
                     <!-- Current Time Indicator -->
                     <div
                         v-if="currentTimePosition >= 0"
                         :style="{ top: `${currentTimePosition}px` }"
                         class="pointer-events-none absolute right-0 left-0 z-20 flex items-center">
-                        <div class="bg-error h-2.5 w-2.5 -ml-1.5 animate-pulse rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
-                        <div class="bg-error/50 h-px flex-1 shadow-[0_0_4px_rgba(239,68,68,0.5)]"></div>
+                        <div class="bg-error h-2.5 w-2.5 -ml-1.5 animate-pulse rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"/>
+                        <div class="bg-error/50 h-px flex-1 shadow-[0_0_4px_rgba(239,68,68,0.5)]"/>
                     </div>
 
                     <!-- Empty State Indicator for Debugging -->
@@ -312,7 +312,7 @@ onUnmounted(() => {
                         <!-- Left Status Strip -->
                         <div
                             class="absolute top-0 bottom-0 left-0 w-1 opacity-80 rounded-l-xl"
-                            :class="getStatusStrip(booking.status)"></div>
+                            :class="getStatusStrip(booking.status)"/>
 
                         <!-- Content Layout -->
                         <div class="flex h-full flex-col pl-2">
@@ -334,7 +334,7 @@ onUnmounted(() => {
                                         class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-2xl">
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info h-3 w-3" /> Confirmar</a></li>
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success h-3 w-3" /> Finalizar</a></li>
-                                        <div class="divider my-0 opacity-30 h-1"></div>
+                                        <div class="divider my-0 opacity-30 h-1"/>
                                         <li><a class="text-[11px] py-1.5" @click.stop="emit('edit', booking)"><Pencil class="h-3 w-3" /> Editar</a></li>
                                         <li><a class="text-error text-[11px] py-1.5" @click.stop="emit('delete', booking.booking_id)"><Trash2 class="h-3 w-3" /> Eliminar</a></li>
                                     </ul>
@@ -355,7 +355,8 @@ onUnmounted(() => {
 
                             <!-- Services Info -->
                             <div v-if="booking.booking_items?.length" class="mt-0.5 flex-1 min-h-0 overflow-hidden">
-                                <div v-for="item in booking.booking_items.slice(0, 2)" :key="item.id" 
+                                <div
+v-for="item in booking.booking_items.slice(0, 2)" :key="item.id" 
                                     class="text-[9px] font-medium opacity-80 flex items-center gap-1 truncate mt-px">
                                     <span class="truncate">{{ item.name }}</span>
                                 </div>

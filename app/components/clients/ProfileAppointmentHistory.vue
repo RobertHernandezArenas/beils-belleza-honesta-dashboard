@@ -76,11 +76,11 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 				:key="b.booking_id"
 				class="border-border-subtle relative border-l pb-4 pl-5 last:pb-0">
 				<span
-					class="bg-bg-card border-primary absolute -left-[6px] top-1.5 h-3 w-3 rounded-full border-2"></span>
+					class="bg-bg-card border-primary absolute -left-[6px] top-1.5 h-3 w-3 rounded-full border-2"/>
 				<button
 					type="button"
-					@click="open(b)"
-					class="group hover:bg-bg-muted/50 border-border-default/70 flex w-full items-start justify-between gap-3 rounded-2xl border p-3 text-left transition-colors">
+					class="group hover:bg-bg-muted/50 border-border-default/70 flex w-full items-start justify-between gap-3 rounded-2xl border p-3 text-left transition-colors"
+					@click="open(b)">
 					<div class="min-w-0 flex-1">
 						<div class="mb-1 flex flex-wrap items-center gap-2">
 							<span class="text-text-primary text-xs font-black tabular-nums">{{ fmtDate(b.booking_date) }}</span>

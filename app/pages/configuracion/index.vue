@@ -37,13 +37,13 @@
 						<li v-for="s in sections" :key="s.id">
 							<button
 								type="button"
-								@click="activeSection = s.id as typeof activeSection"
 								class="flex w-full items-center gap-3 rounded-2xl px-5 py-3.5 text-left transition-colors"
 								:class="
 									activeSection === s.id
 										? 'bg-bg-card text-text-primary font-bold shadow-sm'
 										: 'text-text-muted hover:bg-bg-card/50 font-medium'
-								">
+								"
+								@click="activeSection = s.id as typeof activeSection">
 								<component :is="s.icon" class="h-5 w-5" />
 								{{ s.label }}
 							</button>

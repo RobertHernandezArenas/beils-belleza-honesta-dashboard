@@ -15,11 +15,11 @@
 			<UsersUserFilterPanel />
 
 			<UsersUserTable
+				v-model:current-page="currentPage"
 				:users="paginatedUsers"
 				:pending="pending"
 				:total-items="filteredUsers.length"
 				:items-per-page="itemsPerPage"
-				v-model:current-page="currentPage"
 				@edit="userForm?.showModal($event)"
 				@delete="openDeleteModal"
 				@toggle-status="toggleUserStatus" />

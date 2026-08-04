@@ -22,12 +22,12 @@
 			class="bg-bg-card relative z-10 w-full max-w-lg space-y-8 rounded-[2rem] border border-transparent p-10 text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-md sm:p-14">
 			<!-- Glow sutil dentro de la tarjeta -->
 			<div
-				class="pointer-events-none absolute inset-0 z-0 rounded-[2rem] bg-linear-to-b from-red-50 to-transparent"></div>
+				class="pointer-events-none absolute inset-0 z-0 rounded-[2rem] bg-linear-to-b from-red-50 to-transparent"/>
 
 			<!-- Icono Central con Resplandor (Error, color rojo) -->
 			<div class="relative z-10 flex justify-center">
 				<div class="relative">
-					<div class="absolute inset-0 rounded-full bg-red-50 blur-2xl"></div>
+					<div class="absolute inset-0 rounded-full bg-red-50 blur-2xl"/>
 					<div
 						class="relative mb-5 rounded-full border border-red-200 bg-red-100 p-5 text-red-600 shadow-[0_2px_10px_rgba(0,0,0,0.02)] ring-1 ring-red-300">
 						<AlertCircle class="h-12 w-12" stroke-width="1.5" />
@@ -56,15 +56,15 @@
 			<!-- Botones de Acción -->
 			<div class="relative z-10 flex flex-col justify-center gap-4 pt-6 sm:flex-row">
 				<button
-					@click="handleReload"
-					class="btn btn-ghost group text-text-muted hover:bg-bg-hover hover:text-text-secondary flex h-14 items-center justify-center rounded-2xl border border-transparent px-6 font-semibold tracking-wide transition-colors sm:w-auto">
+					class="btn btn-ghost group text-text-muted hover:bg-bg-hover hover:text-text-secondary flex h-14 items-center justify-center rounded-2xl border border-transparent px-6 font-semibold tracking-wide transition-colors sm:w-auto"
+					@click="handleReload">
 					<RefreshCcw
 						class="text-text-light group-hover:text-text-secondary mr-2 h-5 w-5 group-hover:rotate-180" />
 					Reintentar
 				</button>
 				<button
-					@click="handleError"
-					class="btn btn-ghost group btn-lg text-bg-card h-14 rounded-2xl border-none bg-[#404040] font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,color,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-[#404040]/80 hover:shadow-lg">
+					class="btn btn-ghost group btn-lg text-bg-card h-14 rounded-2xl border-none bg-[#404040] font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-[transform,color,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-[#404040]/80 hover:shadow-lg"
+					@click="handleError">
 					<Home class="mr-2 size-5" />
 					Volver al Inicio
 				</button>

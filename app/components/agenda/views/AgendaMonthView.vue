@@ -72,7 +72,7 @@ const getBookingsForDay = (date: Date) => {
     const offset1 = date.getTimezoneOffset() * 60000;
     const dateStr = new Date(date.getTime() - offset1).toISOString().split('T')[0]
     
-    let dayBookings = props.bookings.filter(b => {
+    const dayBookings = props.bookings.filter(b => {
         const bObj = new Date(b.booking_date)
         const offset2 = bObj.getTimezoneOffset() * 60000;
         const bDate = new Date(bObj.getTime() - offset2).toISOString().split('T')[0]
@@ -132,7 +132,8 @@ const getStatusColorClip = (status: string) => {
         </div>
 
         <!-- Grid -->
-        <div class="grid flex-1 grid-cols-7 border-border-subtle overflow-hidden"
+        <div
+class="grid flex-1 grid-cols-7 border-border-subtle overflow-hidden"
              :class="[
                 weeksNeeded === 4 ? 'grid-rows-4' : 
                 weeksNeeded === 5 ? 'grid-rows-5' : 'grid-rows-6'
@@ -140,9 +141,9 @@ const getStatusColorClip = (status: string) => {
             <div 
                 v-for="{ date, currentMonth } in calendarDays" 
                 :key="date.toISOString()" 
-                @click="handleDayClick(date, getBookingsForDay(date))"
                 class="month-day-cell relative flex flex-col border-r border-b border-border-subtle/50 p-1 transition-all duration-300 hover:bg-bg-card/60 cursor-pointer"
-                :class="{ 'opacity-40 grayscale bg-bg-muted/30': !currentMonth, 'bg-primary/5': isToday(date) }">
+                :class="{ 'opacity-40 grayscale bg-bg-muted/30': !currentMonth, 'bg-primary/5': isToday(date) }"
+                @click="handleDayClick(date, getBookingsForDay(date))">
                 
                 <!-- Day Number -->
                 <div class="flex items-center justify-between p-0.5 md:p-1">
@@ -164,10 +165,10 @@ const getStatusColorClip = (status: string) => {
                     <button
                         v-for="booking in getBookingsForDay(date).slice(0, 4)"
                         :key="booking.booking_id"
-                        @click.stop="emit('edit', booking)"
                         class="flex w-full items-center gap-1.5 truncate rounded px-1.5 py-0.5 text-[9px] font-bold tracking-tight transition-all hover:opacity-80"
-                        :class="getStatusColorClip(booking.status)">
-                        <div class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></div>
+                        :class="getStatusColorClip(booking.status)"
+                        @click.stop="emit('edit', booking)">
+                        <div class="w-1.5 h-1.5 rounded-full bg-current opacity-60"/>
                         <span class="shrink-0 tabular-nums opacity-80">{{ booking.start_time }}</span>
                         <span class="truncate uppercase">{{ booking.client?.name }}</span>
                     </button>

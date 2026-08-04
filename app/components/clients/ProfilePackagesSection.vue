@@ -117,7 +117,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 								<div 
 									class="bg-text-primary h-full transition-all duration-500 rounded-full"
 									:style="`width: ${getProgressPercentage(pkg.completedSessions, pkg.totalSessions)}%`"
-								></div>
+								/>
 							</div>
 						</div>
 

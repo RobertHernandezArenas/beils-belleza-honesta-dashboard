@@ -2,15 +2,15 @@
 	<div class="flex items-center justify-between px-6 py-4">
 		<div class="flex flex-1 items-center justify-between sm:hidden">
 			<button
-				@click="prevPage"
 				:disabled="currentPage <= 1"
-				class="btn btn-sm btn-ghost text-text-secondary hover:bg-bg-hover disabled:text-text-muted border-transparent disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:opacity-50 disabled:hover:bg-transparent">
+				class="btn btn-sm btn-ghost text-text-secondary hover:bg-bg-hover disabled:text-text-muted border-transparent disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:opacity-50 disabled:hover:bg-transparent"
+				@click="prevPage">
 				{{ $t('common.prev') }}
 			</button>
 			<button
-				@click="nextPage"
 				:disabled="currentPage >= totalPages"
-				class="btn btn-sm btn-ghost text-text-secondary hover:bg-bg-hover disabled:text-text-muted border-transparent disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:opacity-50 disabled:hover:bg-transparent">
+				class="btn btn-sm btn-ghost text-text-secondary hover:bg-bg-hover disabled:text-text-muted border-transparent disabled:pointer-events-auto disabled:cursor-not-allowed disabled:border-transparent disabled:opacity-50 disabled:hover:bg-transparent"
+				@click="nextPage">
 				{{ $t('common.next') }}
 			</button>
 		</div>
@@ -29,31 +29,31 @@
 			<div>
 				<div class="join">
 					<button
-						@click="prevPage"
 						aria-label="Página anterior"
 						:disabled="currentPage <= 1"
-						class="btn btn-sm join-item bg-bg-card text-text-secondary hover:bg-bg-hover disabled:text-text-muted disabled:hover:bg-bg-card border-transparent focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50">
+						class="btn btn-sm join-item bg-bg-card text-text-secondary hover:bg-bg-hover disabled:text-text-muted disabled:hover:bg-bg-card border-transparent focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
+						@click="prevPage">
 						<ChevronLeft class="h-4 w-4" />
 					</button>
 
 					<button
 						v-for="page in pages"
 						:key="page"
-						@click="setPage(page)"
 						class="btn btn-sm join-item border-transparent"
 						:class="
 							currentPage === page
 								? 'bg-text-secondary text-bg-card hover:bg-text-secondary/80'
 								: 'bg-bg-card text-text-secondary hover:bg-bg-hover'
-						">
+						"
+						@click="setPage(page)">
 						{{ page }}
 					</button>
 
 					<button
-						@click="nextPage"
 						aria-label="Página siguiente"
 						:disabled="currentPage >= totalPages"
-						class="btn btn-sm join-item bg-bg-card text-text-secondary hover:bg-bg-hover disabled:text-text-muted disabled:hover:bg-bg-card border-transparent focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50">
+						class="btn btn-sm join-item bg-bg-card text-text-secondary hover:bg-bg-hover disabled:text-text-muted disabled:hover:bg-bg-card border-transparent focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
+						@click="nextPage">
 						<ChevronRight class="h-4 w-4" />
 					</button>
 				</div>

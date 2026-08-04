@@ -55,15 +55,15 @@
 	<div ref="dropdownRef" class="relative">
 		<!-- Dropdown Button -->
 		<button
-			@click="isOpen = !isOpen"
 			class="group bg-bg-card hover:border-border-strong hover:bg-bg-muted border-border-default flex items-center justify-between gap-2.5 rounded-full border px-3 py-1.5 transition-[background-color,border-color] focus-visible:outline-none"
 			aria-haspopup="listbox"
-			:aria-expanded="isOpen">
+			:aria-expanded="isOpen"
+			@click="isOpen = !isOpen">
 			<div class="flex items-center gap-2">
 				<img
 					:src="currentLanguage.icon"
 					alt="Flag"
-					class="h-3.5 w-5 rounded-[2px] object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" />
+					class="h-3.5 w-5 rounded-[2px] object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" >
 				<span class="text-text-secondary text-xs font-bold tracking-wider uppercase">
 					{{ currentLanguage.name }}
 				</span>
@@ -88,21 +88,21 @@
 				<li
 					v-for="l in locales"
 					:key="l.code"
-					@click.prevent="selectLanguage(l.code)"
 					class="hover:bg-bg-hover flex w-full cursor-pointer items-center justify-between px-4 py-2 text-sm transition-colors"
 					:class="[locale === l.code ? 'bg-bg-muted text-text-primary' : 'text-text-secondary']"
 					role="option"
-					:aria-selected="locale === l.code">
+					:aria-selected="locale === l.code"
+					@click.prevent="selectLanguage(l.code)">
 					<div class="flex items-center gap-3">
 						<img
 							:src="languageMap[l.code]?.icon"
 							alt="Flag"
-							class="h-3.5 w-5 rounded-[2px] object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" />
+							class="h-3.5 w-5 rounded-[2px] object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" >
 						<span class="text-xs font-medium">{{ languageMap[l.code]?.name || l.name }}</span>
 					</div>
 
 					<!-- Active Indicator -->
-					<div v-if="locale === l.code" class="bg-text-primary h-1.5 w-1.5 rounded-full"></div>
+					<div v-if="locale === l.code" class="bg-text-primary h-1.5 w-1.5 rounded-full"/>
 				</li>
 			</ul>
 		</transition>

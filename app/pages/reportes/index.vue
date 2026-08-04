@@ -157,9 +157,9 @@
 					<p class="text-text-muted text-sm font-medium">{{ $t('finances.reports.subtitle') }}</p>
 				</div>
 				<button
-					@click="exportToPDF"
 					:disabled="isPending || isExporting"
-					class="btn bg-bg-card text-text-secondary hover:bg-bg-muted border-border-subtle flex h-12 items-center gap-2 rounded-full border px-6 shadow-sm transition-colors disabled:opacity-50 print:hidden">
+					class="btn bg-bg-card text-text-secondary hover:bg-bg-muted border-border-subtle flex h-12 items-center gap-2 rounded-full border px-6 shadow-sm transition-colors disabled:opacity-50 print:hidden"
+					@click="exportToPDF">
 					<Loader2 v-if="isExporting" class="h-5 w-5 animate-spin" />
 					<Download v-else class="h-5 w-5" />
 					<span class="font-bold">
@@ -174,13 +174,13 @@
 					<div
 						v-for="i in 4"
 						:key="i"
-						class="bg-bg-card border-border-default h-32 animate-pulse rounded-3xl border shadow-sm"></div>
+						class="bg-bg-card border-border-default h-32 animate-pulse rounded-3xl border shadow-sm"/>
 				</div>
 				<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 					<div
-						class="bg-bg-card border-border-default h-96 animate-pulse rounded-3xl border shadow-sm"></div>
+						class="bg-bg-card border-border-default h-96 animate-pulse rounded-3xl border shadow-sm"/>
 					<div
-						class="bg-bg-card border-border-default h-96 animate-pulse rounded-3xl border shadow-sm"></div>
+						class="bg-bg-card border-border-default h-96 animate-pulse rounded-3xl border shadow-sm"/>
 				</div>
 			</div>
 
