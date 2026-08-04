@@ -1,3 +1,5 @@
+import type { Client } from '~~/shared/types/domain'
+
 export function useDataPrivacy() {
 	// Local cache for revealed documents in this component/session
 	const revealedDocs = ref<Record<string, string>>({})
@@ -8,17 +10,17 @@ export function useDataPrivacy() {
 	 * @param id entity ID
 	 * @param currentMaskedValue currently displayed (likely masked) value
 	 */
-	const toggleDocumentVisibility = async (id: string, currentMaskedValue: string) => {
+	const toggleDocumentVisibility = async (id: string, _currentMaskedValue: string) => {
 		// If already revealed, we just "forget" it from local cache (hide it)
 		if (revealedDocs.value[id]) {
-			delete revealedDocs.value[id]
+			Reflect.deleteProperty(revealedDocs.value, id)
 			return
 		}
 
 		// Otherwise, fetch from server with ?reveal=true
 		revealedLoading.value[id] = true
 		try {
-			const res: any = await $fetch(`/api/clients/${id}`, {
+			const res = await $fetch<Client>(`/api/clients/${id}`, {
 				query: { reveal: 'true' },
 			})
 

@@ -7,7 +7,7 @@
  * @param delay The debounce delay in milliseconds (default: 500ms)
  */
 export function useDebouncedRef<T>(value: T, delay = 500) {
-	let timeout: any
+	let timeout: ReturnType<typeof setTimeout> | undefined
 	return customRef((track, trigger) => {
 		return {
 			get() {

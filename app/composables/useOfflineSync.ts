@@ -5,7 +5,7 @@ export interface SyncAction {
 	id?: number
 	url: string
 	method: string
-	body: any
+	body: unknown
 	timestamp: number
 }
 
@@ -33,7 +33,7 @@ export const useOfflineSync = () => {
 		}
 	}
 
-	const addToQueue = async (url: string, method: string, body: any) => {
+	const addToQueue = async (url: string, method: string, body: unknown) => {
 		await db.syncQueue.add({
 			url,
 			method,
@@ -54,8 +54,8 @@ export const useOfflineSync = () => {
 			for (const action of queue) {
 				try {
 					await $fetch(action.url, {
-						method: action.method as any,
-						body: action.body,
+						method: action.method as 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
+						body: action.body as Record<string, unknown>,
 					})
 					await db.syncQueue.delete(action.id!)
 				} catch (err) {

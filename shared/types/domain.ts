@@ -33,6 +33,14 @@ export interface BookingItem {
 	item_id: string
 	name: string
 	duration: number
+	remaining_sessions?: number
+}
+
+// Shape of an error thrown by $fetch/ofetch on the client: an H3/ofetch error
+// carries `data.statusMessage` (from the server's createError) plus `message`.
+export interface FetchError {
+	data?: { statusMessage?: string }
+	message?: string
 }
 
 export interface Booking {
@@ -106,6 +114,9 @@ export interface CatalogItem {
 	service_id?: string
 	package_id?: string
 	client_package_id?: string
+	// Present when the catalog row has been normalised for a cart/search flow.
+	item_id?: string
+	item_type?: string
 	name: string
 	price?: number
 	tax_rate?: number

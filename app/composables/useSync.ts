@@ -3,7 +3,7 @@
 type SyncEvent = {
   type: 'REFRESH_CLIENT' | 'REFRESH_BOOKINGS' | 'REFRESH_SALES'
   clientId?: string
-  payload?: any
+  payload?: unknown
 }
 
 let sharedChannel: BroadcastChannel | null = null

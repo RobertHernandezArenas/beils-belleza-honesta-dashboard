@@ -1,38 +1,40 @@
 import { ref, computed } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useDebouncedRef } from '~/composables/useDebouncedRef'
+import type { Sale, Client, CatalogItem } from '~~/shared/types/domain'
+import type { IncomingLineItem } from '~~/shared/types/line-item'
 
-export function usePurchaseModal(emit: any) {
+export function usePurchaseModal(emit: (event: 'success') => void) {
   const queryClient = useQueryClient()
   
-  const cart = ref<any>(null)
+  const cart = ref<Sale | null>(null)
   const isSearching = ref(false)
   const isEditingItems = ref(false)
   const searchQuery = useDebouncedRef('', 400)
-  const selectedClientToAssign = ref<any | null>(null)
-  const tempItems = ref<any[]>([])
+  const selectedClientToAssign = ref<Partial<Client> | null>(null)
+  const tempItems = ref<IncomingLineItem[]>([])
 
   // Live totals for editing
   const tempSubtotal = computed(() => tempItems.value.reduce((acc, item) => acc + (item.unit_price * item.quantity), 0))
   const tempTotal = computed(() => Number((tempSubtotal.value - (cart.value?.discount || 0)).toFixed(2)))
 
   // Fetch clients for search
-  const { data: clientSearchResults, isPending: isSearchingClients } = useQuery<any>({
+  const { data: clientSearchResults, isPending: isSearchingClients } = useQuery<{ data: Client[] }>({
     queryKey: ['clients-search', searchQuery],
-    queryFn: () => $fetch('/api/clients', { query: { search: searchQuery.value, limit: 10 } }),
+    queryFn: () => $fetch<{ data: Client[] }>('/api/clients', { query: { search: searchQuery.value, limit: 10 } }),
     enabled: computed(() => isSearching.value && !isEditingItems.value)
   })
 
   const clients = computed(() => clientSearchResults.value?.data || [])
 
   // Fetch items for search
-  const { data: catalogResults, isPending: isSearchingItems } = useQuery<any>({
+  const { data: catalogResults, isPending: isSearchingItems } = useQuery<CatalogItem[]>({
     queryKey: ['catalog-search', searchQuery],
     queryFn: async () => {
       const [prods, servs, packs] = await Promise.all([
-        $fetch<any[]>('/api/catalog/products'),
-        $fetch<any[]>('/api/services'),
-        $fetch<any[]>('/api/packages')
+        $fetch<CatalogItem[]>('/api/catalog/products'),
+        $fetch<CatalogItem[]>('/api/services'),
+        $fetch<CatalogItem[]>('/api/packages')
       ])
 
       const q = searchQuery.value.toLowerCase()
@@ -54,14 +56,13 @@ export function usePurchaseModal(emit: any) {
   // Assign Client Mutation
   const { mutate: assignClient, isPending: isAssigningClient } = useMutation({
     mutationFn: (clientId: string | null) => 
-      $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
+      $fetch<Sale>(`/api/sales/carts/${cart.value!.cart_id}`, {
         method: 'PUT',
         body: { user_id: clientId }
       }),
-    onSuccess: (updatedCart: any) => {
+    onSuccess: (updatedCart: Sale) => {
       queryClient.invalidateQueries({ queryKey: ['sales'] })
-      cart.value = { 
-        ...cart.value, 
+      cart.value = { ...cart.value!, 
         user_id: updatedCart.user_id, 
         user: updatedCart.user_id ? selectedClientToAssign.value : null 
       }
@@ -72,18 +73,18 @@ export function usePurchaseModal(emit: any) {
 
   // Save Items Mutation
   const { mutate: saveItems, isPending: isSavingItems } = useMutation({
-    mutationFn: (items: any[]) => 
-      $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
+    mutationFn: (items: IncomingLineItem[]) => 
+      $fetch<Sale>(`/api/sales/carts/${cart.value!.cart_id}`, {
         method: 'PUT',
         body: { items }
       }),
-    onSuccess: (updatedCart: any) => {
+    onSuccess: (updatedCart: Sale) => {
       queryClient.invalidateQueries({ queryKey: ['sales'] })
       // A bono line may have provisioned a ClientPackage — refresh everywhere it's shown
       queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
       queryClient.invalidateQueries({ queryKey: ['client-packages-tpv'] })
       queryClient.invalidateQueries({ queryKey: ['client'] })
-      cart.value = { ...cart.value, ...updatedCart }
+      cart.value = { ...cart.value!, ...updatedCart }
       isEditingItems.value = false
       emit('success')
     }
@@ -92,13 +93,13 @@ export function usePurchaseModal(emit: any) {
   // Update Date Mutation
   const { mutate: updateDate, isPending: isUpdatingDate } = useMutation({
     mutationFn: (newDate: string) => 
-      $fetch(`/api/sales/carts/${cart.value.cart_id}`, {
+      $fetch<Sale>(`/api/sales/carts/${cart.value!.cart_id}`, {
         method: 'PUT',
         body: { created_at: newDate }
       }),
-    onSuccess: (updatedCart: any) => {
+    onSuccess: (updatedCart: Sale) => {
       queryClient.invalidateQueries({ queryKey: ['sales'] })
-      cart.value = { ...cart.value, created_at: updatedCart.created_at }
+      cart.value = { ...cart.value!, created_at: updatedCart.created_at }
       emit('success')
     }
   })
