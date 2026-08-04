@@ -135,3 +135,65 @@ export interface ClientPackage {
 	status: string
 	items?: ClientPackageItem[]
 }
+
+export interface DebtPayment {
+	payment_id: string
+	debt_id: string
+	amount: number
+	payment_method: string
+	payment_date: string
+	notes?: string | null
+}
+
+export interface Debt {
+	debt_id: string
+	user_id: string
+	cart_id?: string | null
+	amount: number
+	remaining: number
+	status: string
+	due_date?: string | null
+	notes?: string | null
+	created_at?: string
+	payments?: DebtPayment[]
+	cart?: Sale | null
+}
+
+export interface Questionnaire {
+	questionnaire_id: string
+	user_id: string
+	title: string
+	data: string
+	created_at?: string
+}
+
+export interface Consent {
+	consent_id: string
+	user_id?: string | null
+	consent_type?: string | null
+	status: string
+	signed_date: string
+	document_url?: string | null
+	notes?: string | null
+	created_at?: string | null
+}
+
+export interface Revoke {
+	revoke_id: string
+	user_id: string
+	reason?: string | null
+	date_revoked: string
+	created_at?: string
+}
+
+// A Client together with the relations the profile screens load. Everything is
+// optional because different endpoints hydrate different slices.
+export interface ClientProfile extends Client {
+	carts?: Sale[]
+	debts?: Debt[]
+	questionnaires?: Questionnaire[]
+	consents?: Consent[]
+	revokes?: Revoke[]
+	client_packages?: ClientPackage[]
+	bookings?: Booking[]
+}
