@@ -30,7 +30,7 @@ const normalizeStr = (str: string) => {
 
 const filteredItems = computed(() => {
     const q = normalizeStr(itemSearch.value)
-    let source: any[] = props.services || []
+    const source: any[] = props.services || []
     
     if (!q) return source.slice(0, 10)
     
@@ -198,8 +198,8 @@ defineExpose({
                             v-if="pkg.type !== 'MIXTO'"
                             type="button"
                             :disabled="disabled || getEffectiveRemainingForPackage(pkg) <= 0"
-                            @click="addIndividualPackageItem(pkg)"
                             class="badge badge-neutral font-bold text-[9px] px-2.5 py-1 hover:bg-primary hover:text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            @click="addIndividualPackageItem(pkg)"
                         >
                             {{ getEffectiveRemainingForPackage(pkg) > 0 ? 'Usar Sesión' : 'Agotado' }}
                         </button>
@@ -208,8 +208,8 @@ defineExpose({
                         <button 
                             v-else
                             type="button"
-                            @click="toggleExpandPackage(pkg.client_package_id || pkg.package_id)"
                             class="btn btn-ghost btn-xs font-black text-[9px] uppercase gap-1 text-primary"
+                            @click="toggleExpandPackage(pkg.client_package_id || pkg.package_id)"
                         >
                             <span>{{ expandedPackages[pkg.client_package_id || pkg.package_id] ? 'Ocultar Items' : 'Ver Items Incluidos' }}</span>
                             <ChevronUp v-if="expandedPackages[pkg.client_package_id || pkg.package_id]" class="w-3 h-3" />
@@ -250,8 +250,8 @@ defineExpose({
                             <button 
                                 type="button"
                                 :disabled="disabled || getEffectiveRemainingForSubItem(subItem) <= 0"
-                                @click="addMixedPackageSubItem(pkg, subItem)"
                                 class="badge badge-neutral font-bold text-[9px] px-2 py-1 hover:bg-primary hover:text-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                @click="addMixedPackageSubItem(pkg, subItem)"
                             >
                                 {{ getEffectiveRemainingForSubItem(subItem) > 0 ? (subItem.item_type === 'SERVICE' ? 'Usar Sesión' : 'Entregar Producto') : 'Agotado' }}
                             </button>
@@ -264,13 +264,15 @@ defineExpose({
         <!-- Item Search Input & Dropdown -->
         <div class="relative z-40">
             <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <input v-model="itemSearch" type="text" placeholder="Añadir otro servicio del catálogo..." :disabled="disabled"
+            <input
+v-model="itemSearch" type="text" placeholder="Añadir otro servicio del catálogo..." :disabled="disabled"
                 class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
                 @focus="!disabled && (isItemDropdownOpen = true)" 
-                @keydown.esc="isItemDropdownOpen = false" />
+                @keydown.esc="isItemDropdownOpen = false" >
             
             <div v-show="isItemDropdownOpen" class="bg-bg-card border-border-default absolute z-50 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                <button v-for="it in filteredItems" :key="it.service_id"
+                <button
+v-for="it in filteredItems" :key="it.service_id"
                     type="button" class="hover:bg-bg-muted flex w-full items-center justify-between px-4 py-3 text-left border-b border-border-subtle last:border-none"
                     @mousedown="addServiceItem(it)">
                     <div class="flex flex-col">
@@ -286,13 +288,15 @@ defineExpose({
         <!-- Vender Bono / Paquete -->
         <div v-if="catalogPackages && catalogPackages.length > 0" class="relative z-30">
             <Package class="text-primary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <input v-model="pkgSearch" type="text" placeholder="Vender bono / paquete..." :disabled="disabled"
+            <input
+v-model="pkgSearch" type="text" placeholder="Vender bono / paquete..." :disabled="disabled"
                 class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
                 @focus="!disabled && (isPkgDropdownOpen = true)"
-                @keydown.esc="isPkgDropdownOpen = false" />
+                @keydown.esc="isPkgDropdownOpen = false" >
 
             <div v-show="isPkgDropdownOpen" class="bg-bg-card border-border-default absolute z-40 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                <button v-for="pkg in filteredPackages" :key="pkg.package_id"
+                <button
+v-for="pkg in filteredPackages" :key="pkg.package_id"
                     type="button" class="hover:bg-bg-muted flex w-full items-center justify-between px-4 py-3 text-left border-b border-border-subtle last:border-none"
                     @mousedown="addPackageSaleItem(pkg)">
                     <div class="flex flex-col">

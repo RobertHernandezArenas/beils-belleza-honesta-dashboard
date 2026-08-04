@@ -82,14 +82,16 @@ defineExpose({
             <label class="label pb-1"><span class="label-text text-primary text-[10px] font-bold uppercase tracking-widest">Cliente *</span></label>
             <div class="relative">
                 <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                <input v-model="clientSearch" type="text" required placeholder="Buscar cliente..." autocomplete="off" :disabled="disabled"
+                <input
+v-model="clientSearch" type="text" required placeholder="Buscar cliente..." autocomplete="off" :disabled="disabled"
                     class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
                     @focus="!disabled && (isClientDropdownOpen = true)" 
-                    @keydown.esc="isClientDropdownOpen = false" />
+                    @keydown.esc="isClientDropdownOpen = false" >
                 
                 <!-- Dropdown -->
                 <div v-show="isClientDropdownOpen" class="bg-bg-card border-border-default absolute z-50 top-full left-0 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border shadow-xl">
-                    <button v-for="c in filteredClients" :key="c.user_id"
+                    <button
+v-for="c in filteredClients" :key="c.user_id"
                         type="button" class="hover:bg-bg-muted flex w-full flex-col px-4 py-3 text-left transition-colors border-b border-border-subtle last:border-none"
                         @mousedown="selectClient(c)">
                         <span class="text-xs font-bold text-text-primary">{{ c.name }} {{ c.surname }}</span>

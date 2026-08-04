@@ -86,8 +86,8 @@ const handleDateChange = (direction: 'next' | 'prev') => {
         <div class="h-16 shrink-0 border-b border-border-subtle bg-bg-card/90 backdrop-blur-md px-6 flex items-center justify-between z-20 relative">
             <div class="flex items-center gap-4">
                 <button 
-                    @click="store.showSidebar = !store.showSidebar"
-                    class="p-2 hover:bg-bg-muted rounded-xl transition-colors text-text-secondary hidden lg:block">
+                    class="p-2 hover:bg-bg-muted rounded-xl transition-colors text-text-secondary hidden lg:block"
+                    @click="store.showSidebar = !store.showSidebar">
                     <PanelLeftClose v-if="store.showSidebar" class="h-5 w-5" />
                     <PanelLeftOpen v-else class="h-5 w-5" />
                 </button>
@@ -104,13 +104,13 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                 <button
                     v-for="mode in ['day', 'week', 'month']" 
                     :key="mode"
-                    @click="store.setViewMode(mode as any)"
                     class="h-8 px-4 rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-all"
                     :class="[
                         viewMode === mode 
                             ? 'bg-bg-card text-text-primary shadow-sm' 
                             : 'text-text-muted hover:text-text-primary hover:bg-black/5'
-                    ]">
+                    ]"
+                    @click="store.setViewMode(mode as any)">
                     {{ mode === 'day' ? 'Día' : mode === 'week' ? 'Semana' : 'Mes' }}
                 </button>
             </div>
@@ -118,10 +118,10 @@ const handleDateChange = (direction: 'next' | 'prev') => {
             <div class="flex items-center gap-3 sm:gap-4">
                 <!-- Navigation Arrows -->
                 <div class="flex items-center bg-bg-muted/30 rounded-xl p-0.5 border border-border-subtle">
-                    <button @click="handleDateChange('prev')" class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary">
+                    <button class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary" @click="handleDateChange('prev')">
                         <ChevronLeft class="h-4 w-4" />
                     </button>
-                    <button @click="handleDateChange('next')" class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary">
+                    <button class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary" @click="handleDateChange('next')">
                         <ChevronRight class="h-4 w-4" />
                     </button>
                 </div>
@@ -151,7 +151,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                 
                 <!-- Overlay Loader when initially pending -->
                 <div v-if="isPending && (!displayBookings || displayBookings.length === 0)" class="absolute inset-0 z-50 flex items-center justify-center bg-bg-card/40 backdrop-blur-sm">
-                    <div class="loading loading-spinner text-primary loading-lg"></div>
+                    <div class="loading loading-spinner text-primary loading-lg"/>
                 </div>
 
                 <!-- Dynamic View Component -->
@@ -160,15 +160,15 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                         <component 
                             :is="viewComponent"
                             :bookings="displayBookings"
-                            :selectedDate="selectedDate"
-                            :isPending="isPending"
-                            :daysCount="viewMode === '4days' ? 4 : 7"
+                            :selected-date="selectedDate"
+                            :is-pending="isPending"
+                            :days-count="viewMode === '4days' ? 4 : 7"
                             @edit="(booking: any) => store.openBookingDrawer(booking)"
                             @delete="confirmDelete"
                             @status="setBookingStatus"
                             @create="(d: Date, t: string) => store.openBookingDrawer(null, d, t)"
-                            @selectDate="(d: Date) => { store.setDate(d); store.setViewMode('day') }"
-                            @viewDayDetails="(d: Date, bs: any[]) => daySummaryModalRef?.openModal(d, bs)"
+                            @select-date="(d: Date) => { store.setDate(d); store.setViewMode('day') }"
+                            @view-day-details="(d: Date, bs: any[]) => daySummaryModalRef?.openModal(d, bs)"
                         />
                     </ClientOnly>
                 </div>

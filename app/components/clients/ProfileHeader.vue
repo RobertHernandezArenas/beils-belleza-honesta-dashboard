@@ -131,7 +131,7 @@ const blurActiveElement = () => {
 
 <template>
 	<div class="card bg-bg-card border-border-default shadow-md relative z-40 overflow-visible rounded-3xl p-6 lg:p-8 transition-all duration-300 hover:shadow-xl">
-		<input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileSelect" />
+		<input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileSelect" >
 
 		<!-- Main Layout Grid -->
 		<div class="flex w-full flex-col justify-between gap-6 lg:flex-row lg:items-center">
@@ -147,13 +147,13 @@ const blurActiveElement = () => {
 						@click="triggerAvatarUpload"
 					>
 						<div v-if="isUploadingAvatar" class="absolute inset-0 z-20 flex items-center justify-center bg-bg-card/80 text-text-primary">
-							<span class="loading loading-spinner loading-md"></span>
+							<span class="loading loading-spinner loading-md"/>
 						</div>
 						<div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-[2px]">
 							<Camera class="h-6 w-6 mb-0.5" />
 							<span class="text-[9px] font-black uppercase tracking-wider">{{ $t('common.edit') }}</span>
 						</div>
-						<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="object-cover w-full h-full" @error="handleAvatarError" />
+						<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="object-cover w-full h-full" @error="handleAvatarError" >
 						<div v-else class="bg-bg-muted text-primary flex h-full w-full items-center justify-center text-2xl font-black">
 							{{ client.name.charAt(0) }}{{ client.surname?.charAt(0) || '' }}
 						</div>
@@ -272,25 +272,25 @@ const blurActiveElement = () => {
 						class="dropdown-content menu bg-base-100/95 backdrop-blur-xl border border-base-300/80 z-50 mt-2 w-64 rounded-2xl p-2 shadow-2xl space-y-1"
 					>
 						<li>
-							<a @click="$emit('new-booking'); blurActiveElement()" class="py-3 font-bold rounded-xl active:bg-primary">
+							<a class="py-3 font-bold rounded-xl active:bg-primary" @click="$emit('new-booking'); blurActiveElement()">
 								<CalendarPlus class="text-primary mr-2 h-4 w-4" />
 								Nueva Cita
 							</a>
 						</li>
 						<li class="border-t border-base-200/80 pt-1">
-							<a @click="$emit('add-consent'); blurActiveElement()" class="py-3 font-bold rounded-xl active:bg-primary">
+							<a class="py-3 font-bold rounded-xl active:bg-primary" @click="$emit('add-consent'); blurActiveElement()">
 								<FileSignature class="text-success mr-2 h-4 w-4" />
 								{{ $t('catalog.clients.profile.compliance.consents') }}
 							</a>
 						</li>
 						<li>
-							<a @click="$emit('add-questionnaire'); blurActiveElement()" class="py-3 font-bold rounded-xl active:bg-primary">
+							<a class="py-3 font-bold rounded-xl active:bg-primary" @click="$emit('add-questionnaire'); blurActiveElement()">
 								<FileText class="text-info mr-2 h-4 w-4" />
 								{{ $t('catalog.clients.profile.compliance.questionnaires') }}
 							</a>
 						</li>
 						<li class="border-t border-base-200/80 pt-1">
-							<a @click="$emit('add-revoke'); blurActiveElement()" class="py-3 font-bold text-error rounded-xl hover:bg-error/10 active:bg-error">
+							<a class="py-3 font-bold text-error rounded-xl hover:bg-error/10 active:bg-error" @click="$emit('add-revoke'); blurActiveElement()">
 								<ShieldOff class="mr-2 h-4 w-4" />
 								{{ $t('catalog.clients.profile.compliance.revocations') }}
 							</a>

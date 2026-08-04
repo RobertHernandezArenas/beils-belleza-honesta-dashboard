@@ -190,7 +190,7 @@ defineExpose({ openModal, closeModal })
 			</div>
 
 			<!-- Body -->
-			<form @submit.prevent="() => savePackage()" class="mt-4 space-y-4">
+			<form class="mt-4 space-y-4" @submit.prevent="() => savePackage()">
 				<!-- Name & Price -->
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
@@ -201,7 +201,7 @@ defineExpose({ openModal, closeModal })
 							required
 							placeholder="Ej: Bono Indiba 6 Sesiones"
 							class="input input-bordered w-full rounded-xl bg-bg-muted text-text-primary font-medium"
-						/>
+						>
 					</div>
 					<div>
 						<label class="block text-xs font-bold uppercase text-text-muted mb-1">Precio (€)</label>
@@ -213,7 +213,7 @@ defineExpose({ openModal, closeModal })
 							min="0"
 							placeholder="250.00"
 							class="input input-bordered w-full rounded-xl bg-bg-muted text-text-primary font-mono font-bold"
-						/>
+						>
 					</div>
 				</div>
 
@@ -248,7 +248,7 @@ defineExpose({ openModal, closeModal })
 						rows="2"
 						placeholder="Ej: Incluye 6 sesiones de Indiba Corporal de 45 minutos."
 						class="textarea textarea-bordered w-full rounded-xl bg-bg-muted text-text-primary text-xs"
-					></textarea>
+					/>
 				</div>
 
 				<!-- Individual Package Settings -->
@@ -262,7 +262,7 @@ defineExpose({ openModal, closeModal })
 								min="1"
 								required
 								class="input input-bordered w-full rounded-xl bg-bg-card text-text-primary font-mono font-bold"
-							/>
+							>
 						</div>
 						<div>
 							<label class="block text-xs font-bold uppercase text-text-muted mb-1">Servicio del Catálogo</label>
@@ -329,7 +329,7 @@ defineExpose({ openModal, closeModal })
 								min="1"
 								class="input input-sm input-bordered w-full rounded-lg text-center font-mono font-bold text-xs"
 								placeholder="Cant"
-							/>
+							>
 						</div>
 
 						<!-- Delete Button -->
@@ -345,7 +345,7 @@ defineExpose({ openModal, closeModal })
 						Cancelar
 					</button>
 					<button type="submit" class="btn btn-primary rounded-xl font-black uppercase text-xs shadow-md" :disabled="isSaving">
-						<span v-if="isSaving" class="loading loading-spinner"></span>
+						<span v-if="isSaving" class="loading loading-spinner"/>
 						<span v-else>{{ isEditing ? 'Guardar Cambios' : 'Crear Paquete' }}</span>
 					</button>
 				</div>

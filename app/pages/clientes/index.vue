@@ -155,13 +155,13 @@
 							v-model="searchInput"
 							type="search"
 							placeholder="Buscar nombre o correo..."
-							class="bg-bg-card text-text-primary border-border-default placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15 h-12 w-full rounded-full border pr-11 pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] outline-none transition-[border-color,box-shadow] sm:w-full lg:w-64" />
+							class="bg-bg-card text-text-primary border-border-default placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15 h-12 w-full rounded-full border pr-11 pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] outline-none transition-[border-color,box-shadow] sm:w-full lg:w-64" >
 						<button
 							v-if="searchInput"
 							type="button"
 							aria-label="Limpiar búsqueda"
-							@click="searchInput = ''"
-							class="text-text-muted hover:text-text-primary hover:bg-bg-muted absolute top-1/2 right-3 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full transition-colors">
+							class="text-text-muted hover:text-text-primary hover:bg-bg-muted absolute top-1/2 right-3 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full transition-colors"
+							@click="searchInput = ''">
 							<X class="h-3.5 w-3.5" />
 						</button>
 					</div>
@@ -176,7 +176,7 @@
 
 			<!-- Content -->
 			<div v-if="isPending" class="glass-card premium-shadow w-full space-y-4 rounded-3xl p-6">
-				<div v-for="i in 5" :key="i" class="bg-bg-muted/50 h-16 w-full animate-pulse rounded-2xl"></div>
+				<div v-for="i in 5" :key="i" class="bg-bg-muted/50 h-16 w-full animate-pulse rounded-2xl"/>
 			</div>
 
 			<div
@@ -234,7 +234,7 @@
 												v-if="client.avatar && !avatarErrors.has(client.user_id)"
 												:src="client.avatar"
 												class="h-full w-full object-cover"
-												@error="handleAvatarError(client.user_id)" />
+												@error="handleAvatarError(client.user_id)" >
 											<span v-else class="text-sm font-black tracking-tight">
 												{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
 											</span>
@@ -277,10 +277,10 @@
 												@click="toggleDocumentVisibility(client.user_id, client.document_number)">
 												<span
 													v-if="revealedLoading[client.user_id]"
-													class="loading loading-spinner loading-xs h-3 w-3"></span>
+													class="loading loading-spinner loading-xs h-3 w-3"/>
 												<component
-													v-else
 													:is="revealedDocs[client.user_id] ? EyeOff : Eye"
+													v-else
 													class="h-3.5 w-3.5" />
 											</button>
 										</div>
@@ -314,7 +314,7 @@
 												? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700'
 												: 'border-rose-500/20 bg-rose-500/10 text-rose-700'
 										">
-										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"></span>
+										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"/>
 										{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
 									</span>
 								</td>

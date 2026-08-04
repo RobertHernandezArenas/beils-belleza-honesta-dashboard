@@ -76,7 +76,7 @@ const closeDropdowns = () => {
         leave-active-class="transition-opacity ease-linear duration-300"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="isBookingDrawerOpen" class="fixed inset-0 z-100 bg-text-secondary/20 backdrop-blur-sm" @click="store.closeBookingDrawer()"></div>
+        <div v-if="isBookingDrawerOpen" class="fixed inset-0 z-100 bg-text-secondary/20 backdrop-blur-sm" @click="store.closeBookingDrawer()"/>
     </Transition>
 
     <!-- Drawer -->
@@ -106,7 +106,7 @@ const closeDropdowns = () => {
 
             <!-- Body -->
             <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
-                <form id="drawerBookingForm" @submit.prevent="saveBooking" class="flex flex-col gap-6" @click.stop>
+                <form id="drawerBookingForm" class="flex flex-col gap-6" @submit.prevent="saveBooking" @click.stop>
                     
                     <!-- Status -->
                     <div v-if="selectedBooking" class="form-control">
@@ -122,11 +122,11 @@ const closeDropdowns = () => {
                     <div class="grid grid-cols-2 gap-4">
                         <div class="form-control">
                             <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Fecha *</span></label>
-                            <input v-model="form.booking_date" type="date" required :disabled="form.status === 'COMPLETADA'" class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none disabled:opacity-60" />
+                            <input v-model="form.booking_date" type="date" required :disabled="form.status === 'COMPLETADA'" class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none disabled:opacity-60" >
                         </div>
                         <div class="form-control">
                             <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Hora *</span></label>
-                            <input v-model="form.start_time" type="time" required :disabled="form.status === 'COMPLETADA'" class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none disabled:opacity-60" />
+                            <input v-model="form.start_time" type="time" required :disabled="form.status === 'COMPLETADA'" class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl px-4 text-xs font-bold shadow-sm outline-none disabled:opacity-60" >
                         </div>
                     </div>
 
@@ -139,7 +139,7 @@ const closeDropdowns = () => {
 
                     <!-- Professional field removed (auto-assigned in background) -->
 
-                    <div class="divider my-0 opacity-50"></div>
+                    <div class="divider my-0 opacity-50"/>
 
                     <!-- Services/Items -->
                     <div class="flex flex-col gap-3">
@@ -166,13 +166,14 @@ const closeDropdowns = () => {
                         />
                     </div>
 
-                    <div class="divider my-0 opacity-50"></div>
+                    <div class="divider my-0 opacity-50"/>
 
                     <!-- Notes -->
                     <div class="form-control pb-8">
                         <label class="label pb-1"><span class="label-text text-text-muted text-[10px] font-bold uppercase tracking-widest">Notas (Opcional)</span></label>
-                        <textarea v-model="form.notes" rows="2" placeholder="Detalles de la reserva..." :disabled="form.status === 'COMPLETADA'"
-                            class="textarea bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl px-4 py-3 text-xs font-medium shadow-sm outline-none disabled:opacity-60"></textarea>
+                        <textarea
+v-model="form.notes" rows="2" placeholder="Detalles de la reserva..." :disabled="form.status === 'COMPLETADA'"
+                            class="textarea bg-bg-card border-border-default focus:border-primary/50 w-full rounded-xl px-4 py-3 text-xs font-medium shadow-sm outline-none disabled:opacity-60"/>
                     </div>
                 </form>
             </div>
@@ -185,11 +186,11 @@ const closeDropdowns = () => {
                     class="btn btn-primary btn-outline w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-sm"
                     :disabled="isSaving"
                     @click="handlePayInTpv">
-                    <span v-if="isSaving" class="loading loading-spinner"></span>
+                    <span v-if="isSaving" class="loading loading-spinner"/>
                     <span v-else>Cobrar en TPV</span>
                 </button>
                 <button v-if="form.status !== 'COMPLETADA'" type="submit" form="drawerBookingForm" class="btn text-bg-card hover:bg-text-secondary/90 bg-text-secondary w-full h-12 rounded-xl border-none font-black uppercase tracking-widest shadow-lg" :disabled="isSaving">
-                    <span v-if="isSaving" class="loading loading-spinner"></span>
+                    <span v-if="isSaving" class="loading loading-spinner"/>
                     <span v-else>{{ selectedBooking ? 'Guardar Cambios' : 'Confirmar Reserva' }}</span>
                 </button>
                 <div v-show="showLocalError" class="mt-3 text-center">

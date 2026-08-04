@@ -7,6 +7,9 @@
 		"dev": "nuxt dev",
 		"generate": "npm run prisma:generate && nuxt generate",
 		"preview": "nuxt preview",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"typecheck": "nuxi typecheck",
 		"postinstall": "nuxt prepare",
 		"seed": "npx tsx --env-file=.env ./seeds/seed-db.ts",
 		"seed:admin": "npx tsx --env-file=.env ./seeds/admin-seed.ts",
@@ -72,7 +75,9 @@
 		"tailwindcss": "4.1",
 		"ts-node": "10.9.2",
 		"tsx": "4.21.0",
+		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
-		"vue-devtools-stub": "^0.1.0"
+		"vue-devtools-stub": "^0.1.0",
+		"vue-tsc": "^3.3.9"
 	}
 }

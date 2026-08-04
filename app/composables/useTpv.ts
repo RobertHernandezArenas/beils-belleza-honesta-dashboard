@@ -120,7 +120,7 @@ export function useTpv() {
 			if (bookingData.booking_items && bookingData.booking_items.length > 0) {
 				for (const it of bookingData.booking_items) {
 					let foundItem: any = null
-					let type = (it.item_type || 'service').toLowerCase()
+					const type = (it.item_type || 'service').toLowerCase()
 					
 					if (type === 'service') {
 						foundItem = (svcs || []).find((s: any) => s.service_id === it.item_id)

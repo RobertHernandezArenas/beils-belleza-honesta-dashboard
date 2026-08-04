@@ -153,7 +153,7 @@
 						</p>
 					</div>
 				</div>
-				<button @click="localVisible = false" class="btn btn-ghost btn-circle btn-sm text-text-muted">
+				<button class="btn btn-ghost btn-circle btn-sm text-text-muted" @click="localVisible = false">
 					<X class="h-5 w-5" />
 				</button>
 			</div>
@@ -167,7 +167,7 @@
 			</div>
 
 			<!-- Formulario -->
-			<form id="revokeForm" @submit.prevent="onSubmit" class="flex-1 space-y-5 overflow-y-auto p-6 scroll-smooth">
+			<form id="revokeForm" class="flex-1 space-y-5 overflow-y-auto p-6 scroll-smooth" @submit.prevent="onSubmit">
 				<div class="grid grid-cols-1 gap-5">
 					<!-- Client Selection (Autocomplete) -->
 					<div>
@@ -190,7 +190,7 @@
 						<input
 							v-model="form.date_revoked"
 							type="date"
-							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4" />
+							class="input bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary h-12 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4" >
 					</div>
 
 					<!-- Motivo -->
@@ -204,7 +204,7 @@
 							v-model="form.reason"
 							rows="4"
 							placeholder="Describir el motivo de la revocación..."
-							class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"></textarea>
+							class="textarea bg-bg-muted hover:bg-bg-card focus:bg-bg-card focus:border-border-subtle focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 w-full rounded-xl border-transparent font-medium shadow-inner transition-colors focus:ring-4"/>
 					</div>
 				</div>
 			</form>
@@ -214,8 +214,8 @@
 				<button
 					type="button"
 					class="btn btn-ghost hover:bg-bg-muted text-text-muted h-12 flex-1 rounded-xl border-transparent font-bold transition-colors"
-					@click="localVisible = false"
-					:disabled="isPending">
+					:disabled="isPending"
+					@click="localVisible = false">
 					Cancelar
 				</button>
 				<button
@@ -223,7 +223,7 @@
 					form="revokeForm"
 					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 flex-1 items-center gap-2 rounded-xl border-transparent shadow-md transition-colors hover:shadow-lg"
 					:disabled="isPending">
-					<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
+					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
 						<Save class="h-4 w-4" />
 						<span class="font-bold tracking-wide">

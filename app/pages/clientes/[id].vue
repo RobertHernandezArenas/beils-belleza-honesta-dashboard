@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, useMutation, useQueryClient  } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 import {
   ArrowLeft,
@@ -20,7 +20,7 @@ import ProfileBilling from '~/components/clients/ProfileBilling.vue'
 import ProfileHealthSection from '~/components/clients/ProfileHealthSection.vue'
 import ProfilePackagesSection from '~/components/clients/ProfilePackagesSection.vue'
 
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+
 import { useAgendaStore } from '~/stores/useAgendaStore'
 
 definePageMeta({ layout: 'default' })
@@ -153,11 +153,11 @@ const handleNewBooking = () => {
 
       <!-- Loading State -->
       <div v-if="isPending" class="space-y-6">
-        <div class="skeleton h-64 w-full rounded-3xl"></div>
+        <div class="skeleton h-64 w-full rounded-3xl"/>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div class="skeleton h-96 rounded-3xl"></div>
-          <div class="skeleton h-96 rounded-3xl"></div>
-          <div class="skeleton h-96 rounded-3xl"></div>
+          <div class="skeleton h-96 rounded-3xl"/>
+          <div class="skeleton h-96 rounded-3xl"/>
+          <div class="skeleton h-96 rounded-3xl"/>
         </div>
       </div>
 
@@ -194,36 +194,36 @@ const handleNewBooking = () => {
         <!-- 2. Awwwards 2027 Navigation Bar Tabs -->
         <div class="flex items-center justify-center sm:justify-start gap-2 bg-bg-card p-1.5 border border-border-default/80 rounded-2xl shadow-xs overflow-x-auto">
           <button
-            @click="activeTab = 'OVERVIEW'"
             class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
             :class="activeTab === 'OVERVIEW' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+            @click="activeTab = 'OVERVIEW'"
           >
             <LayoutGrid class="w-4 h-4" />
             Visión General & Bento
           </button>
 
           <button
-            @click="activeTab = 'HEALTH'"
             class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
             :class="activeTab === 'HEALTH' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+            @click="activeTab = 'HEALTH'"
           >
             <Activity class="w-4 h-4" />
             Salud Estética (Indiba & Láser)
           </button>
 
           <button
-            @click="activeTab = 'BILLING'"
             class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
             :class="activeTab === 'BILLING' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+            @click="activeTab = 'BILLING'"
           >
             <Receipt class="w-4 h-4" />
             Ventas & Métodos de Pago
           </button>
 
           <button
-            @click="activeTab = 'PACKAGES'"
             class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
             :class="activeTab === 'PACKAGES' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
+            @click="activeTab = 'PACKAGES'"
           >
             <Package class="w-4 h-4" />
             Paquetes & Servicios

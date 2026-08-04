@@ -1,6 +1,6 @@
 <template>
 	<div class="drawer lg:drawer-open bg-bg-app text-text-secondary relative h-dvh overflow-hidden font-sans">
-		<input id="my-drawer-4" v-model="isDrawerOpen" type="checkbox" class="drawer-toggle" />
+		<input id="my-drawer-4" v-model="isDrawerOpen" type="checkbox" class="drawer-toggle" >
 
 		<!-- NAVBAR (Glassmorphism) -->
 		<div class="drawer-content relative z-10 flex h-dvh flex-col">
@@ -33,12 +33,12 @@
 			<label
 				for="my-drawer-4"
 				aria-label="close sidebar"
-				class="drawer-overlay bg-text-secondary/40 backdrop-blur-sm lg:hidden"></label>
+				class="drawer-overlay bg-text-secondary/40 backdrop-blur-sm lg:hidden"/>
 			<aside
 				class="bg-bg-card/90 flex h-full w-72 flex-col items-start border-r border-transparent shadow-[4px_0_20px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-transform duration-300 lg:w-72">
 				<!-- Glow lateral en sidebar -->
 				<div
-					class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-r to-transparent"></div>
+					class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-r to-transparent"/>
 
 				<!-- LOGO SPACE -->
 				<div
@@ -48,7 +48,7 @@
 							<img
 								src="/assets/images/beils_.svg"
 								class="relative w-25 brightness-0 drop-shadow-sm dark:brightness-0 dark:invert"
-								alt="Logo" />
+								alt="Logo" >
 						</NuxtLink>
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 						<div
 							ref="activePill"
 							class="bg-text-secondary pointer-events-none absolute top-0 left-0 w-full rounded-2xl opacity-0 shadow-md"
-							style="z-index: 0; min-height: 36px"></div>
+							style="z-index: 0; min-height: 36px"/>
 
 						<div v-for="(group, gIdx) in navGroups" :key="gIdx" class="flex flex-col gap-1">
 							<!-- Group Header -->
@@ -73,8 +73,8 @@
 								<li
 									v-for="item in group.items"
 									:key="item.to || item.label"
-									class="relative z-10 nav-item"
-									:ref="setNavRef(item.to)">
+									:ref="setNavRef(item.to)"
+									class="relative z-10 nav-item">
 									<NuxtLink
 										v-if="item.to"
 										:to="item.to"
@@ -126,7 +126,7 @@
 										alt="User Avatar"
 										width="36"
 										height="36"
-										class="object-cover" />
+										class="object-cover" >
 								</div>
 							</div>
 							<div class="flex-1 overflow-hidden">
@@ -141,8 +141,8 @@
 						</div>
 
 						<button
-							@click="handleLogout"
-							class="group hover:text-white flex w-full items-center justify-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-2 font-bold text-error transition-[background-color,border-color,color,transform,box-shadow] hover:border-error hover:bg-error hover:shadow-md">
+							class="group hover:text-white flex w-full items-center justify-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-2 font-bold text-error transition-[background-color,border-color,color,transform,box-shadow] hover:border-error hover:bg-error hover:shadow-md"
+							@click="handleLogout">
 							<LogOut class="h-4 w-4 group-hover:-translate-x-0.5" />
 							<span class="text-[11px] tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}

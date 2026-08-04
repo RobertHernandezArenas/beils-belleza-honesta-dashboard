@@ -57,8 +57,8 @@ const formatDate = (dateStr: string) => {
             :model-value="client.address" 
             :label="$t('catalog.clients.form.address')"
             :is-mutating="isUpdating" 
-            @save="emit('update', 'address', $event)" 
-            class="text-text-primary text-sm font-bold leading-tight"
+            class="text-text-primary text-sm font-bold leading-tight" 
+            @save="emit('update', 'address', $event)"
           />
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -68,8 +68,8 @@ const formatDate = (dateStr: string) => {
               :model-value="client.city" 
               :label="$t('catalog.clients.form.city')"
               :is-mutating="isUpdating" 
-              @save="emit('update', 'city', $event)" 
-              class="text-text-primary text-sm font-bold"
+              class="text-text-primary text-sm font-bold" 
+              @save="emit('update', 'city', $event)"
             />
           </div>
           <div class="flex w-full flex-col gap-1">
@@ -78,8 +78,8 @@ const formatDate = (dateStr: string) => {
               :model-value="client.postal_code" 
               :label="$t('catalog.clients.form.postalCode')"
               :is-mutating="isUpdating" 
-              @save="emit('update', 'postal_code', $event)" 
-              class="text-text-primary text-sm font-bold"
+              class="text-text-primary text-sm font-bold" 
+              @save="emit('update', 'postal_code', $event)"
             />
           </div>
           <div class="flex w-full flex-col gap-1 col-span-2">
@@ -88,8 +88,8 @@ const formatDate = (dateStr: string) => {
               :model-value="client.country" 
               :label="$t('catalog.clients.form.country')"
               :is-mutating="isUpdating" 
-              @save="emit('update', 'country', $event)" 
-              class="text-text-primary text-sm font-bold"
+              class="text-text-primary text-sm font-bold" 
+              @save="emit('update', 'country', $event)"
             />
           </div>
         </div>
@@ -114,8 +114,8 @@ const formatDate = (dateStr: string) => {
                 type="select"
                 :options="[{label:'DNI', value:'DNI'}, {label:'PASSPORT', value:'PASSPORT'}, {label:'NIE', value:'NIE'}]"
                 :is-mutating="isUpdating"
-                @save="emit('update', 'document_type', $event)"
                 class="text-text-muted text-[10px] font-black uppercase tracking-widest"
+                @save="emit('update', 'document_type', $event)"
               >
                  <template #display="{ value }">{{ value || $t('users.form.documentType').toUpperCase() }}</template>
               </EditableField>
@@ -125,8 +125,8 @@ const formatDate = (dateStr: string) => {
               :model-value="client.document_number"
               :label="$t('users.form.documentNumber')"
               :is-mutating="isUpdating"
-              @save="emit('update', 'document_number', $event)"
               class="text-text-primary font-mono text-sm font-black tabular-nums tracking-wider w-full"
+              @save="emit('update', 'document_number', $event)"
             >
                <template #display>
                  <span class="truncate">{{ revealedDocs[client.user_id] || client.document_number || '---' }}</span>
@@ -135,15 +135,15 @@ const formatDate = (dateStr: string) => {
           </div>
 
           <button 
-            @click="toggleDocumentVisibility(client.user_id, client.document_number)"
             class="btn btn-circle btn-ghost btn-xs text-text-muted hover:text-primary transition-colors shrink-0"
             :disabled="revealedLoading[client.user_id]"
             :title="$t('overview.charts.details')"
+            @click="toggleDocumentVisibility(client.user_id, client.document_number)"
           >
-            <span v-if="revealedLoading[client.user_id]" class="loading loading-spinner h-3 w-3"></span>
+            <span v-if="revealedLoading[client.user_id]" class="loading loading-spinner h-3 w-3"/>
             <component 
-              v-else 
               :is="revealedDocs[client.user_id] ? EyeOff : Eye" 
+              v-else 
               class="h-3.5 w-3.5"
             />
           </button>
@@ -173,8 +173,8 @@ const formatDate = (dateStr: string) => {
             :label="$t('catalog.clients.form.birthDate')"
             type="date"
             :is-mutating="isUpdating"
-            @save="emit('update', 'birth_date', $event)"
             class="text-text-primary text-sm font-bold w-auto ml-auto flex justify-end"
+            @save="emit('update', 'birth_date', $event)"
           >
              <template #display>{{ formatDate(client.birth_date) }}</template>
           </EditableField>
@@ -187,8 +187,8 @@ const formatDate = (dateStr: string) => {
             type="select"
             :options="[{label:$t('catalog.clients.form.female'), value:'Female'}, {label:$t('catalog.clients.form.male'), value:'Male'}, {label:$t('catalog.clients.form.other'), value:'Other'}]"
             :is-mutating="isUpdating"
-            @save="emit('update', 'gender', $event)"
             class="text-text-primary text-sm font-bold capitalize w-auto ml-auto flex justify-end"
+            @save="emit('update', 'gender', $event)"
           >
              <template #display="{ value }">{{ value || $t('catalog.clients.profile.kpis.unspecified') }}</template>
           </EditableField>

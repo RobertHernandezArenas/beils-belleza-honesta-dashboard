@@ -13,14 +13,14 @@
 						<button
 							v-for="r in ['all', 'ADMIN', 'CLIENT']"
 							:key="r"
-							@click="filtersStore.filterRole = r"
 							class="rounded-xl px-4 py-2 text-xs font-bold transition-[background-color,color,border-color,box-shadow] focus-visible:outline-none"
 							:aria-pressed="filtersStore.filterRole === r"
 							:class="
 								filtersStore.filterRole === r
 									? 'border border-text-primary bg-text-secondary text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
 									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
-							">
+							"
+							@click="filtersStore.filterRole = r">
 							{{ r === 'all' ? $t('users.filters.all') : $t('users.constants.roles.' + r) }}
 						</button>
 					</div>
@@ -35,14 +35,14 @@
 						<button
 							v-for="s in ['all', 'ON', 'OFF']"
 							:key="s"
-							@click="filtersStore.filterStatus = s"
 							class="rounded-xl px-4 py-2 text-xs font-bold transition-[background-color,color,border-color,box-shadow] focus-visible:outline-none"
 							:aria-pressed="filtersStore.filterStatus === s"
 							:class="
 								filtersStore.filterStatus === s
 									? 'border border-text-primary bg-text-secondary text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
 									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
-							">
+							"
+							@click="filtersStore.filterStatus = s">
 							{{ s === 'all' ? $t('users.filters.all') : $t('users.constants.status.' + s) }}
 						</button>
 					</div>
@@ -57,14 +57,14 @@
 						<button
 							v-for="d in ['all', 'DNI', 'PASSPORT', 'NIE']"
 							:key="d"
-							@click="filtersStore.filterDocType = d"
 							class="rounded-xl px-4 py-2 text-xs font-bold transition-[background-color,color,border-color,box-shadow] focus-visible:outline-none"
 							:aria-pressed="filtersStore.filterDocType === d"
 							:class="
 								filtersStore.filterDocType === d
 									? 'border border-text-primary bg-text-secondary text-bg-card shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
 									: 'border border-border-subtle bg-bg-app text-text-muted hover:bg-bg-muted hover:text-text-secondary'
-							">
+							"
+							@click="filtersStore.filterDocType = d">
 							{{ d === 'all' ? $t('users.filters.all') : d }}
 						</button>
 					</div>

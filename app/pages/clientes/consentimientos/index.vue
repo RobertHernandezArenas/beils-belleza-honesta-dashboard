@@ -118,7 +118,7 @@
 							v-model="searchQuery"
 							type="text"
 							placeholder="Buscar consentimiento..."
-							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4 sm:w-full lg:w-64" />
+							class="input bg-bg-card hover:bg-bg-card focus:bg-bg-card focus:ring-border-subtle/30 text-text-primary placeholder:text-text-muted/50 h-12 w-full rounded-full border-none pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors focus:ring-4 sm:w-full lg:w-64" >
 					</div>
 					<button
 						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
@@ -133,7 +133,7 @@
 			<div
 				v-if="isPending"
 				class="bg-bg-card border-border-subtle w-full space-y-4 rounded-3xl border p-6 shadow-sm">
-				<div v-for="i in 5" :key="i" class="bg-bg-muted h-16 w-full animate-pulse rounded-2xl"></div>
+				<div v-for="i in 5" :key="i" class="bg-bg-muted h-16 w-full animate-pulse rounded-2xl"/>
 			</div>
 
 			<!-- Error -->
@@ -177,8 +177,8 @@
 							<tr
 								v-for="item in filteredConsents"
 								:key="item.consent_id"
-								@click="openEdit(item)"
-								class="border-border-default hover:bg-bg-muted/40 group cursor-pointer border-b transition-colors last:border-0">
+								class="border-border-default hover:bg-bg-muted/40 group cursor-pointer border-b transition-colors last:border-0"
+								@click="openEdit(item)">
 								<td class="px-6 py-4">
 									<div class="flex flex-col">
 										<span
@@ -194,8 +194,8 @@
 									<a
 										:href="item.document_url"
 										target="_blank"
-										@click.stop
-										class="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-xs font-bold transition-colors">
+										class="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-xs font-bold transition-colors"
+										@click.stop>
 										<ExternalLink class="h-3.5 w-3.5" />
 										Ver documento
 									</a>

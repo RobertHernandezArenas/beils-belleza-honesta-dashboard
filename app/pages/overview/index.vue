@@ -169,7 +169,7 @@
 
 			<!-- Loader Global -->
 			<div v-if="isPending" class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-				<div v-for="i in 4" :key="i" class="bg-bg-card h-32 animate-pulse rounded-3xl shadow-sm"></div>
+				<div v-for="i in 4" :key="i" class="bg-bg-card h-32 animate-pulse rounded-3xl shadow-sm"/>
 			</div>
 
 			<template v-else>
@@ -291,7 +291,7 @@
 											v-if="booking.client?.avatar && !avatarErrors.has(booking.client.user_id)" 
 											:src="booking.client.avatar" 
 											class="h-full w-full object-cover"
-											@error="handleAvatarError(booking.client.user_id)" />
+											@error="handleAvatarError(booking.client.user_id)" >
 										<span v-else class="text-xs font-bold">{{ booking.client?.name?.charAt(0) }}{{ booking.client?.surname?.charAt(0) }}</span>
 									</div>
 								</div>
@@ -368,7 +368,7 @@
 											v-if="sale.user?.avatar && !avatarErrors.has(sale.user.user_id)" 
 											:src="sale.user.avatar" 
 											class="h-full w-full object-cover"
-											@error="handleAvatarError(sale.user.user_id)" />
+											@error="handleAvatarError(sale.user.user_id)" >
 										<ShoppingBag v-else class="h-4 w-4" />
 									</div>
 									<div class="flex flex-col">

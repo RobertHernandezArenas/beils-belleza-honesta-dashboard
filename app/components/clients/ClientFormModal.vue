@@ -310,7 +310,7 @@
 			<div 
 				class="flex w-full items-center justify-center pt-3 pb-3 sm:hidden cursor-pointer active:scale-95 transition-transform"
 				@click="localVisible = false">
-				<div class="bg-border-default h-1.5 w-12 rounded-full opacity-40 hover:opacity-60 transition-opacity"></div>
+				<div class="bg-border-default h-1.5 w-12 rounded-full opacity-40 hover:opacity-60 transition-opacity"/>
 			</div>
 
 			<!-- Header -->
@@ -343,9 +343,9 @@
 			<!-- Formulario -->
 			<form 
 				id="clientForm"
-				@submit.prevent="onSubmit" 
-				@scroll.passive="handleScroll"
-				class="flex-1 space-y-4 overflow-y-auto p-4 scroll-smooth sm:space-y-5 sm:p-6">
+				class="flex-1 space-y-4 overflow-y-auto p-4 scroll-smooth sm:space-y-5 sm:p-6" 
+				@submit.prevent="onSubmit"
+				@scroll.passive="handleScroll">
 				
 				<!-- Sección: Avatar -->
 				<div class="flex flex-col items-center justify-center gap-4 py-4">
@@ -355,7 +355,7 @@
 								v-if="avatarPreview && !avatarError" 
 								:src="avatarPreview" 
 								class="h-full w-full object-cover"
-								@error="handleAvatarError" />
+								@error="handleAvatarError" >
 							<span v-else-if="form.name || form.surname" class="text-3xl sm:text-4xl font-black text-primary tracking-tight">
 								{{ (form.name?.charAt(0) || '') }}{{ (form.surname?.charAt(0) || '') }}
 							</span>
@@ -369,8 +369,8 @@
 						<button 
 							v-if="avatarPreview" 
 							type="button"
-							@click="removeAvatar"
-							class="absolute -top-1 -right-1 bg-rose-500 text-white p-1.5 rounded-full shadow-lg hover:bg-rose-600 transition-colors">
+							class="absolute -top-1 -right-1 bg-rose-500 text-white p-1.5 rounded-full shadow-lg hover:bg-rose-600 transition-colors"
+							@click="removeAvatar">
 							<Trash2 class="h-3.5 w-3.5" />
 						</button>
 					</div>
@@ -378,8 +378,8 @@
 					<div class="text-center">
 						<button 
 							type="button" 
-							@click="triggerFileInput"
-							class="text-primary text-xs font-black uppercase tracking-widest hover:underline">
+							class="text-primary text-xs font-black uppercase tracking-widest hover:underline"
+							@click="triggerFileInput">
 							{{ avatarPreview ? 'Cambiar Foto' : 'Subir Foto' }}
 						</button>
 						<input 
@@ -387,7 +387,7 @@
 							type="file" 
 							class="hidden" 
 							accept="image/*"
-							@change="onFileChange" />
+							@change="onFileChange" >
 					</div>
 				</div>
 
@@ -412,7 +412,7 @@
 								type="text"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.name }"
-								@input="formatNameInput" />
+								@input="formatNameInput" >
 						</div>
 
 						<div class="form-control">
@@ -426,7 +426,7 @@
 								type="text"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.surname }"
-								@input="formatSurnameInput" />
+								@input="formatSurnameInput" >
 						</div>
 
 						<div class="form-control">
@@ -452,7 +452,7 @@
 								type="text"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.document_number }"
-								@input="clearError('document_number')" />
+								@input="clearError('document_number')" >
 						</div>
 
 						<div class="form-control">
@@ -465,7 +465,7 @@
 								v-model="form.birth_date"
 								type="date"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all"
-								@input="clearError('birth_date')" />
+								@input="clearError('birth_date')" >
 						</div>
 
 						<div class="form-control">
@@ -504,7 +504,7 @@
 								type="tel"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.phone }"
-								@input="clearError('phone')" />
+								@input="clearError('phone')" >
 						</div>
 
 						<div class="form-control">
@@ -518,10 +518,10 @@
 								type="email"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
 								:class="{ 'border-rose-500 ring-4 ring-rose-500/10': errors.email }"
-								@input="clearError('email')" />
+								@input="clearError('email')" >
 						</div>
 
-						<div class="form-control" v-if="false">
+						<div v-if="false" class="form-control">
 							<label class="label">
 								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
 									{{ t('catalog.clients.form.status') }}
@@ -555,7 +555,7 @@
 								v-model="form.address"
 								type="text"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
-								@input="clearError('address')" />
+								@input="clearError('address')" >
 						</div>
 
 						<div class="form-control">
@@ -568,7 +568,7 @@
 								v-model="form.city"
 								type="text"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40"
-								@input="clearError('city')" />
+								@input="clearError('city')" >
 						</div>
 
 						<div class="form-control">
@@ -581,7 +581,7 @@
 								v-model="form.postal_code"
 								type="text"
 								class="input bg-bg-card/60 border-border-default focus:bg-bg-card focus:ring-primary/20 hover:bg-bg-card h-11 w-full rounded-xl px-4 text-sm font-bold shadow-xs transition-all placeholder:text-text-muted/40 tabular-nums"
-								@input="clearError('postal_code')" />
+								@input="clearError('postal_code')" >
 						</div>
 					</div>
 				</div>
@@ -595,8 +595,8 @@
 				<button
 					type="button"
 					class="btn btn-ghost hover:bg-bg-muted text-text-muted h-11 sm:h-12 flex-1 rounded-2xl border-transparent font-bold transition-all hover:scale-[0.98]"
-					@click="localVisible = false"
-					:disabled="isPending">
+					:disabled="isPending"
+					@click="localVisible = false">
 					Cancelar
 				</button>
 				<button
@@ -604,7 +604,7 @@
 					form="clientForm"
 					class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-11 sm:h-12 flex-1 items-center gap-2 rounded-2xl border-transparent shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
 					:disabled="isPending">
-					<span v-if="isPending" class="loading loading-spinner loading-sm"></span>
+					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
 						<Save class="h-4 w-4" />
 						<span class="font-black uppercase tracking-widest text-xs">

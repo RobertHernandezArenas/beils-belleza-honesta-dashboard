@@ -56,7 +56,7 @@
 						v-model="clientSearch"
 						type="text"
 						placeholder="Asignar cliente..."
-						class="input bg-bg-card/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
+						class="input bg-bg-card/70 border border-border-default/85 focus:bg-bg-card focus:border-text-primary h-11 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" >
 					<button
 						v-if="clientSearch"
 						type="button"
@@ -72,8 +72,8 @@
 						<li v-for="client in filteredClients" :key="client.user_id">
 							<button
 								type="button"
-								@click="emit('select-client', client)"
-								class="hover:bg-bg-muted border-border-default/40 flex w-full items-center justify-between border-b p-3 text-left transition-colors last:border-0">
+								class="hover:bg-bg-muted border-border-default/40 flex w-full items-center justify-between border-b p-3 text-left transition-colors last:border-0"
+								@click="emit('select-client', client)">
 								<div class="flex flex-col">
 									<span class="text-xs font-bold text-text-primary">{{ client.name }} {{ client.surname }}</span>
 									<span class="text-text-muted text-[10px] font-medium mt-0.5">{{ client.phone || client.email }}</span>
@@ -95,7 +95,7 @@
 								v-if="selectedClient.avatar && !avatarError"
 								:src="selectedClient.avatar"
 								class="h-full w-full object-cover"
-								@error="emit('avatar-error')" />
+								@error="emit('avatar-error')" >
 							<span v-else class="text-xs font-black">
 								{{ selectedClient.name.charAt(0) }}{{ selectedClient.surname?.charAt(0) || '' }}
 							</span>
@@ -109,9 +109,9 @@
 					</div>
 					<button
 						type="button"
-						@click="emit('remove-client')"
 						aria-label="Remove Client"
-						class="btn btn-ghost btn-circle btn-xs text-white/70 hover:bg-white/15 hover:text-white border-none">
+						class="btn btn-ghost btn-circle btn-xs text-white/70 hover:bg-white/15 hover:text-white border-none"
+						@click="emit('remove-client')">
 						<Trash2 class="h-3.5 w-3.5" />
 					</button>
 				</div>
@@ -144,9 +144,9 @@
 							</span>
 							<button
 								type="button"
-								@click="emit('remove-item', index)"
 								aria-label="Remove Item"
-								class="text-text-muted/60 hover:text-error bg-bg-card absolute top-2.5 right-2.5 p-1 rounded-md transition-all group-hover:opacity-100">
+								class="text-text-muted/60 hover:text-error bg-bg-card absolute top-2.5 right-2.5 p-1 rounded-md transition-all group-hover:opacity-100"
+								@click="emit('remove-item', index)">
 								<Trash2 class="h-3.5 w-3.5" />
 							</button>
 						</div>
@@ -156,9 +156,9 @@
 							<div class="join border-border-default/60 bg-bg-muted/40 rounded-xl border">
 								<button
 									type="button"
-									@click="item.quantity > 1 ? emit('decrease-item-qty', index) : emit('remove-item', index)"
 									aria-label="Decrease Quantity"
-									class="join-item btn btn-xs btn-ghost text-text-primary font-bold px-2">
+									class="join-item btn btn-xs btn-ghost text-text-primary font-bold px-2"
+									@click="item.quantity > 1 ? emit('decrease-item-qty', index) : emit('remove-item', index)">
 									-
 								</button>
 								<span class="join-item flex items-center px-2 text-xs font-bold tabular-nums text-text-primary font-mono">
@@ -166,9 +166,9 @@
 								</span>
 								<button
 									type="button"
-									@click="emit('increase-item-qty', index)"
 									aria-label="Increase Quantity"
-									class="join-item btn btn-xs btn-ghost text-text-primary font-bold px-2">
+									class="join-item btn btn-xs btn-ghost text-text-primary font-bold px-2"
+									@click="emit('increase-item-qty', index)">
 									+
 								</button>
 							</div>
@@ -206,11 +206,11 @@
 							type="number"
 							min="0"
 							:max="cartSubtotal"
-							class="input input-xs bg-error/10 text-error h-7 w-full rounded-lg border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" />
+							class="input input-xs bg-error/10 text-error h-7 w-full rounded-lg border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" >
 					</div>
 				</div>
 
-				<div class="divider my-1 opacity-30"></div>
+				<div class="divider my-1 opacity-30"/>
 
 				<div class="flex items-end justify-between">
 					<span class="text-text-muted text-[10px] font-black tracking-widest uppercase mb-1">Total a Pagar</span>
@@ -280,11 +280,11 @@
 			<!-- Main Action Button -->
 			<button
 				type="button"
-				@click="emit('checkout')"
 				:disabled="cartItems.length === 0 || isCheckingOut"
 				class="btn h-12 sm:h-14 w-full rounded-2xl border-none text-xs sm:text-sm font-black tracking-widest uppercase shadow-md transition-all active:scale-[0.98]"
-				:class="cartItems.length > 0 ? 'bg-text-primary hover:bg-text-primary/95 text-bg-card' : 'bg-bg-muted text-text-muted/60 opacity-50 cursor-not-allowed'">
-				<span v-if="isCheckingOut" class="loading loading-spinner loading-sm"></span>
+				:class="cartItems.length > 0 ? 'bg-text-primary hover:bg-text-primary/95 text-bg-card' : 'bg-bg-muted text-text-muted/60 opacity-50 cursor-not-allowed'"
+				@click="emit('checkout')">
+				<span v-if="isCheckingOut" class="loading loading-spinner loading-sm"/>
 				<span v-else>Confirmar y Cobrar</span>
 			</button>
 		</div>

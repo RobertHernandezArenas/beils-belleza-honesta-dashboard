@@ -49,7 +49,8 @@ const removeGroup = (indices: number[]) => {
 
 <template>
     <div class="flex flex-col gap-2 mt-2">
-        <div v-for="(group, idx) in groupedItems" :key="idx" 
+        <div
+v-for="(group, idx) in groupedItems" :key="idx" 
             class="bg-bg-card border border-border-default p-3 rounded-xl flex items-center justify-between group shadow-sm transition-all hover:border-primary/30">
             <div class="flex items-center gap-3">
                 <Package v-if="group.item.item_type === 'PACKAGE'" class="h-4 w-4 text-primary" />
@@ -62,17 +63,17 @@ const removeGroup = (indices: number[]) => {
             </div>
             <div class="flex items-center gap-2">
                 <div class="flex items-center gap-1">
-                    <button type="button" @click="removeItem(group.indices[group.indices.length - 1]!)" aria-label="Decrease Quantity" :disabled="disabled" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <button type="button" aria-label="Decrease Quantity" :disabled="disabled" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed" @click="removeItem(group.indices[group.indices.length - 1]!)">
                         -
                     </button>
                     <span class="w-6 text-center text-xs font-bold tabular-nums text-text-primary">
                         {{ group.count }}
                     </span>
-                    <button type="button" @click="addGroupItem(group.item)" :disabled="disabled" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <button type="button" :disabled="disabled" aria-label="Increase Quantity" class="w-6 h-6 flex items-center justify-center rounded-lg bg-bg-muted hover:bg-border-default/60 text-text-primary text-xs font-extrabold transition-colors disabled:opacity-60 disabled:cursor-not-allowed" @click="addGroupItem(group.item)">
                         +
                     </button>
                 </div>
-                <button type="button" @click="removeGroup(group.indices)" :disabled="disabled" class="text-text-muted hover:text-error transition-colors p-1 opacity-50 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed">
+                <button type="button" :disabled="disabled" class="text-text-muted hover:text-error transition-colors p-1 opacity-50 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed" @click="removeGroup(group.indices)">
                     <Trash2 class="h-4 w-4" />
                 </button>
             </div>

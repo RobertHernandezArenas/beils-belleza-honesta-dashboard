@@ -30,7 +30,7 @@ const internalSearch = computed({
 <template>
   <div class="space-y-6 animate-slide-right min-h-[400px] flex flex-col">
     <div class="flex items-center gap-4">
-        <button @click="emit('cancel')" class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted">
+        <button class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted" @click="emit('cancel')">
             <ArrowLeft class="w-4 h-4" />
         </button>
         <div class="flex-1 relative">
@@ -41,7 +41,7 @@ const internalSearch = computed({
                 autofocus
                 :placeholder="isEditingItems ? 'Buscar servicios o productos...' : 'Buscar cliente por nombre o teléfono...'" 
                 class="input w-full bg-bg-card border-border-default rounded-2xl pl-11 focus:border-primary focus:ring-primary/10"
-            />
+            >
         </div>
     </div>
 
@@ -49,19 +49,19 @@ const internalSearch = computed({
         <!-- CLIENT SEARCH RESULTS -->
         <template v-if="!isEditingItems">
             <div v-if="isSearchingClients" class="flex flex-col gap-3">
-                <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"></div>
+                <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"/>
             </div>
             <div v-else-if="clients.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div 
                     v-for="c in clients" 
                     :key="c.user_id" 
-                    @click="emit('selectClient', c)"
                     class="bg-bg-card border-border-subtle hover:border-primary/50 cursor-pointer rounded-2xl border p-4 flex items-center justify-between transition-all group"
                     :class="{ 'border-primary bg-primary/5 ring-1 ring-primary': selectedClientToAssign?.user_id === c.user_id }"
+                    @click="emit('selectClient', c)"
                 >
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase overflow-hidden">
-                            <img v-if="c.avatar" :src="c.avatar" class="w-full h-full object-cover" />
+                            <img v-if="c.avatar" :src="c.avatar" class="w-full h-full object-cover" >
                             <span v-else>{{ c.name.charAt(0) }}{{ c.surname.charAt(0) }}</span>
                         </div>
                         <div class="flex flex-col">
@@ -79,14 +79,14 @@ const internalSearch = computed({
         <!-- ITEM SEARCH RESULTS -->
         <template v-else>
             <div v-if="isSearchingItems" class="flex flex-col gap-3">
-                <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"></div>
+                <div v-for="i in 3" :key="i" class="h-16 w-full animate-pulse bg-bg-muted/50 rounded-2xl"/>
             </div>
             <div v-else-if="catalogItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div 
                     v-for="item in catalogItems" 
                     :key="item.item_id" 
-                    @click="emit('addNewItem', item)"
                     class="group bg-bg-card border-border-default hover:border-primary/50 relative flex h-24 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-3 text-left shadow-xs transition-all hover:shadow-md"
+                    @click="emit('addNewItem', item)"
                 >
                     <div class="z-10 flex flex-col">
                         <span class="text-text-primary group-hover:text-primary line-clamp-1 text-sm font-bold transition-colors">{{ item.name }}</span>
@@ -125,13 +125,13 @@ const internalSearch = computed({
         <p v-else class="text-sm text-text-muted italic">Selecciona un cliente de la lista</p>
         
         <div class="flex gap-3">
-            <button @click="emit('cancel')" class="btn btn-ghost rounded-xl">Cancelar</button>
+            <button class="btn btn-ghost rounded-xl" @click="emit('cancel')">Cancelar</button>
             <button 
-                @click="emit('assignClient')" 
                 :disabled="!selectedClientToAssign || isAssigningClient" 
-                class="btn btn-primary rounded-xl px-8 shadow-lg shadow-primary/20"
+                class="btn btn-primary rounded-xl px-8 shadow-lg shadow-primary/20" 
+                @click="emit('assignClient')"
             >
-                <span v-if="isAssigningClient" class="loading loading-spinner loading-xs"></span>
+                <span v-if="isAssigningClient" class="loading loading-spinner loading-xs"/>
                 Asignar Cliente
             </button>
         </div>

@@ -12,8 +12,8 @@ const isDark = computed(() => theme.value === 'dark')
 		role="switch"
 		:aria-checked="isDark"
 		aria-label="Cambiar entre tema claro y oscuro"
-		@click="toggleTheme"
-		class="bg-neutral relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors duration-300 focus-visible:outline-none">
+		class="bg-neutral relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors duration-300 focus-visible:outline-none"
+		@click="toggleTheme">
 		<!-- faint track icons -->
 		<Sun class="text-neutral-content/45 pointer-events-none absolute left-2 h-3.5 w-3.5" />
 		<Moon class="text-neutral-content/45 pointer-events-none absolute right-2 h-3.5 w-3.5" />

@@ -42,7 +42,7 @@ const handleCrop = () => {
             <Crop class="text-primary h-5 w-5" />
             Ajustar Fotografía
           </h3>
-          <button @click="handleClose" class="btn btn-circle btn-ghost btn-sm text-text-muted hover:text-error transition-colors">
+          <button class="btn btn-circle btn-ghost btn-sm text-text-muted hover:text-error transition-colors" @click="handleClose">
             <X class="h-4 w-4" />
           </button>
         </div>
@@ -64,10 +64,10 @@ const handleCrop = () => {
 
         <!-- Footer Actions -->
         <div class="flex items-center justify-end gap-3 border-t border-border-subtle bg-bg-card p-4 shrink-0">
-          <button @click="handleClose" class="btn btn-ghost text-text-muted font-bold hover:bg-bg-muted">
+          <button class="btn btn-ghost text-text-muted font-bold hover:bg-bg-muted" @click="handleClose">
             Cancelar
           </button>
-          <button @click="handleCrop" class="btn btn-primary font-bold shadow-md hover:scale-105 transition-transform">
+          <button class="btn btn-primary font-bold shadow-md hover:scale-105 transition-transform" @click="handleCrop">
             <Upload class="mr-2 h-4 w-4" />
             Recortar y Subir
           </button>

@@ -168,9 +168,9 @@
 											Cancelar
 										</a>
 									</li>
-									<div class="divider my-0.5 opacity-50"></div>
+									<div class="divider my-0.5 opacity-50"/>
 									<li>
-										<a @click.stop="emit('delete', booking.booking_id)" class="text-error">
+										<a class="text-error" @click.stop="emit('delete', booking.booking_id)">
 											<Trash2 class="h-3.5 w-3.5" />
 											Eliminar
 										</a>

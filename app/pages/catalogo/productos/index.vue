@@ -108,14 +108,14 @@
 						v-model="searchQuery"
 						type="text"
 						placeholder="Buscar por nombre, SKU o código..."
-						class="input bg-bg-muted border-border-default focus:border-border-strong focus:ring-border-subtle hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl pl-10 text-sm font-medium shadow-sm transition-[background-color,border-color,box-shadow]" />
+						class="input bg-bg-muted border-border-default focus:border-border-strong focus:ring-border-subtle hover:bg-bg-hover focus:bg-bg-card h-11 w-full rounded-xl pl-10 text-sm font-medium shadow-sm transition-[background-color,border-color,box-shadow]" >
 				</div>
 
 				<!-- Reset Filters -->
-				<div class="w-full sm:w-auto" v-if="searchQuery">
+				<div v-if="searchQuery" class="w-full sm:w-auto">
 					<button
-						@click="resetFilters"
-						class="btn btn-ghost text-text-muted hover:bg-bg-hover w-full rounded-xl sm:w-auto">
+						class="btn btn-ghost text-text-muted hover:bg-bg-hover w-full rounded-xl sm:w-auto"
+						@click="resetFilters">
 						Limpiar
 					</button>
 				</div>
@@ -126,7 +126,7 @@
 				<div
 					v-for="i in 5"
 					:key="i"
-					class="bg-bg-card border-border-default h-24 w-full animate-pulse rounded-2xl border"></div>
+					class="bg-bg-card border-border-default h-24 w-full animate-pulse rounded-2xl border"/>
 			</div>
 
 			<!-- Table List -->
@@ -141,7 +141,7 @@
 								<th class="py-5 pl-6">Producto</th>
 								<th class="text-right py-5 tabular-nums">Stock / Precio</th>
 								<th class="text-center py-5">Estado</th>
-								<th class="w-16 pr-6 py-5"></th>
+								<th class="w-16 pr-6 py-5"/>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-border-subtle/50">
@@ -161,7 +161,7 @@
 												v-else
 												:src="product.image_url"
 												alt=""
-												class="h-full w-full object-cover" />
+												class="h-full w-full object-cover" >
 										</div>
 										<div class="flex flex-col">
 											<span class="text-text-primary text-sm font-bold tracking-tight">{{ product.name }}</span>
@@ -200,7 +200,7 @@
 												? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
 												: 'bg-text-muted/10 text-text-secondary border-text-muted/20'
 										">
-										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"></span>
+										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"/>
 										{{ product.status }}
 									</span>
 								</td>
@@ -217,16 +217,16 @@
 											tabindex="0"
 											class="dropdown-content menu glass-card text-text-secondary z-100 mt-1 w-44 rounded-2xl border p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
 											<li>
-												<a @click="openEditModal(product)" class="hover:bg-primary/5 hover:text-primary rounded-xl py-2.5 font-bold transition-colors">
+												<a class="hover:bg-primary/5 hover:text-primary rounded-xl py-2.5 font-bold transition-colors" @click="openEditModal(product)">
 													<Edit2 class="h-4 w-4" />
 													<span>{{ $t('common.edit') }}</span>
 												</a>
 											</li>
-											<div class="divider my-1 opacity-50"></div>
+											<div class="divider my-1 opacity-50"/>
 											<li>
 												<a
-													@click="confirmDelete(product.product_id)"
-													class="text-rose-500 hover:bg-rose-500/10 rounded-xl py-2.5 font-bold transition-colors">
+													class="text-rose-500 hover:bg-rose-500/10 rounded-xl py-2.5 font-bold transition-colors"
+													@click="confirmDelete(product.product_id)">
 													<Trash2 class="h-4 w-4" />
 													<span>{{ $t('common.delete') }}</span>
 												</a>

@@ -153,7 +153,7 @@ const pendingDebtTotal = computed(() => {
 					<p class="text-xs font-semibold opacity-90">Este cliente tiene un saldo pendiente de <strong>{{ formatCurrency(pendingDebtTotal) }}</strong>.</p>
 				</div>
 			</div>
-			<button @click="$emit('open-debt', props.client.debts[0])" class="btn btn-error btn-sm rounded-xl font-bold uppercase tracking-wider text-white shadow-sm">
+			<button class="btn btn-error btn-sm rounded-xl font-bold uppercase tracking-wider text-white shadow-sm" @click="$emit('open-debt', props.client.debts[0])">
 				Gestionar Pago
 			</button>
 		</div>
@@ -208,7 +208,7 @@ const pendingDebtTotal = computed(() => {
 				</div>
 
 				<div class="pt-4 border-t border-border-subtle mt-4">
-					<button @click="$emit('open-booking')" class="btn btn-neutral btn-sm w-full rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center justify-center gap-2">
+					<button class="btn btn-neutral btn-sm w-full rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center justify-center gap-2" @click="$emit('open-booking')">
 						<Plus class="w-4 h-4" />
 						Agendar Nueva Cita
 					</button>
@@ -292,7 +292,7 @@ const pendingDebtTotal = computed(() => {
 							<span class="text-text-muted text-[11px] font-bold">Documento:</span>
 							<div class="flex items-center gap-2">
 								<span class="font-mono font-bold text-text-primary">{{ revealedDocs[client.user_id] || '****' + (client.document_number?.slice(-4) || '3115') }}</span>
-								<button @click="toggleDocumentVisibility(client.user_id, client.document_number)" class="btn btn-ghost btn-xs btn-circle" aria-label="Toggle Document">
+								<button class="btn btn-ghost btn-xs btn-circle" aria-label="Toggle Document" @click="toggleDocumentVisibility(client.user_id, client.document_number)">
 									<component :is="revealedDocs[client.user_id] ? EyeOff : Eye" class="w-3.5 h-3.5 text-text-muted" />
 								</button>
 							</div>
@@ -318,9 +318,9 @@ const pendingDebtTotal = computed(() => {
 							<button 
 								v-for="tf in (['3M', '6M', '1Y', 'ALL'] as const)" 
 								:key="tf"
-								@click="timeframe = tf"
 								class="join-item btn btn-xs font-black px-3 transition-colors"
 								:class="timeframe === tf ? 'btn-neutral text-white shadow-xs' : 'btn-ghost text-text-muted hover:text-text-primary'"
+								@click="timeframe = tf"
 							>
 								{{ tf }}
 							</button>
@@ -390,11 +390,11 @@ const pendingDebtTotal = computed(() => {
 					rows="3"
 					class="textarea border-border-default/80 bg-bg-muted/20 focus:border-primary/50 w-full rounded-2xl p-4 text-xs font-medium focus:outline-none transition-all shadow-inner" 
 					placeholder="Escribe aquí notas sobre preferencias, alergias, o detalles importantes del cliente..."
-				></textarea>
+				/>
 
 				<div class="flex justify-end">
-					<button @click="saveNotes" :disabled="isSavingNotes" class="btn btn-neutral btn-sm rounded-xl font-bold px-6 shadow-sm">
-						<span v-if="isSavingNotes" class="loading loading-spinner loading-xs"></span>
+					<button :disabled="isSavingNotes" class="btn btn-neutral btn-sm rounded-xl font-bold px-6 shadow-sm" @click="saveNotes">
+						<span v-if="isSavingNotes" class="loading loading-spinner loading-xs"/>
 						{{ isSavingNotes ? 'Guardando...' : 'Guardar Anotaciones' }}
 					</button>
 				</div>

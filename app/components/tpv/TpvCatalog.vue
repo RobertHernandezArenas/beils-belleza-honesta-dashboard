@@ -90,7 +90,7 @@
 				<div
 					ref="pillRef"
 					class="bg-text-primary absolute top-1 bottom-1 left-1 rounded-xl shadow-xs pointer-events-none w-[calc((100%-8px)/3)]"
-					style="z-index: 0"></div>
+					style="z-index: 0"/>
 
 				<button
 					type="button"
@@ -122,7 +122,7 @@
 					v-model="searchQuery"
 					type="text"
 					placeholder="Buscar en el catálogo..."
-					class="input bg-bg-card/70 border-border-default/80 focus:bg-bg-card focus:border-text-primary h-10 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" />
+					class="input bg-bg-card/70 border-border-default/80 focus:bg-bg-card focus:border-text-primary h-10 w-full rounded-2xl pr-8 pl-10 text-xs font-semibold shadow-xs transition-all placeholder:text-text-muted/60" >
 				<button
 					v-if="searchQuery"
 					type="button"
@@ -161,8 +161,8 @@
 						<button
 							type="button"
 							:disabled="Number(pkg.remaining_sessions) <= 0"
-							@click="emit('consume-package', pkg)"
-							class="badge badge-neutral shrink-0 cursor-pointer px-2.5 py-1 text-[9px] font-bold transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+							class="badge badge-neutral shrink-0 cursor-pointer px-2.5 py-1 text-[9px] font-bold transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+							@click="emit('consume-package', pkg)">
 							{{ Number(pkg.remaining_sessions) > 0 ? 'Usar sesión' : 'Agotado' }}
 						</button>
 					</div>
@@ -186,8 +186,8 @@
 					v-for="item in filteredCatalog"
 					:key="item.product_id || item.service_id || item.package_id"
 					type="button"
-					@click="emit('add-to-cart', item, activeTab.slice(0, -1))"
-					class="group bg-bg-card border-border-default/80 hover:border-text-primary/40 relative flex h-28 sm:h-32 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-3 sm:p-4 text-left shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]">
+					class="group bg-bg-card border-border-default/80 hover:border-text-primary/40 relative flex h-28 sm:h-32 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-3 sm:p-4 text-left shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+					@click="emit('add-to-cart', item, activeTab.slice(0, -1))">
 					<div class="z-10 flex flex-col w-full">
 						<span class="group-hover:text-primary line-clamp-2 text-xs font-bold text-text-primary leading-tight transition-colors">
 							{{ item.name }}

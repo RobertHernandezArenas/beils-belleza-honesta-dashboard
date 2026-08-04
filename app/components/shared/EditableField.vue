@@ -200,23 +200,23 @@
 						class="input input-md bg-bg-card focus:ring-primary/30 focus:border-primary text-text-primary flex-1 border-text-secondary/30 font-medium shadow-[0_0_15px_rgba(var(--color-primary),0.1)] ring-0! outline-0! transition-all rounded-full focus-visible:border-text-secondary/30 focus-visible:ring-0! focus-visible:outline-0!"
 						@blur="handleBlur"
 						@keydown.stop="handleKeyDown"
-						@click.stop />
+						@click.stop >
 				</template>
 
 				<!-- Actions (Inline positioning side-by-side to avoid overlapping arrow/text) -->
 				<div class="flex shrink-0 items-center gap-1">
 					<button
-						@click.stop.prevent="saveEdit"
-						@mousedown.stop.prevent
 						class="btn btn-xs btn-circle btn-success text-white shadow-sm"
-						title="Guardar">
+						title="Guardar"
+						@click.stop.prevent="saveEdit"
+						@mousedown.stop.prevent>
 						<Check class="h-3 w-3" />
 					</button>
 					<button
-						@click.stop.prevent="cancelEdit"
-						@mousedown.stop.prevent
 						class="btn btn-xs btn-circle btn-ghost text-error"
-						title="Cancelar">
+						title="Cancelar"
+						@click.stop.prevent="cancelEdit"
+						@mousedown.stop.prevent>
 						<X class="h-3 w-3" />
 					</button>
 				</div>

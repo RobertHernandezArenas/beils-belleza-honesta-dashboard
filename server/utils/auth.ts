@@ -1,4 +1,4 @@
-import { type H3Event as TH3Event } from 'h3'
+import type { H3Event as TH3Event } from 'h3'
 import type { JwtPayload } from './jwt'
 
 // H3Event and createError are auto-imported by Nuxt/Nitro

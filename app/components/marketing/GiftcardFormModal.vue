@@ -124,7 +124,7 @@
 
 			<!-- Body -->
 			<div class="custom-scrollbar max-h-[70vh] overflow-y-auto px-8 py-6">
-				<form id="cardForm" @submit.prevent="saveGiftcard" class="flex flex-col gap-5">
+				<form id="cardForm" class="flex flex-col gap-5" @submit.prevent="saveGiftcard">
 					<div v-if="editingCard" class="flex items-center justify-between">
 						<span class="text-text-muted text-sm font-bold tracking-wider uppercase">
 							Estado de Tarjeta
@@ -152,18 +152,18 @@
 								v-model="form.code"
 								type="text"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-12 w-full rounded-xl pr-12 text-center font-mono text-xl font-black tracking-[0.2em] shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-12 w-full rounded-xl pr-12 text-center font-mono text-xl font-black tracking-[0.2em] shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 							<button
-								type="button"
 								v-if="!editingCard"
-								@click="generateCode"
-								class="btn btn-ghost btn-sm btn-circle text-primary hover:bg-primary/10 absolute top-1/2 right-2 -translate-y-1/2">
+								type="button"
+								class="btn btn-ghost btn-sm btn-circle text-primary hover:bg-primary/10 absolute top-1/2 right-2 -translate-y-1/2"
+								@click="generateCode">
 								<RefreshCcw class="h-4 w-4" />
 							</button>
 						</div>
 					</div>
 
-					<div class="divider my-0 opacity-50"></div>
+					<div class="divider my-0 opacity-50"/>
 
 					<div class="grid grid-cols-2 gap-5">
 						<div class="form-control">
@@ -180,10 +180,10 @@
 								min="0"
 								required
 								:disabled="editingCard !== null"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none disabled:opacity-50" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none disabled:opacity-50" >
 						</div>
 
-						<div class="form-control" v-if="editingCard">
+						<div v-if="editingCard" class="form-control">
 							<label class="label pb-1" for="card-current">
 								<span class="label-text text-primary text-xs font-bold tracking-wider uppercase">
 									Saldo Restante (€) *
@@ -196,7 +196,7 @@
 								step="0.01"
 								min="0"
 								required
-								class="input bg-primary/10 border-primary text-primary focus:bg-bg-card focus:ring-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+								class="input bg-primary/10 border-primary text-primary focus:bg-bg-card focus:ring-primary h-11 w-full rounded-xl px-4 text-sm font-bold tabular-nums shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 						</div>
 					</div>
 
@@ -212,7 +212,7 @@
 								v-model="form.issue_date"
 								type="datetime-local"
 								required
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-colors focus:shadow-md focus:outline-none" >
 						</div>
 
 						<div class="form-control">
@@ -225,7 +225,7 @@
 								id="card-end"
 								v-model="form.expiration_date"
 								type="datetime-local"
-								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-[background-color,border-color,box-shadow] duration-200 focus:shadow-md focus:outline-none" />
+								class="input bg-bg-muted border-border-default focus:bg-bg-card focus:ring-border-subtle/40 hover:bg-bg-hover h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm transition-[background-color,border-color,box-shadow] duration-200 focus:shadow-md focus:outline-none" >
 						</div>
 					</div>
 				</form>
@@ -245,7 +245,7 @@
 					form="cardForm"
 					class="btn text-bg-card hover:bg-text-secondary/80 bg-text-secondary h-12 rounded-xl border-none px-8 font-bold shadow-md"
 					:disabled="isSaving">
-					<span v-if="isSaving" class="loading loading-spinner"></span>
+					<span v-if="isSaving" class="loading loading-spinner"/>
 					{{ editingCard ? 'Guardar Cambios' : 'Emitir Tarjeta' }}
 				</button>
 			</div>

@@ -116,7 +116,6 @@
 						class="flex aspect-square items-center justify-center text-[10px] font-bold">
 						<button
 							v-if="date"
-							@click="emit('selectDate', date)"
 							class="hover:bg-bg-hover relative flex h-7 w-7 items-center justify-center rounded-full transition-all"
 							:class="[
 								isToday(date)
@@ -124,11 +123,12 @@
 									: hasBooking(date)
 										? 'text-text-primary font-black'
 										: 'text-text-muted opacity-40',
-							]">
+							]"
+							@click="emit('selectDate', date)">
 							{{ date.getDate() }}
 							<span
 								v-if="hasBooking(date) && !isToday(date)"
-								class="bg-text-primary absolute -bottom-0.5 h-1 w-1 rounded-full shadow-sm"></span>
+								class="bg-text-primary absolute -bottom-0.5 h-1 w-1 rounded-full shadow-sm"/>
 						</button>
 					</div>
 				</div>

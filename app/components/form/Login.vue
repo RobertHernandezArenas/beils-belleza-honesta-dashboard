@@ -146,13 +146,13 @@
 			class="bg-bg-card relative space-y-8 rounded-4xl border border-transparent p-8 sm:p-12 ">
 			<!-- Glow sutil dentro de la tarjeta -->
 			<div
-				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-4xl bg-linear-to-b to-transparent"></div>
+				class="from-bg-app pointer-events-none absolute inset-0 z-0 rounded-4xl bg-linear-to-b to-transparent"/>
 
 			<div class="relative z-10 w-full">
 				<!-- Loading Screen -->
 				<div v-if="isPending" class="flex h-full w-full flex-col items-center justify-center gap-5 py-10">
 					<div class="relative">
-						<img src="~/assets/images/loader.gif" width="75" height="75" alt="" />
+						<img src="~/assets/images/loader.gif" width="75" height="75" alt="" >
 					</div>
 					<p class="animate-pulse text-xl font-bold tracking-wide">
 						Iniciando sesión...
@@ -205,7 +205,7 @@
 									:class="{
 										'border-red-500 focus:border-red-500 focus:outline-none': errors.email,
 									}"
-									@input="clearError('email')" />
+									@input="clearError('email')" >
 								<Mail
 									class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
 									:class="{ 'text-red-500 group-focus-within:text-red-500': errors.email }" />
@@ -234,7 +234,7 @@
 									:class="{
 										'border-red-500 focus:border-red-500 focus:outline-none': errors.password,
 									}"
-									@input="clearError('password')" />
+									@input="clearError('password')" >
 								<Lock
 									class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
 									:class="{ 'text-red-500 group-focus-within:text-red-500': errors.password }" />
@@ -258,9 +258,9 @@
 						<div class="flex items-center justify-between">
 							<label class="label cursor-pointer justify-start gap-3 p-0">
 								<input
-									type="checkbox"
 									v-model="form.rememberMe"
-									class="checkbox checkbox-sm checkbox-primary border-border-default hover:border-primary rounded-lg transition-colors" />
+									type="checkbox"
+									class="checkbox checkbox-sm checkbox-primary border-border-default hover:border-primary rounded-lg transition-colors" >
 								<span class="label-text text-text-muted text-sm font-medium">
 									{{ t('auth.login.remember') || 'Recordar credenciales' }}
 								</span>
@@ -283,7 +283,7 @@
 							</span>
 							<!-- Efecto de brillo en hover -->
 							<div
-								class="via-bg-card/20 absolute inset-0 -translate-x-full bg-linear-to-r from-transparent to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+								class="via-bg-card/20 absolute inset-0 -translate-x-full bg-linear-to-r from-transparent to-transparent group-hover:animate-[shimmer_1.5s_infinite]"/>
 						</button>
 					</div>
 				</form>

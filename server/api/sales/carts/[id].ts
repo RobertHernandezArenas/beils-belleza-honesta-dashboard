@@ -50,7 +50,7 @@ export default defineEventHandler(async event => {
 		const updatedCart = await prisma.$transaction(async tx => {
 			let subtotal = currentCart.subtotal
 			let total = currentCart.total
-			let discount = body.discount !== undefined ? body.discount : currentCart.discount
+			const discount = body.discount !== undefined ? body.discount : currentCart.discount
 
 			// 1. Handle items update if provided
 			if (body.items && Array.isArray(body.items)) {
