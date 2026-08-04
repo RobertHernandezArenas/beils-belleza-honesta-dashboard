@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { storeToRefs } from 'pinia'
 import { useAgendaStore } from '~/stores/useAgendaStore'
+import type { BookingItem, CatalogItem, FetchError } from '~~/shared/types/domain'
 
 export interface ClientItem {
     user_id: string
     name: string
     surname: string
     phone: string
-    [key: string]: any
+    [key: string]: unknown
 }
 
 export interface StaffItem {
@@ -15,7 +16,7 @@ export interface StaffItem {
     name: string
     surname: string
     role: string
-    [key: string]: any
+    [key: string]: unknown
 }
 
 export interface BookingItemData {
@@ -23,10 +24,10 @@ export interface BookingItemData {
     item_id: string
     name: string
     duration: number
-    [key: string]: any
+    [key: string]: unknown
 }
 
-export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...args: any[]) => void) {
+export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...args: unknown[]) => void) {
     const store = useAgendaStore()
     const { selectedBooking, prefillDate, prefillTime, prefillClientId } = storeToRefs(store)
     const queryClient = useQueryClient()
@@ -50,7 +51,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
     const { data: clients } = useQuery({
         queryKey: ['clients-agenda'],
         queryFn: async () => {
-            const res = await $fetch<any>('/api/clients', { query: { limit: 500 } })
+            const res = await $fetch<{ data: ClientItem[] }>('/api/clients', { query: { limit: 500 } })
             return res?.data || []
         },
     })
@@ -64,20 +65,20 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
 
     const { data: services } = useQuery({
         queryKey: ['services-agenda'],
-        queryFn: () => $fetch<any[]>('/api/services'),
+        queryFn: () => $fetch<CatalogItem[]>('/api/services'),
     })
 
     // Sellable bonos/packages catalog (to sell a bono within an appointment)
     const { data: catalogPackages } = useQuery({
         queryKey: ['packages-agenda'],
-        queryFn: () => $fetch<any[]>('/api/packages'),
+        queryFn: () => $fetch<CatalogItem[]>('/api/packages'),
     })
 
     const { data: clientPackages } = useQuery({
         queryKey: ['client-packages-agenda', computed(() => form.client_id)],
         queryFn: async () => {
             if (!form.client_id) return []
-            return await $fetch<any[]>(`/api/clients/${form.client_id}/packages`)
+            return await $fetch<CatalogItem[]>(`/api/clients/${form.client_id}/packages`)
         },
         enabled: computed(() => !!form.client_id)
     })
@@ -105,7 +106,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
 
     // Mutation
     const { mutate: performSave, isPending: isSaving } = useMutation({
-        mutationFn: async (payload: any) => {
+        mutationFn: async (payload: Record<string, unknown>) => {
             if (selectedBooking.value) {
                 return await $fetch(`/api/agenda/bookings/${selectedBooking.value.booking_id}`, {
                     method: 'PUT',
@@ -125,7 +126,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             emit('refresh')
             store.closeBookingDrawer()
         },
-        onError: (error: any) => {
+        onError: (error: FetchError) => {
             const serverMsg = error.data?.statusMessage || error.message
             localError.value = serverMsg || 'Error al guardar la cita'
             showLocalError.value = true
@@ -136,7 +137,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
 
     const saveBooking = () => {
         if (!form.client_id && clients.value?.length) {
-            const fallback = clients.value.find((c: any) => 
+            const fallback = clients.value.find((c: ClientItem) => 
                 c.name?.toLowerCase().includes('no registrado') || 
                 c.name?.toLowerCase().includes('mostrador')
             ) || clients.value[0]
@@ -168,7 +169,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             form.notes = b.notes || ''
             
             if (b.booking_items) {
-                form.items = b.booking_items.map((it: any) => ({
+                form.items = b.booking_items.map((it: BookingItem) => ({
                     item_type: it.item_type,
                     item_id: it.item_id,
                     name: it.name,

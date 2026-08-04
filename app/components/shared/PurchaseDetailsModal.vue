@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { usePurchaseModal } from '~/composables/usePurchaseModal'
+import type { Sale, Client, CatalogItem } from '~~/shared/types/domain'
 import PurchaseModalHeader from './PurchaseModalHeader.vue'
 import PurchaseModalView from './PurchaseModalView.vue'
 import PurchaseModalSearch from './PurchaseModalSearch.vue'
@@ -27,10 +28,10 @@ const {
     saveItems,
     isSavingItems,
     updateDate
-} = usePurchaseModal(emit as any)
+} = usePurchaseModal(emit)
 
 // Modal Controller Methods
-const open = (cartData: any) => {
+const open = (cartData: Sale) => {
   cart.value = JSON.parse(JSON.stringify(cartData)) // Deep clone for safety
   isSearching.value = false
   isEditingItems.value = false
@@ -47,7 +48,7 @@ const close = () => {
 
 // Handlers for View Actions
 const startEditingItems = () => {
-  tempItems.value = JSON.parse(JSON.stringify(cart.value.items))
+  tempItems.value = cart.value?.items ? JSON.parse(JSON.stringify(cart.value.items)) : []
   isEditingItems.value = true
   isSearching.value = false
 }
@@ -63,31 +64,32 @@ const removeAssignedClient = () => {
 }
 
 const editAssignedClient = () => {
-    selectedClientToAssign.value = cart.value.user
+    selectedClientToAssign.value = cart.value?.user ?? null
     isSearching.value = true
 }
 
 // Handlers for Search Actions
-const selectClient = (client: any) => {
+const selectClient = (client: Client) => {
   selectedClientToAssign.value = client
 }
 
 const confirmAssignment = () => {
-  if (selectedClientToAssign.value) {
-    assignClient(selectedClientToAssign.value.user_id)
+  const uid = selectedClientToAssign.value?.user_id
+  if (uid) {
+    assignClient(uid)
   }
 }
 
-const addNewItem = (item: any) => {
+const addNewItem = (item: CatalogItem) => {
   const existing = tempItems.value.find(i => i.item_id === item.item_id)
   if (existing) {
     existing.quantity++
   } else {
     tempItems.value.push({
-      item_id: item.item_id,
+      item_id: item.item_id || '',
       item_type: item.item_type,
       name: item.name,
-      unit_price: item.price,
+      unit_price: item.price || 0,
       tax_rate: item.tax_rate || 21.0,
       quantity: 1
     })

@@ -1,27 +1,22 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/vue-query'
 import { storeToRefs } from 'pinia'
 import { useAgendaStore } from '~/stores/useAgendaStore'
+import type { Booking, FetchError } from '~~/shared/types/domain'
 
 export function useAgenda() {
 	const queryClient = useQueryClient()
 	const store = useAgendaStore()
 
 	// Extract state from store
-	const { 
-		selectedDate, 
-		viewMode, 
-		searchQuery, 
-		isBookingDrawerOpen, 
-		isBookingDetailsOpen, 
-		selectedBooking,
-		prefillDate,
-		prefillTime,
-		showSidebar
+	const {
+		selectedDate,
+		viewMode,
+		searchQuery,
 	} = storeToRefs(store)
 
 	// Additional local state for modals that are not in store
 	const deleteModalOpen = ref(false)
-	const bookingToDelete = ref<any>(null)
+	const bookingToDelete = ref<Partial<Booking> | null>(null)
 
 	// Toast State
 	const toastMessage = ref('')
@@ -56,7 +51,7 @@ export function useAgenda() {
 	// Fetch bookings
 	const { data: bookings, isPending } = useQuery({
 		queryKey: ['bookings', queryParams], // Removed viewMode to prevent refetching when switching tabs
-		queryFn: () => $fetch<Array<any>>('/api/agenda/bookings', { query: queryParams.value }),
+		queryFn: () => $fetch<Booking[]>('/api/agenda/bookings', { query: queryParams.value }),
 		placeholderData: keepPreviousData,
 	})
 
@@ -71,7 +66,7 @@ export function useAgenda() {
 			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			displayToast('Estado de la cita actualizado', 'success')
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al actualizar', 'error')
 		},
 	})
@@ -84,7 +79,7 @@ export function useAgenda() {
 			deleteModalOpen.value = false
 			bookingToDelete.value = null
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar', 'error')
 		},
 	})
@@ -119,12 +114,12 @@ export function useAgenda() {
 	// Filtered list
 	const displayBookings = computed(() => {
 		if (!bookings.value || !Array.isArray(bookings.value)) return []
-		let filtered = bookings.value as Array<any>
+		let filtered = bookings.value
 
 		if (searchQuery.value) {
 			const q = searchQuery.value.toLowerCase()
 			filtered = filtered.filter(
-				(b: any) =>
+				(b: Booking) =>
 					b.client?.name?.toLowerCase().includes(q) ||
 					b.client?.surname?.toLowerCase().includes(q) ||
 					b.client?.phone?.includes(q) ||
@@ -137,7 +132,7 @@ export function useAgenda() {
 	})
 
 	const confirmDelete = (id: string) => {
-		const b = bookings.value?.find((b: any) => b.booking_id === id)
+		const b = bookings.value?.find((b: Booking) => b.booking_id === id)
 		bookingToDelete.value = b || { booking_id: id }
 		deleteModalOpen.value = true
 	}
