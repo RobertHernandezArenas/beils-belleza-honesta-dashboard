@@ -1,3 +1,4 @@
+import type { IncomingLineItem } from '~~/shared/types/line-item'
 import { prisma } from '../../utils/prisma'
 
 export default defineEventHandler(async (event) => {
@@ -10,7 +11,7 @@ export default defineEventHandler(async (event) => {
 		}
 
 		const calculatedSessions = type === 'MIXTO' && Array.isArray(items)
-			? items.filter((it: any) => (it.item_type || 'SERVICE') === 'SERVICE').reduce((sum: number, it: any) => sum + Number(it.quantity || 0), 0)
+			? items.filter((it: IncomingLineItem) => (it.item_type || 'SERVICE') === 'SERVICE').reduce((sum: number, it: IncomingLineItem) => sum + Number(it.quantity || 0), 0)
 			: Number(total_sessions || 1)
 
 		const pkg = await prisma.package.create({
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
 				service_id: service_id || null,
 				status: 'activo',
 				items: items && Array.isArray(items) && items.length > 0 ? {
-					create: items.map((it: any) => ({
+					create: items.map((it: IncomingLineItem) => ({
 						item_type: it.item_type || 'SERVICE',
 						item_id: it.item_id,
 						name: it.name,
@@ -38,7 +39,8 @@ export default defineEventHandler(async (event) => {
 		})
 
 		return pkg
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,

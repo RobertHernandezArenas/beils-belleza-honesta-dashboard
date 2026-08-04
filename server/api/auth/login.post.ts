@@ -63,7 +63,8 @@ export default defineEventHandler(async event => {
 			user: userData,
 			token,
 		}
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		
 		// If it's already a Nuxt error, rethrow it
 		if (error.statusCode) throw error

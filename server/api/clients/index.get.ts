@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
 import { maskDocument } from '../../utils/privacy'
@@ -13,7 +14,7 @@ export default defineEventHandler(async event => {
 		const limit = parseInt(query.limit as string) || 10
 		const skip = (page - 1) * limit
 
-		const whereClause: any = { role: 'CLIENT' }
+		const whereClause: Prisma.UserWhereInput = { role: 'CLIENT' }
 		if (search) {
 			// Multi-term search: split the query into words and require EVERY word to
 			// match at least one field (AND across words, OR across fields). This lets
@@ -69,7 +70,8 @@ export default defineEventHandler(async event => {
 				totalPages: Math.ceil(total / limit),
 			},
 		}
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,

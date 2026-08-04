@@ -5,7 +5,8 @@ export default defineEventHandler(async () => {
         if (!user) return { success: false, error: 'No user' };
         
         return { success: true, user };
-    } catch (e: any) {
+    } catch (rawError) {
+    	const e = toApiError(rawError)
         return { success: false, error: e.message }
     }
 })

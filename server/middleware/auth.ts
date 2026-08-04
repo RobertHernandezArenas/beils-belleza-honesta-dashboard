@@ -46,7 +46,7 @@ export default defineEventHandler(event => {
 
 		// Attach user info to the event context so subsequent API handlers can use it
 		event.context.user = decoded
-	} catch (error) {
+	} catch {
 		throw createError({
 			statusCode: 401,
 			statusMessage: 'Unauthorized: Session expired or invalid token',

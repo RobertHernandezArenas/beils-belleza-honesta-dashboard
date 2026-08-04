@@ -18,7 +18,8 @@ export default defineEventHandler(async () => {
 				port: process.env.DATABASE_PORT || 'not set',
 			}
 		}
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		console.error('❌ Database Diagnosis Failed:', error)
 		return {
 			status: 'error',

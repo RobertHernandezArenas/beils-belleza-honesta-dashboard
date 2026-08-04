@@ -9,7 +9,7 @@ export default defineEventHandler(async event => {
 			where: { user_id: id },
 		})
 		return { success: true, message: 'Usuario eliminado' }
-	} catch (error) {
+	} catch {
 		throw createError({
 			statusCode: 500,
 			statusMessage: 'Error al eliminar usuario',

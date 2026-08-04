@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 
 export default defineEventHandler(async event => {
@@ -5,7 +6,7 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const userId = query.user_id as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.ConsentWhereInput = {}
 		if (userId) {
 			whereClause.user_id = userId
 		}
@@ -21,7 +22,8 @@ export default defineEventHandler(async event => {
 		})
 
 		return consents
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		throw createError({
 			statusCode: 500,
 			statusMessage: error.message || 'Error al obtener consentimientos',

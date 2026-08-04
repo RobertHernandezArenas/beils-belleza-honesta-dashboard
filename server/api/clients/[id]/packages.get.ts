@@ -40,7 +40,8 @@ export default defineEventHandler(async (event) => {
 				duration: it.duration
 			}))
 		}))
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		console.error('Error fetching client packages:', error)
 		if (error.statusCode) throw error
 		throw createError({

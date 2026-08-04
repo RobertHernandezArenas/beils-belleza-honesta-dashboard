@@ -1,3 +1,4 @@
+import type { Role } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
 import { maskDocument } from '../../utils/privacy'
@@ -11,7 +12,7 @@ export default defineEventHandler(async event => {
 
 		const users = await prisma.user.findMany({
 			where: roles.length > 0 ? {
-				role: { in: roles as any }
+				role: { in: roles as Role[] }
 			} : {},
 			orderBy: { created_at: 'desc' },
 			select: {
@@ -31,7 +32,8 @@ export default defineEventHandler(async event => {
 			...u,
 			document_number: maskDocument(u.document_number),
 		}))
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,

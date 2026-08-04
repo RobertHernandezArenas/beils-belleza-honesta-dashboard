@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
 import { requireAdmin } from '../../../utils/auth'
@@ -56,7 +57,9 @@ export default defineEventHandler(async event => {
 
 			// Check if we need to complete the cart (Rule: paid debt completes the cart)
 			let needsVerifactu = false
-			let cartToUpdate: any = null
+			let cartToUpdate: Prisma.CartGetPayload<{
+				include: { user: { select: { document_number: true; user_id: true } } }
+			}> | null = null
 
 			if (newStatus === 'paid' && debt.cart_id) {
 				const currentCart = await tx.cart.findUnique({
@@ -124,7 +127,8 @@ export default defineEventHandler(async event => {
 		}
 
 		return { success: true, data: { debt: result.debt, payment: result.payment } }
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error instanceof z.ZodError) {
 			throw createError({ statusCode: 400, statusMessage: error.message })
 		}

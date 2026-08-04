@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 
 import { z } from 'zod'
 
@@ -47,7 +48,7 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const search = query.search as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.ServiceWhereInput = {}
 
 		if (search) {
 			whereClause.OR = [
@@ -87,7 +88,8 @@ export default defineEventHandler(async event => {
 			})
 
 			return service
-		} catch (error: any) {
+		} catch (rawError) {
+			const error = toApiError(rawError)
 			if (error instanceof z.ZodError) {
 				throw createError({ statusCode: 400, statusMessage: error.message })
 			}

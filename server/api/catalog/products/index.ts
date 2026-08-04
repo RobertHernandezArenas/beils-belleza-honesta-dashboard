@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 
 
 export default defineEventHandler(async event => {
@@ -7,7 +8,7 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const search = query.search as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.ProductWhereInput = {}
 
 		if (search) {
 			whereClause.OR = [

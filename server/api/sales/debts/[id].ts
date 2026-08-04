@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 
 
 export default defineEventHandler(async event => {
@@ -24,7 +25,7 @@ export default defineEventHandler(async event => {
 	if (method === 'PUT') {
 		const body = await readBody(event)
 
-		const payload: any = { status: body.status, notes: body.notes }
+		const payload: Prisma.DebtUncheckedUpdateInput = { status: body.status, notes: body.notes }
 
 		if (body.remaining !== undefined) {
 			payload.remaining = Number(Number(body.remaining).toFixed(2))

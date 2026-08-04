@@ -12,7 +12,7 @@ const PREFIX = 'BBH'
  * 1. Generate the next consecutive invoice number atomically.
  */
 export async function generateInvoiceNumber(
-	type: 'F1' | 'I' = 'F1', // F1: Full, I: Simplified
+	_type: 'F1' | 'I' = 'F1', // F1: Full, I: Simplified (reservado; la numeración no varía por tipo)
 	year: number = new Date().getFullYear(),
 ): Promise<string> {
 	const now = new Date()

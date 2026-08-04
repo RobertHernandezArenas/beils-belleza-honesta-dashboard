@@ -1,3 +1,4 @@
+import type { IncomingLineItem } from '~~/shared/types/line-item'
 import { prisma } from '../../utils/prisma'
 
 export default defineEventHandler(async (event) => {
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
 		const { name, description, type, price, total_sessions, service_id, items } = body
 
 		const calculatedSessions = type === 'MIXTO' && Array.isArray(items)
-			? items.filter((it: any) => (it.item_type || 'SERVICE') === 'SERVICE').reduce((sum: number, it: any) => sum + Number(it.quantity || 0), 0)
+			? items.filter((it: IncomingLineItem) => (it.item_type || 'SERVICE') === 'SERVICE').reduce((sum: number, it: IncomingLineItem) => sum + Number(it.quantity || 0), 0)
 			: Number(total_sessions || 1)
 
 		const updated = await prisma.$transaction(async (tx) => {
@@ -42,7 +43,7 @@ export default defineEventHandler(async (event) => {
 					total_sessions: calculatedSessions,
 					service_id: service_id || null,
 					items: items && Array.isArray(items) ? {
-						create: items.map((it: any) => ({
+						create: items.map((it: IncomingLineItem) => ({
 							item_type: it.item_type || 'SERVICE',
 							item_id: it.item_id,
 							name: it.name,

@@ -1,6 +1,6 @@
 import { prisma } from '../../utils/prisma'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
 	try {
 		const packages = await prisma.package.findMany({
 			where: { status: 'activo' },
@@ -20,7 +20,8 @@ export default defineEventHandler(async (event) => {
 			}
 			return pkg
 		})
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		throw createError({
 			statusCode: 500,
 			statusMessage: error.message || 'Error al obtener paquetes'
