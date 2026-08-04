@@ -40,6 +40,7 @@ export interface BookingItem {
 // carries `data.statusMessage` (from the server's createError) plus `message`.
 export interface FetchError {
 	data?: { statusMessage?: string }
+	response?: { _data?: { statusMessage?: string } }
 	message?: string
 }
 
@@ -165,6 +166,7 @@ export interface Questionnaire {
 	title: string
 	data: string
 	created_at?: string
+	user?: Partial<Client> | null
 }
 
 export interface Consent {
@@ -176,6 +178,7 @@ export interface Consent {
 	document_url?: string | null
 	notes?: string | null
 	created_at?: string | null
+	user?: Partial<Client> | null
 }
 
 export interface Revoke {
@@ -184,6 +187,7 @@ export interface Revoke {
 	reason?: string | null
 	date_revoked: string
 	created_at?: string
+	user?: Partial<Client> | null
 }
 
 // A Client together with the relations the profile screens load. Everything is

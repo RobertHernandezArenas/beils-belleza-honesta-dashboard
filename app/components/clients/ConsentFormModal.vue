@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import type { Client as ClientDTO, Consent, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { FileCheck, Save, AlertCircle, Edit, X } from 'lucide-vue-next'
@@ -8,7 +9,7 @@
 
 	const props = defineProps<{
 		modelValue: boolean
-		itemToEdit?: any | null
+		itemToEdit?: Partial<Consent> | null
 	}>()
 
 	const emit = defineEmits(['update:modelValue', 'close', 'success'])
@@ -18,7 +19,7 @@
 	const consentDialog = ref<HTMLDialogElement | null>(null)
 	const { animateOpen, animateClose } = useModalAnimation()
 
-	const selectedClient = ref<any | null>(null)
+	const selectedClient = ref<Partial<ClientDTO> | null>(null)
 
 	watch(
 		() => props.modelValue,
@@ -100,7 +101,7 @@
 	const { emitSync } = useSync()
 
 	const { mutate: saveItem, isPending } = useMutation({
-		mutationFn: async (data: any) => {
+		mutationFn: async (data: Record<string, unknown>) => {
 			const url = isEditing.value
 				? `/api/clients/consents/${props.itemToEdit!.consent_id}`
 				: '/api/clients/consents'
@@ -118,7 +119,7 @@
 			emit('success')
 			localVisible.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			apiError.value = err.response?._data?.statusMessage || err.message || 'Error al guardar'
 		},
 	})
@@ -130,8 +131,8 @@
 		const result = consentSchema.safeParse(form)
 		if (!result.success) {
 			const formatted = result.error.format()
-			errors.user_id = (formatted as any).user_id?._errors[0] || ''
-			errors.document_url = (formatted as any).document_url?._errors[0] || ''
+			errors.user_id = (formatted as Record<string, { _errors?: string[] } | undefined>).user_id?._errors?.[0] || ''
+			errors.document_url = (formatted as Record<string, { _errors?: string[] } | undefined>).document_url?._errors?.[0] || ''
 			return
 		}
 

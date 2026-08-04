@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import type { Client as ClientDTO, Revoke, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { ShieldOff, Save, AlertCircle, Edit, X } from 'lucide-vue-next'
@@ -7,7 +8,7 @@
 
 	const props = defineProps<{
 		modelValue: boolean
-		itemToEdit?: any | null
+		itemToEdit?: Partial<Revoke> | null
 	}>()
 
 	const emit = defineEmits(['update:modelValue', 'close', 'success'])
@@ -17,7 +18,7 @@
 	const revokeDialog = ref<HTMLDialogElement | null>(null)
 	const { animateOpen, animateClose } = useModalAnimation()
 
-	const selectedClient = ref<any | null>(null)
+	const selectedClient = ref<Partial<ClientDTO> | null>(null)
 
 	watch(
 		() => props.modelValue,
@@ -90,7 +91,7 @@
 	const { emitSync } = useSync()
 
 	const { mutate: saveItem, isPending } = useMutation({
-		mutationFn: async (payload: any) => {
+		mutationFn: async (payload: Record<string, unknown>) => {
 			const url = isEditing.value
 				? `/api/clients/revokes/${props.itemToEdit!.revoke_id}`
 				: '/api/clients/revokes'
@@ -108,7 +109,7 @@
 			emit('success')
 			localVisible.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			apiError.value = err.response?._data?.statusMessage || err.message || 'Error al guardar'
 		},
 	})
@@ -120,7 +121,7 @@
 		const result = revokeSchema.safeParse(form)
 		if (!result.success) {
 			const formatted = result.error.format()
-			errors.user_id = (formatted as any).user_id?._errors[0] || ''
+			errors.user_id = (formatted as Record<string, { _errors?: string[] } | undefined>).user_id?._errors?.[0] || ''
 			return
 		}
 

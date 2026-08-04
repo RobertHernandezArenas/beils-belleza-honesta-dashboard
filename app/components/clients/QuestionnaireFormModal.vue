@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import type { Client as ClientDTO, Questionnaire, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { ClipboardList, Save, AlertCircle, Edit, X } from 'lucide-vue-next'
@@ -7,7 +8,7 @@
 
 	const props = defineProps<{
 		modelValue: boolean
-		itemToEdit?: any | null
+		itemToEdit?: Partial<Questionnaire> | null
 	}>()
 
 	const emit = defineEmits(['update:modelValue', 'close', 'success'])
@@ -17,7 +18,7 @@
 	const questionnaireDialog = ref<HTMLDialogElement | null>(null)
 	const { animateOpen, animateClose } = useModalAnimation()
 
-	const selectedClient = ref<any | null>(null)
+	const selectedClient = ref<Partial<ClientDTO> | null>(null)
 
 	watch(
 		() => props.modelValue,
@@ -90,7 +91,7 @@
 	const { emitSync } = useSync()
 
 	const { mutate: saveItem, isPending } = useMutation({
-		mutationFn: async (payload: any) => {
+		mutationFn: async (payload: Record<string, unknown>) => {
 			const url = isEditing.value
 				? `/api/clients/questionnaires/${props.itemToEdit!.questionnaire_id}`
 				: '/api/clients/questionnaires'
@@ -108,7 +109,7 @@
 			emit('success')
 			localVisible.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			apiError.value = err.response?._data?.statusMessage || err.message || 'Error al guardar'
 		},
 	})
@@ -120,13 +121,13 @@
 		const result = questionnaireSchema.safeParse(form)
 		if (!result.success) {
 			const formatted = result.error.format()
-			errors.user_id = (formatted as any).user_id?._errors[0] || ''
-			errors.title = (formatted as any).title?._errors[0] || ''
-			errors.data = (formatted as any).data?._errors[0] || ''
+			errors.user_id = (formatted as Record<string, { _errors?: string[] } | undefined>).user_id?._errors?.[0] || ''
+			errors.title = (formatted as Record<string, { _errors?: string[] } | undefined>).title?._errors?.[0] || ''
+			errors.data = (formatted as Record<string, { _errors?: string[] } | undefined>).data?._errors?.[0] || ''
 			return
 		}
 
-		let parsedJson: any
+		let parsedJson: unknown
 		try {
 			parsedJson = JSON.parse(form.data)
 		} catch {
