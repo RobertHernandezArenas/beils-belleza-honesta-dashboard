@@ -43,7 +43,7 @@
 				if (!isNaN(d.getTime())) {
 					return d.toISOString().split('T')[0] as string | number | Date
 				}
-			} catch (e) {
+			} catch {
 				// ignore
 			}
 		}

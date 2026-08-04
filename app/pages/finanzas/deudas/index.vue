@@ -4,8 +4,7 @@
 	import { useI18n } from 'vue-i18n'
 	import AppSelect from '~/components/ui/AppSelect.vue'
 
-	definePageMeta({ layout: 'default' })
-	const queryClient = useQueryClient()
+	definePageMeta({ layout: 'default' })
 	const { notifySalesChanged } = useRealtimeSales()
 	const { t } = useI18n()
 	const searchQuery = ref('')

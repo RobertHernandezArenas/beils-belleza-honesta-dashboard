@@ -2,10 +2,8 @@
 	import {
 		MoreVertical,
 		CheckCircle2,
-		XCircle,
-		Pencil,
-		Trash2,
-		User as UserIcon,
+		XCircle,
+		Trash2,
 		Scissors,
 		Clock,
 		CalendarDays,
@@ -35,7 +33,7 @@
 		return map[status] || map['pending']
 	}
 
-	const getStatusStrip = (status: string) => {
+	const _getStatusStrip = (status: string) => {
 		const map: Record<string, string> = {
 			pending: 'bg-black/20 shadow-none',
 			confirmed: 'bg-black/20 shadow-none',
@@ -46,7 +44,7 @@
 		return map[status] || map['pending']
 	}
 
-	const getStatusLabel = (status: string) => {
+	const _getStatusLabel = (status: string) => {
 		const map: Record<string, string> = {
 			pending: 'Pendiente',
 			confirmed: 'Confirmada',

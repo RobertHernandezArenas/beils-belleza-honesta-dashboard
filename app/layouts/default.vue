@@ -313,7 +313,7 @@
 		}
 	])
 
-	const currentRouteTranslated = computed(() => {
+	const _currentRouteTranslated = computed(() => {
 		for (const group of navGroups.value) {
 			const currentNav = group.items.find(item => item.to === route.path)
 			if (currentNav) return t(currentNav.label)

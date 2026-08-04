@@ -5,16 +5,14 @@
 		Plus,
 		UserCircle,
 		Edit,
-		Trash2,
-		CreditCard,
+		Trash2,
 		CalendarDays,
 		ExternalLink,
 		Eye,
 		EyeOff,
 		X,
 	} from 'lucide-vue-next'
-	import { useI18n } from 'vue-i18n'
-	import AOS from 'aos'
+	import { useI18n } from 'vue-i18n'
 	import AppSelect from '~/components/ui/AppSelect.vue'
 	import ClientFormModal from '~/components/clients/ClientFormModal.vue'
 	import UserDeleteModal from '~/components/users/UserDeleteModal.vue'
@@ -119,7 +117,7 @@
 		}
 	}
 
-	const formatContact = (cl: any) => {
+	const _formatContact = (cl: { phone?: string; email?: string }) => {
 		return `${cl.phone} • ${cl.email}`
 	}
 
