@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { Search, Package as PackageIcon } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import type { ClientItem } from '~/composables/useBookingForm'
 
 const props = defineProps<{
@@ -44,8 +44,6 @@ watch(
     },
     { immediate: true }
 )
-
-const formatCurrency = (val: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 
 const rootRef = ref<HTMLElement | null>(null)
 

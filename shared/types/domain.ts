@@ -29,6 +29,7 @@ export interface ClientDTO {
 export interface BookingItem {
 	booking_item_id?: string
 	booking_id?: string
+	id?: string
 	item_type: string
 	item_id: string
 	name: string
@@ -61,6 +62,16 @@ export interface Booking {
 	staff?: Partial<ClientDTO> | null
 	created_at?: string
 	updated_at?: string
+}
+
+// A Booking augmented with per-column layout fields computed by the day/grid
+// agenda views (overlap resolution). The extra fields are view-only.
+export interface PositionedBooking extends Booking {
+	column?: number
+	maxColumns?: number
+	startMin?: number
+	visualDuration?: number
+	visualEndMin?: number
 }
 
 export interface SaleItem {

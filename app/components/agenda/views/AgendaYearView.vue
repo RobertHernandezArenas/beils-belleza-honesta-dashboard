@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { Booking } from '~~/shared/types/domain'
 	import gsap from 'gsap'
 
 	const props = defineProps<{
-		bookings: any[]
+		bookings: Booking[]
 		selectedDate: Date
 	}>()
 
@@ -46,7 +47,7 @@
 		return date.toDateString() === new Date().toDateString()
 	}
 
-	const getStatusColor = (status: string) => {
+	const _getStatusColor = (status: string) => {
 		const map: Record<string, string> = {
 			pending: 'bg-orange-500/10 text-orange-700 border-none',
 			confirmed: 'bg-primary/10 text-primary border-none',

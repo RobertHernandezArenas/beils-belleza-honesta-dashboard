@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Scissors, Package, Gift, Trash2 } from 'lucide-vue-next'
+import { Scissors, Package, Trash2 } from 'lucide-vue-next'
 import type { BookingItemData } from '~/composables/useBookingForm'
 
 const props = defineProps<{

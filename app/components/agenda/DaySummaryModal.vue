@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { Booking } from '~~/shared/types/domain'
 import { ref } from 'vue'
-import { Clock, Scissors, User as UserIcon, Package, Gift, X } from 'lucide-vue-next'
+import { Scissors, User as UserIcon, Gift, X } from 'lucide-vue-next'
 
 const isOpen = ref(false)
 const selectedDate = ref(new Date())
-const dayBookings = ref<any[]>([])
+const dayBookings = ref<Booking[]>([])
 
 const emit = defineEmits(['edit', 'create'])
 
-const openModal = (date: Date, bookings: any[]) => {
+const openModal = (date: Date, bookings: Booking[]) => {
     selectedDate.value = date
     dayBookings.value = bookings
     isOpen.value = true
