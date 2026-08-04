@@ -52,8 +52,7 @@
 	}>()
 
 	const emit = defineEmits(['close', 'confirm'])
-
-	const { t } = useI18n()
+
 	const deleteModal = ref<HTMLDialogElement | null>(null)
 	const { animateOpen, animateClose } = useModalAnimation()
 

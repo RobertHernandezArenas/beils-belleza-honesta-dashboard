@@ -2,8 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import {
     Clock,
-    User as UserIcon,
-    Scissors,
+    User as UserIcon,
     MoreVertical,
     CheckCircle2,
     Pencil,
@@ -22,8 +21,7 @@ const emit = defineEmits<{
     (e: 'status', id: string, status: string): void
     (e: 'create', defaultDate: Date, defaultTime: string): void
 }>()
-
-const store = useAgendaStore()
+
 
 const hourHeight = 96 // pixels per hour (matches h-24)
 const startHour = 8

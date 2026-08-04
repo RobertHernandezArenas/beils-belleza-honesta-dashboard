@@ -7,7 +7,7 @@ const props = defineProps({
 	client: { type: Object as PropType<any>, required: true }
 })
 
-const emit = defineEmits(['add-consent', 'add-questionnaire'])
+defineEmits(['add-consent', 'add-questionnaire'])
 
 // Indiba questionnaire check
 const indibaQuestionnaire = computed(() => {

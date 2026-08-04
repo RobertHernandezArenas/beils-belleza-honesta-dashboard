@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 	import { useQuery } from '@tanstack/vue-query'
-	import {
-		PieChart as PieChartIcon,
+	import {
 		Download,
 		Users,
 		Package,
@@ -14,8 +13,7 @@
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Reportes | Finanzas' })
-
-	const { t } = useI18n()
+
 
 	// Fetch aggregated report data
 	const {

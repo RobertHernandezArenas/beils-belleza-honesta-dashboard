@@ -10,8 +10,7 @@ import { useSales } from '~/composables/useSales'
 
 definePageMeta({ layout: 'default' })
 useHead({ title: 'Ventas | Finanzas' })
-
-const { t } = useI18n()
+
 const queryClient = useQueryClient()
 
 // Live-refresh sales metrics when a sale/debt is collected anywhere (this tab or another)

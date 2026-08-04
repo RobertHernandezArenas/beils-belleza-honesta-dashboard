@@ -25,8 +25,7 @@ const props = defineProps({
 		default: false,
 	},
 })
-
-const { locale } = useI18n()
+
 
 const emit = defineEmits([
 	'update',

@@ -2,7 +2,7 @@
 import {
 	Calendar, FileText,
 	TrendingUp, Wallet,
-	CalendarClock, MapPin, Eye, EyeOff, Plus, UserCircle, ShoppingBag, Sparkles, AlertCircle
+	CalendarClock, Eye, EyeOff, Plus, UserCircle, ShoppingBag, Sparkles, AlertCircle
 } from 'lucide-vue-next'
 
 import { useI18n } from 'vue-i18n'

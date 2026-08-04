@@ -1,7 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo } from '#app'
 import { useAuthStore } from '~/stores/auth'
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async (to, _from) => {
 	const authStore = useAuthStore()
 
 	// Si el usuario no está autenticado, intentar re-hidratar usando la cookie
