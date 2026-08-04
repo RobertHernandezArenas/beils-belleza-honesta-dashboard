@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { IncomingLineItem } from '~~/shared/types/line-item'
+import type { ClientDTO } from '~~/shared/types/domain'
 	import {
 		User as UserIcon,
 		Trash2,
@@ -14,9 +16,9 @@
 	} from 'lucide-vue-next'
 
 	interface Props {
-		cartItems: any[]
-		selectedClient: any | null
-		filteredClients: any[]
+		cartItems: IncomingLineItem[]
+		selectedClient: Partial<ClientDTO> | null
+		filteredClients: ClientDTO[]
 		cartSubtotal: number
 		cartTotal: number
 		isCheckingOut: boolean
@@ -27,13 +29,9 @@
 	defineProps<Props>()
 
 	const emit = defineEmits<{
-		(e: 'select-client', client: any): void
-		(e: 'remove-client'): void
-		(e: 'remove-item', index: number): void
-		(e: 'decrease-item-qty', index: number): void
-		(e: 'increase-item-qty', index: number): void
-		(e: 'checkout'): void
-		(e: 'avatar-error'): void
+		(e: 'select-client', client: ClientDTO): void
+		(e: 'remove-item' | 'decrease-item-qty' | 'increase-item-qty', index: number): void
+		(e: 'remove-client' | 'checkout' | 'avatar-error'): void
 	}>()
 
 	const clientSearch = defineModel<string>('clientSearch', { required: true })
@@ -96,7 +94,7 @@
 								class="h-full w-full object-cover"
 								@error="emit('avatar-error')" >
 							<span v-else class="text-xs font-black">
-								{{ selectedClient.name.charAt(0) }}{{ selectedClient.surname?.charAt(0) || '' }}
+								{{ selectedClient?.name?.charAt(0) }}{{ selectedClient.surname?.charAt(0) || '' }}
 							</span>
 						</div>
 						<div class="flex flex-col">

@@ -36,7 +36,7 @@
 
 	const emit = defineEmits(['update:modelValue', 'save'])
 
-	const formatDateForInput = (val: any) => {
+	const formatDateForInput = (val: string | number | Date | null | undefined) => {
 		if (props.type === 'date' && val) {
 			try {
 				const d = new Date(val as string)

@@ -11,7 +11,7 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue', 'crop'])
 
-const cropperRef = ref<any>(null)
+const cropperRef = ref<{ getResult: () => { canvas: HTMLCanvasElement } } | null>(null)
 
 const handleClose = () => {
   emit('update:modelValue', false)

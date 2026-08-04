@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { ClientDTO } from '~~/shared/types/domain'
 import { useQuery } from '@tanstack/vue-query'
 import { Search, User as UserIcon, Trash2, FileCheck } from 'lucide-vue-next'
 
 defineProps<{
 	modelValue: string | null // Client ID
-	selectedClient: any | null
+	selectedClient: Partial<ClientDTO> | null
 	disabled?: boolean
 	placeholder?: string
 	error?: string
@@ -15,19 +16,19 @@ const emit = defineEmits(['update:modelValue', 'update:selectedClient', 'clear-e
 const clientSearch = ref('')
 
 // Fetch clients
-const { data: clientsResponse } = useQuery<any>({
+const { data: clientsResponse } = useQuery<{ data: ClientDTO[] }>({
 	queryKey: ['clients-list-autocomplete'],
 	queryFn: () => $fetch('/api/clients', { query: { limit: 1000 } }),
 })
 
-const clients = computed(() => (clientsResponse.value as any)?.data || [])
+const clients = computed(() => clientsResponse.value?.data || [])
 
 const filteredClients = computed(() => {
 	if (!clients.value.length || !clientSearch.value) return []
 	const q = clientSearch.value.toLowerCase()
 	return clients.value
 		.filter(
-			(c: any) =>
+			(c: ClientDTO) =>
 				c.name.toLowerCase().includes(q) ||
 				c.surname.toLowerCase().includes(q) ||
 				c.phone?.includes(q) ||
@@ -36,7 +37,7 @@ const filteredClients = computed(() => {
 		.slice(0, 5)
 })
 
-const selectClient = (client: any) => {
+const selectClient = (client: ClientDTO) => {
 	emit('update:modelValue', client.user_id)
 	emit('update:selectedClient', client)
 	clientSearch.value = ''

@@ -1,17 +1,15 @@
 <script setup lang="ts">
+import type { Sale } from '~~/shared/types/domain'
 import { Edit2, CheckCircle, Trash2, UserPlus, CreditCard, Banknote, Calendar } from 'lucide-vue-next'
 
 import { ref } from 'vue'
 
 const props = defineProps<{
-    cart: any
+    cart: Sale
 }>()
 
 const emit = defineEmits<{
-    (e: 'editItems'): void
-    (e: 'searchClient'): void
-    (e: 'removeClient'): void
-    (e: 'editClient'): void
+    (e: 'editItems' | 'searchClient' | 'removeClient' | 'editClient'): void
     (e: 'updateDate', newDate: string): void
 }>()
 
@@ -57,7 +55,7 @@ const formatCustomDate = (dateString: string) => {
             <Edit2 class="w-3 h-3" /> Editar compra
           </button>
        </div>
-       <div v-if="cart.items?.length > 0" class="space-y-3">
+       <div v-if="(cart.items?.length ?? 0) > 0" class="space-y-3">
           <div v-for="item in cart.items" :key="item.cart_item_id" class="bg-bg-card border-border-subtle rounded-2xl border p-3 flex justify-between items-center shadow-sm">
              <div class="flex-1 min-w-0 pr-4">
                 <p class="text-text-primary text-sm font-bold truncate">{{ item.name }}</p>

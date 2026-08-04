@@ -135,6 +135,8 @@ export interface CatalogItem {
 	sku?: string | null
 	code?: string | null
 	remaining_sessions?: number
+	total_sessions?: number
+	type?: string
 }
 
 export interface ClientPackage {
