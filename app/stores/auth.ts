@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { useCookie } from '#imports'
-import type { Client } from '~~/shared/types/domain'
+import type { ClientDTO } from '~~/shared/types/domain'
 
 export const useAuthStore = defineStore('auth', () => {
-	const user = ref<Client | null>(null)
+	const user = ref<ClientDTO | null>(null)
 	const token = useCookie('auth_token', {
 		maxAge: 60 * 60 * 24, // 1 day
 		path: '/',
@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 	const isAuthenticated = computed(() => !!token.value && !!user.value)
 
-	function setAuth(userData: Client, tokenData: string) {
+	function setAuth(userData: ClientDTO, tokenData: string) {
 		user.value = userData
 		token.value = tokenData
 	}
@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
 		if (!token.value) return false
 
 		try {
-			const data = await $fetch<{ user: Client }>('/api/auth/me', {
+			const data = await $fetch<{ user: ClientDTO }>('/api/auth/me', {
 				headers: {
 					Authorization: `Bearer ${token.value}`,
 				},

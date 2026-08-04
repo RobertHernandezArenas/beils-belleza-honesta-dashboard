@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { usePurchaseModal } from '~/composables/usePurchaseModal'
-import type { Sale, Client, CatalogItem } from '~~/shared/types/domain'
+import type { Sale, ClientDTO, CatalogItem } from '~~/shared/types/domain'
 import PurchaseModalHeader from './PurchaseModalHeader.vue'
 import PurchaseModalView from './PurchaseModalView.vue'
 import PurchaseModalSearch from './PurchaseModalSearch.vue'
@@ -69,7 +69,7 @@ const editAssignedClient = () => {
 }
 
 // Handlers for Search Actions
-const selectClient = (client: Client) => {
+const selectClient = (client: ClientDTO) => {
   selectedClientToAssign.value = client
 }
 

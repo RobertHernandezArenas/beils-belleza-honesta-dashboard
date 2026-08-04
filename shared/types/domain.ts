@@ -1,10 +1,10 @@
-// Client-facing DTOs: the JSON shapes the API actually returns.
+// ClientDTO-facing DTOs: the JSON shapes the API actually returns.
 // Mirror the Prisma models but with dates serialized to strings and Prisma
 // Float -> number. Relations are optional (present only when the endpoint
 // includes them). Kept permissive on purpose so UI code can consume partial
 // payloads without fighting the type system.
 
-export interface Client {
+export interface ClientDTO {
 	user_id: string
 	email: string
 	name: string
@@ -57,8 +57,8 @@ export interface Booking {
 	duration: number
 	notes?: string | null
 	booking_items?: BookingItem[]
-	client?: Partial<Client> | null
-	staff?: Partial<Client> | null
+	client?: Partial<ClientDTO> | null
+	staff?: Partial<ClientDTO> | null
 	created_at?: string
 	updated_at?: string
 }
@@ -92,7 +92,7 @@ export interface Sale {
 	created_at: string
 	updated_at?: string
 	items?: SaleItem[]
-	user?: Partial<Client> | null
+	user?: Partial<ClientDTO> | null
 	debts?: unknown[]
 }
 
@@ -166,7 +166,7 @@ export interface Questionnaire {
 	title: string
 	data: string
 	created_at?: string
-	user?: Partial<Client> | null
+	user?: Partial<ClientDTO> | null
 }
 
 export interface Consent {
@@ -178,7 +178,7 @@ export interface Consent {
 	document_url?: string | null
 	notes?: string | null
 	created_at?: string | null
-	user?: Partial<Client> | null
+	user?: Partial<ClientDTO> | null
 }
 
 export interface Revoke {
@@ -187,12 +187,12 @@ export interface Revoke {
 	reason?: string | null
 	date_revoked: string
 	created_at?: string
-	user?: Partial<Client> | null
+	user?: Partial<ClientDTO> | null
 }
 
-// A Client together with the relations the profile screens load. Everything is
+// A ClientDTO together with the relations the profile screens load. Everything is
 // optional because different endpoints hydrate different slices.
-export interface ClientProfile extends Client {
+export interface ClientProfile extends ClientDTO {
 	carts?: Sale[]
 	debts?: Debt[]
 	questionnaires?: Questionnaire[]

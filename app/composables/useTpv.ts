@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { Booking, Client, Sale, CatalogItem } from '~~/shared/types/domain'
+import type { Booking, ClientDTO, Sale, CatalogItem } from '~~/shared/types/domain'
 import type { IncomingLineItem } from '~~/shared/types/line-item'
 
 export function useTpv() {
@@ -16,7 +16,7 @@ export function useTpv() {
 
 	// Cart State
 	const cartItems = ref<IncomingLineItem[]>([])
-	const selectedClient = ref<Partial<Client> | null>(null)
+	const selectedClient = ref<Partial<ClientDTO> | null>(null)
 	const discountAmount = ref<number>(0)
 	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('card')
 
@@ -36,9 +36,9 @@ export function useTpv() {
 	})
 
 	// Fetch Data
-	const { data: clientsResponse } = useQuery<{ data: Client[] }>({
+	const { data: clientsResponse } = useQuery<{ data: ClientDTO[] }>({
 		queryKey: ['clients-tpv'],
-		queryFn: () => $fetch<{ data: Client[] }>('/api/clients', { query: { limit: 500 } }),
+		queryFn: () => $fetch<{ data: ClientDTO[] }>('/api/clients', { query: { limit: 500 } }),
 	})
 
 	const clients = computed(() => clientsResponse.value?.data || [])
@@ -93,7 +93,7 @@ export function useTpv() {
 			const bookingData = await $fetch<Booking>(`/api/agenda/bookings/${bookingId}`)
 			if (!bookingData) return
 
-			// 1. Set Selected Client (Reliably!)
+			// 1. Set Selected ClientDTO (Reliably!)
 			if (bookingData.client && (bookingData.client.user_id || bookingData.client_id)) {
 				selectedClient.value = {
 					user_id: bookingData.client.user_id || bookingData.client_id,
@@ -104,12 +104,12 @@ export function useTpv() {
 					avatar: bookingData.client.avatar || undefined
 				}
 			} else if (bookingData.client_id) {
-				const found = (cls || []).find((c: Client) => c.user_id === bookingData.client_id)
+				const found = (cls || []).find((c: ClientDTO) => c.user_id === bookingData.client_id)
 				if (found) {
 					selectedClient.value = found
 				} else {
 					try {
-						const directClient = await $fetch<Client>(`/api/clients/${bookingData.client_id}`)
+						const directClient = await $fetch<ClientDTO>(`/api/clients/${bookingData.client_id}`)
 						if (directClient) selectedClient.value = directClient
 					} catch (e) {
 						console.error('Failed fallback client fetch:', e)
@@ -207,7 +207,7 @@ export function useTpv() {
 			
 			// Real-time refresh of every sales/collection view (this tab + broadcast to others)
 			notifySalesChanged()
-			// Client-specific caches touched by a sale
+			// ClientDTO-specific caches touched by a sale
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
@@ -246,7 +246,7 @@ export function useTpv() {
 		const q = clientSearch.value.toLowerCase()
 		return clients.value
 			.filter(
-				(c: Client) =>
+				(c: ClientDTO) =>
 					c.name.toLowerCase().includes(q) ||
 					c.surname.toLowerCase().includes(q) ||
 					c.phone?.includes(q) ||
@@ -362,7 +362,7 @@ export function useTpv() {
 		processedBookingId.value = null
 	}
 
-	const selectClient = (client: Client) => {
+	const selectClient = (client: ClientDTO) => {
 		selectedClient.value = client
 		clientSearch.value = ''
 	}
