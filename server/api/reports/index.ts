@@ -1,4 +1,4 @@
-export default defineEventHandler(async event => {
+export default defineEventHandler(async () => {
 	// Execute initial queries in parallel for zero latency waste
 	const [totalClients, totalProducts, completedSales] = await Promise.all([
 		prisma.user.count({ where: { role: 'CLIENT' } }).catch(() => prisma.user.count()),

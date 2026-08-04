@@ -1,3 +1,5 @@
+import type { IncomingLineItem } from '~~/shared/types/line-item'
+import type { Prisma } from '@prisma/client'
 import {
 	generateInvoiceNumber,
 	processVerifactuInvoice,
@@ -11,7 +13,7 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const status = query.status as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.CartWhereInput = {}
 		if (status) whereClause.status = status
 
 		const carts = await prisma.cart.findMany({
@@ -33,7 +35,7 @@ export default defineEventHandler(async event => {
 
 		// Selling a bono/package assigns it to a person, so a registered client is required.
 		const hasPackageSale = Array.isArray(items) &&
-			items.some((it: any) => (it.item_type || '').toLowerCase() === 'package_sale')
+			items.some((it: IncomingLineItem) => (it.item_type || '').toLowerCase() === 'package_sale')
 		if (hasPackageSale && !user_id) {
 			throw createError({
 				statusCode: 400,
@@ -65,7 +67,7 @@ export default defineEventHandler(async event => {
 					discount: discount,
 					total: 0, 
 					items: {
-						create: items.map((item: any) => {
+						create: items.map((item: IncomingLineItem) => {
 							const itemSubtotal = item.quantity * item.unit_price;
 							const itemTotal = itemSubtotal;
 

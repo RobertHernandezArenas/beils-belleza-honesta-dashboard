@@ -80,7 +80,8 @@ export default defineEventHandler(async event => {
 				size: file.data.length,
 			}
 		}
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		console.error('Error uploading file:', error)
 		throw createError({
 			statusCode: error.statusCode || 500,

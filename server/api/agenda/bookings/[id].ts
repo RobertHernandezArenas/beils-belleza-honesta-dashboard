@@ -1,3 +1,4 @@
+import type { IncomingLineItem } from '~~/shared/types/line-item'
 
 
 export default defineEventHandler(async event => {
@@ -27,6 +28,12 @@ export default defineEventHandler(async event => {
 
 	if (method === 'PUT') {
 		const body = await readBody(event)
+		// Dynamic request bag: fields are added/removed at runtime (delete of
+		// booking_id/items/staff_id, .status.toUpperCase()) before the object is
+		// spread into prisma.booking.update. A strict Prisma input type can't model
+		// the transient `items` property carried through the spread, so `any` here
+		// is deliberate and scoped to this handler.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const payload: any = { ...body }
 
 		delete payload.booking_id
@@ -49,7 +56,7 @@ export default defineEventHandler(async event => {
 			
 			// If items are provided, recalculate duration
 			if (payload.items && Array.isArray(payload.items)) {
-				payload.duration = payload.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
+				payload.duration = payload.items.reduce((acc: number, item: IncomingLineItem) => acc + (Number(item.duration) || 0), 0)
 			}
 			
 			const finalDuration = payload.duration !== undefined ? Number(payload.duration) : current.duration
@@ -110,7 +117,7 @@ export default defineEventHandler(async event => {
 					staff_id: staffIdValue,
 					booking_items: items ? {
 						deleteMany: {},
-						create: items.map((item: any) => ({
+						create: items.map((item: IncomingLineItem) => ({
 							item_type: item.item_type,
 							item_id: item.item_id,
 							name: item.name,
@@ -126,7 +133,8 @@ export default defineEventHandler(async event => {
 			})
 
 			return updatedBooking
-		} catch (error: any) {
+		} catch (rawError) {
+			const error = toApiError(rawError)
 			console.error('[BOOKING_UPDATE_ERROR]', error)
 			throw createError({
 				statusCode: error.statusCode || 500,

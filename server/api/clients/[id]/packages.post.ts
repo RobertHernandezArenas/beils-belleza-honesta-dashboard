@@ -63,7 +63,8 @@ export default defineEventHandler(async (event) => {
 		})
 
 		return clientPkg
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,

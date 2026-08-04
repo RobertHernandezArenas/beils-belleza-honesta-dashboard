@@ -189,7 +189,8 @@ export default defineEventHandler(async event => {
 			kpis,
 			document_number: reveal ? client.document_number : maskDocument(client.document_number),
 		}
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		console.error('Error in GET /api/clients/[id]:', error)
 		if (error.statusCode) throw error
 		throw createError({

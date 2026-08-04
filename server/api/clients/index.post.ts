@@ -66,7 +66,8 @@ export default defineEventHandler(async event => {
 
 		const { password, ...userWithoutPassword } = user
 		return userWithoutPassword
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 400,

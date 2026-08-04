@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
 
@@ -12,8 +13,11 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = questionnaireSchema.parse(body)
 
-		const createData: any = { ...parsedData }
-		createData.data = JSON.stringify(parsedData.data)
+		const createData: Prisma.QuestionnaireUncheckedCreateInput = {
+			user_id: parsedData.user_id,
+			title: parsedData.title,
+			data: JSON.stringify(parsedData.data),
+		}
 
 		const questionnaire = await prisma.questionnaire.create({
 			data: createData,
@@ -25,7 +29,8 @@ export default defineEventHandler(async event => {
 		})
 
 		return questionnaire
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 400,

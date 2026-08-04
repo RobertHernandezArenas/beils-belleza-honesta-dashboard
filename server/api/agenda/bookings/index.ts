@@ -1,3 +1,5 @@
+import type { IncomingLineItem } from '~~/shared/types/line-item'
+import type { Prisma } from '@prisma/client'
 
 
 export default defineEventHandler(async event => {
@@ -11,10 +13,9 @@ export default defineEventHandler(async event => {
 		const client_id = query.client_id as string | undefined
 		const search = query.search as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.BookingWhereInput = {}
 
 		if (search) {
-			const s = search.toLowerCase()
 			whereClause.OR = [
 				{ client: { name: { contains: search } } },
 				{ client: { surname: { contains: search } } },
@@ -92,7 +93,7 @@ export default defineEventHandler(async event => {
 			const bookingDate = new Date(Date.UTC(parsedDate.getUTCFullYear(), parsedDate.getUTCMonth(), parsedDate.getUTCDate(), 0, 0, 0, 0))
 
 			// Calculate total duration from items
-			const totalDuration = body.items.reduce((acc: number, item: any) => acc + (Number(item.duration) || 0), 0)
+			const totalDuration = body.items.reduce((acc: number, item: IncomingLineItem) => acc + (Number(item.duration) || 0), 0)
 
 			// Calculate end_time based on start_time and duration
 			const startTime = body.start_time
@@ -143,7 +144,7 @@ export default defineEventHandler(async event => {
 					item_type: body.items[0]?.item_type || 'SERVICE',
 					item_id: body.items[0]?.item_id || '',
 					booking_items: {
-						create: body.items.map((item: any) => ({
+						create: body.items.map((item: IncomingLineItem) => ({
 							item_type: item.item_type || 'SERVICE',
 							item_id: item.item_id || '',
 							name: item.name || 'Servicio',
@@ -159,7 +160,8 @@ export default defineEventHandler(async event => {
 			})
 
 			return booking
-		} catch (error: any) {
+		} catch (rawError) {
+			const error = toApiError(rawError)
 			console.error('[BOOKING_CREATE_ERROR]', error)
 			
 			// Temporary debug logging to a file since I cannot see the terminal

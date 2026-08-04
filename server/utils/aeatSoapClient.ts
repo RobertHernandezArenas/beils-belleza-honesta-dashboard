@@ -34,7 +34,8 @@ export const submitToAeat = async (xmlPayload: string): Promise<boolean> => {
 		})
 
 		return result && (result.EstadoEnvio === 'Correcto' || result.EstadoEnvio === 'AceptadoConErrores')
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		console.error('Error in AEAT SOAP communication:', error)
 		throw createError({
 			statusCode: 502,

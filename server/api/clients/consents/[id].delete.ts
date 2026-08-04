@@ -12,7 +12,8 @@ export default defineEventHandler(async event => {
 		})
 
 		return { success: true }
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.code === 'P2025') {
 			throw createError({ statusCode: 404, statusMessage: 'Consentimiento no encontrado' })
 		}

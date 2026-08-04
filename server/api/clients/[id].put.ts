@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import { z } from 'zod'
 import { requireAdmin } from '../../utils/auth'
@@ -48,7 +49,7 @@ export default defineEventHandler(async event => {
 			}
 		}
 
-		const updateData: any = { ...parsedData }
+		const updateData: Prisma.UserUncheckedUpdateInput = { ...parsedData }
 		if (parsedData.birth_date) {
 			updateData.birth_date = new Date(parsedData.birth_date)
 		}
@@ -60,7 +61,8 @@ export default defineEventHandler(async event => {
 
 		const { password, ...userWithoutPassword } = user
 		return userWithoutPassword
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.code === 'P2025') {
 			throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado' })
 		}

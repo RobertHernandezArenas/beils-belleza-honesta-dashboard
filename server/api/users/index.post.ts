@@ -47,7 +47,8 @@ export default defineEventHandler(async event => {
 
 		const { password: _, ...userData } = newUser
 		return userData
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error instanceof z.ZodError) {
 			throw createError({ statusCode: 400, statusMessage: error.message })
 		}

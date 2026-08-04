@@ -1,3 +1,5 @@
+import type { Prisma } from '@prisma/client'
+import type { IncomingLineItem } from '~~/shared/types/line-item'
 import {
 	generateInvoiceNumber,
 	processVerifactuInvoice,
@@ -61,7 +63,7 @@ export default defineEventHandler(async event => {
 				subtotal = 0
 				total = 0
 
-				const newItems = body.items.map((item: any) => {
+				const newItems = body.items.map((item: IncomingLineItem) => {
 					const itemSubtotal = Number((item.quantity * item.unit_price).toFixed(2))
 					const itemTotal = itemSubtotal // For simplicity, mirroring POST logic: total = subtotal
 
@@ -81,14 +83,14 @@ export default defineEventHandler(async event => {
 				})
 
 				await tx.cartItem.createMany({
-					data: newItems.map((item: any) => ({ ...item, cart_id: id })),
+					data: newItems.map((item: IncomingLineItem) => ({ ...item, cart_id: id })),
 				})
 
 				// Provision a ClientPackage for each NEWLY added bono/paquete line
 				// (item_type 'package_sale'). We compare against the cart's previous
 				// bono lines so re-saving an edit never duplicates existing bonos.
 				const provisionUserId = body.user_id ?? currentCart.user_id
-				const countPkg = (items: any[]) => {
+				const countPkg = (items: IncomingLineItem[]) => {
 					const m = new Map<string, number>()
 					for (const it of items || []) {
 						if ((it.item_type || '').toLowerCase() === 'package_sale') {
@@ -150,10 +152,9 @@ export default defineEventHandler(async event => {
 			}
 
 			// 2. Handle VeriFactu context if completing
-			let verifactuData: any = {}
+			let verifactuData: Prisma.CartUncheckedUpdateInput = {}
 			if (body.status === 'completed' && !currentCart.invoice_number) {
 				const config = useRuntimeConfig()
-				const nif = currentCart.user?.document_number || '00000000T'
 				const invoiceType = currentCart.user?.document_number ? 'F1' : 'I'
 				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
 
@@ -180,7 +181,7 @@ export default defineEventHandler(async event => {
 			}
 
 			// 3. Update Cart
-			const updateData: any = {
+			const updateData: Prisma.CartUncheckedUpdateInput = {
 				user_id: body.user_id,
 				status: body.status,
 				payment_method: body.payment_method,

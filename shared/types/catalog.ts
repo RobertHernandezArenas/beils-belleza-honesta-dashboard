@@ -38,8 +38,8 @@ export interface IPack {
 	tax_rate: number
 	status: string
 	image_url: string | null
-	products?: any[]
-	services?: any[]
+	products?: IProduct[]
+	services?: IService[]
 	created_at: string | Date
 	updated_at: string | Date
 }

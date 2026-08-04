@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
 
@@ -5,7 +6,7 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const status = query.status as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.DebtWhereInput = {}
 		if (status) {
 			if (status === 'pending') {
 				whereClause.status = { in: ['pending', 'partial'] }

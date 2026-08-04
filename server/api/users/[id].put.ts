@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import bcrypt from 'bcryptjs'
 
@@ -8,12 +9,12 @@ export default defineEventHandler(async event => {
 	const body = await readBody(event)
 
 	try {
-		const updateData: any = { ...body }
-		if (updateData.password) {
-			updateData.password = await bcrypt.hash(updateData.password, 10)
+		const updateData: Prisma.UserUncheckedUpdateInput = { ...body }
+		if (body.password) {
+			updateData.password = await bcrypt.hash(body.password, 10)
 		}
-		if (updateData.birth_date) {
-			updateData.birth_date = new Date(updateData.birth_date)
+		if (body.birth_date) {
+			updateData.birth_date = new Date(body.birth_date)
 		}
 
 		const updatedUser = await prisma.user.update({
@@ -23,7 +24,7 @@ export default defineEventHandler(async event => {
 
 		const { password: _, ...userData } = updatedUser
 		return userData
-	} catch (error) {
+	} catch {
 		throw createError({
 			statusCode: 500,
 			statusMessage: 'Error al actualizar usuario',

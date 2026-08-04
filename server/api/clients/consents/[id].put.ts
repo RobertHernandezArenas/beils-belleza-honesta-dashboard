@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
 
@@ -18,7 +19,7 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = consentUpdateSchema.parse(body)
 
-		const updateData: any = { ...parsedData }
+		const updateData: Prisma.ConsentUncheckedUpdateInput = { ...parsedData }
 		if (parsedData.signed_date) {
 			updateData.signed_date = new Date(parsedData.signed_date)
 		}
@@ -34,7 +35,8 @@ export default defineEventHandler(async event => {
 		})
 
 		return consent
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.code === 'P2025') {
 			throw createError({ statusCode: 404, statusMessage: 'Consentimiento no encontrado' })
 		}

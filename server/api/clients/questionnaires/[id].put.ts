@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
 
@@ -16,7 +17,7 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = questionnaireUpdateSchema.parse(body)
 
-		const updateData: any = { ...parsedData }
+		const updateData: Prisma.QuestionnaireUncheckedUpdateInput = { ...parsedData }
 		if (parsedData.data) {
 			updateData.data = JSON.stringify(parsedData.data)
 		}
@@ -32,7 +33,8 @@ export default defineEventHandler(async event => {
 		})
 
 		return questionnaire
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.code === 'P2025') {
 			throw createError({ statusCode: 404, statusMessage: 'Cuestionario no encontrado' })
 		}

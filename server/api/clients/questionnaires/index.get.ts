@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 
 export default defineEventHandler(async event => {
@@ -5,7 +6,7 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const userId = query.user_id as string | undefined
 
-		const whereClause: any = {}
+		const whereClause: Prisma.QuestionnaireWhereInput = {}
 		if (userId) {
 			whereClause.user_id = userId
 		}
@@ -21,7 +22,7 @@ export default defineEventHandler(async event => {
 		})
 
 		return questionnaires
-	} catch (error) {
+	} catch {
 		throw createError({
 			statusCode: 500,
 			statusMessage: 'Error al obtener cuestionarios',

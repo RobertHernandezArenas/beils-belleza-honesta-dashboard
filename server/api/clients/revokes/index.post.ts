@@ -25,7 +25,8 @@ export default defineEventHandler(async event => {
 		})
 
 		return revoke
-	} catch (error: any) {
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 400,
