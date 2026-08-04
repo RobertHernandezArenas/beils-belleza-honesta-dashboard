@@ -1,15 +1,16 @@
 <script setup lang="ts">
+import type { Booking } from '~~/shared/types/domain'
 import { computed } from 'vue'
 
 const props = defineProps<{
-    bookings: any[]
+    bookings: Booking[]
     selectedDate: Date
 }>()
 
 const emit = defineEmits<{
-    (e: 'edit', booking: any): void
+    (e: 'edit', booking: Booking): void
     (e: 'selectDate', date: Date): void
-    (e: 'viewDayDetails', date: Date, bookings: any[]): void
+    (e: 'viewDayDetails', date: Date, bookings: Booking[]): void
 }>()
 
 const daysOfWeek = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
@@ -96,7 +97,7 @@ const isSelected = (date: Date) => {
     return date.toDateString() === props.selectedDate.toDateString()
 }
 
-const handleDayClick = (date: Date, dayBookings: any[]) => {
+const handleDayClick = (date: Date, dayBookings: Booking[]) => {
     if (dayBookings.length > 0) {
         emit('viewDayDetails', date, dayBookings)
     } else {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import type { BookingItemData } from '~/composables/useBookingForm'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Trash2, X } from 'lucide-vue-next'
 import { useAgendaStore } from '~/stores/useAgendaStore'
@@ -25,18 +26,18 @@ const emit = defineEmits(['refresh', 'toast', 'delete'])
 const {
     form,
     clients,
-    staff,
+
     services,
     clientPackages,
     catalogPackages,
     isSaving,
     saveBooking,
     proceedSaveBooking,
-    resetForm,
+
     localError,
     showLocalError,
     updateDuration
-} = useBookingForm(emit as any)
+} = useBookingForm(emit)
 
 const clientSelectorRef = ref<InstanceType<typeof BookingClientSelector> | null>(null)
 const itemSelectorRef = ref<InstanceType<typeof BookingItemSelector> | null>(null)
@@ -56,7 +57,7 @@ const handlePayInTpv = async () => {
 
 
 
-const handleAddItem = (item: any) => {
+const handleAddItem = (item: BookingItemData) => {
     form.items.push(item)
     updateDuration()
 }
