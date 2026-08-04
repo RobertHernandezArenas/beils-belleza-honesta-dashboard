@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useDebouncedRef } from '~/composables/useDebouncedRef'
-import type { Sale, Client, CatalogItem } from '~~/shared/types/domain'
+import type { Sale, ClientDTO, CatalogItem } from '~~/shared/types/domain'
 import type { IncomingLineItem } from '~~/shared/types/line-item'
 
 export function usePurchaseModal(emit: (event: 'success') => void) {
@@ -11,7 +11,7 @@ export function usePurchaseModal(emit: (event: 'success') => void) {
   const isSearching = ref(false)
   const isEditingItems = ref(false)
   const searchQuery = useDebouncedRef('', 400)
-  const selectedClientToAssign = ref<Partial<Client> | null>(null)
+  const selectedClientToAssign = ref<Partial<ClientDTO> | null>(null)
   const tempItems = ref<IncomingLineItem[]>([])
 
   // Live totals for editing
@@ -19,9 +19,9 @@ export function usePurchaseModal(emit: (event: 'success') => void) {
   const tempTotal = computed(() => Number((tempSubtotal.value - (cart.value?.discount || 0)).toFixed(2)))
 
   // Fetch clients for search
-  const { data: clientSearchResults, isPending: isSearchingClients } = useQuery<{ data: Client[] }>({
+  const { data: clientSearchResults, isPending: isSearchingClients } = useQuery<{ data: ClientDTO[] }>({
     queryKey: ['clients-search', searchQuery],
-    queryFn: () => $fetch<{ data: Client[] }>('/api/clients', { query: { search: searchQuery.value, limit: 10 } }),
+    queryFn: () => $fetch<{ data: ClientDTO[] }>('/api/clients', { query: { search: searchQuery.value, limit: 10 } }),
     enabled: computed(() => isSearching.value && !isEditingItems.value)
   })
 
@@ -53,7 +53,7 @@ export function usePurchaseModal(emit: (event: 'success') => void) {
 
   const catalogItems = computed(() => catalogResults.value || [])
 
-  // Assign Client Mutation
+  // Assign ClientDTO Mutation
   const { mutate: assignClient, isPending: isAssigningClient } = useMutation({
     mutationFn: (clientId: string | null) => 
       $fetch<Sale>(`/api/sales/carts/${cart.value!.cart_id}`, {

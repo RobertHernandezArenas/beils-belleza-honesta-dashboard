@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Client as ClientDTO, Revoke, FetchError } from '~~/shared/types/domain'
+	import type { ClientDTO, Revoke, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { ShieldOff, Save, AlertCircle, Edit, X } from 'lucide-vue-next'

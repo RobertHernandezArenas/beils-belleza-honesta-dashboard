@@ -1,4 +1,4 @@
-import type { Client } from '~~/shared/types/domain'
+import type { ClientDTO } from '~~/shared/types/domain'
 
 export function useDataPrivacy() {
 	// Local cache for revealed documents in this component/session
@@ -20,7 +20,7 @@ export function useDataPrivacy() {
 		// Otherwise, fetch from server with ?reveal=true
 		revealedLoading.value[id] = true
 		try {
-			const res = await $fetch<Client>(`/api/clients/${id}`, {
+			const res = await $fetch<ClientDTO>(`/api/clients/${id}`, {
 				query: { reveal: 'true' },
 			})
 
