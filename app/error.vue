@@ -2,7 +2,7 @@
 	import type { NuxtError } from '#app'
 	import { Home, AlertCircle, RefreshCcw } from 'lucide-vue-next'
 
-	const props = defineProps({
+	defineProps({
 		error: Object as () => NuxtError,
 	})
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { UserPlus, Save, AlertCircle, Edit, User, CreditCard, Search, Camera, Trash2 } from 'lucide-vue-next'
+	import { UserPlus, Save, Edit, User, CreditCard, Search, Camera, Trash2 } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import AppSelect from '~/components/ui/AppSelect.vue'

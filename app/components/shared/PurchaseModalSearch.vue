@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ArrowLeft, Search, Check, Plus, Scissors, Package, PackageSearch, Ticket } from 'lucide-vue-next'
+import { ArrowLeft, Search, Check, Plus, Scissors, Package, Ticket } from 'lucide-vue-next'
 
 const props = defineProps<{
     searchQuery: string

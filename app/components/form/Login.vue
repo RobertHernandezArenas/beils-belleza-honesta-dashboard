@@ -4,7 +4,7 @@
 	import { useRouter } from 'vue-router'
 	import { useI18n } from 'vue-i18n'
 	import { useAuthStore } from '~/stores/auth' // Auto-imported usually, but explicit is safer
-	import { AlertCircle, LockKeyhole, Mail, Lock, Eye, EyeOff } from 'lucide-vue-next'
+	import { AlertCircle, Mail, Lock, Eye, EyeOff } from 'lucide-vue-next'
 	import gsap from 'gsap'
 
 	// definePageMeta removed - only allowed in pages

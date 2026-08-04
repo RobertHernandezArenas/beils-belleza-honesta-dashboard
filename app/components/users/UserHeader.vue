@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-	import { Filter, Plus, Search } from 'lucide-vue-next'
+	import { Filter, Search } from 'lucide-vue-next'
 
 	const searchQuery = defineModel<string>()
 

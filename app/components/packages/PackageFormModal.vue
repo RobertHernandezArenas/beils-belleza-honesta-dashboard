@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { Package, Plus, Trash2, X, Sparkles, Box, Scissors, Clock } from 'lucide-vue-next'
+import { Package, Trash2, X, Sparkles, Box, Scissors } from 'lucide-vue-next'
 import AppSelect from '~/components/ui/AppSelect.vue'
 
 const emit = defineEmits(['saved'])

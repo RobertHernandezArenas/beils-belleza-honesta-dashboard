@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { Scissors, Plus, Search, MoreVertical, Edit2, Trash2, Clock, AlertCircle, Package as PackageIcon, Sparkles } from 'lucide-vue-next'
+	import { Scissors, Plus, Search, MoreVertical, Edit2, Trash2, Clock, Package as PackageIcon } from 'lucide-vue-next'
 	import ServiceFormModal from '~/components/services/ServiceFormModal.vue'
 	import PackageFormModal from '~/components/packages/PackageFormModal.vue'
 	import type { IService } from '~/../shared/types/catalog'

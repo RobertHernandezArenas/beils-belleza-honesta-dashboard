@@ -4,7 +4,7 @@ import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { X, Crop, Upload } from 'lucide-vue-next'
 
-const props = defineProps({
+defineProps({
   modelValue: { type: Boolean, required: true },
   imageSrc: { type: String, required: true },
 })

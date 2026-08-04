@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { 
   User, 
-  CalendarDays, 
-  FileText, 
   CreditCard,
-  Settings
 } from 'lucide-vue-next'
 
-const props = defineProps({
+defineProps({
   modelValue: {
     type: String,
     required: true

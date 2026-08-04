@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowLeft, Plus, ShieldOff, ShoppingBag, Minus } from 'lucide-vue-next'
 
-const props = defineProps<{
+defineProps<{
     cart: any
     tempItems: any[]
     tempTotal: number
