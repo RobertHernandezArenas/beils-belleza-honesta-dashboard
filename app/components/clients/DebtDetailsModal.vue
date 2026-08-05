@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Debt, DebtPayment, SaleItem, FetchError } from '~~/shared/types/domain'
 
 import { X, Receipt, CheckCircle, CreditCard, Banknote, Printer } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -8,7 +9,7 @@ const { locale } = useI18n()
 const { notifySalesChanged } = useRealtimeSales()
 
 const modalRef = ref<HTMLDialogElement | null>(null)
-const debt = ref<any>(null)
+const debt = ref<Debt | null>(null)
 const amountToPay = ref<number | null>(null)
 const paymentMethod = ref('card')
 const isProcessing = ref(false)
@@ -22,7 +23,7 @@ const isValidPayment = computed(() => {
   return safeAmount <= safeRemaining
 })
 
-const open = (debtData: any) => {
+const open = (debtData: Debt) => {
   debt.value = JSON.parse(JSON.stringify(debtData)) // Deep copy to avoid proxy mutation issues
   if (debt.value) {
     debt.value.amount = Number(Number(debt.value.amount).toFixed(2))
@@ -40,20 +41,21 @@ const formatAmount = () => {
   }
 }
 
-const getRemainingAfterPayment = (payment: any) => {
-  if (!debt.value?.payments) return debt.value.remaining
-  const sorted = [...debt.value.payments].sort((a, b) => new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime())
-  let currentBalance = debt.value.amount
+const getRemainingAfterPayment = (payment: DebtPayment) => {
+  const d = debt.value
+  if (!d?.payments) return d?.remaining ?? 0
+  const sorted = [...d.payments].sort((a, b) => new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime())
+  let currentBalance = d.amount
   for (const p of sorted) {
     currentBalance -= p.amount
     if (p.payment_id === payment.payment_id) {
       return currentBalance
     }
   }
-  return debt.value.remaining
+  return d.remaining
 }
 
-const printReceipt = (payment: any) => {
+const printReceipt = (payment: DebtPayment) => {
   const iframe = document.createElement('iframe')
   iframe.style.display = 'none'
   document.body.appendChild(iframe)
@@ -62,7 +64,7 @@ const printReceipt = (payment: any) => {
   if (!doc) return
 
   const dateStr = new Date(payment.payment_date).toLocaleString()
-  const itemsHtml = debt.value.cart?.items?.map((item: any) => `
+  const itemsHtml = debt.value?.cart?.items?.map((item: SaleItem) => `
     <tr>
       <td style="text-align: left;">${item.name} <br><small style="color:#666">IVA sugerido ${item.tax_rate}%</small></td>
       <td style="text-align: center;">${item.quantity}</td>
@@ -95,7 +97,7 @@ const printReceipt = (payment: any) => {
         <div class="center bold">RECIBO DE PAGO DE CUOTA</div>
         <div class="divider"></div>
         <div><strong>Fecha:</strong> ${dateStr}</div>
-        <div><strong>Recibo:</strong> #${payment.payment_id.split('-')[0].toUpperCase()}</div>
+        <div><strong>Recibo:</strong> #${(payment.payment_id.split('-')[0] ?? '').toUpperCase()}</div>
         <div class="divider"></div>
 
         <div class="bold">Conceptos de la Deuda Original:</div>
@@ -116,7 +118,7 @@ const printReceipt = (payment: any) => {
         <table>
           <tr>
             <td>Deuda Total Inicial:</td>
-            <td style="text-align:right;">${debt.value.amount.toFixed(2)}€</td>
+            <td style="text-align:right;">${(debt.value?.amount ?? 0).toFixed(2)}€</td>
           </tr>
           <tr class="bold" style="font-size: 14px;">
             <td>IMPORTE RECIBIDO:</td>
@@ -180,7 +182,7 @@ const processPayment = async () => {
 
   isProcessing.value = true
   try {
-    await $fetch(`/api/debts/${debt.value.debt_id}/pay`, {
+    await $fetch(`/api/debts/${debt.value?.debt_id}/pay`, {
       method: 'POST',
       body: {
         amount: Number(amountToPay.value),
@@ -193,8 +195,8 @@ const processPayment = async () => {
     emit('toast', 'Pago registrado correctamente', 'success')
     emit('payment-success')
     close()
-  } catch (err: any) {
-    emit('toast', err.data?.statusMessage || 'Error al procesar el pago', 'error')
+  } catch (err) {
+    emit('toast', (err as FetchError).data?.statusMessage || 'Error al procesar el pago', 'error')
   } finally {
     isProcessing.value = false
   }
@@ -229,8 +231,8 @@ defineExpose({ open, close })
             <!-- Left: Breakdown -->
             <div class="space-y-4">
                <h4 class="text-text-primary text-sm font-bold uppercase tracking-wider">Desglose de Conceptos</h4>
-               <div v-if="debt.cart?.items?.length > 0" class="space-y-3">
-                  <div v-for="item in debt.cart.items" :key="item.cart_item_id" class="bg-bg-card border-border-subtle rounded-2xl border p-3 flex justify-between items-center shadow-sm">
+               <div v-if="(debt.cart?.items?.length ?? 0) > 0" class="space-y-3">
+                  <div v-for="item in debt.cart?.items" :key="item.cart_item_id" class="bg-bg-card border-border-subtle rounded-2xl border p-3 flex justify-between items-center shadow-sm">
                      <div class="flex-1 min-w-0 pr-4">
                         <p class="text-text-primary text-sm font-bold truncate">{{ item.name }}</p>
                         <p class="text-text-muted text-xs font-medium mt-0.5">{{ item.quantity }} × {{ item.unit_price.toFixed(2) }}€</p>
@@ -284,7 +286,7 @@ defineExpose({ open, close })
                <!-- History -->
                <div>
                   <h4 class="text-text-primary text-sm font-bold uppercase tracking-wider mb-3 ml-1">Historial Acumulado</h4>
-                  <div v-if="debt.payments?.length > 0" class="space-y-2 max-h-40 overflow-y-auto pr-2 no-scrollbar">
+                  <div v-if="(debt.payments?.length ?? 0) > 0" class="space-y-2 max-h-40 overflow-y-auto pr-2 no-scrollbar">
                      <div v-for="pay in debt.payments" :key="pay.payment_id" class="bg-bg-card border-border-subtle rounded-xl border p-3 flex justify-between items-center hover:bg-bg-muted/30 transition-colors">
                         <div class="flex items-center gap-3">
                            <div class="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
