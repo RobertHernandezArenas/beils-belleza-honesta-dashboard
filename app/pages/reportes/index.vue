@@ -10,6 +10,12 @@
 		AlertCircle,
 	} from 'lucide-vue-next'
 
+	interface ReportsOverview {
+		kpis: { totalRevenue: number; totalSales: number; totalClients: number; totalProducts: number }
+		revenueTrend: { month: string; revenue: number }[]
+		paymentMethods: { name: string; value: number }[]
+		topItems: { name: string; quantity: number }[]
+	}
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Reportes | Finanzas' })
 
