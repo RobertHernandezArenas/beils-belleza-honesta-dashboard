@@ -89,8 +89,9 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				body: credentials,
 			})
 			return data as { user: ClientDTO; token: string }
-		} catch (err: any) {
-			const errorMessage = err.response?._data?.statusMessage || err.message || t('auth.login.error')
+		} catch (err) {
+			const e = err as FetchError
+			const errorMessage = e.response?._data?.statusMessage || e.message || t('auth.login.error')
 			throw new Error(errorMessage)
 		}
 	}
