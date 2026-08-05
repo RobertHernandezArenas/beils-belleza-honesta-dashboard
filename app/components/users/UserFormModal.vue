@@ -251,6 +251,7 @@
 </template>
 
 <script setup lang="ts">
+import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 	import { ChevronDown } from 'lucide-vue-next'
 	import { useAuthStore } from '~/stores/auth'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
@@ -261,7 +262,7 @@
 	const isAdmin = computed(() => authStore.user?.role === 'ADMIN')
 
 	const userModal = ref<HTMLDialogElement | null>(null)
-	const editingUser = ref<any | null>(null)
+	const editingUser = ref<ClientDTO | null>(null)
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	const emit = defineEmits(['refresh', 'toast'])
@@ -287,7 +288,7 @@
 		}
 	}
 
-	const showModal = (user: any | null) => {
+	const showModal = (user: ClientDTO | null) => {
 		editingUser.value = user
 		if (user) {
 			form.name = user.name || ''
@@ -345,7 +346,7 @@
 			emit('refresh')
 			closeModal()
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			console.error('Error saving user:', error)
 			emit('toast', {
 				message: error.data?.statusMessage || 'Error al guardar el usuario',

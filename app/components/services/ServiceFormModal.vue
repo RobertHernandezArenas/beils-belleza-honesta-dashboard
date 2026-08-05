@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { FetchError } from '~~/shared/types/domain'
+import type { IService } from '~~/shared/types/catalog'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const { animateOpen, animateClose } = useModalAnimation()
 	const modalRef = ref<HTMLDialogElement | null>(null)
-	const editingService = ref<any | null>(null)
+	const editingService = ref<IService | null>(null)
 	const isSaving = ref(false)
 	const queryClient = useQueryClient()
 
@@ -20,7 +22,7 @@
 		status: 'activo',
 	})
 
-	const showModal = (service: any | null) => {
+	const showModal = (service: IService | null) => {
 		editingService.value = service
 		if (service) {
 			form.name = service.name || ''
@@ -48,7 +50,7 @@
 	}
 
 	const { mutate: performSave } = useMutation({
-		mutationFn: async (payload: any) => {
+		mutationFn: async (payload: Record<string, unknown>) => {
 			if (editingService.value) {
 				return await $fetch(`/api/services/${editingService.value.service_id}`, {
 					method: 'PUT',
@@ -68,7 +70,7 @@
 			emit('refresh')
 			closeModal()
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			console.error('Error saving service:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el servicio', 'error')
 		},

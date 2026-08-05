@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { IPack } from '~~/shared/types/catalog'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Package, X, Check, Sparkles } from 'lucide-vue-next'
 import AppSelect from '~/components/ui/AppSelect.vue'
@@ -14,7 +15,7 @@ const isOpen = ref(false)
 const selectedPackageId = ref<string>('')
 const expiryMonths = ref<number>(6)
 
-const { data: catalogPackages, isPending: isLoadingPackages } = useQuery<any[]>({
+const { data: catalogPackages, isPending: isLoadingPackages } = useQuery<IPack[]>({
 	queryKey: ['packages'],
 	queryFn: () => $fetch('/api/packages')
 })
