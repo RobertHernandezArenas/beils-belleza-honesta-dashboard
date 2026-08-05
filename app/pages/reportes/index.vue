@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+interface ReportsOverview {
+	kpis: { totalRevenue: number; totalSales: number; totalClients: number; totalProducts: number }
+	revenueTrend: { month: string; revenue: number }[]
+	paymentMethods: { name: string; value: number }[]
+	topItems: { name: string; quantity: number }[]
+}
 	import { useQuery } from '@tanstack/vue-query'
 	import {
 		Download,
@@ -19,7 +25,7 @@
 		data: reports,
 		isPending,
 		isError,
-	} = useQuery<any>({
+	} = useQuery<ReportsOverview>({
 		queryKey: ['reportsOverview'],
 		queryFn: () => $fetch('/api/reports'),
 	})
@@ -36,7 +42,7 @@
 			grid: { top: 30, right: 20, bottom: 30, left: 50 },
 			xAxis: {
 				type: 'category',
-				data: data.map((d: any) => d.month),
+				data: data.map((d) => d.month),
 				axisLine: { show: false },
 				axisTick: { show: false },
 				axisLabel: { color: ct.axis },
@@ -48,7 +54,7 @@
 			},
 			series: [
 				{
-					data: data.map((d: any) => d.revenue),
+					data: data.map((d) => d.revenue),
 					type: 'line',
 					smooth: true,
 					lineStyle: { color: ct.series, width: 3 },
@@ -108,7 +114,7 @@
 			xAxis: { type: 'value', show: false },
 			yAxis: {
 				type: 'category',
-				data: data.map((d: any) => d.name),
+				data: data.map((d) => d.name),
 				axisLine: { show: false },
 				axisTick: { show: false },
 				axisLabel: { color: ct.text, fontWeight: 'bold' },
@@ -116,7 +122,7 @@
 			series: [
 				{
 					type: 'bar',
-					data: data.map((d: any) => d.quantity),
+					data: data.map((d) => d.quantity),
 					itemStyle: { borderRadius: [0, 8, 8, 0], color: ct.series },
 					barWidth: '50%',
 					label: { show: true, position: 'right', valueAnimation: true, color: ct.text },
@@ -206,7 +212,7 @@
 								{{ $t('finances.reports.kpis.revenue') }}
 							</p>
 							<p class="text-text-primary text-2xl font-black tabular-nums">
-								{{ formatCurrency(reports.kpis.totalRevenue) }}
+								{{ formatCurrency(reports?.kpis?.totalRevenue ?? 0) }}
 							</p>
 						</div>
 					</div>
@@ -223,7 +229,7 @@
 								{{ $t('finances.reports.kpis.tickets') }}
 							</p>
 							<p class="text-text-primary text-2xl font-black tabular-nums">
-								{{ reports.kpis.totalSales }}
+								{{ reports?.kpis?.totalSales }}
 							</p>
 						</div>
 					</div>
@@ -240,7 +246,7 @@
 								{{ $t('finances.reports.kpis.clients') }}
 							</p>
 							<p class="text-text-primary text-2xl font-black tabular-nums">
-								{{ reports.kpis.totalClients }}
+								{{ reports?.kpis?.totalClients }}
 							</p>
 						</div>
 					</div>
@@ -257,7 +263,7 @@
 								{{ $t('finances.reports.kpis.products') }}
 							</p>
 							<p class="text-text-primary text-2xl font-black tabular-nums">
-								{{ reports.kpis.totalProducts }}
+								{{ reports?.kpis?.totalProducts }}
 							</p>
 						</div>
 					</div>

@@ -33,7 +33,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 	})
 
 	// Catalog Packages Query
-	const { data: packages, isPending: isPendingPackages } = useQuery<any[]>({
+	const { data: packages, isPending: isPendingPackages } = useQuery<CatalogItem[]>({
 		queryKey: ['packages'],
 		queryFn: () => $fetch('/api/packages'),
 	})
@@ -349,7 +349,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 										<li>
 											<a
 												class="text-error hover:bg-error/10 font-medium"
-												@click="confirmDeletePackage(pkg.package_id)">
+												@click="confirmDeletePackage(pkg.package_id || '')">
 												<Trash2 class="h-4 w-4" />
 												Eliminar
 											</a>
@@ -382,7 +382,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 							<div class="text-right">
 								<span class="text-text-muted block text-[10px] font-bold tracking-wider uppercase opacity-70">Precio Oferta</span>
 								<p class="text-text-primary text-xl leading-none font-black tabular-nums">
-									{{ formatCurrency(pkg.price) }}
+									{{ formatCurrency(pkg.price || 0) }}
 								</p>
 							</div>
 						</div>
