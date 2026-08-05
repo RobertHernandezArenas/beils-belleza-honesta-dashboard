@@ -215,9 +215,9 @@
 		return partialMatch || '/'
 	})
 
-	const setNavRef = (path: string | undefined) => (el: any) => {
+	const setNavRef = (path: string | undefined) => (el: Element | ComponentPublicInstance | null) => {
 		if (path && el) {
-			navRefs.value[path] = el.$el || el
+			navRefs.value[path] = ((el as ComponentPublicInstance).$el || el) as HTMLElement
 		}
 	}
 

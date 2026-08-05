@@ -11,6 +11,9 @@ export default withNuxt([
 			'.agents/**',
 			'.codex/**',
 			'.gemini/**',
+			// Dev/DB utility scripts and seeds — not part of the shipped app.
+			'scripts/**',
+			'seeds/**',
 		],
 	},
 	// Custom manual overrides if needed, like Prettier compatibility
