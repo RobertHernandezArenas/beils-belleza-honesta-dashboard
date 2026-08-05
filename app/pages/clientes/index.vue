@@ -52,7 +52,7 @@
 		data: clientsResponse,
 		isPending,
 		error,
-	} = useQuery<any>({
+	} = useQuery<{ data: ClientDTO[]; pagination?: { total?: number; totalPages?: number; page?: number } }>({
 		queryKey: ['clients-list', searchQuery, page, limit],
 		queryFn: () =>
 			$fetch('/api/clients', {
@@ -75,7 +75,7 @@
 	// Modales
 	const showClientModal = ref(false)
 	const showDeleteModal = ref(false)
-	const selectedClient = ref<any>(null)
+	const selectedClient = ref<ClientDTO | null>(null)
 
 	const refreshClients = () => {
 		page.value = 1
@@ -88,12 +88,12 @@
 		showClientModal.value = true
 	}
 
-	const openEditModal = (client: any) => {
+	const openEditModal = (client: ClientDTO) => {
 		selectedClient.value = { ...client }
 		showClientModal.value = true
 	}
 
-	const openDeleteModal = (client: any) => {
+	const openDeleteModal = (client: ClientDTO) => {
 		selectedClient.value = client
 		showDeleteModal.value = true
 	}
@@ -104,7 +104,7 @@
 			queryClient.invalidateQueries({ queryKey: ['clients-list'] })
 			showDeleteModal.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			const msg = err.response?._data?.statusMessage || err.message
 			alert(`Error: ${msg}`)
 			showDeleteModal.value = false
@@ -264,7 +264,7 @@
 											<span class="text-text-muted truncate text-[11px] font-bold tracking-tight">
 												{{
 													revealedDocs[client.user_id] ||
-													`${client.document_number.slice(0, 4)}***`
+													`${(client.document_number || '').slice(0, 4)}***`
 												}}
 											</span>
 											<button
@@ -272,7 +272,7 @@
 												role="button"
 												:aria-label="revealedDocs[client.user_id] ? 'Ocultar' : 'Mostrar'"
 												:disabled="revealedLoading[client.user_id]"
-												@click="toggleDocumentVisibility(client.user_id, client.document_number)">
+												@click="toggleDocumentVisibility(client.user_id, client.document_number || '')">
 												<span
 													v-if="revealedLoading[client.user_id]"
 													class="loading loading-spinner loading-xs h-3 w-3"/>
@@ -386,7 +386,7 @@
 						</button>
 						<button
 							class="join-item btn btn-sm border-none bg-bg-card/50 hover:bg-bg-card disabled:bg-transparent disabled:opacity-30"
-							:disabled="page >= pagination.totalPages"
+							:disabled="page >= (pagination?.totalPages ?? 1)"
 							@click="page++">
 							»
 						</button>

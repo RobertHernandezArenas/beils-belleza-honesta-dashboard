@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import type { Debt, FetchError } from '~~/shared/types/domain'
+	import { useQuery, useMutation } from '@tanstack/vue-query'
 	import { Landmark, Search, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AppSelect from '~/components/ui/AppSelect.vue'
@@ -23,7 +24,7 @@
 	const toastMessage = ref('')
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
-	const selectedDebt = ref<any | null>(null)
+	const selectedDebt = ref<Debt | null>(null)
 	const paymentAmount = ref<number | null>(null)
 	const paymentMethod = ref<'card' | 'cash' | 'transfer'>('card')
 	const paymentModalRef = ref<HTMLDialogElement | null>(null)
@@ -34,7 +35,7 @@
 		return params
 	})
 
-	const { data: debts, isPending } = useQuery<any[]>({
+	const { data: debts, isPending } = useQuery<Debt[]>({
 		queryKey: ['debts', queryParams],
 		queryFn: () => $fetch('/api/sales/debts', { query: queryParams.value }),
 	})
@@ -45,7 +46,7 @@
 
 		const query = searchQuery.value.toLowerCase()
 		return debts.value.filter(
-			(d: any) =>
+			(d: Debt) =>
 				d.user?.name?.toLowerCase().includes(query) || d.user?.surname?.toLowerCase().includes(query),
 		)
 	})
@@ -62,12 +63,12 @@
 			displayToast(t('finances.debts.messages.success'), 'success')
 			closePaymentModal()
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || t('finances.debts.messages.errorGeneric'), 'error')
 		},
 	})
 
-	const openPaymentModal = (debt: any) => {
+	const openPaymentModal = (debt: Debt) => {
 		selectedDebt.value = debt
 		paymentAmount.value = debt.remaining
 		paymentModalRef.value?.showModal()
@@ -187,7 +188,7 @@
 									</div>
 								</td>
 								<td class="hidden text-sm font-medium lg:table-cell">
-									{{ formatDate(debt.created_at) }}
+									{{ formatDate(debt.created_at || null) }}
 								</td>
 								<td class="text-sm font-medium">
 									<span
@@ -197,7 +198,7 @@
 												debt.due_date &&
 												new Date(debt.due_date) < new Date(),
 										}">
-										{{ formatDate(debt.due_date) }}
+										{{ formatDate(debt.due_date || null) }}
 									</span>
 								</td>
 								<td class="text-text-muted text-right text-sm font-bold tabular-nums">

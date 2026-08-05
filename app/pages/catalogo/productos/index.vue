@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { IProduct } from '~~/shared/types/catalog'
+import type { FetchError } from '~~/shared/types/domain'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import {
 		Package,
@@ -30,7 +32,7 @@
 		return params
 	})
 
-	const { data: products, isPending } = useQuery<any[]>({
+	const { data: products, isPending } = useQuery<IProduct[]>({
 		queryKey: ['products', queryParams],
 		queryFn: () => $fetch('/api/catalog/products', { query: queryParams.value }),
 	})
@@ -47,7 +49,7 @@
 			queryClient.invalidateQueries({ queryKey: ['products-tpv'] })
 			displayToast('Producto eliminado exitosamente', 'success')
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar', 'error')
 		},
 	})
@@ -56,7 +58,7 @@
 		modalRef.value?.showModal(null)
 	}
 
-	const openEditModal = (product: any) => {
+	const openEditModal = (product: IProduct) => {
 		modalRef.value?.showModal(product)
 	}
 

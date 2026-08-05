@@ -14,7 +14,7 @@
 		data: revokes,
 		isPending,
 		error,
-	} = useQuery<any[]>({
+	} = useQuery<Revoke[]>({
 		queryKey: ['revokes-list'],
 		queryFn: () => $fetch('/api/clients/revokes'),
 	})
@@ -24,7 +24,7 @@
 		const q = searchQuery.value.toLowerCase()
 		if (!q) return revokes.value
 		return revokes.value.filter(
-			(item: any) =>
+			(item: Revoke) =>
 				item.user?.name?.toLowerCase().includes(q) ||
 				item.user?.surname?.toLowerCase().includes(q) ||
 				item.reason?.toLowerCase().includes(q),
@@ -33,19 +33,19 @@
 
 	const showFormModal = ref(false)
 	const showDeleteModal = ref(false)
-	const selectedItem = ref<any>(null)
+	const selectedItem = ref<Revoke | null>(null)
 
 	const openCreate = () => {
 		selectedItem.value = null
 		showFormModal.value = true
 	}
 
-	const openEdit = (item: any) => {
+	const openEdit = (item: Revoke) => {
 		selectedItem.value = { ...item }
 		showFormModal.value = true
 	}
 
-	const openDelete = (item: any) => {
+	const openDelete = (item: Revoke) => {
 		selectedItem.value = item
 		showDeleteModal.value = true
 	}
@@ -56,7 +56,7 @@
 			queryClient.invalidateQueries({ queryKey: ['revokes-list'] })
 			showDeleteModal.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			alert(`Error: ${err.response?._data?.statusMessage || err.message}`)
 			showDeleteModal.value = false
 		},

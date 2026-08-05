@@ -24,6 +24,7 @@ export interface ClientDTO {
 	annotations?: string | null
 	created_at?: string
 	updated_at?: string
+	_count?: Record<string, number>
 }
 
 export interface BookingItem {
@@ -39,6 +40,15 @@ export interface BookingItem {
 
 // Shape of an error thrown by $fetch/ofetch on the client: an H3/ofetch error
 // carries `data.statusMessage` (from the server's createError) plus `message`.
+// Structural type for a template ref to a modal component exposing imperative
+// open/close methods (via defineExpose). Permissive on args so any modal fits.
+export interface ModalRef {
+	open?: (...args: unknown[]) => void
+	openModal?: (...args: unknown[]) => void
+	showModal?: (...args: unknown[]) => void
+	close?: () => void
+}
+
 export interface FetchError {
 	data?: { statusMessage?: string }
 	response?: { _data?: { statusMessage?: string } }
@@ -173,6 +183,7 @@ export interface Debt {
 	created_at?: string
 	payments?: DebtPayment[]
 	cart?: Sale | null
+	user?: Partial<ClientDTO> | null
 }
 
 export interface Questionnaire {

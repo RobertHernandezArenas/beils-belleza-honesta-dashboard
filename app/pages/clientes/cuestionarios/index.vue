@@ -14,7 +14,7 @@
 		data: questionnaires,
 		isPending,
 		error,
-	} = useQuery<any[]>({
+	} = useQuery<Questionnaire[]>({
 		queryKey: ['questionnaires-list'],
 		queryFn: () => $fetch('/api/clients/questionnaires'),
 	})
@@ -24,7 +24,7 @@
 		const q = searchQuery.value.toLowerCase()
 		if (!q) return questionnaires.value
 		return questionnaires.value.filter(
-			(item: any) =>
+			(item: Questionnaire) =>
 				item.user?.name?.toLowerCase().includes(q) ||
 				item.user?.surname?.toLowerCase().includes(q) ||
 				item.title?.toLowerCase().includes(q),
@@ -33,19 +33,19 @@
 
 	const showFormModal = ref(false)
 	const showDeleteModal = ref(false)
-	const selectedItem = ref<any>(null)
+	const selectedItem = ref<Questionnaire | null>(null)
 
 	const openCreate = () => {
 		selectedItem.value = null
 		showFormModal.value = true
 	}
 
-	const openEdit = (item: any) => {
+	const openEdit = (item: Questionnaire) => {
 		selectedItem.value = { ...item }
 		showFormModal.value = true
 	}
 
-	const openDelete = (item: any) => {
+	const openDelete = (item: Questionnaire) => {
 		selectedItem.value = item
 		showDeleteModal.value = true
 	}
@@ -56,7 +56,7 @@
 			queryClient.invalidateQueries({ queryKey: ['questionnaires-list'] })
 			showDeleteModal.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			alert(`Error: ${err.response?._data?.statusMessage || err.message}`)
 			showDeleteModal.value = false
 		},
@@ -74,7 +74,7 @@
 		)
 	}
 
-	const formatJsonPreview = (data: any) => {
+	const formatJsonPreview = (data: string) => {
 		if (!data) return '—'
 		const keys = Object.keys(data)
 		if (keys.length === 0) return '(vacío)'
@@ -179,7 +179,7 @@
 								</td>
 								<td class="px-6 py-4 tabular-nums">
 									<span class="text-text-primary font-medium">
-										{{ formatDate(item.created_at) }}
+										{{ formatDate(item.created_at || '') }}
 									</span>
 								</td>
 								<td class="px-6 py-4 text-right">

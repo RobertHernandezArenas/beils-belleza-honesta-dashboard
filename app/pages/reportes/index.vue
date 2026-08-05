@@ -8,8 +8,7 @@
 		CreditCard,
 		Loader2,
 		AlertCircle,
-	} from 'lucide-vue-next'
-	import { useI18n } from 'vue-i18n'
+	} from 'lucide-vue-next'
 
 	definePageMeta({ layout: 'default' })
 	useHead({ title: 'Reportes | Finanzas' })

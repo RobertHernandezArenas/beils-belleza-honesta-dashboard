@@ -14,7 +14,7 @@
 		data: consents,
 		isPending,
 		error,
-	} = useQuery<any[]>({
+	} = useQuery<Consent[]>({
 		queryKey: ['consents-list'],
 		queryFn: () => $fetch('/api/clients/consents'),
 	})
@@ -24,7 +24,7 @@
 		const q = searchQuery.value.toLowerCase()
 		if (!q) return consents.value
 		return consents.value.filter(
-			(c: any) =>
+			(c: Consent) =>
 				c.user?.name?.toLowerCase().includes(q) ||
 				c.user?.surname?.toLowerCase().includes(q) ||
 				c.user?.email?.toLowerCase().includes(q) ||
@@ -34,19 +34,19 @@
 
 	const showFormModal = ref(false)
 	const showDeleteModal = ref(false)
-	const selectedItem = ref<any>(null)
+	const selectedItem = ref<Consent | null>(null)
 
 	const openCreate = () => {
 		selectedItem.value = null
 		showFormModal.value = true
 	}
 
-	const openEdit = (item: any) => {
+	const openEdit = (item: Consent) => {
 		selectedItem.value = { ...item }
 		showFormModal.value = true
 	}
 
-	const openDelete = (item: any) => {
+	const openDelete = (item: Consent) => {
 		selectedItem.value = item
 		showDeleteModal.value = true
 	}
@@ -57,7 +57,7 @@
 			queryClient.invalidateQueries({ queryKey: ['consents-list'] })
 			showDeleteModal.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			alert(`Error: ${err.response?._data?.statusMessage || err.message}`)
 			showDeleteModal.value = false
 		},
@@ -192,7 +192,7 @@
 								</td>
 								<td class="px-6 py-4">
 									<a
-										:href="item.document_url"
+										:href="item.document_url ?? undefined"
 										target="_blank"
 										class="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-xs font-bold transition-colors"
 										@click.stop>

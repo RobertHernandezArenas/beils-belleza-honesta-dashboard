@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ModalRef } from '~~/shared/types/domain'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
     CalendarDays,
@@ -37,7 +38,7 @@ const {
     formatDayDate,
 } = useAgenda()
 
-const daySummaryModalRef = ref<any>(null)
+const daySummaryModalRef = ref<ModalRef | null>(null)
 
 const viewComponent = computed(() => {
     switch (viewMode.value) {
@@ -165,7 +166,7 @@ const handleDateChange = (direction: 'next' | 'prev') => {
                             @status="setBookingStatus"
                             @create="(d: Date, t: string) => store.openBookingDrawer(null, d, t)"
                             @select-date="(d: Date) => { store.setDate(d); store.setViewMode('day') }"
-                            @view-day-details="(d: Date, bs: any[]) => daySummaryModalRef?.openModal(d, bs)"
+                            @view-day-details="(d: Date, bs: any[]) => daySummaryModalRef?.openModal?.(d, bs)"
                         />
                     </ClientOnly>
                 </div>
