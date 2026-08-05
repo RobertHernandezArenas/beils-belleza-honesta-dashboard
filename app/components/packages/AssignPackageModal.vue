@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IPack } from '~~/shared/types/catalog'
+import type { CatalogItem } from '~~/shared/types/domain'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Package, X, Check, Sparkles } from 'lucide-vue-next'
 import AppSelect from '~/components/ui/AppSelect.vue'
@@ -15,7 +15,7 @@ const isOpen = ref(false)
 const selectedPackageId = ref<string>('')
 const expiryMonths = ref<number>(6)
 
-const { data: catalogPackages, isPending: isLoadingPackages } = useQuery<IPack[]>({
+const { data: catalogPackages, isPending: isLoadingPackages } = useQuery<CatalogItem[]>({
 	queryKey: ['packages'],
 	queryFn: () => $fetch('/api/packages')
 })
@@ -97,7 +97,7 @@ defineExpose({ openModal, closeModal })
 							:key="pkg.package_id"
 							class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between"
 							:class="selectedPackageId === pkg.package_id ? 'border-primary bg-primary/10 shadow-xs' : 'border-border-default bg-bg-muted/40 hover:bg-bg-muted'"
-							@click="selectedPackageId = pkg.package_id">
+							@click="selectedPackageId = pkg.package_id || ''">
 							<div class="flex items-center gap-3">
 								<div class="h-8 w-8 rounded-xl flex items-center justify-center font-bold text-xs" :class="pkg.type === 'MIXTO' ? 'bg-amber-500/10 text-amber-600' : 'bg-primary/10 text-primary'">
 									<Sparkles v-if="pkg.type === 'MIXTO'" class="h-4 w-4" />
