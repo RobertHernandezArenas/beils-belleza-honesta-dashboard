@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { IProduct } from '~~/shared/types/catalog'
+import type { Sale, Booking, ClientDTO, Debt } from '~~/shared/types/domain'
 	import { useQuery } from '@tanstack/vue-query'
 	import {
 		CircleDollarSign,
@@ -21,27 +23,27 @@
 	listenSalesChanged()
 
 	// Queries
-	const { data: carts, isPending: loadingCarts } = useQuery<any[]>({
+	const { data: carts, isPending: loadingCarts } = useQuery<Sale[]>({
 		queryKey: ['carts-overview'],
 		queryFn: () => $fetch('/api/sales/carts'),
 	})
 
-	const { data: bookings, isPending: loadingBookings } = useQuery<any[]>({
+	const { data: bookings, isPending: loadingBookings } = useQuery<Booking[]>({
 		queryKey: ['bookings-overview'],
 		queryFn: () => $fetch('/api/agenda/bookings'),
 	})
 
-	const { data: clients, isPending: loadingClients } = useQuery<any[]>({
+	const { data: clients, isPending: loadingClients } = useQuery<ClientDTO[]>({
 		queryKey: ['clients-overview'],
 		queryFn: () => $fetch('/api/users?role=CLIENT'),
 	})
 
-	const { data: debts, isPending: loadingDebts } = useQuery<any[]>({
+	const { data: debts, isPending: loadingDebts } = useQuery<Debt[]>({
 		queryKey: ['debts-overview'],
 		queryFn: () => $fetch('/api/sales/debts'),
 	})
 
-	const { data: products, isPending: loadingProducts } = useQuery<any[]>({
+	const { data: products, isPending: loadingProducts } = useQuery<IProduct[]>({
 		queryKey: ['products-overview'],
 		queryFn: () => $fetch('/api/catalog/products'),
 	})
@@ -100,48 +102,48 @@
 	const todayRevenue = computed(() => {
 		if (!carts.value) return 0
 		return carts.value
-			.filter((c: any) => c.status === 'completed' && isToday(c.created_at))
-			.reduce((sum: number, c: any) => sum + c.total, 0)
+			.filter((c: Sale) => c.status === 'completed' && isToday(c.created_at))
+			.reduce((sum: number, c: Sale) => sum + c.total, 0)
 	})
 
 	const todayBookingsCount = computed(() => {
 		if (!bookings.value) return 0
-		return bookings.value.filter((b: any) => isToday(b.booking_date)).length
+		return bookings.value.filter((b: Booking) => isToday(b.booking_date)).length
 	})
 
 	const newClientsCount = computed(() => {
 		if (!clients.value) return 0
 		const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-		return clients.value.filter((c: any) => new Date(c.created_at) >= sevenDaysAgo).length
+		return clients.value.filter((c: ClientDTO) => new Date(c.created_at ?? '') >= sevenDaysAgo).length
 	})
 
 	const totalPendingDebts = computed(() => {
 		if (!debts.value) return 0
 		return debts.value
-			.filter((d: any) => d.status === 'pending' || d.status === 'partial')
-			.reduce((sum: number, d: any) => sum + Number(d.remaining || 0), 0)
+			.filter((d: Debt) => d.status === 'pending' || d.status === 'partial')
+			.reduce((sum: number, d: Debt) => sum + Number(d.remaining || 0), 0)
 	})
 
 	// Lists
 	const upcomingBookings = computed(() => {
 		if (!bookings.value) return []
 		return bookings.value
-			.filter((b: any) => new Date(b.booking_date) >= today && b.status !== 'cancelled')
-			.sort((a: any, b: any) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
+			.filter((b: Booking) => new Date(b.booking_date) >= today && b.status !== 'cancelled')
+			.sort((a: Booking, b: Booking) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
 			.slice(0, 5) // Top 5
 	})
 
 	const recentSales = computed(() => {
 		if (!carts.value) return []
 		return carts.value
-			.filter((c: any) => c.status === 'completed')
-			.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+			.filter((c: Sale) => c.status === 'completed')
+			.sort((a: Sale, b: Sale) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 			.slice(0, 5) // Top 5
 	})
 
 	const lowStockAlerts = computed(() => {
 		if (!products.value) return []
-		return products.value.filter((p: any) => p.stock <= (p.min_stock || 0))
+		return products.value.filter((p: IProduct) => p.stock <= (p.min_stock || 0))
 	})
 
 	// Manejo de errores de avatar
@@ -288,10 +290,10 @@
 									</div>
 									<div class="bg-primary/10 text-primary border-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border overflow-hidden">
 										<img 
-											v-if="booking.client?.avatar && !avatarErrors.has(booking.client.user_id)" 
+											v-if="booking.client?.avatar && !avatarErrors.has(booking.client.user_id || '')" 
 											:src="booking.client.avatar" 
 											class="h-full w-full object-cover"
-											@error="handleAvatarError(booking.client.user_id)" >
+											@error="handleAvatarError(booking.client.user_id || '')" >
 										<span v-else class="text-xs font-bold">{{ booking.client?.name?.charAt(0) }}{{ booking.client?.surname?.charAt(0) }}</span>
 									</div>
 								</div>
@@ -365,10 +367,10 @@
 									<div
 										class="bg-primary/5 text-primary group-hover:bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors border-primary/10 border overflow-hidden">
 										<img 
-											v-if="sale.user?.avatar && !avatarErrors.has(sale.user.user_id)" 
+											v-if="sale.user?.avatar && !avatarErrors.has(sale.user.user_id || '')" 
 											:src="sale.user.avatar" 
 											class="h-full w-full object-cover"
-											@error="handleAvatarError(sale.user.user_id)" >
+											@error="handleAvatarError(sale.user.user_id || '')" >
 										<ShoppingBag v-else class="h-4 w-4" />
 									</div>
 									<div class="flex flex-col">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientProfile, ModalRef, FetchError } from '~~/shared/types/domain'
 import { useQuery, useMutation, useQueryClient  } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 import {
@@ -64,7 +65,7 @@ const {
   isPending,
   error,
   isFetching,
-} = useQuery<any, any>({
+} = useQuery<ClientProfile, Error & { statusMessage?: string }>({
   queryKey: ['client', clientId],
   queryFn: () => $fetch(`/api/clients/${clientId}`),
 })
@@ -79,8 +80,8 @@ useHead({
 const isConsentModalOpen = ref(false)
 const isQuestionnaireModalOpen = ref(false)
 const isRevokeModalOpen = ref(false)
-const debtDetailsModalRef = ref<any>(null)
-const purchaseDetailsModalRef = ref<any>(null)
+const debtDetailsModalRef = ref<ModalRef | null>(null)
+const purchaseDetailsModalRef = ref<ModalRef | null>(null)
 
 const mockItemToEdit = computed(() => {
   if (!client.value) return null
@@ -89,7 +90,7 @@ const mockItemToEdit = computed(() => {
 
 // Update Client Mutation
 const { mutate: updateClient, isPending: isUpdating } = useMutation({
-  mutationFn: async (data: Record<string, any>) => {
+  mutationFn: async (data: Record<string, unknown>) => {
     return await $fetch(`/api/clients/${clientId}`, {
       method: 'PUT',
       body: data
@@ -99,12 +100,12 @@ const { mutate: updateClient, isPending: isUpdating } = useMutation({
     queryClient.invalidateQueries({ queryKey: ['client', clientId] })
     addToast(locale.value === 'es' ? 'Perfil actualizado correctamente' : 'Profile updated successfully', 'success')
   },
-  onError: (err: any) => {
+  onError: (err: FetchError) => {
     addToast(err.data?.statusMessage || (locale.value === 'es' ? 'Error al actualizar el perfil' : 'Error updating profile'), 'error')
   }
 })
 
-const handleFieldUpdate = (field: string, value: any) => {
+const handleFieldUpdate = (field: string, value: unknown) => {
   updateClient({ [field]: value })
 }
 
@@ -169,7 +170,7 @@ const handleNewBooking = () => {
         <AlertCircle class="h-16 w-16 mb-2 text-white" />
         <h2 class="text-2xl font-black text-white">{{ $t('catalog.clients.profile.status.error') }}</h2>
         <p class="mt-1 text-sm font-semibold text-white/80 max-w-md">
-          {{ error.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
+          {{ error?.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
         </p>
         <NuxtLink to="/clientes" class="btn btn-outline btn-neutral btn-sm mt-6 rounded-xl font-bold">
           {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
@@ -239,8 +240,8 @@ const handleNewBooking = () => {
                 :is-updating="isUpdating"
                 @update="handleFieldUpdate"
                 @open-booking="handleNewBooking"
-                @open-purchase="purchaseDetailsModalRef?.open($event)"
-                @open-debt="debtDetailsModalRef?.open($event)"
+                @open-purchase="purchaseDetailsModalRef?.open?.($event)"
+                @open-debt="debtDetailsModalRef?.open?.($event)"
               />
               <ProfileAppointmentHistory :client="client" />
             </div>
@@ -255,8 +256,8 @@ const handleNewBooking = () => {
             <ProfileBilling 
               v-else-if="activeTab === 'BILLING'"
               :client="client" 
-              @open-debt="debtDetailsModalRef?.open($event)" 
-              @open-purchase="purchaseDetailsModalRef?.open($event)" 
+              @open-debt="debtDetailsModalRef?.open?.($event)" 
+              @open-purchase="purchaseDetailsModalRef?.open?.($event)" 
             />
 
             <ProfilePackagesSection 
