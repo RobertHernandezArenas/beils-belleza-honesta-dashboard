@@ -68,6 +68,7 @@ export interface Booking {
 	duration: number
 	notes?: string | null
 	booking_items?: BookingItem[]
+	professional?: { name?: string } | null
 	service_item?: { name?: string } | null
 	pack_item?: { name?: string } | null
 	client?: Partial<ClientDTO> | null

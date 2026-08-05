@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Booking } from '~~/shared/types/domain'
 	import {
 		MoreVertical,
 		CheckCircle2,
@@ -11,12 +12,12 @@
 	import gsap from 'gsap'
 
 	defineProps<{
-		bookings: any[]
+		bookings: Booking[]
 		isPending: boolean
 	}>()
 
 	const emit = defineEmits<{
-		(e: 'edit', booking: any): void
+		(e: 'edit', booking: Booking): void
 		(e: 'delete', id: string): void
 		(e: 'status', id: string, status: string): void
 		(e: 'create'): void
@@ -112,7 +113,7 @@
 					<div class="flex h-full flex-col p-3 text-left md:p-4">
 						<div class="flex items-center justify-between">
 							<span class="text-[9px] font-black tracking-widest uppercase opacity-60 md:text-[10px]">
-								{{ booking.item_id.split('-')[0] }}
+								{{ (booking.item_id ?? '').split('-')[0] }}
 							</span>
 							<span
 								class="rounded-full px-2 py-0.5 text-[8px] font-black tracking-widest uppercase md:text-[9px]"

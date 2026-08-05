@@ -1,15 +1,16 @@
 <script setup lang="ts">
+import type { Booking, PositionedBooking } from '~~/shared/types/domain'
 import { computed } from 'vue'
 import { Clock } from 'lucide-vue-next'
 
 const props = defineProps<{
-    bookings: any[]
+    bookings: Booking[]
     selectedDate: Date
     daysCount?: number
 }>()
 
 const emit = defineEmits<{
-    (e: 'edit', booking: any): void
+    (e: 'edit', booking: Booking): void
     (e: 'delete', id: string): void
     (e: 'status', id: string, status: string): void
     (e: 'create', defaultDate: Date, defaultTime: string): void
@@ -98,14 +99,14 @@ const processedDays = computed(() => {
         })
 
         // Bin Packing
-        const columns: any[][] = []
+        const columns: PositionedBooking[][] = []
         for (const b of dayBookings) {
             let placed = false
             for (let colIndex = 0; colIndex < columns.length; colIndex++) {
                 const col = columns[colIndex]
                 if (!col) continue
                 const lastInCol = col[col.length - 1]
-                if (lastInCol?.visualEndMin <= b.startMin) {
+                if ((lastInCol?.visualEndMin ?? 0) <= (b.startMin ?? 0)) {
                     b.column = colIndex
                     col.push(b)
                     placed = true
@@ -118,8 +119,8 @@ const processedDays = computed(() => {
             }
         }
 
-        const blocks: any[][] = []
-        let currentBlock: any[] = []
+        const blocks: PositionedBooking[][] = []
+        let currentBlock: PositionedBooking[] = []
         let blockEnd = -1
 
         for (const b of dayBookings) {
@@ -138,7 +139,7 @@ const processedDays = computed(() => {
         }
 
         for (const block of blocks) {
-            const maxCol = Math.max(...block.map(b => b.column)) + 1
+            const maxCol = Math.max(...block.map(b => b.column ?? 0)) + 1
             block.forEach(b => {
                 b.maxColumns = maxCol
             })
@@ -148,22 +149,22 @@ const processedDays = computed(() => {
     })
 })
 
-const getBookingStyle = (booking: any) => {
+const getBookingStyle = (booking: PositionedBooking) => {
     let startMin = booking.startMin || (startHour * 60)
     // Clamp to visible hours to prevent disappearing
     startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
     
     const top = ((startMin - (startHour * 60)) / 60) * hourHeight
-    const height = (booking.visualDuration / 60) * hourHeight
-    const width = 100 / booking.maxColumns
-    const left = booking.column * width
+    const height = ((booking.visualDuration ?? 0) / 60) * hourHeight
+    const width = 100 / (booking.maxColumns ?? 1)
+    const left = (booking.column ?? 0) * width
 
     return {
         top: `${top}px`,
         height: `${height}px`, // Height is now driven by visualDuration to ensure readability
         width: `calc(${width}% - 2px)`, // 2px margin
         left: `${left}%`,
-        zIndex: booking.column + 10
+        zIndex: (booking.column ?? 0) + 10
     }
 }
 

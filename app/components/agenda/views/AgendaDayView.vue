@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Booking, PositionedBooking } from '~~/shared/types/domain'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import {
     Clock,
@@ -7,16 +8,15 @@ import {
     CheckCircle2,
     Pencil,
     Trash2,
-} from 'lucide-vue-next'
-import { useAgendaStore } from '~/stores/useAgendaStore'
+} from 'lucide-vue-next'
 
 const props = defineProps<{
-    bookings: any[]
+    bookings: Booking[]
     selectedDate: Date
 }>()
 
 const emit = defineEmits<{
-    (e: 'edit', booking: any): void
+    (e: 'edit', booking: Booking): void
     (e: 'delete', id: string): void
     (e: 'status', id: string, status: string): void
     (e: 'create', defaultDate: Date, defaultTime: string): void
@@ -77,7 +77,7 @@ const processedBookings = computed(() => {
     })
 
     // 3. Assign columns (Bin Packing)
-    const columns: any[][] = []
+    const columns: PositionedBooking[][] = []
     
     for (const b of dayBookings) {
         let placed = false
@@ -89,7 +89,7 @@ const processedBookings = computed(() => {
             const lastInCol = col[col.length - 1]
             if (!lastInCol) continue
 
-            if (lastInCol.visualEndMin <= b.startMin) {
+            if ((lastInCol.visualEndMin ?? 0) <= (b.startMin ?? 0)) {
                 // Doesn't overlap, can be placed here
                 b.column = colIndex
                 col.push(b)
@@ -106,8 +106,8 @@ const processedBookings = computed(() => {
 
     // 4. Determine max overlapping columns for each block to compute widths
     // A block is a group of connected overlapping events
-    const blocks: any[][] = []
-    let currentBlock: any[] = []
+    const blocks: PositionedBooking[][] = []
+    let currentBlock: PositionedBooking[] = []
     let blockEnd = -1
 
     for (const b of dayBookings) {
@@ -129,7 +129,7 @@ const processedBookings = computed(() => {
     // For each block, all members share the max width
     for (const block of blocks) {
         // Find max column index in this block
-        const maxCol = Math.max(...block.map(b => b.column)) + 1
+        const maxCol = Math.max(...block.map(b => b.column ?? 0)) + 1
         block.forEach(b => {
             b.maxColumns = maxCol
         })
@@ -138,22 +138,22 @@ const processedBookings = computed(() => {
     return dayBookings
 })
 
-const getBookingStyle = (booking: any) => {
+const getBookingStyle = (booking: PositionedBooking) => {
     let startMin = booking.startMin || (startHour * 60)
     // Clamp to visible hours to prevent disappearing
     startMin = Math.max(startHour * 60, Math.min(endHour * 60, startMin))
     
     const top = ((startMin - (startHour * 60)) / 60) * hourHeight
-    const height = (booking.visualDuration / 60) * hourHeight
-    const width = 100 / booking.maxColumns
-    const left = booking.column * width
+    const height = ((booking.visualDuration ?? 0) / 60) * hourHeight
+    const width = 100 / (booking.maxColumns ?? 1)
+    const left = (booking.column ?? 0) * width
 
     return {
         top: `${top}px`,
         height: `${height}px`, // Height is now driven by visualDuration to ensure readability
         width: `calc(${width}% - 4px)`, // 4px margin between columns
         left: `${left}%`,
-        zIndex: booking.column + 10 // Layer overlapping correctly
+        zIndex: (booking.column ?? 0) + 10 // Layer overlapping correctly
     }
 }
 
@@ -194,7 +194,7 @@ const getStatusStrip = (status: string) => {
 // Time Indicator
 // ----------------------------------------------------
 const currentTimePosition = ref(-1)
-let timeInterval: any
+let timeInterval: ReturnType<typeof setInterval> | undefined
 
 const updateTimeIndicator = () => {
     const now = new Date()
