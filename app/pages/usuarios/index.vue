@@ -83,30 +83,12 @@
 		showToast(payload.message, payload.type)
 	}
 
-	interface UserData {
-		user_id: string
-		name: string
-		surname?: string
-		email: string
-		phone?: string
-		address?: string
-		city?: string
-		country?: string
-		postal_code?: string
-		gender?: string
-		birth_date?: string
-		document_type?: string
-		document_number?: string
-		role: string
-		status: 'ON' | 'OFF'
-		avatar?: string
-	}
 
 	const {
 		data: usersData,
 		refetch: refresh,
 		isPending: pending,
-	} = useQuery<UserData[]>({
+	} = useQuery<ClientDTO[]>({
 		queryKey: ['users'],
 		queryFn: () => $fetch('/api/users'),
 	})
@@ -170,7 +152,7 @@
 	
 	// --- Gestión de Eliminación ---
 	const showDeleteModal = ref(false)
-	const selectedUserToDelete = ref<UserData | null>(null)
+	const selectedUserToDelete = ref<ClientDTO | null>(null)
 	const queryClient = useQueryClient()
 
 	const { mutate: deleteUser, isPending: isDeletingUser } = useMutation({
@@ -194,7 +176,7 @@
 		},
 	})
 
-	const openDeleteModal = (user: UserData) => {
+	const openDeleteModal = (user: ClientDTO) => {
 		selectedUserToDelete.value = user
 		showDeleteModal.value = true
 	}
@@ -226,7 +208,7 @@
 		},
 	})
 
-	const toggleUserStatus = (user: UserData) => {
+	const toggleUserStatus = (user: ClientDTO) => {
 		const newStatus = user.status === 'ON' ? 'OFF' : 'ON'
 		updateStatus({ id: user.user_id, status: newStatus })
 	}
