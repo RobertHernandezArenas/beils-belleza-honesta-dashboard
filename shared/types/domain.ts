@@ -230,4 +230,7 @@ export interface ClientProfile extends ClientDTO {
 	revokes?: Revoke[]
 	client_packages?: ClientPackage[]
 	bookings?: Booking[]
+	client_bookings?: Booking[]
+	kpis?: Record<string, number>
+	payment_methods?: { method: string; count: number; total: number }[]
 }
