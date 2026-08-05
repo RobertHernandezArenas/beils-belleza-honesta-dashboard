@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { UserPlus, Save, Edit, User, CreditCard, Search, Camera, Trash2 } from 'lucide-vue-next'
@@ -8,7 +9,7 @@
 
 	const props = defineProps<{
 		modelValue: boolean
-		clientToEdit?: any | null
+		clientToEdit?: ClientDTO | null
 	}>()
 
 	const emit = defineEmits(['update:modelValue', 'close', 'success'])
@@ -123,7 +124,7 @@
 	
 	// Scroll-reactive action bar (Mobile only)
 	const isActionBarVisible = ref(true)
-	let scrollTimeout: any = null
+	let scrollTimeout: ReturnType<typeof setTimeout> | undefined
 
 	const handleScroll = () => {
 		// Only trigger for real scrolling on small screens
@@ -151,7 +152,7 @@
 			// If the document number is masked (starts with ****), fetch the real one
 			if (fullDocNumber.startsWith('****')) {
 				try {
-					const res: any = await $fetch(`/api/clients/${props.clientToEdit.user_id}`, {
+					const res = await $fetch<ClientDTO>(`/api/clients/${props.clientToEdit!.user_id}`, {
 						query: { reveal: 'true' },
 					})
 					if (res && res.document_number) {
@@ -238,8 +239,8 @@
 				formData.append('file', avatarFile.value)
 				
 				// Generar nombre de subcarpeta descriptivo
-				const clientId = isEditing.value ? props.clientToEdit!.user_id : (form as any).user_id || crypto.randomUUID()
-				if (!isEditing.value) (form as any).user_id = clientId
+				const clientId = isEditing.value ? props.clientToEdit!.user_id : (form as Record<string, unknown>).user_id as string || crypto.randomUUID()
+				if (!isEditing.value) (form as Record<string, unknown>).user_id = clientId
 				
 				const slugify = (text: string) => text.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-')
 				const subdirectory = `${slugify(form.name)}-${slugify(form.surname)}-${clientId.substring(0, 8)}`
@@ -272,7 +273,7 @@
 			emit('success')
 			localVisible.value = false
 		},
-		onError: (err: any) => {
+		onError: (err: FetchError) => {
 			apiError.value = err.response?._data?.statusMessage || err.message || 'Error al guardar el cliente'
 		},
 	})
@@ -297,7 +298,7 @@
 			return
 		}
 
-		saveClient(result.data as any)
+		saveClient(result.data as typeof form)
 	}
 </script>
 
