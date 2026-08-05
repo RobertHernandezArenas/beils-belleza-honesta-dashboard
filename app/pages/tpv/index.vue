@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CatalogItem } from '~~/shared/types/domain'
 	import TpvCatalog from '~/components/tpv/TpvCatalog.vue'
 	import TpvCart from '~/components/tpv/TpvCart.vue'
 	import { useTpv } from '~/composables/useTpv'
@@ -44,7 +45,7 @@
 		cartItems.value.reduce((sum, item) => sum + item.quantity, 0)
 	)
 
-	const handleAddToCartAndNotify = (item: any, type: string) => {
+	const handleAddToCartAndNotify = (item: CatalogItem, type: string) => {
 		addToCart(item, type)
 	}
 </script>

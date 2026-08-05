@@ -9,7 +9,7 @@
 				v-model="filtersStore.searchQuery"
 				:filters-active="filtersStore.hasActiveFilters"
 				@toggle-filters="filtersStore.toggleFilters()"
-				@create="userForm?.showModal(null)" />
+				@create="userForm?.showModal?.(null)" />
 
 			<!-- Filters Panel Component -->
 			<UsersUserFilterPanel />
@@ -20,7 +20,7 @@
 				:pending="pending"
 				:total-items="filteredUsers.length"
 				:items-per-page="itemsPerPage"
-				@edit="userForm?.showModal($event)"
+				@edit="userForm?.showModal?.($event)"
 				@delete="openDeleteModal"
 				@toggle-status="toggleUserStatus" />
 		</div>
@@ -166,11 +166,11 @@
 	)
 
 	// --- Referencias a los componentes hijos ---
-	const userForm = ref<any>(null)
+	const userForm = ref<ModalRef | null>(null)
 	
 	// --- Gestión de Eliminación ---
 	const showDeleteModal = ref(false)
-	const selectedUserToDelete = ref<any>(null)
+	const selectedUserToDelete = ref<UserData | null>(null)
 	const queryClient = useQueryClient()
 
 	const { mutate: deleteUser, isPending: isDeletingUser } = useMutation({
@@ -184,7 +184,7 @@
 			showDeleteModal.value = false
 			selectedUserToDelete.value = null
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			console.error('Error deleting user:', error)
 			handleToast({
 				message: error.data?.statusMessage || t('users.messages.errorDelete', 'Error al eliminar el usuario'),
@@ -194,7 +194,7 @@
 		},
 	})
 
-	const openDeleteModal = (user: any) => {
+	const openDeleteModal = (user: UserData) => {
 		selectedUserToDelete.value = user
 		showDeleteModal.value = true
 	}
@@ -218,9 +218,9 @@
 				handleToast({ message: t('users.messages.statusOff', 'Usuario desactivado'), type: 'success' })
 			}
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			handleToast({
-				message: error.data?.message || t('users.messages.toggleError', 'Error al cambiar estado'),
+				message: error.data?.statusMessage || t('users.messages.toggleError', 'Error al cambiar estado'),
 				type: 'error',
 			})
 		},

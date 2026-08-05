@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FetchError } from '~~/shared/types/domain'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Ticket, Plus, Search, MoreVertical, Edit2, Trash2, Percent } from 'lucide-vue-next'
 	import CouponFormModal from '~/components/marketing/CouponFormModal.vue'
@@ -32,7 +33,7 @@
 			queryClient.invalidateQueries({ queryKey: ['coupons'] })
 			displayToast('Cupón eliminado exitosamente', 'success')
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar el cupón', 'error')
 		},
 	})
@@ -41,7 +42,7 @@
 		modalRef.value?.showModal(null)
 	}
 
-	const openEditModal = (coupon: any) => {
+	const openEditModal = (coupon: ICoupon) => {
 		modalRef.value?.showModal(coupon)
 	}
 

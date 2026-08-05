@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 	import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Scissors, Plus, Search, MoreVertical, Edit2, Trash2, Clock, Package as PackageIcon } from 'lucide-vue-next'
 	import ServiceFormModal from '~/components/services/ServiceFormModal.vue'
@@ -44,7 +45,7 @@
 			queryClient.invalidateQueries({ queryKey: ['services-tpv'] })
 			displayToast('Servicio eliminado exitosamente', 'success')
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar el servicio', 'error')
 		},
 	})
@@ -55,7 +56,7 @@
 			queryClient.invalidateQueries({ queryKey: ['packages'] })
 			displayToast('Paquete eliminado exitosamente', 'success')
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar el paquete', 'error')
 		},
 	})
@@ -75,12 +76,12 @@
 		}
 	}
 
-	const openEditModal = (service: any) => {
+	const openEditModal = (service: IService) => {
 		closeMenu()
 		modalRef.value?.showModal(service)
 	}
 
-	const openEditPackageModal = (pkg: any) => {
+	const openEditPackageModal = (pkg: CatalogItem) => {
 		closeMenu()
 		packageModalRef.value?.openModal(pkg)
 	}
@@ -118,14 +119,14 @@
 		return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 	}
 
-	const formatPackageBadge = (pkg: any) => {
+	const formatPackageBadge = (pkg: CatalogItem) => {
 		const serviceSessions = (pkg.items || [])
-			.filter((it: any) => (it.item_type || 'SERVICE') === 'SERVICE')
-			.reduce((sum: number, it: any) => sum + (Number(it.quantity) || 0), 0)
+			.filter((it: { item_type?: string; quantity?: number }) => (it.item_type || 'SERVICE') === 'SERVICE')
+			.reduce((sum: number, it: { item_type?: string; quantity?: number }) => sum + (Number(it.quantity) || 0), 0)
 		
 		const productCount = (pkg.items || [])
-			.filter((it: any) => (it.item_type || 'SERVICE') === 'PRODUCT')
-			.reduce((sum: number, it: any) => sum + (Number(it.quantity) || 0), 0)
+			.filter((it: { item_type?: string; quantity?: number }) => (it.item_type || 'SERVICE') === 'PRODUCT')
+			.reduce((sum: number, it: { item_type?: string; quantity?: number }) => sum + (Number(it.quantity) || 0), 0)
 
 		const sessions = serviceSessions || pkg.total_sessions || 0
 

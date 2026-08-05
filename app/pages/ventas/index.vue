@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useQueryClient } from '@tanstack/vue-query'
-import { useI18n } from 'vue-i18n'
+import type { Sale, ModalRef } from '~~/shared/types/domain'
+import { useQueryClient } from '@tanstack/vue-query'
 import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
 import SalesMetrics from '~/components/ventas/SalesMetrics.vue'
 import SalesFilters from '~/components/ventas/SalesFilters.vue'
@@ -58,10 +58,10 @@ const {
 } = useSales()
 
 // Modal reference & action
-const purchaseDetailsModalRef = ref<any>(null)
+const purchaseDetailsModalRef = ref<ModalRef | null>(null)
 
-const openDetails = (sale: any) => {
-	purchaseDetailsModalRef.value?.open(sale)
+const openDetails = (sale: Sale) => {
+	purchaseDetailsModalRef.value?.open?.(sale)
 }
 
 // Compute sum totals for historic values
