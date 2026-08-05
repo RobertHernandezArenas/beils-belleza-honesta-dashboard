@@ -148,6 +148,8 @@ export interface CatalogItem {
 	total_sessions?: number
 	type?: string
 	description?: string | null
+	package_item_id?: string
+	quantity?: number
 	items?: CatalogItem[]
 }
 
