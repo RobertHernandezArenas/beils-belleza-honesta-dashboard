@@ -3,7 +3,7 @@
 	import { Home, AlertCircle, RefreshCcw } from 'lucide-vue-next'
 
 	defineProps({
-		error: Object as () => NuxtError,
+		error: { type: Object as () => NuxtError, required: true },
 	})
 
 	const handleError = () => clearError({ redirect: '/' })
