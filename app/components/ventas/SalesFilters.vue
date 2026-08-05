@@ -19,8 +19,7 @@ const paymentMethodOptions = [
 ]
 
 const emit = defineEmits<{
-	(e: 'download-csv'): void
-	(e: 'download-pdf'): void
+	(e: 'download-csv' | 'download-pdf'): void
 }>()
 
 const searchQuery = defineModel<string>('searchQuery', { required: true })

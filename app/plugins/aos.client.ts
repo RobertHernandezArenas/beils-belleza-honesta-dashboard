@@ -25,7 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         })
         
         // Expose to window for components that need it
-        // @ts-ignore
+        // @ts-expect-error AOS no expone tipos
         if (typeof window !== 'undefined') window.AOS = AOS
 
         // Robust refresh using ResizeObserver to prevent reflow violations

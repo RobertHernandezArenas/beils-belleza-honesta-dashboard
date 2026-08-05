@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation } from '@tanstack/vue-query'
 	import { useRouter } from 'vue-router'
@@ -87,7 +88,7 @@
 				method: 'POST',
 				body: credentials,
 			})
-			return data as { user: any; token: string }
+			return data as { user: ClientDTO; token: string }
 		} catch (err: any) {
 			const errorMessage = err.response?._data?.statusMessage || err.message || t('auth.login.error')
 			throw new Error(errorMessage)

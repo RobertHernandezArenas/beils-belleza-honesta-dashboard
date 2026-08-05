@@ -15,7 +15,7 @@ const props = withDefaults(
 		disabled?: boolean
 		size?: 'sm' | 'md' | 'lg'
 	}>(),
-	{ size: 'md' },
+	{ size: 'md', placeholder: '', ariaLabel: '' },
 )
 
 const model = defineModel<string | number>({ required: true })
@@ -69,7 +69,7 @@ const openPanel = async () => {
 
 const toggle = () => {
 	if (props.disabled) return
-	open.value ? (open.value = false) : openPanel()
+	if (open.value) { open.value = false } else { openPanel() }
 }
 const select = (value: string | number) => {
 	model.value = value

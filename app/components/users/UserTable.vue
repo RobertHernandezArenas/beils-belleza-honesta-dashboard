@@ -132,16 +132,17 @@
 					</tr>
 
 					<!-- Filas vacías para mantener la altura cuando hay menos de 5 usuarios -->
-					<tr
-						v-for="i in itemsPerPage - users.length"
-						v-if="users.length > 0 && users.length < itemsPerPage"
-						:key="`empty-${i}`"
-						class="pointer-events-none h-[81px] border-b border-transparent">
-						<td class="px-6 py-4"/>
-						<td class="px-6 py-4"/>
-						<td class="px-6 py-4"/>
-						<td class="px-6 py-4"/>
-					</tr>
+					<template v-if="users.length > 0 && users.length < itemsPerPage">
+						<tr
+							v-for="i in itemsPerPage - users.length"
+							:key="`empty-${i}`"
+							class="pointer-events-none h-[81px] border-b border-transparent">
+							<td class="px-6 py-4"/>
+							<td class="px-6 py-4"/>
+							<td class="px-6 py-4"/>
+							<td class="px-6 py-4"/>
+						</tr>
+					</template>
 				</tbody>
 			</table>
 

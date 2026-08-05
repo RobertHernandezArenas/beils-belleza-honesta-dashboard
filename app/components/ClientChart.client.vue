@@ -17,7 +17,7 @@
 	])
 
 	defineProps<{
-		option: Record<string, any>
+		option: Record<string, unknown>
 	}>()
 
 	const containerRef = ref<HTMLElement | null>(null)
