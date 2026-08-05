@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { BookingItemData } from '~/composables/useBookingForm'
 import type { CatalogItem } from '~~/shared/types/domain'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
