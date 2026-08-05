@@ -2,7 +2,7 @@
 	import { ChevronDown } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 
-	const { locale, setLocale } = useI18n() as any
+	const { locale, setLocale } = useI18n() as unknown as { locale: import('vue').Ref<string>; setLocale: (l: string) => void }
 	const localeCookie = useCookie('i18n_redirected')
 	const isOpen = ref(false)
 	const dropdownRef = ref<HTMLElement | null>(null)
