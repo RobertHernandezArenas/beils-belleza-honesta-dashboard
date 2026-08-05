@@ -168,10 +168,11 @@
 </template>
 
 <script setup lang="ts">
+import type { ClientDTO } from '~~/shared/types/domain'
 	import { ShieldCheck, User, Contact, ToggleLeft, ToggleRight, Pencil, Trash2, Users } from 'lucide-vue-next'
 
 	defineProps<{
-		users: any[]
+		users: ClientDTO[]
 		pending: boolean
 		totalItems: number
 		itemsPerPage: number
