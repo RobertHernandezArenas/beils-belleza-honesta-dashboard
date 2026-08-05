@@ -1,22 +1,23 @@
 <script setup lang="ts">
+import type { ClientProfile, Booking, Sale } from '~~/shared/types/domain'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { CalendarClock, Clock, User2, Receipt, X, ChevronRight, Scissors } from 'lucide-vue-next'
 
 const props = defineProps<{
-	client: any
+	client: ClientProfile
 }>()
 
-const selected = ref<any | null>(null)
+const selected = ref<Booking | null>(null)
 
-const bookings = computed<any[]>(() =>
+const bookings = computed<Booking[]>(() =>
 	[...(props.client?.client_bookings || [])].sort(
 		(a, b) => new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime(),
 	),
 )
 
 // Cart/ticket linked to a booking via cart.booking_id
-const ticketFor = (booking: any) =>
-	(props.client?.carts || []).find((c: any) => c.booking_id === booking?.booking_id) || null
+const ticketFor = (booking: Booking) =>
+	(props.client?.carts || []).find((c: Sale) => c.booking_id === booking?.booking_id) || null
 
 const selectedTicket = computed(() => (selected.value ? ticketFor(selected.value) : null))
 
@@ -34,10 +35,10 @@ const statusStyle = (status: string) => {
 	if (s === 'AUSENTE' || s === 'NO_SHOW') return 'bg-text-muted/15 text-text-muted'
 	return 'bg-text-muted/15 text-text-muted'
 }
-const serviceNames = (b: any) =>
-	(b.booking_items || []).map((it: any) => it.name).join(' · ') || b.item_type || 'Servicio'
+const serviceNames = (b: Booking) =>
+	(b.booking_items || []).map((it: { name: string }) => it.name).join(' · ') || b.item_type || 'Servicio'
 
-const open = (b: any) => (selected.value = b)
+const open = (b: Booking) => (selected.value = b)
 const close = () => (selected.value = null)
 const onKey = (e: KeyboardEvent) => {
 	if (e.key === 'Escape') close()

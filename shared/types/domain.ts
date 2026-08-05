@@ -169,6 +169,7 @@ export interface ClientPackage {
 	remaining_sessions: number
 	expiry_date?: string | null
 	status: string
+	package?: CatalogItem | null
 	items?: ClientPackageItem[]
 }
 
@@ -237,6 +238,19 @@ export interface ClientProfile extends ClientDTO {
 	client_packages?: ClientPackage[]
 	bookings?: Booking[]
 	client_bookings?: Booking[]
-	kpis?: Record<string, number>
+	kpis?: {
+		engagementScore?: number
+		engagementTier?: string
+		engagementTierLabel?: string
+		ltv?: number
+		aov?: number
+		bookingFrequencyDays?: number
+		totalBookings?: number
+		nextBooking?: Booking | null
+		spendingHistory?: { period: string; total: number }[]
+		paymentMethods?: { method: string; count: number; total: number }[]
+		topServices?: { name: string; total?: number; count?: number; qty?: number }[]
+		topProducts?: { name: string; total?: number; count?: number; qty?: number }[]
+	}
 	payment_methods?: { method: string; count: number; total: number }[]
 }

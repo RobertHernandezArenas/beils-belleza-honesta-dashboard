@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientProfile } from '~~/shared/types/domain'
 import { 
   MapPin, 
   FileSignature, 
@@ -14,7 +15,7 @@ import { useI18n } from 'vue-i18n'
 
 defineProps({
   client: {
-    type: Object as PropType<any>,
+    type: Object as PropType<ClientProfile>,
     required: true
   },
   isUpdating: {
@@ -53,7 +54,7 @@ const formatDate = (dateStr: string) => {
         <div class="flex flex-col gap-1 w-full">
           <span class="text-text-muted text-[10px] font-black uppercase tracking-widest">{{ $t('catalog.clients.form.address') }}</span>
           <EditableField 
-            :model-value="client.address" 
+            :model-value="client.address || ''" 
             :label="$t('catalog.clients.form.address')"
             :is-mutating="isUpdating" 
             class="text-text-primary text-sm font-bold leading-tight" 
@@ -64,7 +65,7 @@ const formatDate = (dateStr: string) => {
           <div class="flex w-full flex-col gap-1">
             <span class="text-text-muted text-[10px] font-black tracking-widest uppercase">{{ $t('catalog.clients.form.city') }}</span>
             <EditableField 
-              :model-value="client.city" 
+              :model-value="client.city || ''" 
               :label="$t('catalog.clients.form.city')"
               :is-mutating="isUpdating" 
               class="text-text-primary text-sm font-bold" 
@@ -74,7 +75,7 @@ const formatDate = (dateStr: string) => {
           <div class="flex w-full flex-col gap-1">
             <span class="text-text-muted text-[10px] font-black tracking-widest uppercase">{{ $t('catalog.clients.form.postalCode') }}</span>
             <EditableField 
-              :model-value="client.postal_code" 
+              :model-value="client.postal_code || ''" 
               :label="$t('catalog.clients.form.postalCode')"
               :is-mutating="isUpdating" 
               class="text-text-primary text-sm font-bold" 
@@ -84,7 +85,7 @@ const formatDate = (dateStr: string) => {
           <div class="flex w-full flex-col gap-1 col-span-2">
             <span class="text-text-muted text-[10px] font-black tracking-widest uppercase">{{ $t('catalog.clients.form.country') }}</span>
             <EditableField 
-              :model-value="client.country" 
+              :model-value="client.country || ''" 
               :label="$t('catalog.clients.form.country')"
               :is-mutating="isUpdating" 
               class="text-text-primary text-sm font-bold" 
@@ -108,7 +109,7 @@ const formatDate = (dateStr: string) => {
           <div class="flex flex-col gap-1 w-full flex-1 min-w-0">
             <div class="w-fit">
               <EditableField
-                :model-value="client.document_type"
+                :model-value="client.document_type || ''"
                 :label="$t('users.form.documentType')"
                 type="select"
                 :options="[{label:'DNI', value:'DNI'}, {label:'PASSPORT', value:'PASSPORT'}, {label:'NIE', value:'NIE'}]"
@@ -121,7 +122,7 @@ const formatDate = (dateStr: string) => {
             </div>
             
             <EditableField
-              :model-value="client.document_number"
+              :model-value="client.document_number || ''"
               :label="$t('users.form.documentNumber')"
               :is-mutating="isUpdating"
               class="text-text-primary font-mono text-sm font-black tabular-nums tracking-wider w-full"
@@ -137,7 +138,7 @@ const formatDate = (dateStr: string) => {
             class="btn btn-circle btn-ghost btn-xs text-text-muted hover:text-primary transition-colors shrink-0"
             :disabled="revealedLoading[client.user_id]"
             :title="$t('overview.charts.details')"
-            @click="toggleDocumentVisibility(client.user_id, client.document_number)"
+            @click="toggleDocumentVisibility(client.user_id, client.document_number || '')"
           >
             <span v-if="revealedLoading[client.user_id]" class="loading loading-spinner h-3 w-3"/>
             <component 
@@ -168,20 +169,20 @@ const formatDate = (dateStr: string) => {
         <div class="flex justify-between items-center border-b border-border-subtle pb-3 gap-4">
           <span class="text-text-muted text-xs font-bold uppercase shrink-0">{{ $t('catalog.clients.form.birthDate') }}</span>
           <EditableField
-            :model-value="client.birth_date"
+            :model-value="client.birth_date || ''"
             :label="$t('catalog.clients.form.birthDate')"
             type="date"
             :is-mutating="isUpdating"
             class="text-text-primary text-sm font-bold w-auto ml-auto flex justify-end"
             @save="emit('update', 'birth_date', $event)"
           >
-             <template #display>{{ formatDate(client.birth_date) }}</template>
+             <template #display>{{ formatDate(client.birth_date || '') }}</template>
           </EditableField>
         </div>
         <div class="flex justify-between items-center border-b border-border-subtle pb-3 gap-4">
           <span class="text-text-muted text-xs font-bold uppercase shrink-0">{{ $t('catalog.clients.form.gender') }}</span>
           <EditableField
-            :model-value="client.gender"
+            :model-value="client.gender || ''"
             :label="$t('catalog.clients.form.gender')"
             type="select"
             :options="[{label:$t('catalog.clients.form.female'), value:'Female'}, {label:$t('catalog.clients.form.male'), value:'Male'}, {label:$t('catalog.clients.form.other'), value:'Other'}]"
@@ -194,7 +195,7 @@ const formatDate = (dateStr: string) => {
         </div>
         <div class="flex justify-between items-center">
           <span class="text-text-muted text-xs font-bold uppercase shrink-0">{{ $t('catalog.clients.profile.kpis.registered') }}</span>
-          <span class="text-text-primary text-sm font-bold flex p-1">{{ formatDate(client.created_at) }}</span>
+          <span class="text-text-primary text-sm font-bold flex p-1">{{ formatDate(client.created_at || '') }}</span>
         </div>
       </div>
     </div>

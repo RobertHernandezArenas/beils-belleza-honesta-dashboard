@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { ClientProfile, Questionnaire } from '~~/shared/types/domain'
 import {
 	Activity, Zap, ShieldCheck, AlertCircle, CheckCircle2, Plus, ChevronRight
 } from 'lucide-vue-next'
 
 const props = defineProps({
-	client: { type: Object as PropType<any>, required: true }
+	client: { type: Object as PropType<ClientProfile>, required: true }
 })
 
 defineEmits(['add-consent', 'add-questionnaire'])
@@ -12,7 +13,7 @@ defineEmits(['add-consent', 'add-questionnaire'])
 // Indiba questionnaire check
 const indibaQuestionnaire = computed(() => {
 	if (!props.client.questionnaires) return null
-	return props.client.questionnaires.find((q: any) => 
+	return (props.client.questionnaires || []).find((q: Questionnaire) => 
 		q.title?.toLowerCase().includes('indiba') || q.title?.toLowerCase().includes('radiofrecuencia')
 	)
 })
@@ -20,7 +21,7 @@ const indibaQuestionnaire = computed(() => {
 // Laser questionnaire check
 const laserQuestionnaire = computed(() => {
 	if (!props.client.questionnaires) return null
-	return props.client.questionnaires.find((q: any) => 
+	return (props.client.questionnaires || []).find((q: Questionnaire) => 
 		q.title?.toLowerCase().includes('láser') || q.title?.toLowerCase().includes('laser') || q.title?.toLowerCase().includes('depilación')
 	)
 })
@@ -113,7 +114,7 @@ const laserContraindications = [
 					</div>
 
 					<div class="pt-2 flex items-center justify-between text-xs text-text-muted font-medium border-t border-border-subtle">
-						<span>Última revisión: {{ indibaQuestionnaire ? new Date(indibaQuestionnaire.created_at).toLocaleDateString() : 'No realizada' }}</span>
+						<span>Última revisión: {{ indibaQuestionnaire ? new Date(indibaQuestionnaire.created_at || '').toLocaleDateString() : 'No realizada' }}</span>
 						<button class="btn btn-ghost btn-xs font-bold text-primary" @click="$emit('add-questionnaire')">
 							Ver Detalles <ChevronRight class="w-3.5 h-3.5" />
 						</button>
@@ -164,7 +165,7 @@ const laserContraindications = [
 					</div>
 
 					<div class="pt-2 flex items-center justify-between text-xs text-text-muted font-medium border-t border-border-subtle">
-						<span>Última revisión: {{ laserQuestionnaire ? new Date(laserQuestionnaire.created_at).toLocaleDateString() : 'No realizada' }}</span>
+						<span>Última revisión: {{ laserQuestionnaire ? new Date(laserQuestionnaire.created_at || '').toLocaleDateString() : 'No realizada' }}</span>
 						<button class="btn btn-ghost btn-xs font-bold text-primary" @click="$emit('add-questionnaire')">
 							Ver Detalles <ChevronRight class="w-3.5 h-3.5" />
 						</button>
