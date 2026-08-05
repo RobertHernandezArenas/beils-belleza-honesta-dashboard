@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import type { FetchError } from '~~/shared/types/domain'
+import type { IGiftcard } from '~~/shared/types/marketing'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { RefreshCcw } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
-	const editingCard = ref<any | null>(null)
+	const editingCard = ref<IGiftcard | null>(null)
 	const isSaving = ref(false)
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
@@ -31,7 +33,7 @@
 		form.code = result
 	}
 
-	const showModal = (card: any | null) => {
+	const showModal = (card: IGiftcard | null) => {
 		editingCard.value = card
 		if (card) {
 			form.code = card.code || ''
@@ -60,7 +62,7 @@
 	}
 
 	const { mutate: performSave } = useMutation({
-		mutationFn: async (payload: any) => {
+		mutationFn: async (payload: Record<string, unknown>) => {
 			if (editingCard.value) {
 				return await $fetch(`/api/marketing/giftcards/${editingCard.value.giftcard_id}`, {
 					method: 'PUT',
@@ -80,7 +82,7 @@
 			emit('refresh')
 			closeModal()
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			console.error('Error saving giftcard:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar la tarjeta', 'error')
 		},

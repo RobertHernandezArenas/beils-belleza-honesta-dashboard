@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { IProduct, IService } from '~~/shared/types/catalog'
+import type { CatalogItem } from '~~/shared/types/domain'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Package, Trash2, X, Sparkles, Box, Scissors } from 'lucide-vue-next'
 import AppSelect from '~/components/ui/AppSelect.vue'
@@ -26,12 +28,12 @@ const form = reactive({
 })
 
 // Fetch Services & Products for item selection
-const { data: services } = useQuery<any[]>({
+const { data: services } = useQuery<IService[]>({
 	queryKey: ['services-catalog'],
 	queryFn: () => $fetch('/api/services')
 })
 
-const { data: products } = useQuery<any[]>({
+const { data: products } = useQuery<IProduct[]>({
 	queryKey: ['products-catalog'],
 	queryFn: () => $fetch('/api/catalog/products')
 })
@@ -39,19 +41,19 @@ const { data: products } = useQuery<any[]>({
 // Options for the themed AppSelect dropdowns
 const serviceOptions = computed(() => [
 	{ value: '', label: 'Selecciona servicio...' },
-	...(services.value || []).map((s: any) => ({
+	...(services.value || []).map((s: IService) => ({
 		value: s.service_id,
 		label: `${s.name} (${s.duration || 45} min)`,
 	})),
 ])
 const productOptions = computed(() => [
 	{ value: '', label: 'Seleccionar Producto...' },
-	...(products.value || []).map((p: any) => ({ value: p.product_id, label: p.name })),
+	...(products.value || []).map((p: IProduct) => ({ value: p.product_id, label: p.name })),
 ])
 
 const onCatalogServiceSelect = (value: string | number) => {
 	form.service_id = String(value)
-	const svc = (services.value || []).find((s: any) => s.service_id === value)
+	const svc = (services.value || []).find((s: IService) => s.service_id === value)
 	if (svc) {
 		form.items = [
 			{
@@ -88,18 +90,18 @@ const { mutate: savePackage, isPending: isSaving } = useMutation({
 	}
 })
 
-const openModal = (packageData: any = null) => {
+const openModal = (packageData: CatalogItem | null = null) => {
 	if (packageData) {
 		isEditing.value = true
-		editingId.value = packageData.package_id
+		editingId.value = packageData.package_id ?? null
 		form.name = packageData.name || ''
 		form.description = packageData.description || ''
-		form.type = packageData.type || 'INDIVIDUAL'
+		form.type = (packageData.type || 'INDIVIDUAL') as 'MIXTO' | 'INDIVIDUAL'
 		form.price = Number(packageData.price || 0)
 		form.total_sessions = Number(packageData.total_sessions || 1)
 		form.service_id = packageData.service_id || ''
-		form.items = (packageData.items || []).map((it: any) => ({
-			item_type: it.item_type || 'SERVICE',
+		form.items = (packageData.items || []).map((it: { item_type?: string; item_id?: string; name?: string; quantity?: number; duration?: number }) => ({
+			item_type: (it.item_type || 'SERVICE') as 'SERVICE' | 'PRODUCT',
 			item_id: it.item_id || '',
 			name: it.name || '',
 			quantity: Number(it.quantity || 1),
@@ -140,7 +142,7 @@ const removeItemRow = (index: number) => {
 
 const onServiceSelect = (index: number, serviceId: string) => {
 	const item = form.items[index]
-	const svc = (services.value || []).find((s: any) => s.service_id === serviceId)
+	const svc = (services.value || []).find((s: IService) => s.service_id === serviceId)
 	if (!item || !svc) return
 	item.item_id = svc.service_id
 	item.name = svc.name
@@ -149,7 +151,7 @@ const onServiceSelect = (index: number, serviceId: string) => {
 
 const onProductSelect = (index: number, productId: string) => {
 	const item = form.items[index]
-	const prd = (products.value || []).find((p: any) => p.product_id === productId)
+	const prd = (products.value || []).find((p: IProduct) => p.product_id === productId)
 	if (!item || !prd) return
 	item.item_id = prd.product_id
 	item.name = prd.name

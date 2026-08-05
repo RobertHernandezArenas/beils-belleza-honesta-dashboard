@@ -1,22 +1,23 @@
 <script setup lang="ts">
+import type { Sale, SaleItem } from '~~/shared/types/domain'
 import { ArrowUp, ArrowDown, ArrowUpDown, ShoppingBag, ExternalLink } from 'lucide-vue-next'
 
 interface Props {
-	paginatedSales: any[]
+	paginatedSales: Sale[]
 	isPending: boolean
 	sortKey: 'id' | 'date' | 'payment_method' | 'total' | 'client'
 	sortOrder: 'asc' | 'desc'
-	getTicketDisplay: (sale: any) => string
+	getTicketDisplay: (sale: Sale) => string
 	formatCustomDate: (dateString: string) => string
 	getPaymentMethodBadge: (method: string) => { label: string; class: string }
-	getTotalItems: (items: any[]) => number
+	getTotalItems: (items: SaleItem[]) => number
 	formatCurrency: (val: number) => string
 }
 
 defineProps<Props>()
 
 const emit = defineEmits<{
-	(e: 'open-details', sale: any): void
+	(e: 'open-details', sale: Sale): void
 	(e: 'toggle-sort', key: 'id' | 'date' | 'payment_method' | 'total' | 'client'): void
 }>()
 </script>
@@ -97,12 +98,12 @@ const emit = defineEmits<{
 					</td>
 					<td class="py-4 px-4">
 						<span class="bg-bg-muted/80 text-text-secondary border border-border-default/70 text-[10px] font-extrabold px-2.5 py-1 rounded-md tracking-wider uppercase font-sans">
-							{{ getTotalItems(sale.items) }} items
+							{{ getTotalItems(sale.items || []) }} items
 						</span>
 					</td>
 					<td class="py-4 px-4 text-center">
-						<span class="text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border shadow-sm" :class="getPaymentMethodBadge(sale.payment_method).class">
-							{{ getPaymentMethodBadge(sale.payment_method).label }}
+						<span class="text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border shadow-sm" :class="getPaymentMethodBadge(sale.payment_method || '').class">
+							{{ getPaymentMethodBadge(sale.payment_method || '').label }}
 						</span>
 					</td>
 					<td class="py-4 px-4 text-right">

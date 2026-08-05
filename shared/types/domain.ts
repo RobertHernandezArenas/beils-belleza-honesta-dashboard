@@ -137,6 +137,8 @@ export interface CatalogItem {
 	remaining_sessions?: number
 	total_sessions?: number
 	type?: string
+	description?: string | null
+	items?: CatalogItem[]
 }
 
 export interface ClientPackage {

@@ -1,17 +1,19 @@
 <script setup lang="ts">
+import type { FetchError } from '~~/shared/types/domain'
+import type { IProduct } from '~~/shared/types/catalog'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { Euro, Package, ImageIcon } from 'lucide-vue-next'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
-	const editingProduct = ref<any | null>(null)
+	const editingProduct = ref<IProduct | null>(null)
 	const isSaving = ref(false)
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
 	// Scroll-reactive action bar (Mobile only)
 	const isActionBarVisible = ref(true)
-	let scrollTimeout: any = null
+	let scrollTimeout: ReturnType<typeof setTimeout> | undefined
 
 	const handleScroll = () => {
 		if (window.innerWidth >= 1024) return
@@ -41,7 +43,7 @@
 		status: 'activo',
 	})
 
-	const showModal = (product: any | null) => {
+	const showModal = (product: IProduct | null) => {
 		editingProduct.value = product
 		if (product) {
 			form.name = product.name || ''
@@ -74,7 +76,7 @@
 	}
 
 	const { mutate: performSave } = useMutation({
-		mutationFn: async (payload: any) => {
+		mutationFn: async (payload: Record<string, unknown>) => {
 			if (editingProduct.value) {
 				return await $fetch(`/api/catalog/products/${editingProduct.value.product_id}`, {
 					method: 'PUT',
@@ -94,7 +96,7 @@
 			emit('refresh')
 			closeModal()
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			console.error('Error saving product:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el producto', 'error')
 		},

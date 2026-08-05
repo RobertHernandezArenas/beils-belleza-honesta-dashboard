@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { FetchError } from '~~/shared/types/domain'
+import type { ICoupon } from '~~/shared/types/marketing'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import AppSelect from '~/components/ui/AppSelect.vue'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
-	const editingCoupon = ref<any | null>(null)
+	const editingCoupon = ref<ICoupon | null>(null)
 	const isSaving = ref(false)
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
@@ -23,7 +25,7 @@
 		status: 'activo',
 	})
 
-	const showModal = (coupon: any | null) => {
+	const showModal = (coupon: ICoupon | null) => {
 		editingCoupon.value = coupon
 		if (coupon) {
 			form.code = coupon.code || ''
@@ -55,7 +57,7 @@
 	}
 
 	const { mutate: performSave } = useMutation({
-		mutationFn: async (payload: any) => {
+		mutationFn: async (payload: Record<string, unknown>) => {
 			if (editingCoupon.value) {
 				return await $fetch(`/api/marketing/coupons/${editingCoupon.value.coupon_id}`, {
 					method: 'PUT',
@@ -75,7 +77,7 @@
 			emit('refresh')
 			closeModal()
 		},
-		onError: (error: any) => {
+		onError: (error: FetchError) => {
 			console.error('Error saving coupon:', error)
 			emit('toast', error.data?.statusMessage || 'Error al guardar el cupón', 'error')
 		},
