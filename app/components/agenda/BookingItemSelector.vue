@@ -1,17 +1,18 @@
 <script setup lang="ts">
+import type { CatalogItem } from '~~/shared/types/domain'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Search, Plus, Package, Sparkles, Scissors, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
 const props = defineProps<{
-    services: any[] | undefined
-    clientPackages?: any[] | undefined
-    catalogPackages?: any[] | undefined
-    selectedItems?: any[] | undefined
+    services: CatalogItem[] | undefined
+    clientPackages?: CatalogItem[] | undefined
+    catalogPackages?: CatalogItem[] | undefined
+    selectedItems?: CatalogItem[] | undefined
     disabled?: boolean
 }>()
 
 const emit = defineEmits<{
-    (e: 'add', item: any): void
+    (e: 'add', item: CatalogItem): void
 }>()
 
 const itemSearch = ref('')
@@ -30,7 +31,7 @@ const normalizeStr = (str: string) => {
 
 const filteredItems = computed(() => {
     const q = normalizeStr(itemSearch.value)
-    const source: any[] = props.services || []
+    const source: CatalogItem[] = props.services || []
     
     if (!q) return source.slice(0, 10)
     
@@ -43,22 +44,22 @@ const filteredItems = computed(() => {
 // Calculate used count for individual package or sub-item
 const getUsedCount = (itemId: string) => {
     if (!props.selectedItems) return 0
-    return props.selectedItems.filter((item: any) => item.item_id === itemId).length
+    return props.selectedItems.filter((item: CatalogItem) => item.item_id === itemId).length
 }
 
-const getEffectiveRemainingForPackage = (pkg: any) => {
-    const pkgId = pkg.client_package_id || pkg.package_id
+const getEffectiveRemainingForPackage = (pkg: CatalogItem) => {
+    const pkgId = pkg.client_package_id || pkg.package_id || ''
     const used = getUsedCount(pkgId)
     return Math.max(0, (pkg.remaining_sessions || 0) - used)
 }
 
-const getEffectiveRemainingForSubItem = (subItem: any) => {
-    const itemId = subItem.client_package_item_id || subItem.package_item_id
+const getEffectiveRemainingForSubItem = (subItem: CatalogItem) => {
+    const itemId = subItem.client_package_item_id || subItem.package_item_id || ''
     const used = getUsedCount(itemId)
     return Math.max(0, (subItem.quantity_remaining || 0) - used)
 }
 
-const addServiceItem = (item: any) => {
+const addServiceItem = (item: CatalogItem) => {
     emit('add', {
         item_type: 'SERVICE',
         item_id: item.service_id,
@@ -71,7 +72,7 @@ const addServiceItem = (item: any) => {
 
 const filteredPackages = computed(() => {
     const q = normalizeStr(pkgSearch.value)
-    const source: any[] = props.catalogPackages || []
+    const source: CatalogItem[] = props.catalogPackages || []
     if (!q) return source.slice(0, 10)
     return source.filter(pkg =>
         normalizeStr(pkg.name).includes(q) ||
@@ -80,7 +81,7 @@ const filteredPackages = computed(() => {
 })
 
 // Sell a bono/package within the appointment (assigned to the client on checkout in TPV)
-const addPackageSaleItem = (pkg: any) => {
+const addPackageSaleItem = (pkg: CatalogItem) => {
     emit('add', {
         item_type: 'package_sale',
         item_id: pkg.package_id,
@@ -92,7 +93,7 @@ const addPackageSaleItem = (pkg: any) => {
     isPkgDropdownOpen.value = false
 }
 
-const addIndividualPackageItem = (pkg: any) => {
+const addIndividualPackageItem = (pkg: CatalogItem) => {
     if (getEffectiveRemainingForPackage(pkg) <= 0) return
     const pkgId = pkg.client_package_id || pkg.package_id
     emit('add', {
@@ -106,7 +107,7 @@ const addIndividualPackageItem = (pkg: any) => {
     isItemDropdownOpen.value = false
 }
 
-const addMixedPackageSubItem = (pkg: any, subItem: any) => {
+const addMixedPackageSubItem = (pkg: CatalogItem, subItem: CatalogItem) => {
     if (getEffectiveRemainingForSubItem(subItem) <= 0) return
     const itemId = subItem.client_package_item_id || subItem.package_item_id
     emit('add', {
@@ -209,17 +210,17 @@ defineExpose({
                             v-else
                             type="button"
                             class="btn btn-ghost btn-xs font-black text-[9px] uppercase gap-1 text-primary"
-                            @click="toggleExpandPackage(pkg.client_package_id || pkg.package_id)"
+                            @click="toggleExpandPackage((pkg.client_package_id || pkg.package_id) || '')"
                         >
-                            <span>{{ expandedPackages[pkg.client_package_id || pkg.package_id] ? 'Ocultar Items' : 'Ver Items Incluidos' }}</span>
-                            <ChevronUp v-if="expandedPackages[pkg.client_package_id || pkg.package_id]" class="w-3 h-3" />
+                            <span>{{ expandedPackages[(pkg.client_package_id || pkg.package_id) || ''] ? 'Ocultar Items' : 'Ver Items Incluidos' }}</span>
+                            <ChevronUp v-if="expandedPackages[(pkg.client_package_id || pkg.package_id) || '']" class="w-3 h-3" />
                             <ChevronDown v-else class="w-3 h-3" />
                         </button>
                     </div>
 
                     <!-- DESGLOSE DE SUB-ITEMS DE BONO MIXTO -->
                     <div 
-                        v-if="pkg.type === 'MIXTO' && (expandedPackages[pkg.client_package_id || pkg.package_id] !== false)"
+                        v-if="pkg.type === 'MIXTO' && (expandedPackages[(pkg.client_package_id || pkg.package_id) || ''] !== false)"
                         class="pt-2 border-t border-border-subtle/60 space-y-1.5 pl-2"
                     >
                         <p class="text-[9px] font-black uppercase tracking-wider text-text-muted flex items-center gap-1">

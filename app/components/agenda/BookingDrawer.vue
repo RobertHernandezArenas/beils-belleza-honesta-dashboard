@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { BookingItemData } from '~/composables/useBookingForm'
+import type { CatalogItem } from '~~/shared/types/domain'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Trash2, X } from 'lucide-vue-next'
@@ -57,8 +58,8 @@ const handlePayInTpv = async () => {
 
 
 
-const handleAddItem = (item: BookingItemData) => {
-    form.items.push(item)
+const handleAddItem = (item: CatalogItem) => {
+    form.items.push({ item_type: item.item_type || 'SERVICE', item_id: item.item_id || '', name: item.name, duration: item.duration || 0 })
     updateDuration()
 }
 
