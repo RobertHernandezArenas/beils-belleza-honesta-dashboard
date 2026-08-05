@@ -1,10 +1,4 @@
 <script lang="ts" setup>
-interface ReportsOverview {
-	kpis: { totalRevenue: number; totalSales: number; totalClients: number; totalProducts: number }
-	revenueTrend: { month: string; revenue: number }[]
-	paymentMethods: { name: string; value: number }[]
-	topItems: { name: string; quantity: number }[]
-}
 	import { useQuery } from '@tanstack/vue-query'
 	import {
 		Download,
