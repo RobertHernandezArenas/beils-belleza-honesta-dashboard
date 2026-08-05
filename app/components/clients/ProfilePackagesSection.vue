@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { ClientProfile, ClientPackage } from '~~/shared/types/domain'
 import { Package as PackageIcon, AlertCircle, Scissors, ShoppingBag, Plus } from 'lucide-vue-next'
 import AssignPackageModal from '~/components/packages/AssignPackageModal.vue'
 
 const props = defineProps({
-	client: { type: Object as PropType<any>, required: true }
+	client: { type: Object as PropType<ClientProfile>, required: true }
 })
 
 const assignModalRef = ref<InstanceType<typeof AssignPackageModal> | null>(null)
@@ -15,7 +16,7 @@ const openAssignModal = () => {
 // Real active client packages from DB
 const activePackages = computed(() => {
 	if (!props.client.client_packages?.length) return []
-	return props.client.client_packages.map((cp: any) => {
+	return (props.client.client_packages || []).map((cp: ClientPackage) => {
 		const completed = cp.total_sessions - cp.remaining_sessions
 		const expiryFormatted = cp.expiry_date ? new Date(cp.expiry_date).toISOString().split('T')[0] : 'Sin vencimiento'
 		return {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientProfile, Booking } from '~~/shared/types/domain'
 import {
 	Calendar, FileText,
 	TrendingUp, Wallet,
@@ -11,7 +12,7 @@ import EditableField from '~/components/shared/EditableField.vue'
 import ClientChart from '~/components/ClientChart.client.vue'
 
 const props = defineProps({
-	client: { type: Object as PropType<any>, required: true },
+	client: { type: Object as PropType<ClientProfile>, required: true },
 	isUpdating: { type: Boolean, default: false }
 })
 
@@ -54,12 +55,12 @@ const nextBookingData = computed(() => {
 	const now = new Date()
 	now.setHours(0, 0, 0, 0)
 	const futureBookings = props.client.client_bookings
-		.filter((b: any) => {
+		.filter((b: Booking) => {
 			const bDate = new Date(b.booking_date)
 			bDate.setHours(0, 0, 0, 0)
 			return bDate.getTime() >= now.getTime() && (b.status === 'PENDIENTE' || b.status === 'CONFIRMADA' || b.status === 'pending' || b.status === 'confirmed')
 		})
-		.sort((a: any, b: any) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
+		.sort((a: Booking, b: Booking) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
 	return futureBookings[0] || null
 })
 
@@ -77,8 +78,8 @@ const chartOptions = computed(() => {
 		rawHistory = rawHistory.slice(-12)
 	}
 
-	const dates = rawHistory.map((h: any) => h.period)
-	const totals = rawHistory.map((h: any) => h.total)
+	const dates = rawHistory.map((h: { period: string; total: number }) => h.period)
+	const totals = rawHistory.map((h: { period: string; total: number }) => h.total)
 
 	return {
 		grid: { top: 25, right: 15, bottom: 25, left: 45, containLabel: true },
@@ -87,9 +88,9 @@ const chartOptions = computed(() => {
 			backgroundColor: ct.tooltipBg,
 			borderColor: ct.tooltipBorder,
 			textStyle: { color: ct.tooltipText, fontSize: 11, fontWeight: 'bold' },
-			formatter: (params: any) => {
+			formatter: (params: { name: string; value: number }[]) => {
 				const item = params[0]
-				return `${item.name}: <b style="color: ${ct.accent}">${item.value.toFixed(2)} €</b>`
+				return `${item?.name}: <b style="color: ${ct.accent}">${(item?.value ?? 0).toFixed(2)} €</b>`
 			}
 		},
 		xAxis: {
@@ -130,7 +131,7 @@ const chartOptions = computed(() => {
 // Pending Debt Calculation
 const pendingDebtTotal = computed(() => {
 	if (!props.client.debts) return 0
-	return props.client.debts.reduce((acc: number, d: any) => acc + (d.remaining || 0), 0)
+	return (props.client.debts || []).reduce((acc: number, d: { remaining?: number }) => acc + (d.remaining || 0), 0)
 })
 </script>
 
@@ -153,7 +154,7 @@ const pendingDebtTotal = computed(() => {
 					<p class="text-xs font-semibold opacity-90">Este cliente tiene un saldo pendiente de <strong>{{ formatCurrency(pendingDebtTotal) }}</strong>.</p>
 				</div>
 			</div>
-			<button class="btn btn-error btn-sm rounded-xl font-bold uppercase tracking-wider text-white shadow-sm" @click="$emit('open-debt', props.client.debts[0])">
+			<button class="btn btn-error btn-sm rounded-xl font-bold uppercase tracking-wider text-white shadow-sm" @click="$emit('open-debt', props.client.debts?.[0])">
 				Gestionar Pago
 			</button>
 		</div>
@@ -234,7 +235,7 @@ const pendingDebtTotal = computed(() => {
 								<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
 							</div>
 						</div>
-						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.ltv) }}</p>
+						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.ltv || 0) }}</p>
 						<span class="text-[9px] font-bold text-success flex items-center gap-1">
 							<Sparkles class="w-3 h-3" /> Acumulado
 						</span>
@@ -248,7 +249,7 @@ const pendingDebtTotal = computed(() => {
 								<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
 							</div>
 						</div>
-						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.aov) }}</p>
+						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.aov || 0) }}</p>
 						<span class="text-[9px] font-bold text-text-muted">Por transacción</span>
 					</div>
 				</div>
@@ -279,20 +280,20 @@ const pendingDebtTotal = computed(() => {
 
 					<div class="space-y-3 text-xs font-medium">
 						<div class="bg-bg-muted/30 border border-border-subtle rounded-2xl p-3.5 space-y-2">
-							<EditableField :model-value="client.address" label="Dirección" :is-mutating="isUpdating" @save="emit('update', 'address', $event)" />
+							<EditableField :model-value="client.address || ''" label="Dirección" :is-mutating="isUpdating" @save="emit('update', 'address', $event)" />
 							<div class="flex gap-1 items-center">
-								<EditableField :model-value="client.city" label="Ciudad" :is-mutating="isUpdating" @save="emit('update', 'city', $event)" />
+								<EditableField :model-value="client.city || ''" label="Ciudad" :is-mutating="isUpdating" @save="emit('update', 'city', $event)" />
 								<span>,</span>
-								<EditableField :model-value="client.postal_code" label="C.P." :is-mutating="isUpdating" @save="emit('update', 'postal_code', $event)" />
+								<EditableField :model-value="client.postal_code || ''" label="C.P." :is-mutating="isUpdating" @save="emit('update', 'postal_code', $event)" />
 							</div>
-							<EditableField :model-value="client.country" label="País" :is-mutating="isUpdating" @save="emit('update', 'country', $event)" />
+							<EditableField :model-value="client.country || ''" label="País" :is-mutating="isUpdating" @save="emit('update', 'country', $event)" />
 						</div>
 
 						<div class="bg-bg-muted/30 border border-border-subtle rounded-2xl p-3 flex items-center justify-between">
 							<span class="text-text-muted text-[11px] font-bold">Documento:</span>
 							<div class="flex items-center gap-2">
 								<span class="font-mono font-bold text-text-primary">{{ revealedDocs[client.user_id] || '****' + (client.document_number?.slice(-4) || '3115') }}</span>
-								<button class="btn btn-ghost btn-xs btn-circle" aria-label="Toggle Document" @click="toggleDocumentVisibility(client.user_id, client.document_number)">
+								<button class="btn btn-ghost btn-xs btn-circle" aria-label="Toggle Document" @click="toggleDocumentVisibility(client.user_id, client.document_number || '')">
 									<component :is="revealedDocs[client.user_id] ? EyeOff : Eye" class="w-3.5 h-3.5 text-text-muted" />
 								</button>
 							</div>
@@ -352,7 +353,7 @@ const pendingDebtTotal = computed(() => {
 						<div v-if="kpis.topServices?.length" class="space-y-1.5">
 							<div v-for="s in kpis.topServices" :key="s.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
 								<span class="font-bold text-text-primary truncate max-w-[170px]">{{ s.name }}</span>
-								<span class="badge badge-sm font-black tabular-nums">{{ s.qty }}x ({{ formatCurrency(s.total) }})</span>
+								<span class="badge badge-sm font-black tabular-nums">{{ s.qty }}x ({{ formatCurrency(s.total || 0) }})</span>
 							</div>
 						</div>
 						<p v-else class="text-xs text-text-muted italic opacity-60">Sin historial de servicios</p>
@@ -364,7 +365,7 @@ const pendingDebtTotal = computed(() => {
 						<div v-if="kpis.topProducts?.length" class="space-y-1.5">
 							<div v-for="p in kpis.topProducts" :key="p.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
 								<span class="font-bold text-text-primary truncate max-w-[170px]">{{ p.name }}</span>
-								<span class="badge badge-sm font-black tabular-nums">{{ p.qty }}x ({{ formatCurrency(p.total) }})</span>
+								<span class="badge badge-sm font-black tabular-nums">{{ p.qty }}x ({{ formatCurrency(p.total || 0) }})</span>
 							</div>
 						</div>
 						<p v-else class="text-xs text-text-muted italic opacity-60">Sin compras de productos</p>

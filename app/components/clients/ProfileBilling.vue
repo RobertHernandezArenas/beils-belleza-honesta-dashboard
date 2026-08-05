@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { ClientProfile } from '~~/shared/types/domain'
 import { Receipt, CheckCircle2, ShoppingBag, Wallet, History, AlertCircle, PieChart } from 'lucide-vue-next'
 import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ClientChart from '~/components/ClientChart.client.vue'
 
 const props = defineProps({
-  client: { type: Object as PropType<any>, required: true }
+  client: { type: Object as PropType<ClientProfile>, required: true }
 })
 
 const emit = defineEmits(['open-debt', 'open-purchase'])
@@ -25,7 +26,7 @@ const chart = useChartTheme()
 // ECharts Donut Chart Options (theme-aware)
 const chartOptions = computed(() => {
   const ct = chart.value
-  const data = paymentMethodsData.value.map((pm: any) => ({
+  const data = paymentMethodsData.value.map((pm: { method: string; count: number; total: number }) => ({
     name: pm.method.toUpperCase(),
     value: pm.total
   }))
@@ -111,13 +112,13 @@ const chartOptions = computed(() => {
               </div>
             </h3>
           </div>
-          <span v-if="client.debts?.length > 0" class="badge badge-error badge-sm font-black p-2.5 shadow-xs">
-            {{ client.debts.length }} {{ $t('catalog.clients.profile.billing.pending') }}
+          <span v-if="(client.debts?.length ?? 0) > 0" class="badge badge-error badge-sm font-black p-2.5 shadow-xs">
+            {{ client.debts?.length }} {{ $t('catalog.clients.profile.billing.pending') }}
           </span>
         </div>
         
         <div class="p-0 overflow-x-auto">
-          <table v-if="client.debts?.length > 0" class="table table-zebra w-full text-xs">
+          <table v-if="(client.debts?.length ?? 0) > 0" class="table table-zebra w-full text-xs">
             <thead>
               <tr class="text-text-muted text-[10px] font-black uppercase tracking-widest border-b border-border-subtle bg-bg-muted/30">
                 <th class="px-6 py-3">{{ $t('catalog.clients.profile.billing.table.concept') }}</th>
@@ -183,13 +184,13 @@ const chartOptions = computed(() => {
             </div>
           </h3>
         </div>
-        <span v-if="client.carts?.length > 0" class="badge badge-neutral badge-sm font-black p-2.5 uppercase">
-          {{ client.carts.length }} {{ $t('nav.sales') }}
+        <span v-if="(client.carts?.length ?? 0) > 0" class="badge badge-neutral badge-sm font-black p-2.5 uppercase">
+          {{ client.carts?.length }} {{ $t('nav.sales') }}
         </span>
       </div>
 
       <div class="p-0 overflow-x-auto">
-        <table v-if="client.carts?.length > 0" class="table table-zebra w-full">
+        <table v-if="(client.carts?.length ?? 0) > 0" class="table table-zebra w-full">
           <thead>
             <tr class="text-text-muted text-[10px] font-black uppercase tracking-widest border-b border-border-subtle bg-bg-muted/30">
               <th class="px-8 py-4">{{ $t('catalog.clients.profile.billing.table.ticket') }}</th>

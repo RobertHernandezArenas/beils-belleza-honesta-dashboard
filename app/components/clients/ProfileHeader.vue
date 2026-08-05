@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientProfile, FetchError } from '~~/shared/types/domain'
 import {
 	Mail,
 	Phone,
@@ -10,14 +11,13 @@ import {
 	ShieldOff,
 	AlertCircle,
 	Sparkles
-} from 'lucide-vue-next'
-import { useI18n } from 'vue-i18n'
+} from 'lucide-vue-next'
 import ImageCropperModal from '~/components/shared/ImageCropperModal.vue'
 import EditableField from '~/components/shared/EditableField.vue'
 
 const props = defineProps({
 	client: {
-		type: Object as PropType<any>,
+		type: Object as PropType<ClientProfile>,
 		required: true,
 	},
 	isUpdating: {
@@ -100,8 +100,8 @@ const uploadCroppedImage = async (blob: Blob) => {
 			emit('update', 'avatar', response.url)
 			emit('toast', 'Avatar actualizado correctamente', 'success')
 		}
-	} catch (err: any) {
-		emit('toast', err.data?.statusMessage || 'Error subiendo la imagen', 'error')
+	} catch (err) {
+		emit('toast', (err as FetchError).data?.statusMessage || 'Error subiendo la imagen', 'error')
 	} finally {
 		isUploadingAvatar.value = false
 	}
@@ -210,7 +210,7 @@ const blurActiveElement = () => {
 							</template>
 						</EditableField>
 						<div class="flex items-center gap-3 text-[11px] font-medium opacity-70 flex-wrap mt-0.5">
-							<span>Registrado: {{ new Date(client.created_at).toLocaleDateString() }}</span>
+							<span>Registrado: {{ new Date(client.created_at || '').toLocaleDateString() }}</span>
 							<span v-if="client.city" class="opacity-50">• {{ client.city }}, {{ client.country || 'España' }}</span>
 							<span v-if="client.document_number" class="opacity-50">• Doc: {{ client.document_number }}</span>
 						</div>
