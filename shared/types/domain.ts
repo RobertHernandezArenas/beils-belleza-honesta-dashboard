@@ -152,7 +152,12 @@ export interface CatalogItem {
 	type?: string
 	description?: string | null
 	package_item_id?: string
+	client_package_item_id?: string
+	parent_package_id?: string
 	quantity?: number
+	quantity_total?: number
+	quantity_remaining?: number
+	duration?: number
 	items?: CatalogItem[]
 }
 
