@@ -246,6 +246,7 @@ export interface ClientProfile extends ClientDTO {
 		aov?: number
 		bookingFrequencyDays?: number
 		totalBookings?: number
+		attendanceRate?: number
 		nextBooking?: Booking | null
 		spendingHistory?: { period: string; total: number }[]
 		paymentMethods?: { method: string; count: number; total: number }[]
