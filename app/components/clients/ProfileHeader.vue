@@ -110,6 +110,7 @@ const uploadCroppedImage = async (blob: Blob) => {
 const engagementScore = computed(() => props.client.kpis?.engagementScore || 0)
 const engagementTier = computed(() => props.client.kpis?.engagementTier || 'BRONZE')
 const engagementTierLabel = computed(() => props.client.kpis?.engagementTierLabel || 'Bronce')
+const attendanceRate = computed(() => props.client.kpis?.attendanceRate || 0)
 
 const getTierBadgeStyle = computed(() => {
 	if (engagementTier.value === 'GOLD_VIP') {
