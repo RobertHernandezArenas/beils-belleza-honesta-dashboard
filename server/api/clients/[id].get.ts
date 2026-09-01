@@ -119,21 +119,39 @@ export default defineEventHandler(async event => {
 			bookingFrequencyDays = Math.round(diffDays / (bookings.length - 1))
 		}
 
-		// Engagement Score Calculation (0 - 100)
-		let engagementScore = 50 // Base score
-		engagementScore += Math.min(25, bookings.length * 5) // Frequency
-		engagementScore += Math.min(25, Math.floor(ltv / 30)) // Spending
-		if (client.consents.length >= 2) engagementScore += 10 // Compliance
+		// Attendance Rate Calculation
+		let attendanceRate = 0
+		let attended = 0
+		const attendedStatuses = ['COMPLETADA', 'ASISTIDA', 'ASISTIO']
+		const absentStatuses = ['AUSENTE', 'NO_SHOW', 'CANCELADA']
 		
-		const hasRecent = client.client_bookings.some(b => {
-			const d = new Date(b.booking_date)
-			const diff = (new Date().getTime() - d.getTime()) / (1000 * 60 * 60 * 24)
-			return diff < 30
+		const pastBookings = client.client_bookings.filter(b => {
+			const st = b.status.toUpperCase()
+			return attendedStatuses.includes(st) || absentStatuses.includes(st)
 		})
-		if (hasRecent) engagementScore += 10
 		
-		const noShows = client.client_bookings.filter(b => b.status === 'no_show' || b.status === 'AUSENTE').length
-		engagementScore -= (noShows * 15)
+		if (pastBookings.length > 0) {
+			attended = pastBookings.filter(b => attendedStatuses.includes(b.status.toUpperCase())).length
+			attendanceRate = Math.round((attended / pastBookings.length) * 100)
+		}
+
+		// Engagement Score Calculation (0 - 100)
+		let engagementScore = 0 // Base score
+		
+		if (attended > 0) {
+			// 1. Asistencia (Max 50 pts)
+			engagementScore += Math.round(attendanceRate / 2)
+			
+			// 2. Frequency (Max 20 pts)
+			engagementScore += Math.min(20, bookings.length * 4)
+			
+			// 3. Spending (Max 20 pts) - 1 pt per 50 spent
+			engagementScore += Math.min(20, Math.floor(ltv / 50))
+			
+			// 4. Compliance (Max 10 pts)
+			if (client.consents && client.consents.length > 0) engagementScore += 10
+		}
+		
 		engagementScore = Math.max(0, Math.min(100, engagementScore))
 
 		// 3-Tier Client Category Classification (Bronce, Plata, Oro VIP)
@@ -174,6 +192,7 @@ export default defineEventHandler(async event => {
 			aov,
 			bookingFrequencyDays,
 			totalBookings: bookings.length,
+			attendanceRate,
 			engagementScore,
 			engagementTier,
 			engagementTierLabel,
