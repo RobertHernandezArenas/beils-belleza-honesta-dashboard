@@ -212,6 +212,7 @@ export interface Consent {
 	consent_type?: string | null
 	status: string
 	signed_date: string
+	signature_data?: string | null
 	document_url?: string | null
 	notes?: string | null
 	created_at?: string | null
@@ -253,5 +254,43 @@ export interface ClientProfile extends ClientDTO {
 		topServices?: { name: string; total?: number; count?: number; qty?: number }[]
 		topProducts?: { name: string; total?: number; count?: number; qty?: number }[]
 	}
+	treatment_zones?: TreatmentZoneDTO[]
 	payment_methods?: { method: string; count: number; total: number }[]
+}
+
+export type TreatmentType = 'LASER_SHR' | 'INDIBA'
+
+export interface TreatmentSessionDTO {
+	session_id: string
+	zone_id: string
+	client_id: string
+	staff_id?: string | null
+	client_package_id?: string | null
+	booking_id?: string | null
+	session_number: number
+	session_date: string
+	parameters: string
+	skin_reaction?: string | null
+	observations?: string | null
+	created_at?: string
+	updated_at?: string
+	staff?: { name?: string; surname?: string } | null
+	client_package?: { package?: { name?: string } } | null
+	booking?: { booking_date?: string; start_time?: string } | null
+}
+
+export interface TreatmentZoneDTO {
+	zone_id: string
+	user_id: string
+	treatment_type: TreatmentType
+	zone_name: string
+	phototype?: string | null
+	hair_thickness?: string | null
+	hair_color?: string | null
+	hair_density?: string | null
+	status: string
+	notes?: string | null
+	created_at?: string
+	updated_at?: string
+	sessions?: TreatmentSessionDTO[]
 }

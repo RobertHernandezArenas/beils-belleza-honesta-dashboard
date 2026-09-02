@@ -19,6 +19,19 @@ export default defineEventHandler(async event => {
 				consents: true,
 				questionnaires: true,
 				revokes: true,
+				treatment_zones: {
+					include: {
+						sessions: {
+							orderBy: { session_number: 'desc' },
+							include: {
+								staff: { select: { name: true, surname: true } },
+								client_package: { include: { package: true } },
+								booking: { select: { booking_date: true, start_time: true } }
+							}
+						}
+					},
+					orderBy: { created_at: 'desc' }
+				},
 				client_bookings: {
 					orderBy: { booking_date: 'desc' },
 					include: {

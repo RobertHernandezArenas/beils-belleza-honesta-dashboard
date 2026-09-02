@@ -37,12 +37,14 @@ export default defineEventHandler(async event => {
 		const category = formData.find(item => item.name === 'category')?.data.toString() || 'imagenes'
 		const subdirectory = formData.find(item => item.name === 'subdirectory')?.data.toString() || ''
 
-		// Validate type
+		// Validate type (images and PDFs allowed for authorizations/consents)
 		const contentType = file.type || ''
-		if (!contentType.startsWith('image/')) {
+		const isImage = contentType.startsWith('image/')
+		const isPdf = contentType === 'application/pdf' || (file.filename && file.filename.toLowerCase().endsWith('.pdf'))
+		if (!isImage && !isPdf) {
 			throw createError({
 				statusCode: 400,
-				statusMessage: 'El archivo debe ser una imagen',
+				statusMessage: 'El archivo debe ser una imagen (JPG, PNG, WebP) o un documento PDF',
 			})
 		}
 
