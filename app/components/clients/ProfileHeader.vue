@@ -11,7 +11,8 @@ import {
 	ShieldOff,
 	AlertCircle,
 	Sparkles
-} from 'lucide-vue-next'
+} from 'lucide-vue-next'
+
 import ImageCropperModal from '~/components/shared/ImageCropperModal.vue'
 import EditableField from '~/components/shared/EditableField.vue'
 
@@ -25,7 +26,8 @@ const props = defineProps({
 		default: false,
 	},
 })
-
+
+
 
 const emit = defineEmits([
 	'update',
@@ -220,7 +222,7 @@ const blurActiveElement = () => {
 			</div>
 
 			<!-- 2. Commitment Level Stat Card (0 - 100) -->
-			<div class="stats overflow-visible bg-bg-muted/30 border border-border-default/80 shadow-xs rounded-2xl p-2 w-full sm:w-auto sm:min-w-[340px]">
+			<div class="stats overflow-visible bg-bg-muted/30 border border-border-default/80 shadow-xs rounded-2xl p-2 w-full sm:w-auto sm:min-w-85">
 				<div class="stat overflow-visible p-3 flex items-center justify-between gap-4">
 					<div class="space-y-1">
 						<div class="stat-title text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-text-muted">

@@ -1,33 +1,67 @@
 ---
-name: Loop Mode
-description: "Coordinar Grill‑Me, Maker, Verifier, Memoria y Evaluaciones en iteraciones."
+name: loop
+description: Orquestación del ciclo iterativo de desarrollo basado en una máquina de estados finitos (Grill-Me, Maker, Verifier, Memory). Activar para gestionar tareas multi-paso complejas con control estricto de progreso.
 ---
-# 🔄 SKILL: Loop Mode
+
+# 🔄 SKILL: Loop Mode (Orquestación Iterativa)
 
 ## Propósito
-Coordinar Grill‑Me, Maker, Verifier, Memoria y Evaluaciones en iteraciones.
+Gobernar la ejecución iterativa de tareas complejas mediante una máquina de estados finitos con contratos estrictos, evitando ciclos infinitos y asegurando convergencia hacia una solución verificada.
 
-## Estados
-- INIT
-- NEEDS_CONTEXT
-- WORKING
-- VERIFYING
-- LEARNING
-- DONE
-- FAILED
+---
 
-## Contrato
-Cada iteración produce:
+## Máquina de Estados
+
+```
+   ┌──────────┐
+   │   INIT   │
+   └────┬─────┘
+        │
+        ▼
+   ┌─────────────────┐       ¿Falta contexto?
+   │  NEEDS_CONTEXT  │ ──────────────────────────► (Grill-Me)
+   └────┬────────────┘
+        │ Contexto OK
+        ▼
+   ┌─────────────────┐
+   │    WORKING      │ (Maker)
+   └────┬────────────┘
+        │
+        ▼
+   ┌─────────────────┐       ¿Rechazado?
+   │   VERIFYING     │ ──────────────────────────► Retorna a WORKING (Max 3 reintentos)
+   └────┬────────────┘
+        │ Aprobado
+        ▼
+   ┌─────────────────┐
+   │    LEARNING     │ (Memory)
+   └────┬────────────┘
+        │
+        ▼
+   ┌─────────────────┐
+   │      DONE       │
+   └─────────────────┘
+```
+
+---
+
+## Contrato de Iteración
+Cada ciclo del loop debe emitir un bloque estructurado de telemetría:
+
+```json
 {
-  "state": "...",
-  "action": "...",
-  "input": "...",
-  "output": "...",
-  "evidence": "...",
-  "next": "..."
+  "iteration": 1,
+  "state": "WORKING | VERIFYING | LEARNING | DONE | FAILED",
+  "actor": "Grill-Me | Maker | Verifier | Memory",
+  "action": "Descripción concreta de la operación realizada",
+  "evidence": "Ruta a logs, tests o capturas generadas",
+  "next_state": "Siguiente estado en la máquina de estados"
 }
+```
 
-## Reglas
-- No avanzar sin evidencia.
-- No saltar memoria.
-- Máximo 3 fallos consecutivos.
+---
+
+## Reglas de Control (Circuit Breakers)
+1. **Límite de Fallos Consecutivos:** Si el Verifier rechaza la entrega 3 veces consecutivas, el loop transiciona a `FAILED` y solicita intervención humana con un resumen de los intentos.
+2. **Prohibido Saltear la Memoria:** Antes de transicionar a `DONE`, es obligatorio registrar los aprendizajes en `LEARNING`.
+3. **Avance Basado en Evidencia:** No se permite transicionar de `VERIFYING` a `LEARNING` sin el veredicto `APPROVED` y evidencia comprobable.

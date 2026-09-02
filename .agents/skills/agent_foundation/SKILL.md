@@ -1,29 +1,61 @@
 ---
-name: Agent Foundation
-description: "Skill universal para coordinar Maker, Verifier, Memoria, Evaluaciones y Loop."
+name: agent_foundation
+description: Base unificada para coordinar agentes de desarrollo: Maker, Verifier, Memoria, Evaluaciones y Loop. Usar como marco conceptual y operativo para estructurar flujos de trabajo autónomos o asistidos.
 ---
+
 # 🧠 SKILL: Agent Foundation
 
 ## Propósito
-Skill universal para coordinar Maker, Verifier, Memoria, Evaluaciones y Loop.
+Definir y gobernar el ciclo de vida de desarrollo asistido por agentes de inteligencia artificial, garantizando rigor arquitectónico, evidencia empírica antes de aprobación, separación de responsabilidades y mejora continua.
 
-## Capacidades
-- Cargar documentación del proyecto.
-- Ejecutar Maker/Verifier.
-- Validar con evidencia visual.
-- Actualizar memoria persistente.
-- Ejecutar evaluaciones.
-- Integrarse con Loop Mode.
+---
 
-## Limitaciones
-- No aprobar sin evidencia.
-- No mezclar roles.
-- No ignorar memoria.
-- No actuar sin Grill‑Me.
+## Cuándo Activar (Triggers)
+- Al inicializar un nuevo proyecto o sesión de trabajo con agentes.
+- Cuando se requiere definir la interacción entre diferentes roles (Maker vs. Verifier).
+- Al estructurar pipelines de CI/CD, automatización de tareas o loops iterativos.
 
-## Checklist
-- Documentación cargada
-- Contexto completo
-- Evidencia generada
-- Memoria actualizada
-- Loop completado
+---
+
+## Principios Fundamentales
+1. **Separación de Roles (Maker / Verifier):** El rol que diseña e implementa el código (Maker) no puede auto-aprobarse sin una validación formal independiente (Verifier).
+2. **Evidencia antes de Aprobación:** Ningún cambio se considera completado sin pruebas observables (logs de ejecución, tests pasando, capturas visuales, mediciones de rendimiento).
+3. **Memoria como Ventaja Acumulativa:** Las decisiones de diseño, patrones acordados y errores resueltos deben persistirse para evitar regresiones y re-trabajo.
+4. **Ciclo Disciplinado:** Toda tarea compleja atraviesa: `Grill-Me ➔ Maker ➔ Verifier ➔ Memory ➔ Loop`.
+
+---
+
+## Mapa de Responsabilidades
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                       GRILL-ME                              │
+│       (Preguntas críticas y aclaración de contexto)         │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                         MAKER                               │
+│      (Diseño, refactorización y escritura de código)        │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                        VERIFIER                             │
+│     (Ejecución de tests, análisis visual, linter y QA)      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                        MEMORY                               │
+│     (Persistencia de decisiones, hechos y lecciones)        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Checklist de Calidad
+- [ ] Contexto y requisitos clarificados mediante **Grill-Me**.
+- [ ] Implementación modular y testeable por **Maker**.
+- [ ] Validación con evidencia explícita por **Verifier**.
+- [ ] Registro de lecciones en **Memory**.
