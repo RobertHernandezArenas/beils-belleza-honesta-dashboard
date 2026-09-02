@@ -37,7 +37,10 @@ model User {
   debts           Debt[]
   questionnaires  Questionnaire[]
   revokes         Revoke[]
-  client_packages ClientPackage[]
+  client_packages           ClientPackage[]
+  treatment_zones           TreatmentZone[]
+  client_treatment_sessions TreatmentSession[] @relation("ClientTreatmentSessions")
+  staff_treatment_sessions  TreatmentSession[] @relation("StaffTreatmentSessions")
 
   @@index([role])
   @@index([status])
@@ -49,13 +52,14 @@ model Consent {
   consent_id   String       @id @default(uuid()) @db.Char(100)
   user_id      String?      @db.Char(100)
   consent_type ConsentType?
-  status       String       @default("UNSIGNED") @db.VarChar(20)
-  signed_date  DateTime     @default(now())
-  document_url String?      @db.VarChar(255)
-  notes        String?      @db.VarChar(255)
-  created_at   DateTime?    @default(now())
-  updated_at   DateTime?    @updatedAt
-  user         User?        @relation(fields: [user_id], references: [user_id])
+  status         String       @default("UNSIGNED") @db.VarChar(20)
+  signed_date    DateTime     @default(now())
+  signature_data String?      @db.LongText
+  document_url   String?      @db.VarChar(255)
+  notes          String?      @db.Text
+  created_at     DateTime?    @default(now())
+  updated_at     DateTime?    @updatedAt
+  user           User?        @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, consent_type], name: "unique_user_consent")
   @@map("consents")
@@ -233,8 +237,9 @@ model Booking {
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
   booking_items BookingItem[]
-  carts         Cart[]
-  client        User          @relation("ClientBookings", fields: [client_id], references: [user_id], onDelete: NoAction)
+  carts              Cart[]
+  treatment_sessions TreatmentSession[]
+  client             User               @relation("ClientBookings", fields: [client_id], references: [user_id], onDelete: NoAction)
   staff         User?         @relation("StaffBookings", fields: [staff_id], references: [user_id])
 
   @@index([client_id])
@@ -329,6 +334,7 @@ model ClientPackage {
   user               User                @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   package            Package             @relation(fields: [package_id], references: [package_id], onDelete: Cascade)
   items              ClientPackageItem[]
+  treatment_sessions TreatmentSession[]
 
   @@index([user_id])
   @@index([package_id])
@@ -357,5 +363,57 @@ model ClientPackageItem {
 enum PackageType {
   INDIVIDUAL
   MIXTO
+}
+
+enum TreatmentType {
+  LASER_SHR
+  INDIBA
+}
+
+model TreatmentZone {
+  zone_id        String             @id @default(uuid()) @db.Char(100)
+  user_id        String             @db.Char(100)
+  treatment_type TreatmentType
+  zone_name      String             @db.VarChar(100)
+  phototype      String?            @db.VarChar(10)
+  hair_thickness String?            @db.VarChar(20)
+  hair_color     String?            @db.VarChar(20)
+  hair_density   String?            @db.VarChar(20)
+  status         String             @default("ACTIVE") @db.VarChar(20)
+  notes          String?            @db.Text
+  created_at     DateTime           @default(now())
+  updated_at     DateTime           @updatedAt
+  user           User               @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  sessions       TreatmentSession[]
+
+  @@index([user_id])
+  @@map("treatment_zones")
+}
+
+model TreatmentSession {
+  session_id        String         @id @default(uuid()) @db.Char(100)
+  zone_id           String         @db.Char(100)
+  client_id         String         @db.Char(100)
+  staff_id          String?        @db.Char(100)
+  client_package_id String?        @db.Char(100)
+  booking_id        String?        @db.Char(100)
+  session_number    Int            @default(1)
+  session_date      DateTime       @default(now())
+  parameters        String         @db.VarChar(255)
+  skin_reaction     String?        @db.VarChar(100)
+  observations      String?        @db.Text
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  zone              TreatmentZone  @relation(fields: [zone_id], references: [zone_id], onDelete: Cascade)
+  client            User           @relation("ClientTreatmentSessions", fields: [client_id], references: [user_id], onDelete: Cascade)
+  staff             User?          @relation("StaffTreatmentSessions", fields: [staff_id], references: [user_id], onDelete: SetNull)
+  client_package    ClientPackage? @relation(fields: [client_package_id], references: [client_package_id], onDelete: SetNull)
+  booking           Booking?       @relation(fields: [booking_id], references: [booking_id], onDelete: SetNull)
+
+  @@index([zone_id])
+  @@index([client_id])
+  @@index([client_package_id])
+  @@index([booking_id])
+  @@map("treatment_sessions")
 }
 

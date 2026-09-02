@@ -97,11 +97,16 @@ input[type='search']::-webkit-search-decoration {
 select option,
 select optgroup {
 	color: var(--text-primary);
-	background-color: var(--bg-card);
+	background-color: #ffffff !important;
+}
+[data-theme='dark'] select option,
+[data-theme='dark'] select optgroup {
+	color: #e6e6e9;
+	background-color: #1f1f24 !important;
 }
 select option:checked,
 select option:hover {
-	background-color: color-mix(in oklab, var(--accent) 16%, var(--bg-card));
+	background-color: color-mix(in oklab, var(--accent) 16%, var(--bg-card)) !important;
 	color: var(--text-primary);
 }
 
