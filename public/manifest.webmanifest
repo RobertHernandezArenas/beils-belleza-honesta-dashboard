@@ -1,0 +1,21 @@
+{
+	"name": "Beils Belleza Honesta",
+	"short_name": "Beils",
+	"description": "Plataforma de Gestión Integral Beils Belleza Honesta",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#f8f8f8",
+	"theme_color": "#922c88",
+	"icons": [
+		{
+			"src": "/images/apple-touch-icon.png",
+			"sizes": "180x180",
+			"type": "image/png"
+		},
+		{
+			"src": "/images/apple-touch-icon-152x152.png",
+			"sizes": "152x152",
+			"type": "image/png"
+		}
+	]
+}
