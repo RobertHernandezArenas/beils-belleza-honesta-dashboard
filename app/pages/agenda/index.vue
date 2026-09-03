@@ -75,6 +75,18 @@ const handleDateChange = (direction: 'next' | 'prev') => {
         )
     }
 }
+
+const route = useRoute()
+
+onMounted(() => {
+    if (route.query.date) {
+        const d = new Date(route.query.date as string)
+        if (!isNaN(d.getTime())) {
+            store.setDate(d)
+            store.setViewMode('day')
+        }
+    }
+})
 </script>
 
 <template>

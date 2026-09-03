@@ -152,13 +152,8 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 
 			<div class="relative z-10 w-full">
 				<!-- Loading Screen -->
-				<div v-if="isPending" class="flex h-full w-full flex-col items-center justify-center gap-5 py-10">
-					<div class="relative">
-						<img src="~/assets/images/loader.gif" width="75" height="75" alt="" >
-					</div>
-					<p class="animate-pulse text-xl font-bold tracking-wide">
-						Iniciando sesión...
-					</p>
+				<div v-if="isPending" class="flex h-full w-full flex-col items-center justify-center py-8">
+					<LogoTPLoader size="lg" :show-text="true" text="Iniciando sesión..." />
 				</div>
 
 				<!-- Error Screen -->
