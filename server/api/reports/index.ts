@@ -1,3 +1,33 @@
+const formatLocalDate = (d: Date): string => {
+	const year = d.getFullYear()
+	const month = String(d.getMonth() + 1).padStart(2, '0')
+	const day = String(d.getDate()).padStart(2, '0')
+	return `${year}-${month}-${day}`
+}
+
+const getSaleDateKey = (sale: {
+	created_at: Date | string
+	booking?: { booking_date?: Date | string | null } | null
+}): string => {
+	if (sale.booking?.booking_date) {
+		const bDate = new Date(sale.booking.booking_date)
+		return bDate.toISOString().split('T')[0] || ''
+	}
+	return formatLocalDate(new Date(sale.created_at))
+}
+
+const getSaleMonthKey = (sale: {
+	created_at: Date | string
+	booking?: { booking_date?: Date | string | null } | null
+}): string => {
+	if (sale.booking?.booking_date) {
+		const d = new Date(sale.booking.booking_date)
+		return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+	}
+	const d = new Date(sale.created_at)
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
 export default defineEventHandler(async (event) => {
 	const query = getQuery(event)
 	const range = (query.range as string) || '6m'
@@ -81,11 +111,25 @@ export default defineEventHandler(async (event) => {
 		debtsSummary,
 		allTimeUsersWithCarts,
 	] = await Promise.all([
-		// Current period sales with full relations
+		// Current period sales with full relations (filtered by service/booking date when available)
 		prisma.cart.findMany({
 			where: {
 				status: 'completed',
-				...(startDate ? { created_at: { gte: startDate, lte: now } } : {}),
+				...(startDate
+					? {
+							OR: [
+								{
+									booking: {
+										booking_date: { gte: startDate, lte: now },
+									},
+								},
+								{
+									booking_id: null,
+									created_at: { gte: startDate, lte: now },
+								},
+							],
+						}
+					: {}),
 			},
 			include: {
 				items: true,
@@ -101,6 +145,7 @@ export default defineEventHandler(async (event) => {
 				},
 				booking: {
 					select: {
+						booking_date: true,
 						staff_id: true,
 						staff: {
 							select: {
@@ -120,7 +165,17 @@ export default defineEventHandler(async (event) => {
 			? prisma.cart.findMany({
 					where: {
 						status: 'completed',
-						created_at: { gte: prevStartDate, lte: prevEndDate },
+						OR: [
+							{
+								booking: {
+									booking_date: { gte: prevStartDate, lte: prevEndDate },
+								},
+							},
+							{
+								booking_id: null,
+								created_at: { gte: prevStartDate, lte: prevEndDate },
+							},
+						],
 					},
 					select: { total: true, discount: true },
 				})
@@ -232,21 +287,21 @@ export default defineEventHandler(async (event) => {
 
 	if (granularity === 'day') {
 		// Generate all days in the range to avoid gaps
-		const cursor = new Date(startDate || (completedSales[0]?.created_at ?? now))
+		const cursor = new Date(startDate || (completedSales[0] ? (completedSales[0].booking?.booking_date ?? completedSales[0].created_at) : now))
 		cursor.setHours(0, 0, 0, 0)
 		const targetEnd = new Date(now)
 		targetEnd.setHours(23, 59, 59, 999)
 
 		while (cursor <= targetEnd) {
-			const key = cursor.toISOString().split('T')[0] || ''
+			const key = formatLocalDate(cursor)
 			const label = cursor.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
 			trendMap.set(key, { key, label, revenue: 0, tickets: 0, aov: 0 })
 			cursor.setDate(cursor.getDate() + 1)
 		}
 
-		// Populate data
+		// Populate data using operational service date
 		completedSales.forEach((sale) => {
-			const key = new Date(sale.created_at).toISOString().split('T')[0] || ''
+			const key = getSaleDateKey(sale)
 			const point = trendMap.get(key)
 			if (point) {
 				point.revenue += sale.total
@@ -270,8 +325,7 @@ export default defineEventHandler(async (event) => {
 		}
 
 		completedSales.forEach((sale) => {
-			const d = new Date(sale.created_at)
-			const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+			const key = getSaleMonthKey(sale)
 			const point = trendMap.get(key)
 			if (point) {
 				point.revenue += sale.total

@@ -830,7 +830,7 @@
 									Evolución de Ingresos y Volumen Transaccional
 								</h2>
 								<p class="text-text-muted text-xs">
-									Facturación diaria/mensual combinada con la cantidad de tickets emitidos
+									Facturación diaria/mensual combinada con la cantidad de tickets por fecha de servicio
 								</p>
 							</div>
 						</div>
