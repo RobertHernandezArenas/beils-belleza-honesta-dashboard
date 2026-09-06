@@ -41,14 +41,14 @@ import type { ClientDTO } from '~~/shared/types/domain'
 
 <template>
 	<div
-		class="bg-bg-card/90 border-border-default/80 z-20 flex h-full w-full flex-col border-t shadow-xl backdrop-blur-2xl md:border-t-0 md:border-l overflow-y-auto md:overflow-hidden">
+		class="bg-bg-card/90 border-border-default/80 z-20 flex size-full flex-col border-t shadow-xl backdrop-blur-2xl md:border-t-0 md:border-l overflow-y-auto md:overflow-hidden">
 
 		<!-- CLIENT SELECTOR HEADER -->
 		<div class="bg-bg-muted/15 border-border-default/70 relative z-30 border-b p-3.5 sm:p-5">
 			<div class="relative">
 				<!-- Search Client State -->
 				<div v-if="!selectedClient" class="relative">
-					<UserIcon class="text-text-muted absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+					<UserIcon class="text-text-muted absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
 					<input
 						v-model="clientSearch"
 						type="text"
@@ -59,7 +59,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 						type="button"
 						class="btn btn-ghost btn-xs btn-circle absolute top-1/2 right-2 -translate-y-1/2 text-text-muted"
 						@click="clientSearch = ''">
-						<X class="h-3.5 w-3.5" />
+						<X class="size-3.5" />
 					</button>
 
 					<!-- Client Autocomplete Dropdown -->
@@ -75,7 +75,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 									<span class="text-xs font-bold text-text-primary">{{ client.name }} {{ client.surname }}</span>
 									<span class="text-text-muted text-[10px] font-medium mt-0.5">{{ client.phone || client.email }}</span>
 								</div>
-								<ChevronRight class="text-text-muted h-3.5 w-3.5" />
+								<ChevronRight class="text-text-muted size-3.5" />
 							</button>
 						</li>
 					</ul>
@@ -87,11 +87,11 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="bg-text-primary text-bg-card flex items-center justify-between rounded-2xl p-3 shadow-xs transition-all">
 					<div class="flex items-center gap-3">
 						<div
-							class="bg-white/20 text-white flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/10">
+							class="bg-white/20 text-white flex size-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/10">
 							<img
 								v-if="selectedClient.avatar && !avatarError"
 								:src="selectedClient.avatar"
-								class="h-full w-full object-cover"
+								class="size-full object-cover"
 								@error="emit('avatar-error')" >
 							<span v-else class="text-xs font-black">
 								{{ selectedClient?.name?.charAt(0) }}{{ selectedClient.surname?.charAt(0) || '' }}
@@ -109,7 +109,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 						aria-label="Remove Client"
 						class="btn btn-ghost btn-circle btn-xs text-white/70 hover:bg-white/15 hover:text-white border-none"
 						@click="emit('remove-client')">
-						<Trash2 class="h-3.5 w-3.5" />
+						<Trash2 class="size-3.5" />
 					</button>
 				</div>
 			</div>
@@ -121,8 +121,8 @@ import type { ClientDTO } from '~~/shared/types/domain'
 			<div
 				v-if="cartItems.length === 0"
 				class="flex h-full flex-col items-center justify-center text-center py-12 opacity-60">
-				<div class="bg-bg-muted/40 mb-3 flex h-14 w-14 items-center justify-center rounded-full">
-					<ShoppingBag class="text-text-muted h-7 w-7 opacity-50" />
+				<div class="bg-bg-muted/40 mb-3 flex size-14 items-center justify-center rounded-full">
+					<ShoppingBag class="text-text-muted size-7 opacity-50" />
 				</div>
 				<p class="text-text-primary text-xs font-bold uppercase tracking-wider">Carrito vacío</p>
 				<p class="text-text-muted mt-1 max-w-50 text-[11px]">Selecciona ítems del catálogo para comenzar la venta</p>
@@ -144,7 +144,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 								aria-label="Remove Item"
 								class="text-text-muted/60 hover:text-error bg-bg-card absolute top-2.5 right-2.5 p-1 rounded-md transition-all group-hover:opacity-100"
 								@click="emit('remove-item', index)">
-								<Trash2 class="h-3.5 w-3.5" />
+								<Trash2 class="size-3.5" />
 							</button>
 						</div>
 
@@ -193,7 +193,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 
 				<div class="text-error flex items-center justify-between text-xs font-semibold uppercase">
 					<span class="flex items-center gap-1">
-						<Tag class="h-3 w-3" />
+						<Tag class="size-3" />
 						<span>Descuento</span>
 					</span>
 					<div class="relative w-28">
@@ -224,7 +224,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
 					:class="paymentMethod === 'card' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'card'">
-					<CreditCard class="h-4 w-4 mb-0.5 shrink-0" />
+					<CreditCard class="size-4 mb-0.5 shrink-0" />
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">Tarjeta</span>
 				</button>
 
@@ -233,7 +233,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
 					:class="paymentMethod === 'cash' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'cash'">
-					<Banknote class="h-4 w-4 mb-0.5 shrink-0" />
+					<Banknote class="size-4 mb-0.5 shrink-0" />
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">Efectivo</span>
 				</button>
 
@@ -242,7 +242,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
 					:class="paymentMethod === 'bizum' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'bizum'">
-					<Smartphone class="h-4 w-4 mb-0.5 shrink-0" />
+					<Smartphone class="size-4 mb-0.5 shrink-0" />
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">Bizum</span>
 				</button>
 
@@ -251,7 +251,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
 					:class="paymentMethod === 'transfer' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'transfer'">
-					<ArrowRightLeft class="h-4 w-4 mb-0.5 shrink-0" />
+					<ArrowRightLeft class="size-4 mb-0.5 shrink-0" />
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">Transf.</span>
 				</button>
 
@@ -260,7 +260,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
 					:class="paymentMethod === 'mixed' ? 'btn-neutral text-bg-card shadow-xs' : 'btn-ghost border-border-default/70 text-text-muted hover:text-text-primary'"
 					@click="paymentMethod = 'mixed'">
-					<Wallet class="h-4 w-4 mb-0.5 shrink-0" />
+					<Wallet class="size-4 mb-0.5 shrink-0" />
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">Mixto</span>
 				</button>
 
@@ -269,7 +269,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					class="btn btn-sm h-auto py-2.5 flex flex-col items-center justify-center rounded-xl border text-center transition-all"
 					:class="paymentMethod === 'debt' ? 'btn-error text-white shadow-xs' : 'btn-ghost border-error/20 text-error hover:bg-error/10'"
 					@click="paymentMethod = 'debt'">
-					<span class="h-4 w-4 flex items-center justify-center font-black text-xs font-mono mb-0.5">D</span>
+					<span class="size-4 flex items-center justify-center font-black text-xs font-mono mb-0.5">D</span>
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">A Deber</span>
 				</button>
 			</div>

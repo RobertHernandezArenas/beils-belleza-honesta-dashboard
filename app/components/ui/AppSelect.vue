@@ -124,7 +124,7 @@ defineExpose({ close: () => (open.value = false) })
 				{{ selectedLabel }}
 			</span>
 			<ChevronDown
-				class="text-text-muted/70 h-3.5 w-3.5 shrink-0 transition-transform duration-200"
+				class="text-text-muted/70 size-3.5 shrink-0 transition-transform duration-200"
 				:class="open && 'rotate-180'" />
 		</button>
 
@@ -142,7 +142,7 @@ defineExpose({ close: () => (open.value = false) })
 					ref="panelRef"
 					role="listbox"
 					:style="panelStyle"
-					class="bg-bg-card border-border-default z-[6000] max-h-64 origin-top overflow-y-auto rounded-xl border p-1.5 shadow-xl">
+					class="bg-bg-card border-border-default z-6000 max-h-64 origin-top overflow-y-auto rounded-xl border p-1.5 shadow-xl">
 					<li v-for="opt in options" :key="opt.value">
 						<button
 							type="button"
@@ -156,7 +156,7 @@ defineExpose({ close: () => (open.value = false) })
 							"
 							@click="select(opt.value)">
 							<span class="truncate">{{ opt.label }}</span>
-							<Check v-if="opt.value === model" class="text-primary h-3.5 w-3.5 shrink-0" />
+							<Check v-if="opt.value === model" class="text-primary size-3.5 shrink-0" />
 						</button>
 					</li>
 				</ul>

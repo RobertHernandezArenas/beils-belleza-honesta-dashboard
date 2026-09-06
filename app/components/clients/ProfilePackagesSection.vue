@@ -48,13 +48,13 @@ const getProgressPercentage = (completed: number, total: number) => {
 			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-subtle pb-4">
 				<div class="flex items-center gap-3">
 					<div class="p-3 bg-primary/15 text-primary rounded-2xl">
-						<PackageIcon class="w-6 h-6" />
+						<PackageIcon class="size-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-xl font-black tracking-tight flex items-center gap-2">
 							Paquetes & Servicios Contratados
 							<div class="tooltip tooltip-right z-50" data-tip="Panel de seguimiento de sesiones consumidas y pendientes en bonos o packs contratados.">
-								<AlertCircle class="w-4 h-4 text-text-muted/60 cursor-help" />
+								<AlertCircle class="size-4 text-text-muted/60 cursor-help" />
 							</div>
 						</h3>
 						<p class="text-text-muted text-xs font-semibold">Gestión y consumo de bonos/paquetes individuales y mixtos activos</p>
@@ -69,7 +69,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 						type="button"
 						class="btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
 						@click="openAssignModal">
-						<Plus class="w-4 h-4" />
+						<Plus class="size-4" />
 						Asignar Bono
 					</button>
 				</div>
@@ -109,7 +109,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 								<span class="text-text-muted flex items-center gap-1">
 									Progreso de Sesiones:
 									<div class="tooltip tooltip-top z-50" data-tip="Porcentaje de sesiones ya consumidas en el centro respecto al total contratado en el paquete.">
-										<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
+										<AlertCircle class="size-3 text-text-muted/60 cursor-help" />
 									</div>
 								</span>
 								<span class="text-text-primary tabular-nums">{{ pkg.completedSessions }} de {{ pkg.totalSessions }} realizadas ({{ getProgressPercentage(pkg.completedSessions, pkg.totalSessions) }}%)</span>
@@ -132,8 +132,8 @@ const getProgressPercentage = (completed: number, total: number) => {
 									class="flex items-center justify-between p-2 rounded-xl bg-bg-card border border-border-subtle text-xs"
 								>
 									<div class="flex items-center gap-2">
-										<Scissors v-if="it.item_type === 'SERVICE'" class="w-3.5 h-3.5 text-primary shrink-0" />
-										<ShoppingBag v-else class="w-3.5 h-3.5 text-amber-600 shrink-0" />
+										<Scissors v-if="it.item_type === 'SERVICE'" class="size-3.5 text-primary shrink-0" />
+										<ShoppingBag v-else class="size-3.5 text-amber-600 shrink-0" />
 										<span class="font-bold text-text-primary text-[11px]">{{ it.name }}</span>
 									</div>
 									<span class="text-[10px] font-bold text-text-muted tabular-nums">
@@ -153,13 +153,13 @@ const getProgressPercentage = (completed: number, total: number) => {
 			</div>
 
 			<div v-else class="py-12 flex flex-col items-center justify-center text-center text-text-muted opacity-60">
-				<PackageIcon class="w-12 h-12 mb-2 stroke-[1.5]" />
+				<PackageIcon class="size-12 mb-2 stroke-[1.5]" />
 				<p class="text-xs font-bold uppercase tracking-wider mb-3">El cliente no posee paquetes activos contratados</p>
 				<button
 					type="button"
 					class="btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
 					@click="openAssignModal">
-					<Plus class="w-4 h-4" />
+					<Plus class="size-4" />
 					Asignar Primer Bono
 				</button>
 			</div>

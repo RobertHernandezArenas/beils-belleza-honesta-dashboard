@@ -137,9 +137,9 @@
 			<div class="bg-bg-card border-border-subtle flex items-center justify-between border-b p-6 sm:rounded-t-3xl">
 				<div class="flex items-center gap-4">
 					<div
-						class="bg-error/10 text-error flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-						<Edit v-if="isEditing" class="h-6 w-6" />
-						<ShieldOff v-else class="h-6 w-6" />
+						class="bg-error/10 text-error flex size-12 shrink-0 items-center justify-center rounded-xl">
+						<Edit v-if="isEditing" class="size-6" />
+						<ShieldOff v-else class="size-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-lg font-bold">
@@ -155,7 +155,7 @@
 					</div>
 				</div>
 				<button class="btn btn-ghost btn-circle btn-sm text-text-muted" @click="localVisible = false">
-					<X class="h-5 w-5" />
+					<X class="size-5" />
 				</button>
 			</div>
 
@@ -163,7 +163,7 @@
 			<div
 				v-if="apiError"
 				class="bg-error/10 border-error/20 mx-6 mt-6 flex items-start gap-3 rounded-xl border p-4">
-				<AlertCircle class="text-error mt-0.5 h-5 w-5 shrink-0" />
+				<AlertCircle class="text-error mt-0.5 size-5 shrink-0" />
 				<p class="text-error text-sm font-medium">{{ apiError }}</p>
 			</div>
 
@@ -226,7 +226,7 @@
 					:disabled="isPending">
 					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
-						<Save class="h-4 w-4" />
+						<Save class="size-4" />
 						<span class="font-bold tracking-wide">
 							{{ isEditing ? 'Guardar Cambios' : 'Registrar Revocación' }}
 						</span>

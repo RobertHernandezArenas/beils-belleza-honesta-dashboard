@@ -116,7 +116,7 @@ const handleNewBooking = () => {
 
 <template>
   <div class="bg-bg-app min-h-screen w-full p-4 font-sans lg:p-8 2xl:p-12 transition-colors duration-500">
-    <div class="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] space-y-6">
+    <div class="mx-auto max-w-350 2xl:max-w-[1600px] 3xl:max-w-[1800px] space-y-6">
       
       <!-- Navigation Bar & Breadcrumbs -->
       <div class="flex items-center justify-between">
@@ -126,7 +126,7 @@ const handleNewBooking = () => {
             class="btn btn-circle btn-ghost bg-bg-card border border-border-default hover:bg-bg-muted shadow-xs transition-all hover:scale-105"
             aria-label="Volver"
           >
-            <ArrowLeft class="text-text-primary h-5 w-5" />
+            <ArrowLeft class="text-text-primary size-5" />
           </NuxtLink>
 
           <!-- Breadcrumbs -->
@@ -139,7 +139,7 @@ const handleNewBooking = () => {
               </li>
               <li>
                 <span class="font-black text-text-primary flex items-center gap-1">
-                  <UserCheck class="w-4 h-4 text-primary" />
+                  <UserCheck class="size-4 text-primary" />
                   {{ client ? `${client.name} ${client.surname}` : $t('catalog.clients.profile.title') }}
                 </span>
               </li>
@@ -167,7 +167,7 @@ const handleNewBooking = () => {
         v-else-if="error"
         class="alert alert-error shadow-xl rounded-3xl p-12 flex flex-col items-center justify-center text-center"
       >
-        <AlertCircle class="h-16 w-16 mb-2 text-white" />
+        <AlertCircle class="size-16 mb-2 text-white" />
         <h2 class="text-2xl font-black text-white">{{ $t('catalog.clients.profile.status.error') }}</h2>
         <p class="mt-1 text-sm font-semibold text-white/80 max-w-md">
           {{ error?.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
@@ -199,7 +199,7 @@ const handleNewBooking = () => {
             :class="activeTab === 'OVERVIEW' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
             @click="activeTab = 'OVERVIEW'"
           >
-            <LayoutGrid class="w-4 h-4" />
+            <LayoutGrid class="size-4" />
             Visión General & Bento
           </button>
 
@@ -208,7 +208,7 @@ const handleNewBooking = () => {
             :class="activeTab === 'HEALTH' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
             @click="activeTab = 'HEALTH'"
           >
-            <Activity class="w-4 h-4" />
+            <Activity class="size-4" />
             Salud Estética (Indiba & Láser)
           </button>
 
@@ -217,7 +217,7 @@ const handleNewBooking = () => {
             :class="activeTab === 'BILLING' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
             @click="activeTab = 'BILLING'"
           >
-            <Receipt class="w-4 h-4" />
+            <Receipt class="size-4" />
             Ventas & Métodos de Pago
           </button>
 
@@ -226,7 +226,7 @@ const handleNewBooking = () => {
             :class="activeTab === 'PACKAGES' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
             @click="activeTab = 'PACKAGES'"
           >
-            <Package class="w-4 h-4" />
+            <Package class="size-4" />
             Paquetes & Servicios
           </button>
         </div>
@@ -283,7 +283,7 @@ const handleNewBooking = () => {
           class="alert shadow-xl font-bold flex items-center gap-2"
           :class="toastType === 'success' ? 'alert-success text-white' : 'alert-error text-white'"
         >
-          <component :is="toastType === 'success' ? CheckCircle2 : AlertCircle" class="w-5 h-5 shrink-0" />
+          <component :is="toastType === 'success' ? CheckCircle2 : AlertCircle" class="size-5 shrink-0" />
           <span>{{ toastMessage }}</span>
         </div>
       </div>

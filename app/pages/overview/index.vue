@@ -375,7 +375,7 @@ const revenueTrendOptions = computed(() => {
 
 <template>
 	<div class="bg-bg-app text-text-secondary selection:bg-primary/20 min-h-screen w-full p-4 font-sans lg:p-10">
-		<div class="mx-auto max-w-[1400px] space-y-8">
+		<div class="mx-auto max-w-350 space-y-8">
 			<!-- Header & Executive Command Bar -->
 			<header class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
 				<div>
@@ -386,7 +386,7 @@ const revenueTrendOptions = computed(() => {
 						</h1>
 						<span
 							class="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">
-							<span class="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+							<span class="size-1.5 rounded-full bg-success animate-pulse" />
 							Operativa en vivo
 						</span>
 					</div>
@@ -400,25 +400,25 @@ const revenueTrendOptions = computed(() => {
 					<NuxtLink
 						to="/tpv"
 						class="btn btn-sm h-10 rounded-xl bg-primary px-4 text-white border-none font-bold shadow-sm transition-all hover:brightness-110 active:scale-95 flex items-center gap-2">
-						<ShoppingBag class="h-4 w-4" />
+						<ShoppingBag class="size-4" />
 						<span>Nueva Venta (TPV)</span>
 					</NuxtLink>
 					<NuxtLink
 						to="/agenda"
 						class="btn btn-sm h-10 rounded-xl bg-bg-card border border-border-subtle px-3 text-text-primary hover:bg-bg-muted font-semibold shadow-xs transition-all active:scale-95 flex items-center gap-1.5">
-						<CalendarPlus class="h-4 w-4 text-primary" />
+						<CalendarPlus class="size-4 text-primary" />
 						<span>Agendar Cita</span>
 					</NuxtLink>
 					<NuxtLink
 						to="/clientes"
 						class="btn btn-sm h-10 rounded-xl bg-bg-card border border-border-subtle px-3 text-text-primary hover:bg-bg-muted font-semibold shadow-xs transition-all active:scale-95 flex items-center gap-1.5">
-						<UserPlus class="h-4 w-4 text-info" />
+						<UserPlus class="size-4 text-info" />
 						<span>Nuevo Cliente</span>
 					</NuxtLink>
 					<NuxtLink
 						to="/finanzas/deudas"
 						class="btn btn-sm h-10 rounded-xl bg-bg-card border border-border-subtle px-3 text-text-primary hover:bg-bg-muted font-semibold shadow-xs transition-all active:scale-95 flex items-center gap-1.5">
-						<Receipt class="h-4 w-4 text-warning-content" />
+						<Receipt class="size-4 text-warning-content" />
 						<span>Deudas</span>
 					</NuxtLink>
 				</div>
@@ -438,8 +438,8 @@ const revenueTrendOptions = computed(() => {
 						<div>
 							<div class="flex items-center justify-between">
 								<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Caja & Ventas Hoy</span>
-								<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-success/10 text-success">
-									<CircleDollarSign class="h-5 w-5" />
+								<div class="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success">
+									<CircleDollarSign class="size-5" />
 								</div>
 							</div>
 							<div class="mt-3">
@@ -465,8 +465,8 @@ const revenueTrendOptions = computed(() => {
 						<div>
 							<div class="flex items-center justify-between">
 								<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Agenda & Cabinas</span>
-								<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-									<CalendarCheck class="h-5 w-5" />
+								<div class="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+									<CalendarCheck class="size-5" />
 								</div>
 							</div>
 							<div class="mt-3">
@@ -500,8 +500,8 @@ const revenueTrendOptions = computed(() => {
 						<div>
 							<div class="flex items-center justify-between">
 								<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Marketing & Clientes</span>
-								<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-info/10 text-info">
-									<Users class="h-5 w-5" />
+								<div class="flex size-9 items-center justify-center rounded-xl bg-info/10 text-info">
+									<Users class="size-5" />
 								</div>
 							</div>
 							<div class="mt-3">
@@ -528,8 +528,8 @@ const revenueTrendOptions = computed(() => {
 						<div>
 							<div class="flex items-center justify-between">
 								<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Deudas Pendientes</span>
-								<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-error/10 text-error">
-									<AlertCircle class="h-5 w-5" />
+								<div class="flex size-9 items-center justify-center rounded-xl bg-error/10 text-error">
+									<AlertCircle class="size-5" />
 								</div>
 							</div>
 							<div class="mt-3">
@@ -548,7 +548,7 @@ const revenueTrendOptions = computed(() => {
 								to="/finanzas/deudas"
 								class="text-primary hover:text-primary/80 font-bold flex items-center gap-1 transition-colors">
 								Gestionar Cobros
-								<ArrowRight class="h-3.5 w-3.5" />
+								<ArrowRight class="size-3.5" />
 							</NuxtLink>
 							<span class="text-[0.7rem] text-text-muted uppercase font-bold">Riesgo Financiero</span>
 						</div>
@@ -584,7 +584,7 @@ const revenueTrendOptions = computed(() => {
 									:to="activeTab === 'bookings' ? '/agenda' : '/ventas'"
 									class="text-primary hover:text-primary/80 flex items-center gap-1 text-xs font-bold transition-colors">
 									<span>{{ activeTab === 'bookings' ? 'Ver Agenda Completa' : 'Histórico de Ventas' }}</span>
-									<ArrowRight class="h-3.5 w-3.5" />
+									<ArrowRight class="size-3.5" />
 								</NuxtLink>
 							</div>
 
@@ -606,13 +606,13 @@ const revenueTrendOptions = computed(() => {
 
 											<NuxtLink
 												:to="`/clientes/${booking.client_id}`"
-												class="bg-primary/10 text-primary border-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border overflow-hidden hover:scale-105 transition-transform"
+												class="bg-primary/10 text-primary border-primary/20 flex size-10 shrink-0 items-center justify-center rounded-xl border overflow-hidden hover:scale-105 transition-transform"
 												title="Ver ficha del cliente"
 												@click.stop>
 												<img
 													v-if="booking.client?.avatar && !avatarErrors.has(booking.client.user_id || '')"
 													:src="booking.client.avatar"
-													class="h-full w-full object-cover"
+													class="size-full object-cover"
 													@error="handleAvatarError(booking.client.user_id || '')">
 												<span v-else class="text-xs font-bold">
 													{{ booking.client?.name?.charAt(0) }}{{ booking.client?.surname?.charAt(0) }}
@@ -664,15 +664,15 @@ const revenueTrendOptions = computed(() => {
 												class="text-text-muted hover:text-primary transition-colors p-1"
 												title="Llamar al cliente"
 												@click.stop>
-												<Phone class="h-4 w-4" />
+												<Phone class="size-4" />
 											</a>
 										</div>
 									</div>
 								</div>
 
 								<div v-else class="flex flex-col items-center justify-center py-10 text-center">
-									<div class="bg-bg-app mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-border-subtle">
-										<CalendarCheck class="text-text-muted/60 h-7 w-7" />
+									<div class="bg-bg-app mb-3 flex size-14 items-center justify-center rounded-2xl border border-border-subtle">
+										<CalendarCheck class="text-text-muted/60 size-7" />
 									</div>
 									<p class="text-text-primary text-base font-bold">No hay citas pendientes</p>
 									<p class="text-text-muted text-xs">Agenda despejada para las próximas horas.</p>
@@ -687,8 +687,8 @@ const revenueTrendOptions = computed(() => {
 										:key="sale.cart_id"
 										class="group flex items-center justify-between py-3">
 										<div class="flex items-center gap-3.5 min-w-0">
-											<div class="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/20">
-												<Receipt class="h-5 w-5" />
+											<div class="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/20">
+												<Receipt class="size-5" />
 											</div>
 											<div class="flex flex-col min-w-0">
 												<p class="text-text-primary text-sm font-bold truncate">
@@ -714,8 +714,8 @@ const revenueTrendOptions = computed(() => {
 								</div>
 
 								<div v-else class="flex flex-col items-center justify-center py-10 text-center">
-									<div class="bg-bg-app mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-border-subtle">
-										<ShoppingBag class="text-text-muted/60 h-7 w-7" />
+									<div class="bg-bg-app mb-3 flex size-14 items-center justify-center rounded-2xl border border-border-subtle">
+										<ShoppingBag class="text-text-muted/60 size-7" />
 									</div>
 									<p class="text-text-primary text-base font-bold">No hay ventas registradas</p>
 									<p class="text-text-muted text-xs">Abre el TPV para registrar la primera venta de caja.</p>
@@ -734,11 +734,11 @@ const revenueTrendOptions = computed(() => {
 									to="/reportes"
 									class="text-primary hover:text-primary/80 flex items-center gap-1 text-xs font-bold transition-colors">
 									<span>Ver Reportes</span>
-									<ArrowRight class="h-3.5 w-3.5" />
+									<ArrowRight class="size-3.5" />
 								</NuxtLink>
 							</div>
 
-							<div class="h-[260px] w-full">
+							<div class="h-65 w-full">
 								<ClientChart v-if="revenueTrendOptions" :option="revenueTrendOptions" />
 								<div v-else class="flex h-full items-center justify-center text-text-muted text-xs">
 									Cargando datos de facturación...
@@ -753,7 +753,7 @@ const revenueTrendOptions = computed(() => {
 						<section class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-border-subtle md:p-8">
 							<div class="mb-4 flex items-center justify-between">
 								<div class="flex items-center gap-2">
-									<Sparkles class="h-4 w-4 text-primary" />
+									<Sparkles class="size-4 text-primary" />
 									<h3 class="text-text-primary text-base font-bold">Tratamientos Estrella</h3>
 								</div>
 								<span class="text-xs font-semibold text-text-muted">Top Demanda</span>
@@ -763,7 +763,7 @@ const revenueTrendOptions = computed(() => {
 							<div v-if="topPerformers.length > 0" class="space-y-4">
 								<div v-for="(item, idx) in topPerformers" :key="item.name" class="space-y-1.5">
 									<div class="flex items-center justify-between text-xs font-semibold">
-										<span class="text-text-primary truncate max-w-[200px]">
+										<span class="text-text-primary truncate max-w-50">
 											<span class="text-text-muted mr-1">#{{ idx + 1 }}</span>
 											{{ item.name }}
 										</span>
@@ -786,7 +786,7 @@ const revenueTrendOptions = computed(() => {
 						<section class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-border-subtle md:p-8">
 							<div class="mb-3 flex items-center justify-between">
 								<div class="flex items-center gap-2">
-									<Layers class="h-4 w-4 text-info" />
+									<Layers class="size-4 text-info" />
 									<h3 class="text-text-primary text-base font-bold">Mix de Venta (Servicio vs Retail)</h3>
 								</div>
 								<span class="text-xs font-bold text-primary">{{ salesMix.retail }}% Producto</span>
@@ -809,11 +809,11 @@ const revenueTrendOptions = computed(() => {
 
 							<div class="mt-3 flex items-center justify-between text-xs font-semibold">
 								<div class="flex items-center gap-1.5">
-									<span class="h-2.5 w-2.5 rounded-full bg-primary" />
+									<span class="size-2.5 rounded-full bg-primary" />
 									<span class="text-text-primary">Servicios: {{ salesMix.services }}%</span>
 								</div>
 								<div class="flex items-center gap-1.5">
-									<span class="h-2.5 w-2.5 rounded-full bg-info" />
+									<span class="size-2.5 rounded-full bg-info" />
 									<span class="text-text-primary">Retail: {{ salesMix.retail }}%</span>
 								</div>
 							</div>
@@ -823,32 +823,32 @@ const revenueTrendOptions = computed(() => {
 						<section class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-border-subtle md:p-8">
 							<div class="flex items-center justify-between mb-4">
 								<div class="flex items-center gap-2">
-									<PackageOpen class="h-4 w-4 text-warning-content" />
+									<PackageOpen class="size-4 text-warning-content" />
 									<h3 class="text-text-primary text-base font-bold">Inventario & Reposición</h3>
 								</div>
 								<NuxtLink
 									to="/catalogo/productos"
 									class="text-primary hover:text-primary/80 text-xs font-bold flex items-center gap-1">
 									<span>Catálogo</span>
-									<ArrowRight class="h-3.5 w-3.5" />
+									<ArrowRight class="size-3.5" />
 								</NuxtLink>
 							</div>
 
 							<div v-if="lowStockAlerts.length > 0" class="space-y-3">
 								<div class="rounded-2xl bg-warning/10 border border-warning/20 p-3.5 text-warning-content text-xs font-medium flex items-start gap-2.5">
-									<AlertTriangle class="h-4 w-4 shrink-0 mt-0.5" />
+									<AlertTriangle class="size-4 shrink-0 mt-0.5" />
 									<div>
 										<p class="font-bold">Hay {{ lowStockAlerts.length }} productos bajo mínimos</p>
 										<p class="text-[0.75rem] opacity-90 mt-0.5">Riesgo de pérdida de ventas en mostrador.</p>
 									</div>
 								</div>
 
-								<div class="divide-y divide-border-subtle/60 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
+								<div class="divide-y divide-border-subtle/60 max-h-40 overflow-y-auto custom-scrollbar pr-1">
 									<div
 										v-for="prod in lowStockAlerts.slice(0, 4)"
 										:key="prod.product_id"
 										class="flex items-center justify-between py-2 text-xs">
-										<span class="text-text-primary font-medium truncate max-w-[180px]">{{ prod.name }}</span>
+										<span class="text-text-primary font-medium truncate max-w-45">{{ prod.name }}</span>
 										<span class="rounded-md bg-error/10 text-error px-2 py-0.5 font-bold tabular-nums text-[0.7rem]">
 											{{ prod.stock }} disp. (mín {{ prod.min_stock }})
 										</span>
@@ -863,7 +863,7 @@ const revenueTrendOptions = computed(() => {
 							</div>
 
 							<div v-else class="rounded-2xl bg-success/10 border border-success/20 p-4 text-success flex items-center gap-3">
-								<CheckCircle2 class="h-5 w-5 shrink-0" />
+								<CheckCircle2 class="size-5 shrink-0" />
 								<div class="text-xs">
 									<p class="font-bold">Stock en niveles saludables</p>
 									<p class="opacity-90 mt-0.5">No hay productos por debajo del stock de seguridad.</p>

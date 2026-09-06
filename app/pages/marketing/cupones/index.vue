@@ -71,8 +71,8 @@ import type { FetchError } from '~~/shared/types/domain'
 			<!-- Header -->
 			<div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 				<div class="flex items-center gap-3">
-					<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
-						<Ticket class="h-6 w-6" />
+					<div class="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl">
+						<Ticket class="size-6" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold tracking-tight">Cupones</h1>
@@ -82,7 +82,7 @@ import type { FetchError } from '~~/shared/types/domain'
 
 				<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
 					<div class="relative w-full sm:w-3/4 lg:w-64">
-						<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+						<Search class="text-text-muted absolute top-1/2 left-3 size-5 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
 							type="text"
@@ -92,7 +92,7 @@ import type { FetchError } from '~~/shared/types/domain'
 					<button
 						class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-12 flex w-full shrink-0 items-center justify-center rounded-2xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
 						@click="openCreateModal">
-						<Plus class="h-5 w-5" />
+						<Plus class="size-5" />
 						Nuevo Cupón
 					</button>
 				</div>
@@ -127,7 +127,7 @@ import type { FetchError } from '~~/shared/types/domain'
 									{{ coupon.status }}
 								</span>
 								<div class="text-primary flex items-center gap-1">
-									<Percent class="h-4 w-4" />
+									<Percent class="size-4" />
 									<h3 class="text-xl font-black tracking-widest uppercase">{{ coupon.code }}</h3>
 								</div>
 							</div>
@@ -135,14 +135,14 @@ import type { FetchError } from '~~/shared/types/domain'
 							<!-- Menu dropdown -->
 							<div class="dropdown dropdown-end">
 								<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted -mr-2">
-									<MoreVertical class="h-4 w-4" />
+									<MoreVertical class="size-4" />
 								</button>
 								<ul
 									tabindex="0"
 									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-10 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 									<li>
 										<a class="hover:bg-bg-muted font-medium" @click="openEditModal(coupon)">
-											<Edit2 class="h-4 w-4" />
+											<Edit2 class="size-4" />
 											Editar
 										</a>
 									</li>
@@ -150,7 +150,7 @@ import type { FetchError } from '~~/shared/types/domain'
 										<a
 											class="text-error hover:bg-error/10 font-medium"
 											@click="confirmDelete(coupon.coupon_id)">
-											<Trash2 class="h-4 w-4" />
+											<Trash2 class="size-4" />
 											Eliminar
 										</a>
 									</li>
@@ -198,8 +198,8 @@ import type { FetchError } from '~~/shared/types/domain'
 			<div
 				v-else
 				class="bg-bg-card border-border-default flex flex-col items-center justify-center rounded-3xl border border-dashed px-4 py-20 text-center">
-				<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-					<Ticket class="text-text-muted h-10 w-10" />
+				<div class="bg-bg-muted mb-4 flex size-20 items-center justify-center rounded-full">
+					<Ticket class="text-text-muted size-10" />
 				</div>
 				<h3 class="mb-1 text-xl font-bold">No hay cupones registrados</h3>
 				<p class="text-text-muted mb-6 max-w-sm text-sm">

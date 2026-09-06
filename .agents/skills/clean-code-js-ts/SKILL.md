@@ -9,7 +9,11 @@ description: >-
   este skill explícitamente.
 argument-hint: "[ruta] [--review | --refactor | --test]"
 user-invocable: true
+version: 1.0.0
 license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: code-quality
 ---
 
 # JS/TS Clean Code, SOLID & Testing

@@ -39,20 +39,20 @@ const handleCrop = () => {
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-border-subtle bg-bg-card p-4 shrink-0">
           <h3 class="text-text-primary flex items-center gap-2 text-lg font-bold tracking-tight">
-            <Crop class="text-primary h-5 w-5" />
+            <Crop class="text-primary size-5" />
             Ajustar Fotografía
           </h3>
           <button class="btn btn-circle btn-ghost btn-sm text-text-muted hover:text-error transition-colors" @click="handleClose">
-            <X class="h-4 w-4" />
+            <X class="size-4" />
           </button>
         </div>
 
         <!-- Cropper Area -->
-        <div class="h-[500px] w-full bg-black shrink-0">
+        <div class="h-125 w-full bg-black shrink-0">
           <ClientOnly>
             <Cropper
               ref="cropperRef"
-              class="h-full w-full"
+              class="size-full"
               :src="imageSrc"
               :stencil-component="CircleStencil"
               :stencil-props="{ aspectRatio: 1 }"
@@ -68,7 +68,7 @@ const handleCrop = () => {
             Cancelar
           </button>
           <button class="btn btn-primary font-bold shadow-md hover:scale-105 transition-transform" @click="handleCrop">
-            <Upload class="mr-2 h-4 w-4" />
+            <Upload class="mr-2 size-4" />
             Recortar y Subir
           </button>
         </div>

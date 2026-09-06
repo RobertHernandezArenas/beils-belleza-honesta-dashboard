@@ -97,10 +97,10 @@ const closeDropdowns = () => {
                 </h2>
                 <div class="flex items-center gap-2">
                     <button v-if="selectedBooking" type="button" class="btn btn-sm btn-circle btn-ghost text-error" @click="emit('delete', selectedBooking.booking_id)">
-                        <Trash2 class="h-4 w-4" />
+                        <Trash2 class="size-4" />
                     </button>
                     <button type="button" class="btn btn-sm btn-circle btn-ghost text-text-muted" @click="store.closeBookingDrawer()">
-                        <X class="h-5 w-5" />
+                        <X class="size-5" />
                     </button>
                 </div>
             </div>

@@ -1,6 +1,11 @@
 ---
 name: verifier
-description: Validación rigurosa de cambios de código mediante ejecución de tests, análisis de logs, linters y comprobación visual. Activar inmediatamente después de que Maker genera o modifica código.
+description: "Trigger: verifier, verificar cambios, validación de tests, certificación de calidad, post-maker. Validación rigurosa de cambios de código mediante ejecución de tests, análisis de logs, linters y comprobación visual."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🛡 SKILL: Verifier (Validación y Evidencia)

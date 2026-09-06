@@ -1,6 +1,11 @@
 ---
 name: memory
-description: Gestión de memoria técnica persistente para registrar decisiones arquitectónicas, lecciones aprendidas, patrones adoptados y soluciones a bugs recurrentes. Activar al finalizar una tarea o ante descubrimientos clave.
+description: "Trigger: memory, mem_save, registrar lección, decisiones arquitectónicas, registrar patrón. Gestión de memoria técnica persistente para registrar decisiones arquitectónicas, lecciones aprendidas, patrones adoptados y soluciones a bugs recurrentes."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🧠 SKILL: Memory (Persistencia de Aprendizaje)

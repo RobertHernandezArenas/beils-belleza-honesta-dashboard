@@ -76,8 +76,8 @@ import type { Booking } from '~~/shared/types/domain'
 				v-if="bookings.length === 0"
 				class="flex flex-col items-center justify-center py-20 text-center">
 				<div
-					class="bg-bg-card border-border-default mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border shadow-sm">
-					<CalendarDays class="text-text-muted h-10 w-10 opacity-20" />
+					class="bg-bg-card border-border-default mb-6 flex size-20 items-center justify-center rounded-3xl border shadow-sm">
+					<CalendarDays class="text-text-muted size-10 opacity-20" />
 				</div>
 				<h3 class="text-text-primary text-xl font-black tracking-tighter uppercase">No hay citas</h3>
 				<p class="text-text-muted mt-2 text-xs font-black tracking-widest uppercase opacity-40">
@@ -133,44 +133,44 @@ import type { Booking } from '~~/shared/types/domain'
 							<div class="flex items-center gap-3">
 								<div
 									class="flex items-center gap-1.5 text-[9px] font-black tracking-widest uppercase opacity-40 md:text-[10px]">
-									<Clock class="h-3 w-3" />
+									<Clock class="size-3" />
 									{{ booking.duration }} MIN
 								</div>
 								<div
 									class="flex items-center gap-1.5 text-[9px] font-black tracking-widest uppercase opacity-40 md:text-[10px]">
-									<Scissors class="h-3 w-3" />
+									<Scissors class="size-3" />
 									{{ booking.professional?.name || 'Pro' }}
 								</div>
 							</div>
 							<div class="dropdown dropdown-end relative z-20">
 								<button tabindex="0" class="btn btn-ghost btn-xs btn-circle bg-bg-muted" @click.stop>
-									<MoreVertical class="h-3 w-3" />
+									<MoreVertical class="size-3" />
 								</button>
 								<ul
 									tabindex="0"
 									class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-50 mt-1 w-40 rounded-xl border p-1 shadow-xl">
 									<li>
 										<a @click.stop="emit('status', booking.booking_id, 'confirmed')">
-											<CheckCircle2 class="text-info h-3.5 w-3.5" />
+											<CheckCircle2 class="text-info size-3.5" />
 											Confirmar
 										</a>
 									</li>
 									<li>
 										<a @click.stop="emit('status', booking.booking_id, 'completed')">
-											<CheckCircle2 class="text-success h-3.5 w-3.5" />
+											<CheckCircle2 class="text-success size-3.5" />
 											Finalizar
 										</a>
 									</li>
 									<li>
 										<a @click.stop="emit('status', booking.booking_id, 'cancelled')">
-											<XCircle class="text-error h-3.5 w-3.5" />
+											<XCircle class="text-error size-3.5" />
 											Cancelar
 										</a>
 									</li>
 									<div class="divider my-0.5 opacity-50"/>
 									<li>
 										<a class="text-error" @click.stop="emit('delete', booking.booking_id)">
-											<Trash2 class="h-3.5 w-3.5" />
+											<Trash2 class="size-3.5" />
 											Eliminar
 										</a>
 									</li>

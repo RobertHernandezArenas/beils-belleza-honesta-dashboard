@@ -102,14 +102,14 @@ const handleEmail = () => {
 </script>
 
 <template>
-	<dialog ref="dialogRef" class="modal modal-bottom sm:modal-middle z-[6500]">
+	<dialog ref="dialogRef" class="modal modal-bottom sm:modal-middle z-6500">
 		<div class="modal-box bg-bg-card border border-border-default/80 max-w-4xl w-full p-0 rounded-3xl shadow-2xl flex flex-col max-h-[95dvh] overflow-hidden">
 			
 			<!-- BARRA SUPERIOR DE ACCIONES (SE OCULTA AL IMPRIMIR) -->
 			<div class="no-print p-4 sm:p-5 border-b border-border-subtle bg-bg-card flex flex-wrap items-center justify-between gap-3 shrink-0">
 				<div class="flex items-center gap-2.5">
 					<div class="p-2 bg-primary/15 text-primary rounded-xl">
-						<FileText class="w-5 h-5" />
+						<FileText class="size-5" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-sm sm:text-base font-black tracking-tight">
@@ -128,7 +128,7 @@ const handleEmail = () => {
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-sm"
 						@click="handlePrint"
 					>
-						<Printer class="w-4 h-4" />
+						<Printer class="size-4" />
 						Imprimir / PDF
 					</button>
 
@@ -138,7 +138,7 @@ const handleEmail = () => {
 						class="btn btn-success btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-sm text-white"
 						@click="handleWhatsApp"
 					>
-						<MessageCircle class="w-4 h-4" />
+						<MessageCircle class="size-4" />
 						WhatsApp
 					</button>
 
@@ -148,7 +148,7 @@ const handleEmail = () => {
 						class="btn btn-neutral btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-sm"
 						@click="handleEmail"
 					>
-						<Mail class="w-4 h-4" />
+						<Mail class="size-4" />
 						Email
 					</button>
 
@@ -156,7 +156,7 @@ const handleEmail = () => {
 						class="btn btn-ghost btn-circle btn-sm text-text-muted hover:text-text-primary ml-1"
 						@click="handleClose"
 					>
-						<X class="w-5 h-5" />
+						<X class="size-5" />
 					</button>
 				</div>
 			</div>
@@ -211,7 +211,7 @@ const handleEmail = () => {
 						</div>
 						<div>
 							<span class="text-gray-500 block">Fecha de Nacimiento:</span>
-							<strong class="text-gray-900">{{ client.date_of_birth ? new Date(client.date_of_birth).toLocaleDateString() : 'No indicada' }}</strong>
+							<strong class="text-gray-900">{{ (client.birth_date || client.date_of_birth) ? new Date(client.birth_date || client.date_of_birth!).toLocaleDateString() : 'No indicada' }}</strong>
 						</div>
 						<div>
 							<span class="text-gray-500 block">Estado del Consentimiento:</span>
@@ -396,7 +396,7 @@ const handleEmail = () => {
 					class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-sm"
 					@click="handlePrint"
 				>
-					<Printer class="w-4 h-4" />
+					<Printer class="size-4" />
 					Imprimir / Guardar PDF
 				</button>
 			</div>

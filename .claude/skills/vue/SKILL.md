@@ -1,6 +1,14 @@
 ---
 name: vue
-description: Vue 3 renderer for json-render. Use when building Vue UIs from JSON specs, working with @json-render/vue, defining Vue component registries, or rendering AI-generated specs in Vue.
+description:
+   'Trigger: @json-render/vue, json-render vue, renderizar specs json en vue. Vue 3 renderer for json-render.
+   Use when building Vue UIs from JSON specs, working with @json-render/vue, defining Vue component
+   registries, or rendering AI-generated specs in Vue.'
+version: 1.0.0
+license: MIT
+metadata:
+   author: vercel-labs
+   category: frontend
 ---
 
 # @json-render/vue
@@ -20,96 +28,136 @@ Peer dependencies: `vue ^3.5.0` and `zod ^4.0.0`.
 ### Create a Catalog
 
 ```typescript
-import { defineCatalog } from "@json-render/core";
-import { schema } from "@json-render/vue/schema";
-import { z } from "zod";
+import { defineCatalog } from '@json-render/core'
+import { schema } from '@json-render/vue/schema'
+import { z } from 'zod'
 
 export const catalog = defineCatalog(schema, {
-  components: {
-    Card: {
-      props: z.object({ title: z.string(), description: z.string().nullable() }),
-      description: "A card container",
-    },
-    Button: {
-      props: z.object({ label: z.string(), action: z.string() }),
-      description: "A clickable button",
-    },
-  },
-  actions: {},
-});
+	components: {
+		Card: {
+			props: z.object({ title: z.string(), description: z.string().nullable() }),
+			slots: ['default'],
+			description: 'A card container',
+		},
+		Layout: {
+			props: z.object({}),
+			slots: ['default', 'header', 'footer'],
+			description: 'Layout with named content regions',
+		},
+		Button: {
+			props: z.object({ label: z.string(), action: z.string() }),
+			description: 'A clickable button',
+		},
+	},
+	actions: {},
+})
 ```
 
 ### Define Registry with h() Render Functions
 
 ```typescript
-import { h } from "vue";
-import { defineRegistry } from "@json-render/vue";
-import { catalog } from "./catalog";
+import { h } from 'vue'
+import { defineRegistry } from '@json-render/vue'
+import { catalog } from './catalog'
 
 export const { registry } = defineRegistry(catalog, {
-  components: {
-    Card: ({ props, children }) =>
-      h("div", { class: "card" }, [
-        h("h3", null, props.title),
-        props.description ? h("p", null, props.description) : null,
-        children,
-      ]),
-    Button: ({ props, emit }) =>
-      h("button", { onClick: () => emit("press") }, props.label),
-  },
-});
+	components: {
+		Card: ({ props, children }) =>
+			h('div', { class: 'card' }, [
+				h('h3', null, props.title),
+				props.description ? h('p', null, props.description) : null,
+				children,
+			]),
+		Layout: ({ slots }) =>
+			h('div', null, [
+				h('header', null, slots.header?.()),
+				h('main', null, slots.default?.()),
+				h('footer', null, slots.footer?.()),
+			]),
+		Button: ({ props, emit }) => h('button', { onClick: () => emit('press') }, props.label),
+	},
+})
 ```
+
+## Named Slots
+
+Use `children` for the `"default"` slot. Use the element's top-level `slots` object for other slot names
+declared by the catalog:
+
+```json
+{
+	"type": "Layout",
+	"props": {},
+	"children": ["main"],
+	"slots": {
+		"header": ["heading"],
+		"footer": ["actions"]
+	}
+}
+```
+
+Registry components receive Vue-native slot functions. Render them with `slots.header?.()`,
+`slots.footer?.()`, and so on. `slots.default?.()` renders the spec's `children`; the `children` context field
+is a convenience alias for that rendered result. In the JSON spec, keep default content in `children` rather
+than adding a `default` entry to `slots`.
 
 ### Render Specs
 
 ```vue
 <script setup lang="ts">
-import { StateProvider, ActionProvider, Renderer } from "@json-render/vue";
-import { registry } from "./registry";
+	import { StateProvider, ActionProvider, Renderer } from '@json-render/vue'
+	import { registry } from './registry'
 
-const spec = { root: "card-1", elements: { /* ... */ } };
+	const spec = {
+		root: 'card-1',
+		elements: {
+			/* ... */
+		},
+	}
 </script>
 
 <template>
-  <StateProvider :initial-state="{ form: { name: '' } }">
-    <ActionProvider :handlers="{ submit: handleSubmit }">
-      <Renderer :spec="spec" :registry="registry" />
-    </ActionProvider>
-  </StateProvider>
+	<StateProvider :initial-state="{ form: { name: '' } }">
+		<ActionProvider :handlers="{ submit: handleSubmit }">
+			<Renderer :spec="spec" :registry="registry" />
+		</ActionProvider>
+	</StateProvider>
 </template>
 ```
 
 ## Providers
 
-| Provider | Purpose |
-|----------|---------|
-| `StateProvider` | Share state across components (JSON Pointer paths). Accepts `initialState` or `store` for controlled mode. |
-| `ActionProvider` | Handle actions dispatched via the event system |
-| `VisibilityProvider` | Enable conditional rendering based on state |
-| `ValidationProvider` | Form field validation |
+| Provider             | Purpose                                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `StateProvider`      | Share state across components (JSON Pointer paths). Accepts `initialState` or `store` for controlled mode. |
+| `ActionProvider`     | Handle actions dispatched via the event system                                                             |
+| `VisibilityProvider` | Enable conditional rendering based on state                                                                |
+| `ValidationProvider` | Form field validation                                                                                      |
 
 ## Composables
 
-| Composable | Purpose |
-|------------|---------|
-| `useStateStore()` | Access state context (`state` as `ShallowRef`, `get`, `set`, `update`) |
-| `useStateValue(path)` | Get single value from state |
-| `useIsVisible(condition)` | Check if a visibility condition is met |
-| `useActions()` | Access action context |
-| `useAction(binding)` | Get a single action dispatch function |
-| `useFieldValidation(path, config)` | Field validation state |
-| `useBoundProp(propValue, bindingPath)` | Two-way binding for `$bindState`/`$bindItem` |
+| Composable                             | Purpose                                                                |
+| -------------------------------------- | ---------------------------------------------------------------------- |
+| `useStateStore()`                      | Access state context (`state` as `ShallowRef`, `get`, `set`, `update`) |
+| `useStateValue(path)`                  | Get single value from state                                            |
+| `useIsVisible(condition)`              | Check if a visibility condition is met                                 |
+| `useActions()`                         | Access action context                                                  |
+| `useAction(binding)`                   | Get a single action dispatch function                                  |
+| `useFieldValidation(path, config)`     | Field validation state                                                 |
+| `useBoundProp(propValue, bindingPath)` | Two-way binding for `$bindState`/`$bindItem`                           |
 
 Note: `useStateStore().state` returns a `ShallowRef<StateModel>` — use `state.value` to access.
 
 ## External Store (StateStore)
 
+Nested lists can set `repeat.statePath` to `{ "$item": "field" }` inside an enclosing repeat.
+
 Pass a `StateStore` to `StateProvider` to wire json-render to Pinia, VueUse, or any state management:
 
 ```typescript
-import { createStateStore, type StateStore } from "@json-render/vue";
+import { createStateStore, type StateStore } from '@json-render/vue'
 
-const store = createStateStore({ count: 0 });
+const store = createStateStore({ count: 0 })
 ```
 
 ```vue
@@ -120,7 +168,8 @@ const store = createStateStore({ count: 0 });
 
 ## Dynamic Prop Expressions
 
-Props support `$state`, `$bindState`, `$cond`, `$template`, `$computed`. Use `{ "$bindState": "/path" }` on the natural value prop for two-way binding.
+Props support `$state`, `$bindState`, `$cond`, `$template`, `$computed`. Use `{ "$bindState": "/path" }` on
+the natural value prop for two-way binding.
 
 ## Visibility Conditions
 
@@ -133,12 +182,13 @@ Props support `$state`, `$bindState`, `$cond`, `$template`, `$computed`. Use `{ 
 
 ## Built-in Actions
 
-`setState`, `pushState`, `removeState`, and `validateForm` are built into the Vue schema and handled by `ActionProvider`:
+`setState`, `pushState`, `removeState`, and `validateForm` are built into the Vue schema and handled by
+`ActionProvider`:
 
 ```json
 {
-  "action": "setState",
-  "params": { "statePath": "/activeTab", "value": "settings" }
+	"action": "setState",
+	"params": { "statePath": "/activeTab", "value": "settings" }
 }
 ```
 
@@ -155,23 +205,23 @@ Components use `emit(event)` to fire events, or `on(event)` for metadata (`shoul
 For catalog-agnostic reusable components:
 
 ```typescript
-import type { BaseComponentProps } from "@json-render/vue";
+import type { BaseComponentProps } from '@json-render/vue'
 
 const Card = ({ props, children }: BaseComponentProps<{ title?: string }>) =>
-  h("div", null, [props.title, children]);
+	h('div', null, [props.title, children])
 ```
 
 ## Key Exports
 
-| Export | Purpose |
-|--------|---------|
-| `defineRegistry` | Create a type-safe component registry from a catalog |
-| `Renderer` | Render a spec using a registry |
-| `schema` | Element tree schema (from `@json-render/vue/schema`) |
-| `StateProvider`, `ActionProvider`, `VisibilityProvider`, `ValidationProvider` | Context providers |
-| `useStateStore`, `useStateValue`, `useBoundProp` | State composables |
-| `useActions`, `useAction` | Action composables |
-| `useFieldValidation`, `useIsVisible` | Validation and visibility |
-| `useUIStream`, `useChatUI` | Streaming composables |
-| `createStateStore` | Create in-memory `StateStore` |
-| `BaseComponentProps` | Catalog-agnostic component props type |
+| Export                                                                        | Purpose                                              |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `defineRegistry`                                                              | Create a type-safe component registry from a catalog |
+| `Renderer`                                                                    | Render a spec using a registry                       |
+| `schema`                                                                      | Element tree schema (from `@json-render/vue/schema`) |
+| `StateProvider`, `ActionProvider`, `VisibilityProvider`, `ValidationProvider` | Context providers                                    |
+| `useStateStore`, `useStateValue`, `useBoundProp`                              | State composables                                    |
+| `useActions`, `useAction`                                                     | Action composables                                   |
+| `useFieldValidation`, `useIsVisible`                                          | Validation and visibility                            |
+| `useUIStream`, `useChatUI`                                                    | Streaming composables                                |
+| `createStateStore`                                                            | Create in-memory `StateStore`                        |
+| `BaseComponentProps`                                                          | Catalog-agnostic component props type                |

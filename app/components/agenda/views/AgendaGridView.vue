@@ -220,7 +220,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
 
 <template>
     <div class="custom-scrollbar flex-1 overflow-y-auto bg-bg-app">
-        <div class="flex min-w-[800px] flex-col min-h-full">
+        <div class="flex min-w-200 flex-col min-h-full">
             <!-- Header Row -->
             <div class="border-border-subtle sticky top-0 z-40 flex border-b bg-bg-card/90 backdrop-blur-md">
                 <div class="border-border-subtle w-16 shrink-0 border-r"/>
@@ -233,7 +233,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                         {{ dayObj.date.toLocaleDateString('es-ES', { weekday: 'short' }) }}
                     </div>
                     <div 
-                        class="mt-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-black transition-all"
+                        class="mt-1 flex size-10 items-center justify-center rounded-full text-xl font-black transition-all"
                         :class="isToday(dayObj.date) ? 'bg-primary text-white shadow-lg' : 'text-text-primary'">
                         {{ dayObj.date.getDate() }}
                     </div>
@@ -289,7 +289,7 @@ const handleGridClick = (e: MouseEvent, day: Date) => {
                                     {{ booking.client?.name }} {{ booking.client?.surname?.charAt(0) }}.
                                 </div>
                                 <div class="text-[8px] font-semibold opacity-70 mt-px truncate flex items-center gap-1 shrink-0">
-                                    <Clock class="h-2 w-2 shrink-0" /> {{ booking.start_time }}
+                                    <Clock class="size-2 shrink-0" /> {{ booking.start_time }}
                                 </div>
                                 <div v-if="booking.booking_items?.length" class="mt-px flex-1 min-h-0 overflow-hidden">
                                     <div

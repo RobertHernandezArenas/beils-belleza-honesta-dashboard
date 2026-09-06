@@ -1,14 +1,17 @@
 ---
+name: solid-principles-js-ts
 title: Principios SOLID en JavaScript y TypeScript
-description: Guía prescriptiva para refactorización, desacoplamiento y diseño modular en aplicaciones JS/TS.
-category: Arquitectura de Software & Clean Code
+description: "Trigger: solid, principios solid, refactorización limpia, desacoplamiento, clean code js ts, arquitectura modular. Guía prescriptiva para refactorización, desacoplamiento y diseño modular en aplicaciones JS/TS."
 version: 1.1.0
-last_updated: 2026-09
-tags:
-  - solid
-  - clean-code
-  - typescript
-  - architecture
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: architecture
+  tags:
+    - solid
+    - clean-code
+    - typescript
+    - architecture
 ---
 
 # 📐 Principios SOLID en JavaScript / TypeScript

@@ -78,12 +78,12 @@ import type { FetchError } from '~~/shared/types/domain'
 
 <template>
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
-		<div class="mx-auto flex h-full w-full max-w-7xl flex-col lg:overflow-hidden">
+		<div class="mx-auto flex size-full max-w-7xl flex-col lg:overflow-hidden">
 			<!-- Header -->
 			<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div class="flex items-center gap-3">
-					<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
-						<Package class="h-6 w-6" />
+					<div class="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl">
+						<Package class="size-6" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold tracking-tight">Productos</h1>
@@ -95,7 +95,7 @@ import type { FetchError } from '~~/shared/types/domain'
 					<button
 						class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-12 rounded-2xl border-none px-6 font-bold shadow-sm"
 						@click="openCreateModal">
-						<Plus class="h-5 w-5" />
+						<Plus class="size-5" />
 						Nuevo Producto
 					</button>
 				</div>
@@ -105,7 +105,7 @@ import type { FetchError } from '~~/shared/types/domain'
 			<div
 				class="bg-bg-card border-border-default mb-8 flex flex-col gap-4 rounded-3xl border p-4 sm:flex-row sm:items-center">
 				<div class="relative flex-1">
-					<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+					<Search class="text-text-muted absolute top-1/2 left-3 size-5 -translate-y-1/2" />
 					<input
 						v-model="searchQuery"
 						type="text"
@@ -155,15 +155,15 @@ import type { FetchError } from '~~/shared/types/domain'
 								<td class="pl-6 py-4">
 									<div class="flex items-center gap-4">
 										<div
-											class="bg-bg-card border-border-default/50 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
+											class="bg-bg-card border-border-default/50 flex size-14 shrink-0 items-center justify-center rounded-2xl border shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
 											<ImageIcon
 												v-if="!product.image_url"
-												class="text-text-muted/30 h-6 w-6" />
+												class="text-text-muted/30 size-6" />
 											<img
 												v-else
 												:src="product.image_url"
 												alt=""
-												class="h-full w-full object-cover" >
+												class="size-full object-cover" >
 										</div>
 										<div class="flex flex-col">
 											<span class="text-text-primary text-sm font-bold tracking-tight">{{ product.name }}</span>
@@ -188,7 +188,7 @@ import type { FetchError } from '~~/shared/types/domain'
 											">
 											<AlertCircle
 												v-if="product.stock <= (product.min_stock || 0)"
-												class="h-3 w-3" />
+												class="size-3" />
 											<span class="opacity-60 font-medium">Stock:</span> {{ product.stock }}
 										</span>
 									</div>
@@ -202,7 +202,7 @@ import type { FetchError } from '~~/shared/types/domain'
 												? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
 												: 'bg-text-muted/10 text-text-secondary border-text-muted/20'
 										">
-										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"/>
+										<span class="mr-1.5 size-1 rounded-full bg-current"/>
 										{{ product.status }}
 									</span>
 								</td>
@@ -213,14 +213,14 @@ import type { FetchError } from '~~/shared/types/domain'
 										:class="{ 'dropdown-top': index > (products?.length || 0) - 3 }"
 									>
 										<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted transition-all hover:bg-primary/10 hover:text-primary">
-											<MoreVertical class="h-4.5 w-4.5" />
+											<MoreVertical class="size-4.5" />
 										</button>
 										<ul
 											tabindex="0"
 											class="dropdown-content menu glass-card text-text-secondary z-100 mt-1 w-44 rounded-2xl border p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
 											<li>
 												<a class="hover:bg-primary/5 hover:text-primary rounded-xl py-2.5 font-bold transition-colors" @click="openEditModal(product)">
-													<Edit2 class="h-4 w-4" />
+													<Edit2 class="size-4" />
 													<span>{{ $t('common.edit') }}</span>
 												</a>
 											</li>
@@ -229,7 +229,7 @@ import type { FetchError } from '~~/shared/types/domain'
 												<a
 													class="text-rose-500 hover:bg-rose-500/10 rounded-xl py-2.5 font-bold transition-colors"
 													@click="confirmDelete(product.product_id)">
-													<Trash2 class="h-4 w-4" />
+													<Trash2 class="size-4" />
 													<span>{{ $t('common.delete') }}</span>
 												</a>
 											</li>
@@ -246,8 +246,8 @@ import type { FetchError } from '~~/shared/types/domain'
 			<div
 				v-else
 				class="bg-bg-card border-border-default flex flex-col items-center justify-center rounded-3xl border border-dashed py-16 text-center">
-				<div class="bg-bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-					<Package class="text-text-muted h-8 w-8" />
+				<div class="bg-bg-muted mb-4 flex size-16 items-center justify-center rounded-full">
+					<Package class="text-text-muted size-8" />
 				</div>
 				<h3 class="mb-1 text-lg font-bold">No se encontraron productos</h3>
 				<p class="text-text-muted mb-4 text-sm">Prueba ajustando los filtros o crea un nuevo producto.</p>

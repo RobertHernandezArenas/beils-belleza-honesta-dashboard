@@ -17,23 +17,23 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="space-y-6 animate-slide-right min-h-[450px] flex flex-col">
+  <div class="space-y-6 animate-slide-right min-h-112.5 flex flex-col">
     <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
             <button class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted" @click="emit('cancel')">
-                <ArrowLeft class="w-4 h-4" />
+                <ArrowLeft class="size-4" />
             </button>
             <h3 class="text-text-primary font-bold text-lg">Editando compra</h3>
         </div>
         <button class="btn btn-sm btn-primary rounded-xl gap-2 font-bold shadow-sm shadow-primary/20" @click="emit('searchItems')">
-            <Plus class="w-4 h-4" /> Añadir Concepto
+            <Plus class="size-4" /> Añadir Concepto
         </button>
     </div>
 
     <!-- AEAT Warning if submitted -->
     <div v-if="cart.aeat_status === 'submitted'" class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 animate-pulse">
         <div class="bg-amber-100 p-2 rounded-lg text-amber-600">
-            <ShieldOff class="w-4 h-4" />
+            <ShieldOff class="size-4" />
         </div>
         <div class="flex-1">
             <p class="text-amber-800 text-xs font-bold uppercase tracking-wider">Aviso de Cumplimiento Fiscal</p>
@@ -44,9 +44,9 @@ const emit = defineEmits<{
     </div>
 
     <!-- Current Session Cart -->
-    <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+    <div class="flex-1 overflow-y-auto max-h-100 pr-2 custom-scrollbar">
         <div v-if="tempItems.length === 0" class="flex flex-col items-center justify-center py-16 opacity-40">
-            <ShoppingBag class="w-16 h-16 mb-4" />
+            <ShoppingBag class="size-16 mb-4" />
             <p class="font-bold tracking-widest uppercase text-xs">El carrito está vacío</p>
             <p class="text-[10px] mt-1">Añade servicios o productos usando el buscador</p>
         </div>
@@ -59,15 +59,15 @@ const emit = defineEmits<{
                 
                 <div class="flex items-center gap-3 shrink-0">
                     <div class="flex items-center gap-2 bg-bg-muted/50 rounded-xl p-1">
-                        <button class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs" @click="emit('updateQuantity', idx, -1)">
-                            <Minus class="w-3 h-3" />
+                        <button class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted size-7 text-xs" @click="emit('updateQuantity', idx, -1)">
+                            <Minus class="size-3" />
                         </button>
                         <span class="w-6 text-center text-sm font-black tabular-nums">{{ item.quantity }}</span>
-                        <button class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted h-7 w-7 text-xs" @click="emit('updateQuantity', idx, 1)">
-                            <Plus class="w-3 h-3" />
+                        <button class="btn btn-xs btn-circle bg-bg-card border-bg-muted/30 shadow-xs hover:bg-bg-muted size-7 text-xs" @click="emit('updateQuantity', idx, 1)">
+                            <Plus class="size-3" />
                         </button>
                     </div>
-                    <span class="text-text-primary font-black tabular-nums min-w-[60px] text-right">{{ (item.unit_price * item.quantity).toFixed(2) }}€</span>
+                    <span class="text-text-primary font-black tabular-nums min-w-15 text-right">{{ (item.unit_price * item.quantity).toFixed(2) }}€</span>
                 </div>
             </div>
         </div>

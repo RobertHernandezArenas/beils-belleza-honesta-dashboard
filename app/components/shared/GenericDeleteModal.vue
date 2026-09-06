@@ -46,7 +46,7 @@
 
 			<div class="relative z-10 flex flex-col items-center">
 				<div class="mb-5 rounded-full bg-red-100 p-5 text-red-600 shadow-sm ring-1 ring-red-200">
-					<AlertTriangle class="h-10 w-10" />
+					<AlertTriangle class="size-10" />
 				</div>
 				<h3 class="mb-2 text-2xl font-black text-red-600">
 					{{ customTitle || 'Eliminar Registro' }}

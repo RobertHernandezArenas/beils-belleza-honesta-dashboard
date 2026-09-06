@@ -134,7 +134,7 @@
 <template>
 	<div
 		class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:flex lg:h-[calc(100dvh-73px)] lg:flex-col lg:overflow-hidden lg:p-10">
-		<div class="mx-auto flex h-full w-full max-w-350 flex-col lg:overflow-hidden">
+		<div class="mx-auto flex size-full max-w-350 flex-col lg:overflow-hidden">
 			<!-- Header -->
 			<header
 				data-aos="fade-up"
@@ -148,7 +148,7 @@
 
 				<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
 					<div class="relative w-full sm:w-3/4 lg:w-auto">
-						<Search class="text-text-muted absolute top-1/2 left-4 z-2 h-4 w-4 -translate-y-1/2" />
+						<Search class="text-text-muted absolute top-1/2 left-4 z-2 size-4 -translate-y-1/2" />
 						<input
 							v-model="searchInput"
 							type="search"
@@ -158,15 +158,15 @@
 							v-if="searchInput"
 							type="button"
 							aria-label="Limpiar búsqueda"
-							class="text-text-muted hover:text-text-primary hover:bg-bg-muted absolute top-1/2 right-3 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full transition-colors"
+							class="text-text-muted hover:text-text-primary hover:bg-bg-muted absolute top-1/2 right-3 flex size-6 -translate-y-1/2 items-center justify-center rounded-full transition-colors"
 							@click="searchInput = ''">
-							<X class="h-3.5 w-3.5" />
+							<X class="size-3.5" />
 						</button>
 					</div>
 					<button
 						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
 						@click="openCreateModal">
-						<Plus class="h-5 w-5" />
+						<Plus class="size-5" />
 						<span class="font-bold">{{ t('catalog.clients.newClient') }}</span>
 					</button>
 				</div>
@@ -186,8 +186,8 @@
 			<div
 				v-else-if="clients?.length === 0"
 				class="glass-card premium-shadow flex flex-col items-center justify-center rounded-3xl py-24 text-center">
-				<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-					<UserCircle class="text-text-muted/50 h-10 w-10" />
+				<div class="bg-bg-muted mb-4 flex size-20 items-center justify-center rounded-full">
+					<UserCircle class="text-text-muted/50 size-10" />
 				</div>
 				<p class="text-text-primary text-xl font-bold">{{ t('catalog.clients.emptyState') }}</p>
 				<p class="text-text-muted mt-2 max-w-sm">{{ t('catalog.clients.emptyStateSub') }}</p>
@@ -227,11 +227,11 @@
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-3">
 										<div
-											class="from-primary/20 to-primary/5 text-primary border-text-secondary flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
+											class="from-primary/20 to-primary/5 text-primary border-text-secondary flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
 											<img
 												v-if="client.avatar && !avatarErrors.has(client.user_id)"
 												:src="client.avatar"
-												class="h-full w-full object-cover"
+												class="size-full object-cover"
 												@error="handleAvatarError(client.user_id)" >
 											<span v-else class="text-sm font-black tracking-tight">
 												{{ client.name.charAt(0) }}{{ client.surname.charAt(0) }}
@@ -275,11 +275,11 @@
 												@click="toggleDocumentVisibility(client.user_id, client.document_number || '')">
 												<span
 													v-if="revealedLoading[client.user_id]"
-													class="loading loading-spinner loading-xs h-3 w-3"/>
+													class="loading loading-spinner loading-xs size-3"/>
 												<component
 													:is="revealedDocs[client.user_id] ? EyeOff : Eye"
 													v-else
-													class="h-3.5 w-3.5" />
+													class="size-3.5" />
 											</button>
 										</div>
 									</div>
@@ -291,13 +291,13 @@
 										<div
 											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-bg-card/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
 											title="Citas Reservadas">
-											<CalendarDays class="text-primary/70 h-3.5 w-3.5" />
+											<CalendarDays class="text-primary/70 size-3.5" />
 											<span class="tabular-nums">{{ client._count?.client_bookings || 0 }}</span>
 										</div>
 										<div
 											class="text-text-secondary border-border-default/30 group-hover:border-primary/20 group-hover:bg-primary/5 flex items-center gap-2 rounded-xl border bg-bg-card/50 px-3 py-1.5 text-xs font-bold shadow-xs transition-colors"
 											title="Consentimientos Firmados">
-											<ExternalLink class="text-primary/70 h-3.5 w-3.5" />
+											<ExternalLink class="text-primary/70 size-3.5" />
 											<span class="tabular-nums">{{ client._count?.consents || 0 }}</span>
 										</div>
 									</div>
@@ -312,7 +312,7 @@
 												? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700'
 												: 'border-rose-500/20 bg-rose-500/10 text-rose-700'
 										">
-										<span class="mr-1.5 h-1 w-1 rounded-full bg-current"/>
+										<span class="mr-1.5 size-1 rounded-full bg-current"/>
 										{{ client.status === 'ON' ? 'Activo' : 'Inactivo' }}
 									</span>
 								</td>
@@ -325,19 +325,19 @@
 											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-primary/10 hover:text-primary transition-all duration-300"
 											title="Ver Perfil"
 											@click.stop>
-											<UserCircle class="h-4.5 w-4.5" />
+											<UserCircle class="size-4.5" />
 										</NuxtLink>
 										<button
 											class="btn btn-sm btn-circle btn-ghost text-text-muted hover:bg-bg-muted hover:text-text-primary transition-all duration-300"
 											title="Editar Cliente"
 											@click.stop="openEditModal(client)">
-											<Edit class="h-4.5 w-4.5" />
+											<Edit class="size-4.5" />
 										</button>
 										<button
 											class="btn btn-sm btn-circle btn-ghost text-rose-500/40 transition-all duration-300 hover:bg-rose-500/10 hover:text-rose-600"
 											title="Eliminar Cliente"
 											@click.stop="openDeleteModal(client)">
-											<Trash2 class="h-4.5 w-4.5" />
+											<Trash2 class="size-4.5" />
 										</button>
 									</div>
 								</td>

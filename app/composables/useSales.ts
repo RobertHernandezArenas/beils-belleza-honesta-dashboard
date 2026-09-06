@@ -1,8 +1,15 @@
 import { ref, computed, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import type { Sale, SaleItem } from '~~/shared/types/domain'
-import { useSalesAnalytics } from './useSalesAnalytics'
-import { exportVentasCsv, exportVentasPdf } from '~/utils/exportHelpers'
+import { useSalesAnalytics, type SummaryTimeframe } from './useSalesAnalytics'
+import {
+	downloadSalesExportCsv,
+	downloadSalesExportPdf,
+} from '~/utils/exportHelpers'
+import {
+	getPeriodDateBounds,
+	type ExportDetailMode,
+} from '~/utils/salesExportCalculations'
 
 export interface SalesMonthGroup {
 	key: string
@@ -28,7 +35,9 @@ export function useSales() {
 	const filterDateRange = ref({ start: '', end: '' })
 	const filterPaymentMethod = ref('all')
 
-	const summaryTimeframe = ref<'day' | 'week' | 'month' | 'year'>('month')
+	const summaryTimeframe = ref<SummaryTimeframe>('month')
+	const selectedQuarter = ref<number>(Math.floor(new Date().getMonth() / 3) + 1)
+	const selectedYear = ref<number>(new Date().getFullYear())
 
 	const sortKey = ref<'id' | 'date' | 'payment_method' | 'total' | 'client'>('date')
 	const sortOrder = ref<'desc' | 'asc'>('desc')
@@ -37,6 +46,7 @@ export function useSales() {
 	const itemsPerPage = ref(20)
 
 	const isGeneratingPdf = ref(false)
+	const isExportModalOpen = ref(false)
 	const toastMessage = ref('')
 	const toastType = ref<'success' | 'error'>('success')
 	const showToast = ref(false)
@@ -60,24 +70,36 @@ export function useSales() {
 		queryFn: () => $fetch<Sale[]>('/api/sales/carts', { query: { status: 'completed' } }),
 	})
 
+	// When user clicks one of the timeframe buttons, clear manual date pickers to prevent conflicting filters
+	const setTimeframe = (tf: SummaryTimeframe) => {
+		summaryTimeframe.value = tf
+		filterDateSingle.value = ''
+		filterDateRange.value = { start: '', end: '' }
+	}
+
 	const filteredSales = computed(() => {
 		if (!sales.value) return []
 		let result = sales.value
 
+		// 1. Search Query (Client name or cart id)
 		if (searchQuery.value) {
-			const query = searchQuery.value.toLowerCase()
+			const query = searchQuery.value.toLowerCase().trim()
 			result = result.filter((s: Sale) => {
-				const clientName = s.user ? `${s.user.name} ${s.user.surname}`.toLowerCase() : ''
-				return clientName.includes(query) || s.cart_id.toLowerCase().includes(query)
+				const clientName = s.user ? `${s.user.name || ''} ${s.user.surname || ''}`.toLowerCase() : ''
+				return clientName.includes(query) || s.cart_id.toLowerCase().includes(query) || (s.invoice_number || '').toLowerCase().includes(query)
 			})
 		}
 
-		if (filterDateMode.value === 'single' && filterDateSingle.value) {
+		// 2. Date Filtering: Manual picker has precedence if populated; otherwise use summaryTimeframe
+		const hasManualSingle = filterDateMode.value === 'single' && Boolean(filterDateSingle.value)
+		const hasManualRange = filterDateMode.value === 'range' && Boolean(filterDateRange.value.start || filterDateRange.value.end)
+
+		if (hasManualSingle) {
 			result = result.filter((s: Sale) => {
 				const saleDate = new Date(s.created_at).toISOString().split('T')[0]
 				return saleDate === filterDateSingle.value
 			})
-		} else if (filterDateMode.value === 'range') {
+		} else if (hasManualRange) {
 			const start = filterDateRange.value.start ? new Date(filterDateRange.value.start) : null
 			const end = filterDateRange.value.end ? new Date(filterDateRange.value.end) : null
 			if (end) end.setHours(23, 59, 59, 999)
@@ -88,13 +110,27 @@ export function useSales() {
 				if (end && saleDate > end) return false
 				return true
 			})
+		} else if (summaryTimeframe.value !== 'all') {
+			// Apply timeframe filter (Día, Semana, Mes, Trimestre, Año)
+			const { start, end } = getPeriodDateBounds(summaryTimeframe.value, {
+				quarter: selectedQuarter.value,
+				year: selectedYear.value,
+			})
+
+			if (start && end) {
+				result = result.filter((s: Sale) => {
+					const saleDate = new Date(s.created_at)
+					return saleDate >= start && saleDate <= end
+				})
+			}
 		}
 
+		// 3. Payment Method Filter
 		if (filterPaymentMethod.value !== 'all') {
 			result = result.filter((s: Sale) => s.payment_method === filterPaymentMethod.value)
 		}
 
-		// Sorting
+		// 4. Sorting
 		result = [...result].sort((a: Sale, b: Sale) => {
 			const modifier = sortOrder.value === 'asc' ? 1 : -1
 			if (sortKey.value === 'date') {
@@ -104,8 +140,8 @@ export function useSales() {
 			} else if (sortKey.value === 'payment_method') {
 				return (a.payment_method || '').localeCompare(b.payment_method || '') * modifier
 			} else if (sortKey.value === 'client') {
-				const nameA = a.user ? `${a.user.name} ${a.user.surname}`.toLowerCase() : 'zzzz'
-				const nameB = b.user ? `${b.user.name} ${b.user.surname}`.toLowerCase() : 'zzzz'
+				const nameA = a.user ? `${a.user.name || ''} ${a.user.surname || ''}`.toLowerCase() : 'zzzz'
+				const nameB = b.user ? `${b.user.name || ''} ${b.user.surname || ''}`.toLowerCase() : 'zzzz'
 				return nameA.localeCompare(nameB) * modifier
 			} else if (sortKey.value === 'id') {
 				return getTicketDisplay(a).localeCompare(getTicketDisplay(b)) * modifier
@@ -116,7 +152,18 @@ export function useSales() {
 		return result
 	})
 
-	watch([searchQuery, filterDateMode, filterDateSingle, filterDateRange, filterPaymentMethod, sortKey, sortOrder], () => {
+	watch([
+		searchQuery,
+		filterDateMode,
+		filterDateSingle,
+		filterDateRange,
+		filterPaymentMethod,
+		summaryTimeframe,
+		selectedQuarter,
+		selectedYear,
+		sortKey,
+		sortOrder,
+	], () => {
 		currentPage.value = 1
 	})
 
@@ -126,7 +173,7 @@ export function useSales() {
 		return filteredSales.value.slice(start, end)
 	})
 
-	const totalPages = computed(() => Math.ceil(filteredSales.value.length / itemsPerPage.value))
+	const totalPages = computed(() => Math.ceil(filteredSales.value.length / itemsPerPage.value) || 1)
 
 	const {
 		timeframeLabels,
@@ -138,7 +185,7 @@ export function useSales() {
 		averageSparkline,
 		averageSparklineArea,
 		monthlyProjection,
-	} = useSalesAnalytics(sales, summaryTimeframe)
+	} = useSalesAnalytics(sales, summaryTimeframe, selectedQuarter, selectedYear)
 
 	const toggleSort = (key: 'id' | 'date' | 'payment_method' | 'total' | 'client') => {
 		if (sortKey.value === key) {
@@ -179,128 +226,90 @@ export function useSales() {
 		return `${day} ${month} ${year}, ${hours}:${minutes}`
 	}
 
-	const reportData = computed(() => {
-		const monthGroups = new Map<string, SalesMonthGroup>()
-		let grandTotal = 0
+	// Current human title of the active period
+	const currentPeriodTitle = computed(() => {
+		const hasManualSingle = filterDateMode.value === 'single' && Boolean(filterDateSingle.value)
+		const hasManualRange = filterDateMode.value === 'range' && Boolean(filterDateRange.value.start || filterDateRange.value.end)
 
-		filteredSales.value.forEach((s: Sale) => {
-			grandTotal += s.total
+		if (hasManualSingle) {
+			return `Día ${filterDateSingle.value}`
+		}
+		if (hasManualRange) {
+			return `Rango ${filterDateRange.value.start || 'inicio'} - ${filterDateRange.value.end || 'hoy'}`
+		}
 
-			const d = new Date(s.created_at)
-			const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-			if (!monthGroups.has(key)) {
-				monthGroups.set(key, {
-					key,
-					label: d.toLocaleString('es-ES', { month: 'long', year: 'numeric' }),
-					methods: new Map(),
-					total: 0,
-				})
+		if (summaryTimeframe.value === 'quarter') {
+			const quarterLabels: Record<number, string> = {
+				1: '20 Ene - 20 Abr',
+				2: '20 Abr - 20 Jul',
+				3: '20 Jul - 20 Oct',
+				4: `20 Oct ${selectedYear.value} - 20 Ene ${selectedYear.value + 1}`,
 			}
-
-			const group = monthGroups.get(key)!
-			const methodLabel = getPaymentMethodBadge(s.payment_method).label
-			group.methods.set(methodLabel, (group.methods.get(methodLabel) || 0) + s.total)
-			group.total += s.total
-		})
-
-		const months = Array.from(monthGroups.values()).sort((a, b) => b.key.localeCompare(a.key))
-		return { months, grandTotal }
+			return `${selectedQuarter.value}T ${selectedYear.value} (${quarterLabels[selectedQuarter.value] || `Trimestre ${selectedQuarter.value}`})`
+		}
+		if (summaryTimeframe.value === 'year') {
+			return `Año ${selectedYear.value}`
+		}
+		if (summaryTimeframe.value === 'all') {
+			return 'Histórico Total'
+		}
+		return timeframeLabels.value[summaryTimeframe.value] || 'Periodo personalizado'
 	})
 
-	const buildTicketSeries = (periodStart: (d: Date) => Date, formatLabel: (start: Date) => string): TicketSeriesRow[] => {
-		const groups = new Map<number, { start: Date; sales: Sale[] }>()
+	// Modal Controls
+	const openExportModal = () => {
+		isExportModalOpen.value = true
+	}
 
-		filteredSales.value.forEach((s: Sale) => {
-			const start = periodStart(new Date(s.created_at))
-			const key = start.getTime()
-			if (!groups.has(key)) groups.set(key, { start, sales: [] })
-			groups.get(key)!.sales.push(s)
-		})
+	const closeExportModal = () => {
+		isExportModalOpen.value = false
+	}
 
-		const rows = Array.from(groups.values()).map(group => {
-			const sorted = [...group.sales].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-			const methodCounts = new Map<string, number>()
-			let total = 0
-			sorted.forEach(s => {
-				total += s.total
-				const label = getPaymentMethodBadge(s.payment_method).label
-				methodCounts.set(label, (methodCounts.get(label) || 0) + 1)
+	// Execute export with customized options
+	const executeExport = async ({
+		format,
+		mode,
+		targetSales,
+		periodTitle,
+	}: {
+		format: 'csv' | 'pdf'
+		mode: ExportDetailMode
+		targetSales?: Sale[]
+		periodTitle?: string
+	}) => {
+		const salesToExport = targetSales || filteredSales.value
+		const title = periodTitle || currentPeriodTitle.value
+
+		if (!salesToExport.length) {
+			displayToast('No se encontraron ventas para exportar en este periodo.', 'error')
+			return
+		}
+
+		if (format === 'csv') {
+			downloadSalesExportCsv({
+				sales: salesToExport,
+				mode,
+				periodTitle: title,
+				displayToast,
 			})
-
-			return {
-				start: group.start,
-				label: formatLabel(group.start),
-				firstTicket: getTicketDisplay(sorted[0]!),
-				lastTicket: getTicketDisplay(sorted[sorted.length - 1]!),
-				count: sorted.length,
-				methodCounts,
-				total,
-			}
-		})
-
-		return rows.sort((a, b) => b.start.getTime() - a.start.getTime())
+		} else {
+			await downloadSalesExportPdf({
+				sales: salesToExport,
+				mode,
+				periodTitle: title,
+				isGeneratingPdf,
+				displayToast,
+			})
+		}
 	}
 
-	const dayStart = (d: Date) => {
-		const x = new Date(d)
-		x.setHours(0, 0, 0, 0)
-		return x
-	}
-	const weekStart = (d: Date) => {
-		const x = dayStart(d)
-		const day = x.getDay() || 7
-		x.setDate(x.getDate() - day + 1)
-		return x
-	}
-	const monthStart = (d: Date) => {
-		const x = dayStart(d)
-		x.setDate(1)
-		return x
-	}
-
-	const dailySeries = computed(() =>
-		buildTicketSeries(dayStart, start => start.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }))
-	)
-
-	const weeklySeries = computed(() =>
-		buildTicketSeries(weekStart, start => {
-			const end = new Date(start)
-			end.setDate(end.getDate() + 6)
-			const fmt = (dt: Date) => dt.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })
-			return `${fmt(start)} – ${fmt(end)} ${end.getFullYear()}`
-		})
-	)
-
-	const monthlySeries = computed(() => buildTicketSeries(monthStart, start => start.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })))
-
+	// Legacy direct download helpers
 	const downloadCsv = () => {
-		exportVentasCsv({
-			filteredSales: filteredSales.value,
-			reportData: reportData.value,
-			dailySeries: dailySeries.value,
-			weeklySeries: weeklySeries.value,
-			monthlySeries: monthlySeries.value,
-			getTicketDisplay,
-			formatCustomDate,
-			getPaymentMethodBadge,
-			displayToast
-		})
+		executeExport({ format: 'csv', mode: 'breakdown' })
 	}
 
 	const downloadPdf = async () => {
-		await exportVentasPdf({
-			filteredSales: filteredSales.value,
-			reportData: reportData.value,
-			dailySeries: dailySeries.value,
-			weeklySeries: weeklySeries.value,
-			monthlySeries: monthlySeries.value,
-			isGeneratingPdf,
-			getTicketDisplay,
-			formatCustomDate,
-			getPaymentMethodBadge,
-			formatCurrency,
-			displayToast
-		})
+		await executeExport({ format: 'pdf', mode: 'breakdown' })
 	}
 
 	return {
@@ -310,6 +319,9 @@ export function useSales() {
 		filterDateRange,
 		filterPaymentMethod,
 		summaryTimeframe,
+		selectedQuarter,
+		selectedYear,
+		setTimeframe,
 		sortKey,
 		sortOrder,
 		currentPage,
@@ -329,6 +341,8 @@ export function useSales() {
 		averageSparklineArea,
 		monthlyProjection,
 		isGeneratingPdf,
+		isExportModalOpen,
+		currentPeriodTitle,
 		toastMessage,
 		toastType,
 		showToast,
@@ -339,6 +353,9 @@ export function useSales() {
 		formatCurrency,
 		formatCustomDate,
 		getTicketDisplay,
+		openExportModal,
+		closeExportModal,
+		executeExport,
 		downloadCsv,
 		downloadPdf,
 	}

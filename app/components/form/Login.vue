@@ -152,7 +152,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 
 			<div class="relative z-10 w-full">
 				<!-- Loading Screen -->
-				<div v-if="isPending" class="flex h-full w-full flex-col items-center justify-center py-8">
+				<div v-if="isPending" class="flex size-full flex-col items-center justify-center py-8">
 					<LogoTPLoader size="lg" :show-text="true" text="Iniciando sesión..." />
 				</div>
 
@@ -160,7 +160,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<div v-else-if="isError" class="flex flex-col items-center justify-center py-6 text-center">
 					<div
 						class="mb-5 rounded-full bg-red-50 p-4 text-red-600 shadow-[0_2px_10px_rgba(0,0,0,0.02)] ring-1 ring-red-200">
-						<AlertCircle class="h-10 w-10" />
+						<AlertCircle class="size-10" />
 					</div>
 					<h2 class="mb-3 text-2xl font-bold text-red-600">Error de Acceso</h2>
 					<p class="text-text-muted mb-8 max-w-xs text-center text-sm font-medium">
@@ -204,7 +204,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 									}"
 									@input="clearError('email')" >
 								<Mail
-									class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
+									class="text-text-light group-focus-within:text-text-secondary absolute left-4 size-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
 									:class="{ 'text-red-500 group-focus-within:text-red-500': errors.email }" />
 							</div>
 							<span v-if="errors.email" class="mt-2 ml-1 text-xs font-bold text-red-600">
@@ -233,15 +233,15 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 									}"
 									@input="clearError('password')" >
 								<Lock
-									class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
+									class="text-text-light group-focus-within:text-text-secondary absolute left-4 size-5 transition-colors duration-300 sm:left-5 sm:h-6 sm:w-6"
 									:class="{ 'text-red-500 group-focus-within:text-red-500': errors.password }" />
 								<button
 									type="button"
 									aria-label="Toggle password visibility"
 									class="text-text-light hover:text-text-secondary absolute right-4 transition-colors duration-300 focus-visible:outline-none sm:right-5"
 									@click="showPassword = !showPassword">
-									<Eye v-if="showPassword" class="h-5 w-5 sm:h-6 sm:w-6" />
-									<EyeOff v-else class="h-5 w-5 sm:h-6 sm:w-6" />
+									<Eye v-if="showPassword" class="size-5 sm:h-6 sm:w-6" />
+									<EyeOff v-else class="size-5 sm:h-6 sm:w-6" />
 								</button>
 							</div>
 							<span

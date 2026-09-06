@@ -176,13 +176,13 @@ const { mutate: deleteZone } = useMutation({
 			<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border-subtle pb-6">
 				<div class="flex items-center gap-3.5">
 					<div class="p-3 sm:p-3.5 bg-primary/15 text-primary rounded-2xl shrink-0">
-						<Activity class="w-6 h-6 sm:w-7 sm:h-7" />
+						<Activity class="size-6 sm:w-7 sm:h-7" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
 							Ficha Técnica & Cuaderno de Tratamientos
 							<div class="tooltip tooltip-right z-50" data-tip="Seguimiento clínico, diagnóstico dérmico, consentimiento y parámetros sesión a sesión para aparatología.">
-								<AlertCircle class="w-4 h-4 text-text-muted/60 cursor-help" />
+								<AlertCircle class="size-4 text-text-muted/60 cursor-help" />
 							</div>
 						</h3>
 						<p class="text-text-muted text-xs font-semibold">
@@ -198,7 +198,7 @@ const { mutate: deleteZone } = useMutation({
 						class="btn btn-outline btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-xs"
 						@click="openDossier()"
 					>
-						<Printer class="w-4 h-4 text-primary" />
+						<Printer class="size-4 text-primary" />
 						Imprimir Expediente
 					</button>
 
@@ -210,7 +210,7 @@ const { mutate: deleteZone } = useMutation({
 							:class="activeTreatment === 'LASER_SHR' ? 'btn-primary shadow-sm' : 'btn-ghost text-text-muted hover:text-text-primary'"
 							@click="activeTreatment = 'LASER_SHR'"
 						>
-							<ShieldCheck class="w-4 h-4" />
+							<ShieldCheck class="size-4" />
 							Láser SHR
 						</button>
 
@@ -220,7 +220,7 @@ const { mutate: deleteZone } = useMutation({
 							:class="activeTreatment === 'INDIBA' ? 'btn-primary shadow-sm' : 'btn-ghost text-text-muted hover:text-text-primary'"
 							@click="activeTreatment = 'INDIBA'"
 						>
-							<Zap class="w-4 h-4 text-amber-500" />
+							<Zap class="size-4 text-amber-500" />
 							Indiba (448 kHz)
 						</button>
 					</div>
@@ -236,7 +236,7 @@ const { mutate: deleteZone } = useMutation({
 						<div class="flex items-center justify-between">
 							<div class="flex items-center gap-2.5">
 								<div class="p-2 rounded-xl" :class="activeTreatment === 'LASER_SHR' ? 'bg-blue-500/15 text-blue-600' : 'bg-amber-500/15 text-amber-600'">
-									<FileText class="w-5 h-5" />
+									<FileText class="size-5" />
 								</div>
 								<div>
 									<h4 class="text-xs font-black uppercase tracking-wider text-text-primary">
@@ -258,11 +258,11 @@ const { mutate: deleteZone } = useMutation({
 
 						<!-- Alertas médicas -->
 						<div v-if="activeTreatment === 'LASER_SHR' && questionnaireData?.hasCriticalContraindications" class="alert alert-error text-xs p-3 rounded-2xl flex items-center gap-2 font-bold">
-							<ShieldAlert class="w-4 h-4 shrink-0" />
+							<ShieldAlert class="size-4 shrink-0" />
 							<span>Contraindicación: Justificante obligatorio.</span>
 						</div>
 						<div v-else-if="activeTreatment === 'INDIBA' && questionnaireData?.hasAbsoluteContraindication" class="alert alert-error text-xs p-3 rounded-2xl flex items-center gap-2 font-bold">
-							<ShieldAlert class="w-4 h-4 shrink-0" />
+							<ShieldAlert class="size-4 shrink-0" />
 							<span>TRATAMIENTO CONTRAINDICADO (NO APTO).</span>
 						</div>
 						<div v-else class="text-xs text-text-muted space-y-1">
@@ -298,7 +298,7 @@ const { mutate: deleteZone } = useMutation({
 						<div class="flex items-center justify-between">
 							<div class="flex items-center gap-2.5">
 								<div class="p-2 rounded-xl bg-emerald-500/15 text-emerald-600">
-									<ShieldCheck class="w-5 h-5" />
+									<ShieldCheck class="size-5" />
 								</div>
 								<div>
 									<h4 class="text-xs font-black uppercase tracking-wider text-text-primary">
@@ -328,7 +328,7 @@ const { mutate: deleteZone } = useMutation({
 							<div v-if="currentConsent?.signature_data" class="flex items-center justify-between py-1 border-b border-border-subtle/50">
 								<span class="font-medium">Firma digital:</span>
 								<div class="flex items-center gap-1.5 bg-white border border-border-subtle rounded-lg px-2 py-0.5 shadow-xs">
-									<img :src="currentConsent.signature_data" alt="Firma" class="h-5 w-auto max-w-[80px] object-contain" />
+									<img :src="currentConsent.signature_data" alt="Firma" class="h-5 w-auto max-w-20 object-contain" />
 									<span class="text-[10px] text-success font-black">PNG</span>
 								</div>
 							</div>
@@ -353,7 +353,7 @@ const { mutate: deleteZone } = useMutation({
 							class="btn btn-ghost btn-xs w-full text-primary gap-1 font-bold rounded-lg"
 							@click="openDossier(activeTreatment)"
 						>
-							<Printer class="w-3.5 h-3.5" />
+							<Printer class="size-3.5" />
 							Ver Expediente Imprimible
 						</button>
 					</div>
@@ -365,7 +365,7 @@ const { mutate: deleteZone } = useMutation({
 						<div class="flex items-center justify-between">
 							<div class="flex items-center gap-2.5">
 								<div class="p-2 rounded-xl bg-purple-500/15 text-purple-600">
-									<Lock class="w-5 h-5" />
+									<Lock class="size-5" />
 								</div>
 								<div>
 									<h4 class="text-xs font-black uppercase tracking-wider text-text-primary">
@@ -395,7 +395,7 @@ const { mutate: deleteZone } = useMutation({
 							<div v-if="lgpdConsent?.signature_data" class="flex items-center justify-between py-1 border-b border-border-subtle/50">
 								<span class="font-medium">Firma digital:</span>
 								<div class="flex items-center gap-1.5 bg-white border border-border-subtle rounded-lg px-2 py-0.5 shadow-xs">
-									<img :src="lgpdConsent.signature_data" alt="Firma" class="h-5 w-auto max-w-[80px] object-contain" />
+									<img :src="lgpdConsent.signature_data" alt="Firma" class="h-5 w-auto max-w-20 object-contain" />
 									<span class="text-[10px] text-success font-black">PNG</span>
 								</div>
 							</div>
@@ -419,7 +419,7 @@ const { mutate: deleteZone } = useMutation({
 							class="btn btn-ghost btn-xs w-full text-primary gap-1 font-bold rounded-lg"
 							@click="openDossier('LGPD')"
 						>
-							<Printer class="w-3.5 h-3.5" />
+							<Printer class="size-3.5" />
 							Ver Expediente RGPD
 						</button>
 					</div>
@@ -446,15 +446,15 @@ const { mutate: deleteZone } = useMutation({
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 self-start sm:self-auto"
 						@click="openNewZoneModal"
 					>
-						<Plus class="w-4 h-4" />
+						<Plus class="size-4" />
 						Añadir Nueva Zona
 					</button>
 				</div>
 
 				<!-- SI NO HAY ZONAS DADAS DE ALTA -->
 				<div v-if="activeZones.length === 0" class="text-center py-12 px-4 bg-bg-muted/10 border-2 border-dashed border-border-subtle rounded-3xl space-y-3">
-					<div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
-						<Sparkles class="w-6 h-6" />
+					<div class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+						<Sparkles class="size-6" />
 					</div>
 					<h5 class="text-sm font-black text-text-primary">No hay zonas registradas para {{ activeTreatment === 'LASER_SHR' ? 'Láser SHR' : 'Indiba' }}</h5>
 					<p class="text-xs text-text-muted max-w-md mx-auto">
@@ -465,7 +465,7 @@ const { mutate: deleteZone } = useMutation({
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider mt-2"
 						@click="openNewZoneModal"
 					>
-						<Plus class="w-4 h-4 mr-1" />
+						<Plus class="size-4 mr-1" />
 						Configurar Primera Zona
 					</button>
 				</div>
@@ -516,7 +516,7 @@ const { mutate: deleteZone } = useMutation({
 									class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-1.5"
 									@click="openNewSessionModal(zone)"
 								>
-									<Plus class="w-3.5 h-3.5" />
+									<Plus class="size-3.5" />
 									Registrar Sesión
 								</button>
 								<button
@@ -525,7 +525,7 @@ const { mutate: deleteZone } = useMutation({
 									title="Eliminar Zona"
 									@click="deleteZone(zone.zone_id)"
 								>
-									<Trash2 class="w-4 h-4" />
+									<Trash2 class="size-4" />
 								</button>
 							</div>
 						</div>
@@ -537,8 +537,8 @@ const { mutate: deleteZone } = useMutation({
 									<tr class="text-text-muted uppercase text-[10px] font-black border-b border-border-subtle">
 										<th class="w-20 text-center">Nº Sesión</th>
 										<th class="w-28">Fecha</th>
-										<th class="min-w-[180px]">Parámetros Técnicos</th>
-										<th class="min-w-[220px]">Observaciones & Reacción</th>
+										<th class="min-w-45">Parámetros Técnicos</th>
+										<th class="min-w-55">Observaciones & Reacción</th>
 										<th class="w-36">Bono Vinculado</th>
 										<th class="w-12 text-center"></th>
 									</tr>
@@ -565,7 +565,7 @@ const { mutate: deleteZone } = useMutation({
 										<!-- Fecha -->
 										<td class="font-semibold text-text-primary whitespace-nowrap">
 											<div class="flex items-center gap-1.5">
-												<Calendar class="w-3.5 h-3.5 text-text-muted" />
+												<Calendar class="size-3.5 text-text-muted" />
 												{{ new Date(sess.session_date).toLocaleDateString() }}
 											</div>
 										</td>
@@ -607,7 +607,7 @@ const { mutate: deleteZone } = useMutation({
 												title="Eliminar sesión"
 												@click="deleteSession(sess.session_id)"
 											>
-												<Trash2 class="w-3.5 h-3.5" />
+												<Trash2 class="size-3.5" />
 											</button>
 										</td>
 									</tr>

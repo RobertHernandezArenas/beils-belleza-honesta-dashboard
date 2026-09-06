@@ -51,7 +51,7 @@ defineExpose({ openModal, closeModal })
                     </p>
                 </div>
                 <button type="button" class="btn btn-sm btn-circle btn-ghost text-text-muted bg-bg-muted hover:text-text-primary" @click="closeModal">
-                    <X class="h-4 w-4" />
+                    <X class="size-4" />
                 </button>
             </div>
 
@@ -73,13 +73,13 @@ defineExpose({ openModal, closeModal })
                     </div>
 
                     <div class="flex items-center gap-2 mt-2 opacity-80 text-[10px] font-semibold">
-                        <span v-if="booking.staff" class="flex items-center gap-1"><UserIcon class="h-3 w-3" /> {{ booking.staff.name }}</span>
+                        <span v-if="booking.staff" class="flex items-center gap-1"><UserIcon class="size-3" /> {{ booking.staff.name }}</span>
                     </div>
 
                     <div v-if="booking.booking_items?.length" class="mt-2 flex flex-wrap gap-1">
                         <span v-for="it in booking.booking_items" :key="it.item_id" class="text-[9px] bg-bg-card/40 px-1.5 py-0.5 rounded flex items-center gap-1 font-bold">
-                            <Scissors v-if="it.item_type === 'SERVICE'" class="h-2 w-2" />
-                            <Gift v-else class="h-2 w-2" />
+                            <Scissors v-if="it.item_type === 'SERVICE'" class="size-2" />
+                            <Gift v-else class="size-2" />
                             {{ it.name }}
                         </span>
                     </div>

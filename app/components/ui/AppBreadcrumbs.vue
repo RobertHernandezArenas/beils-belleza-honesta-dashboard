@@ -34,20 +34,20 @@
 					v-if="!crumb.active"
 					:to="crumb.to"
 					class="hover:text-text-secondary flex items-center gap-1.5 transition-colors">
-					<Home v-if="crumb.icon" class="mb-[2px] h-3.5 w-3.5 duration-300" />
+					<Home v-if="crumb.icon" class="mb-0.5 size-3.5 duration-300" />
 					<span v-else class="tracking-wide capitalize">{{ crumb.label }}</span>
 				</NuxtLink>
 				<span
 					v-else
 					class="text-text-secondary flex items-center gap-1.5 font-bold tracking-wide capitalize"
 					aria-current="page">
-					<Home v-if="crumb.icon && breadcrumbs.length === 1" class="mb-[2px] h-3.5 w-3.5" />
+					<Home v-if="crumb.icon && breadcrumbs.length === 1" class="mb-0.5 size-3.5" />
 					<span>{{ crumb.label }}</span>
 				</span>
 
 				<ChevronRight
 					v-if="index < breadcrumbs.length - 1"
-					class="text-border-strong mx-1 mb-px h-3.5 w-3.5 opacity-70" />
+					class="text-border-strong mx-1 mb-px size-3.5 opacity-70" />
 			</li>
 		</ol>
 	</nav>

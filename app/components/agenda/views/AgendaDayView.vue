@@ -289,7 +289,7 @@ onUnmounted(() => {
                         v-if="currentTimePosition >= 0"
                         :style="{ top: `${currentTimePosition}px` }"
                         class="pointer-events-none absolute right-0 left-0 z-20 flex items-center">
-                        <div class="bg-error h-2.5 w-2.5 -ml-1.5 animate-pulse rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"/>
+                        <div class="bg-error size-2.5 -ml-1.5 animate-pulse rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"/>
                         <div class="bg-error/50 h-px flex-1 shadow-[0_0_4px_rgba(239,68,68,0.5)]"/>
                     </div>
 
@@ -324,17 +324,17 @@ onUnmounted(() => {
                                 <div class="dropdown dropdown-end relative z-50" @click.stop>
                                     <button
                                         tabindex="0"
-                                        class="btn btn-ghost btn-xs btn-circle h-5 w-5 min-h-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <MoreVertical class="h-3 w-3" />
+                                        class="btn btn-ghost btn-xs btn-circle size-5 min-h-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <MoreVertical class="size-3" />
                                     </button>
                                     <ul
                                         tabindex="0"
                                         class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-2xl">
-                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info h-3 w-3" /> Confirmar</a></li>
-                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success h-3 w-3" /> Finalizar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info size-3" /> Confirmar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success size-3" /> Finalizar</a></li>
                                         <div class="divider my-0 opacity-30 h-1"/>
-                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('edit', booking)"><Pencil class="h-3 w-3" /> Editar</a></li>
-                                        <li><a class="text-error text-[11px] py-1.5" @click.stop="emit('delete', booking.booking_id)"><Trash2 class="h-3 w-3" /> Eliminar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('edit', booking)"><Pencil class="size-3" /> Editar</a></li>
+                                        <li><a class="text-error text-[11px] py-1.5" @click.stop="emit('delete', booking.booking_id)"><Trash2 class="size-3" /> Eliminar</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -342,12 +342,12 @@ onUnmounted(() => {
                             <!-- Meta Info (Time & Staff) -->
                             <div class="flex items-center gap-2 mt-px shrink-0 opacity-80">
                                 <span class="flex items-center gap-1 text-[8.5px] font-bold tabular-nums">
-                                    <Clock class="h-2 w-2" />
+                                    <Clock class="size-2" />
                                     {{ booking.start_time }}
                                 </span>
                                 <span v-if="booking.staff" class="flex items-center gap-1 text-[8.5px] font-semibold truncate">
-                                    <UserIcon class="h-2 w-2" />
-                                    <span class="truncate max-w-[60px]">{{ booking.staff.name }}</span>
+                                    <UserIcon class="size-2" />
+                                    <span class="truncate max-w-15">{{ booking.staff.name }}</span>
                                 </span>
                             </div>
 

@@ -235,7 +235,7 @@ defineExpose({
 	<div ref="containerRef" class="w-full space-y-2">
 		<div class="flex items-center justify-between text-xs">
 			<span class="font-bold text-text-primary flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
-				<PenTool class="w-3.5 h-3.5 text-primary" />
+				<PenTool class="size-3.5 text-primary" />
 				Recuadro de Firma Digital (Táctil / Stylus / Ratón)
 			</span>
 			<div class="flex items-center gap-2">
@@ -245,7 +245,7 @@ defineExpose({
 					class="btn btn-ghost btn-xs text-text-muted hover:text-error gap-1 font-semibold rounded-lg"
 					@click="clear"
 				>
-					<RotateCcw class="w-3 h-3" />
+					<RotateCcw class="size-3" />
 					Limpiar Firma
 				</button>
 				<button
@@ -255,7 +255,7 @@ defineExpose({
 					title="Descargar firma PNG"
 					@click="download"
 				>
-					<Download class="w-3 h-3" />
+					<Download class="size-3" />
 					PNG
 				</button>
 			</div>
@@ -285,7 +285,7 @@ defineExpose({
 				v-if="isEmpty && !disabled"
 				class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-gray-400 gap-1"
 			>
-				<PenTool class="w-5 h-5 opacity-40" />
+				<PenTool class="size-5 opacity-40" />
 				<span class="text-xs font-semibold tracking-wide opacity-70">
 					Firme aquí con el dedo, stylus o ratón
 				</span>
@@ -295,7 +295,7 @@ defineExpose({
 		<div class="flex items-center justify-between text-[10px] text-text-muted px-1">
 			<span>Optimizado para iPad, Tablets Android, Móvil y PC</span>
 			<span v-if="!isEmpty" class="text-success font-bold flex items-center gap-1">
-				<Check class="w-3 h-3" />
+				<Check class="size-3" />
 				Firma registrada
 			</span>
 		</div>

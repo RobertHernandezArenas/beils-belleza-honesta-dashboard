@@ -90,7 +90,7 @@
 								<span class="font-medium">
 									{{ form.document_type === 'PASSPORT' ? 'Pasaporte' : form.document_type }}
 								</span>
-								<ChevronDown class="h-4 w-4 opacity-50" />
+								<ChevronDown class="size-4 opacity-50" />
 							</div>
 							<ul
 								tabindex="0"
@@ -160,7 +160,7 @@
 								<span class="font-medium">
 									{{ $t('users.constants.roles.' + form.role) }}
 								</span>
-								<ChevronDown class="h-4 w-4 opacity-50" />
+								<ChevronDown class="size-4 opacity-50" />
 							</div>
 							<ul
 								tabindex="0"

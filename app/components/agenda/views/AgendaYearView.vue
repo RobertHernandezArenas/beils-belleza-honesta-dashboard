@@ -117,7 +117,7 @@ import type { Booking } from '~~/shared/types/domain'
 						class="flex aspect-square items-center justify-center text-[10px] font-bold">
 						<button
 							v-if="date"
-							class="hover:bg-bg-hover relative flex h-7 w-7 items-center justify-center rounded-full transition-all"
+							class="hover:bg-bg-hover relative flex size-7 items-center justify-center rounded-full transition-all"
 							:class="[
 								isToday(date)
 									? 'bg-primary text-white shadow-md'
@@ -129,7 +129,7 @@ import type { Booking } from '~~/shared/types/domain'
 							{{ date.getDate() }}
 							<span
 								v-if="hasBooking(date) && !isToday(date)"
-								class="bg-text-primary absolute -bottom-0.5 h-1 w-1 rounded-full shadow-sm"/>
+								class="bg-text-primary absolute -bottom-0.5 size-1 rounded-full shadow-sm"/>
 						</button>
 					</div>
 				</div>

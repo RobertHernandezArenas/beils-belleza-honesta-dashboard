@@ -317,9 +317,9 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 			<!-- Header -->
 			<div class="border-border-subtle sticky top-0 z-20 flex items-center gap-3 border-b p-4 sm:gap-4 sm:p-6 sm:rounded-t-3xl backdrop-blur-md bg-bg-app/80">
 				<div
-					class="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12">
-					<Edit v-if="isEditing" class="h-5 w-5 sm:h-6 sm:w-6" />
-					<UserPlus v-else class="h-5 w-5 sm:h-6 sm:w-6" />
+					class="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12">
+					<Edit v-if="isEditing" class="size-5 sm:h-6 sm:w-6" />
+					<UserPlus v-else class="size-5 sm:h-6 sm:w-6" />
 				</div>
 				<div class="flex-1 overflow-hidden">
 					<h3 class="text-text-primary truncate text-base font-bold sm:text-lg">
@@ -351,19 +351,19 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<!-- Sección: Avatar -->
 				<div class="flex flex-col items-center justify-center gap-4 py-4">
 					<div class="relative group">
-						<div class="h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-bg-muted flex items-center justify-center transition-all group-hover:border-primary/30 from-primary/20 to-primary/5 bg-linear-to-br">
+						<div class="size-24 sm:size-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-bg-muted flex items-center justify-center transition-all group-hover:border-primary/30 from-primary/20 to-primary/5 bg-linear-to-br">
 							<img 
 								v-if="avatarPreview && !avatarError" 
 								:src="avatarPreview" 
-								class="h-full w-full object-cover"
+								class="size-full object-cover"
 								@error="handleAvatarError" >
 							<span v-else-if="form.name || form.surname" class="text-3xl sm:text-4xl font-black text-primary tracking-tight">
 								{{ (form.name?.charAt(0) || '') }}{{ (form.surname?.charAt(0) || '') }}
 							</span>
-							<User v-else class="h-10 w-10 sm:h-12 sm:w-12 text-text-muted/40" />
+							<User v-else class="size-10 sm:size-12 text-text-muted/40" />
 							
 							<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" @click="triggerFileInput">
-								<Camera class="text-white h-6 w-6 sm:h-8 sm:w-8" />
+								<Camera class="text-white size-6 sm:size-8" />
 							</div>
 						</div>
 						
@@ -372,7 +372,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 							type="button"
 							class="absolute -top-1 -right-1 bg-rose-500 text-white p-1.5 rounded-full shadow-lg hover:bg-rose-600 transition-colors"
 							@click="removeAvatar">
-							<Trash2 class="h-3.5 w-3.5" />
+							<Trash2 class="size-3.5" />
 						</button>
 					</div>
 					
@@ -395,8 +395,8 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<!-- Sección: Información Personal -->
 				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
-						<div class="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
-							<User class="h-4 w-4" />
+						<div class="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
+							<User class="size-4" />
 						</div>
 						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Información Personal</h4>
 					</div>
@@ -487,8 +487,8 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<!-- Sección: Contacto -->
 				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
-						<div class="bg-indigo-500/10 text-indigo-600 flex h-8 w-8 items-center justify-center rounded-lg">
-							<CreditCard class="h-4 w-4" />
+						<div class="bg-indigo-500/10 text-indigo-600 flex size-8 items-center justify-center rounded-lg">
+							<CreditCard class="size-4" />
 						</div>
 						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Contacto y Comunicación</h4>
 					</div>
@@ -539,8 +539,8 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<!-- Sección: Localización -->
 				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
-						<div class="bg-amber-500/10 text-amber-600 flex h-8 w-8 items-center justify-center rounded-lg">
-							<Search class="h-4 w-4" />
+						<div class="bg-amber-500/10 text-amber-600 flex size-8 items-center justify-center rounded-lg">
+							<Search class="size-4" />
 						</div>
 						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Dirección y Localización</h4>
 					</div>
@@ -607,7 +607,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 					:disabled="isPending">
 					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
-						<Save class="h-4 w-4" />
+						<Save class="size-4" />
 						<span class="font-black uppercase tracking-widest text-xs">
 							{{ isEditing ? t('common.save') : t('catalog.clients.newClient') }}
 						</span>

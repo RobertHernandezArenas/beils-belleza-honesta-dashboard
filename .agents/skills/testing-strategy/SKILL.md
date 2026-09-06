@@ -1,15 +1,18 @@
 ---
+name: testing-strategy
 title: Estrategia de Testing en JavaScript y TypeScript
-description: Directrices arquitectónicas, taxonomía de pruebas, estructura AAA/FIRST y patrones para suites confiables.
-category: Aseguramiento de Calidad & Testing
+description: "Trigger: testing strategy, estrategia de tests, vitest, pruebas unitarias, tdd, patron aaa, mocks y stubs. Directrices arquitectónicas, taxonomía de pruebas, estructura AAA/FIRST y patrones para suites confiables en JS/TS."
 version: 1.1.0
-last_updated: 2026-09
-tags:
-  - testing
-  - vitest
-  - jest
-  - tdd
-  - clean-code
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: quality-assurance
+  tags:
+    - testing
+    - vitest
+    - jest
+    - tdd
+    - clean-code
 ---
 
 # 🧪 Estrategia de Testing en JavaScript / TypeScript

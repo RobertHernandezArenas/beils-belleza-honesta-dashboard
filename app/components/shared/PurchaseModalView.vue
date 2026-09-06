@@ -52,7 +52,7 @@ const formatCustomDate = (dateString: string) => {
             class="btn btn-xs btn-ghost text-primary gap-1" 
             @click="emit('editItems')"
           >
-            <Edit2 class="w-3 h-3" /> Editar compra
+            <Edit2 class="size-3" /> Editar compra
           </button>
        </div>
        <div v-if="(cart.items?.length ?? 0) > 0" class="space-y-3">
@@ -79,7 +79,7 @@ const formatCustomDate = (dateString: string) => {
        <div class="bg-success/5 border-success/20 rounded-3xl border p-6">
           <div class="flex items-center justify-between mb-4">
               <h4 class="text-success text-sm font-bold uppercase tracking-wider">Completado</h4>
-              <CheckCircle class="text-success w-5 h-5" />
+              <CheckCircle class="text-success size-5" />
           </div>
           
           <div class="space-y-4">
@@ -97,10 +97,10 @@ const formatCustomDate = (dateString: string) => {
                    </div>
                    <div class="flex gap-1 opacity-0 group-hover/client:opacity-100 transition-opacity">
                       <button class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Cliente" @click="emit('editClient')">
-                         <Edit2 class="w-3 h-3" />
+                         <Edit2 class="size-3" />
                       </button>
                       <button class="btn btn-xs btn-circle btn-ghost text-rose-500 hover:bg-rose-500/10" title="Quitar Cliente" @click="emit('removeClient')">
-                         <Trash2 class="w-3 h-3" />
+                         <Trash2 class="size-3" />
                       </button>
                    </div>
                 </div>
@@ -108,7 +108,7 @@ const formatCustomDate = (dateString: string) => {
                     <div class="flex flex-col gap-2">
                         <span class="text-text-muted text-[10px] font-bold italic uppercase tracking-wider">Mostrador / No registrado</span>
                         <button class="btn btn-sm btn-ghost bg-primary/10 text-primary hover:bg-primary/20 rounded-xl border-none" @click="emit('searchClient')">
-                            <UserPlus class="w-4 h-4 mr-1" /> Asignar Cliente
+                            <UserPlus class="size-4 mr-1" /> Asignar Cliente
                         </button>
                     </div>
                 </div>
@@ -118,8 +118,8 @@ const formatCustomDate = (dateString: string) => {
                 <label class="text-text-primary text-[10px] font-black uppercase tracking-widest">Método</label>
                 <div class="flex items-center gap-2 mt-1">
                     <span class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                        <CreditCard v-if="cart.payment_method === 'card'" class="w-3.5 h-3.5" />
-                        <Banknote v-if="cart.payment_method === 'cash'" class="w-3.5 h-3.5" />
+                        <CreditCard v-if="cart.payment_method === 'card'" class="size-3.5" />
+                        <Banknote v-if="cart.payment_method === 'cash'" class="size-3.5" />
                         {{ cart.payment_method }}
                     </span>
                 </div>
@@ -130,12 +130,12 @@ const formatCustomDate = (dateString: string) => {
                 <div class="flex items-center gap-2 mt-1">
                     <div v-if="!isEditingDate" class="flex items-center gap-2 group/date transition-all">
                         <span class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                            <Calendar class="w-3.5 h-3.5" />
+                            <Calendar class="size-3.5" />
                             {{ formatCustomDate(cart.created_at) }}
                         </span>
                         <div class="date-edit flex gap-1 opacity-0 transition-opacity group-hover/date:opacity-100">
                             <button class="btn btn-xs btn-circle btn-ghost text-primary hover:bg-primary/10" title="Cambiar Fecha" @click="startEditingDate">
-                                <Edit2 class="w-3 h-3" />
+                                <Edit2 class="size-3" />
                             </button>
                         </div>
                     </div>

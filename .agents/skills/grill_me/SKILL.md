@@ -1,6 +1,11 @@
 ---
 name: grill_me
-description: Entrevista técnica interactiva para extraer requerimientos críticos, restricciones arquitectónicas y criterios de aceptación antes de escribir código. Activar cuando el usuario proponga una nueva feature, refactorización o cambio complejo.
+description: "Trigger: grill me, grill-me, requerimientos, clarificar tarea, entrevista técnica previa. Entrevista técnica interactiva para extraer requerimientos críticos, restricciones arquitectónicas y criterios de aceptación antes de escribir código."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🔍 SKILL: Grill-Me (Contexto y Requisitos)

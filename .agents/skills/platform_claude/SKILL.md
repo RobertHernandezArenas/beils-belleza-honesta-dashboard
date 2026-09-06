@@ -1,6 +1,11 @@
 ---
 name: platform_claude
-description: Adaptador y directivas de ejecución para Claude Code y Anthropic CLI. Activar al ejecutar tareas en repositorios configurados para Claude.
+description: "Trigger: claude code, anthropic cli, directivas claude. Adaptador y directivas de ejecución para Claude Code y Anthropic CLI."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: platform
 ---
 
 # 🧩 SKILL: Claude Edition

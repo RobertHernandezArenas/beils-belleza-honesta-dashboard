@@ -160,7 +160,7 @@ import type { IGiftcard } from '~~/shared/types/marketing'
 								type="button"
 								class="btn btn-ghost btn-sm btn-circle text-primary hover:bg-primary/10 absolute top-1/2 right-2 -translate-y-1/2"
 								@click="generateCode">
-								<RefreshCcw class="h-4 w-4" />
+								<RefreshCcw class="size-4" />
 							</button>
 						</div>
 					</div>

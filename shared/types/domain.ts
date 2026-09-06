@@ -16,6 +16,7 @@ export interface ClientDTO {
 	postal_code?: string
 	gender?: string
 	birth_date?: string
+	date_of_birth?: string
 	role: string
 	status: string
 	avatar?: string

@@ -63,13 +63,13 @@
 				<img
 					:src="currentLanguage.icon"
 					alt="Flag"
-					class="h-3.5 w-5 rounded-[2px] object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" >
+					class="h-3.5 w-5 rounded-xs object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" >
 				<span class="text-text-secondary text-xs font-bold tracking-wider uppercase">
 					{{ currentLanguage.name }}
 				</span>
 			</div>
 			<ChevronDown
-				class="text-text-light group-hover:text-text-secondary h-3 w-3 duration-200"
+				class="text-text-light group-hover:text-text-secondary size-3 duration-200"
 				:class="{ 'rotate-180': isOpen }" />
 		</button>
 
@@ -83,7 +83,7 @@
 			leave-to-class="transform scale-95 opacity-0 translate-y-[-10px]">
 			<ul
 				v-show="isOpen"
-				class="bg-bg-card ring-border-subtle absolute top-full right-0 mt-2 w-[150px] origin-top-right overflow-hidden rounded-2xl py-1 shadow-[0_4px_20px_rgba(0,0,0,0.08)] ring-1 focus-visible:outline-none"
+				class="bg-bg-card ring-border-subtle absolute top-full right-0 mt-2 w-37.5 origin-top-right overflow-hidden rounded-2xl py-1 shadow-[0_4px_20px_rgba(0,0,0,0.08)] ring-1 focus-visible:outline-none"
 				role="listbox">
 				<li
 					v-for="l in locales"
@@ -97,12 +97,12 @@
 						<img
 							:src="languageMap[l.code]?.icon"
 							alt="Flag"
-							class="h-3.5 w-5 rounded-[2px] object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" >
+							class="h-3.5 w-5 rounded-xs object-cover shadow-[0_0_2px_rgba(0,0,0,0.2)]" >
 						<span class="text-xs font-medium">{{ languageMap[l.code]?.name || l.name }}</span>
 					</div>
 
 					<!-- Active Indicator -->
-					<div v-if="locale === l.code" class="bg-text-primary h-1.5 w-1.5 rounded-full"/>
+					<div v-if="locale === l.code" class="bg-text-primary size-1.5 rounded-full"/>
 				</li>
 			</ul>
 		</transition>

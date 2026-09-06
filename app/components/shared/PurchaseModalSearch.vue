@@ -28,13 +28,13 @@ const internalSearch = computed({
 </script>
 
 <template>
-  <div class="space-y-6 animate-slide-right min-h-[400px] flex flex-col">
+  <div class="space-y-6 animate-slide-right min-h-100 flex flex-col">
     <div class="flex items-center gap-4">
         <button class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted" @click="emit('cancel')">
-            <ArrowLeft class="w-4 h-4" />
+            <ArrowLeft class="size-4" />
         </button>
         <div class="flex-1 relative">
-            <Search class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+            <Search class="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-text-muted" />
             <input 
                 v-model="internalSearch"
                 type="text" 
@@ -45,7 +45,7 @@ const internalSearch = computed({
         </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto max-h-[440px] pr-2 custom-scrollbar">
+    <div class="flex-1 overflow-y-auto max-h-110 pr-2 custom-scrollbar">
         <!-- CLIENT SEARCH RESULTS -->
         <template v-if="!isEditingItems">
             <div v-if="isSearchingClients" class="flex flex-col gap-3">
@@ -60,8 +60,8 @@ const internalSearch = computed({
                     @click="emit('selectClient', c)"
                 >
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase overflow-hidden">
-                            <img v-if="c.avatar" :src="c.avatar" class="w-full h-full object-cover" >
+                        <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase overflow-hidden">
+                            <img v-if="c.avatar" :src="c.avatar" class="size-full object-cover" >
                             <span v-else>{{ c.name.charAt(0) }}{{ c.surname.charAt(0) }}</span>
                         </div>
                         <div class="flex flex-col">
@@ -70,7 +70,7 @@ const internalSearch = computed({
                         </div>
                     </div>
                     <div v-if="selectedClientToAssign?.user_id === c.user_id" class="bg-primary text-white rounded-full p-1">
-                        <Check class="w-4 h-4" />
+                        <Check class="size-4" />
                     </div>
                 </div>
             </div>
@@ -95,22 +95,22 @@ const internalSearch = computed({
                     <div class="z-10 flex items-end justify-between">
                         <span class="text-lg font-black tabular-nums">{{ (item.price || 0).toFixed(2) }}€</span>
                         <div class="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-lg p-1.5 transition-colors">
-                            <Plus class="w-4 h-4" />
+                            <Plus class="size-4" />
                         </div>
                     </div>
                     <!-- Background icon -->
                     <div class="absolute -right-2 -bottom-2 opacity-5">
-                        <Scissors v-if="item.item_type === 'service'" class="w-16 h-16" />
-                        <Package v-else-if="item.item_type === 'product'" class="w-16 h-16" />
-                        <Ticket v-else class="w-16 h-16" />
+                        <Scissors v-if="item.item_type === 'service'" class="size-16" />
+                        <Package v-else-if="item.item_type === 'product'" class="size-16" />
+                        <Ticket v-else class="size-16" />
                     </div>
                 </div>
             </div>
         </template>
 
         <div v-if="internalSearch && (!isEditingItems ? clients.length === 0 : catalogItems.length === 0)" class="flex flex-col items-center justify-center py-12 text-center text-text-muted">
-            <div class="bg-bg-muted w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                <Search class="w-8 h-8 opacity-20" />
+            <div class="bg-bg-muted size-16 rounded-full flex items-center justify-center mb-4">
+                <Search class="size-8 opacity-20" />
             </div>
             <p class="font-bold text-lg mb-1 italic">Vaya, no hemos encontrado nada</p>
             <p class="text-sm max-w-xs">Intenta con otros términos o revisa que esté bien escrito.</p>

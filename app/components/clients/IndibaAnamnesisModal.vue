@@ -137,7 +137,7 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 			<div class="flex items-center justify-between p-6 border-b border-border-subtle bg-bg-card shrink-0">
 				<div class="flex items-center gap-3">
 					<div class="p-2.5 bg-amber-500/15 text-amber-600 rounded-2xl">
-						<Zap class="w-6 h-6" />
+						<Zap class="size-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-lg font-black tracking-tight flex items-center gap-2">
@@ -147,7 +147,7 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 					</div>
 				</div>
 				<button class="btn btn-ghost btn-circle btn-sm text-text-muted hover:text-text-primary" @click="handleClose">
-					<X class="w-5 h-5" />
+					<X class="size-5" />
 				</button>
 			</div>
 
@@ -156,7 +156,7 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 				
 				<!-- STATUS BANNER -->
 				<div v-if="isNoApto" class="alert alert-error text-xs rounded-2xl font-bold flex items-start gap-2.5">
-					<ShieldAlert class="w-5 h-5 shrink-0 text-error-content mt-0.5" />
+					<ShieldAlert class="size-5 shrink-0 text-error-content mt-0.5" />
 					<div>
 						<p class="font-black">TRATAMIENTO CONTRAINDICADO (NO APTO)</p>
 						<p class="font-normal opacity-90 mt-0.5">
@@ -165,7 +165,7 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 					</div>
 				</div>
 				<div v-else-if="hasPrecautions" class="alert alert-warning text-xs rounded-2xl font-bold flex items-start gap-2.5 text-warning-content">
-					<AlertCircle class="w-5 h-5 shrink-0 mt-0.5" />
+					<AlertCircle class="size-5 shrink-0 mt-0.5" />
 					<div>
 						<p class="font-black">PRECAUCIONES CLÍNICAS REQUERIDAS</p>
 						<p class="font-normal opacity-90 mt-0.5">
@@ -174,13 +174,13 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 					</div>
 				</div>
 				<div v-else class="alert alert-success/15 border border-success/30 rounded-2xl text-xs font-semibold flex items-center gap-2 text-success">
-					<CheckCircle2 class="w-4 h-4 shrink-0" />
+					<CheckCircle2 class="size-4 shrink-0" />
 					<span>Paciente APTO. Sin contraindicaciones ni precauciones para radiofrecuencia 448 kHz.</span>
 				</div>
 
 				<!-- ERROR ALERT -->
 				<div v-if="error" class="alert alert-error text-xs rounded-2xl flex items-center gap-2">
-					<AlertCircle class="w-4 h-4 shrink-0" />
+					<AlertCircle class="size-4 shrink-0" />
 					<span>{{ error }}</span>
 				</div>
 
@@ -296,7 +296,7 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 					:disabled="isPending"
 					@click="saveQuestionnaire()"
 				>
-					<Save class="w-4 h-4" />
+					<Save class="size-4" />
 					{{ isPending ? 'Guardando...' : 'Guardar Checklist' }}
 				</button>
 			</div>

@@ -1,6 +1,11 @@
 ---
 name: platform_antigravity
-description: Adaptador y directivas específicas para Google Antigravity IDE. Activar cuando se configure o ejecute SkillForge dentro del ecosistema Antigravity.
+description: "Trigger: antigravity, google antigravity, subagentes antigravity, workspace rules antigravity. Adaptador y directivas específicas para el ecosistema Google Antigravity IDE."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: platform
 ---
 
 # 🧩 SKILL: Antigravity Edition

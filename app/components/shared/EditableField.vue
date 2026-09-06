@@ -167,7 +167,7 @@
 			</span>
 			<div
 				class="bg-primary/10 text-primary shrink-0 rounded-md p-1 opacity-0 transition-opacity group-hover:opacity-100">
-				<Edit2 class="h-4 w-4" />
+				<Edit2 class="size-4" />
 			</div>
 		</div>
 
@@ -210,14 +210,14 @@
 						title="Guardar"
 						@click.stop.prevent="saveEdit"
 						@mousedown.stop.prevent>
-						<Check class="h-3 w-3" />
+						<Check class="size-3" />
 					</button>
 					<button
 						class="btn btn-xs btn-circle btn-ghost text-error"
 						title="Cancelar"
 						@click.stop.prevent="cancelEdit"
 						@mousedown.stop.prevent>
-						<X class="h-3 w-3" />
+						<X class="size-3" />
 					</button>
 				</div>
 			</div>

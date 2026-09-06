@@ -1,6 +1,11 @@
 ---
 name: platform_copilot
-description: Adaptador y directivas para GitHub Copilot en VS Code. Activar para flujos de edición asistida en el editor e integración con Prompt Files y CI.
+description: "Trigger: copilot, github copilot, prompts vscode. Adaptador y directivas para GitHub Copilot en VS Code e integración con Prompt Files y CI."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: platform
 ---
 
 # 🧩 SKILL: Copilot VSCode Edition

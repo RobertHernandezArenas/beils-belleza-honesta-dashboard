@@ -38,12 +38,12 @@ const setActiveTab = (id: string) => {
         : 'border-transparent text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
       @click="setActiveTab(tab.id)"
     >
-      <component :is="tab.icon" class="h-4 w-4" />
+      <component :is="tab.icon" class="size-4" />
       {{ tab.name }}
       
       <span 
         v-if="tab.count && (counts?.[tab.count] ?? 0) > 0"
-        class="ml-2 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-black uppercase ring-1 ring-inset transition-all"
+        class="ml-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-black uppercase ring-1 ring-inset transition-all"
         :class="modelValue === tab.id 
           ? 'bg-primary/10 text-primary ring-primary/20' 
           : 'bg-bg-muted text-text-muted ring-border-default group-hover:bg-primary/5 group-hover:text-primary'"

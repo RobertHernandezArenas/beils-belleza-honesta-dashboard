@@ -162,8 +162,8 @@ import type { IProduct } from '~~/shared/types/catalog'
 					<div class="space-y-6 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center justify-between border-b border-border-subtle/20 pb-4">
 							<div class="flex items-center gap-2">
-								<div class="bg-primary/10 text-primary flex h-7 w-7 items-center justify-center rounded-lg">
-									<Package class="h-4 w-4" />
+								<div class="bg-primary/10 text-primary flex size-7 items-center justify-center rounded-lg">
+									<Package class="size-4" />
 								</div>
 								<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Información Básica</h4>
 							</div>
@@ -228,8 +228,8 @@ import type { IProduct } from '~~/shared/types/catalog'
 					<!-- Section: Inventory & Pricing -->
 					<div class="space-y-6 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
-							<div class="bg-emerald-500/10 text-emerald-600 flex h-7 w-7 items-center justify-center rounded-lg">
-								<Euro class="h-4 w-4" />
+							<div class="bg-emerald-500/10 text-emerald-600 flex size-7 items-center justify-center rounded-lg">
+								<Euro class="size-4" />
 							</div>
 							<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Precios y Stock</h4>
 						</div>
@@ -241,7 +241,7 @@ import type { IProduct } from '~~/shared/types/catalog'
 										<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">PVP *</span>
 									</label>
 									<div class="relative">
-										<Euro class="text-text-muted absolute top-1/2 left-3.5 h-3.5 w-3.5 -translate-y-1/2" />
+										<Euro class="text-text-muted absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2" />
 										<input
 											v-model="form.price"
 											type="number"
@@ -286,8 +286,8 @@ import type { IProduct } from '~~/shared/types/catalog'
 					<!-- Section: Media -->
 					<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
-							<div class="bg-indigo-500/10 text-indigo-600 flex h-7 w-7 items-center justify-center rounded-lg">
-								<ImageIcon class="h-4 w-4" />
+							<div class="bg-indigo-500/10 text-indigo-600 flex size-7 items-center justify-center rounded-lg">
+								<ImageIcon class="size-4" />
 							</div>
 							<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Imágenes</h4>
 						</div>
