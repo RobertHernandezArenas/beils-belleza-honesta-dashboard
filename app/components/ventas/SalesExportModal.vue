@@ -12,7 +12,7 @@ import {
 	AlertCircle,
 } from 'lucide-vue-next'
 import type { Sale } from '~~/shared/types/domain'
-import type { ExportDetailMode } from '~/utils/salesExportCalculations'
+import type { ExportDetailMode, ExportSummaryGrouping } from '~/utils/salesExportCalculations'
 import { getPeriodDateBounds } from '~/utils/salesExportCalculations'
 import type { SummaryTimeframe } from '~/composables/useSalesAnalytics'
 import InfoTooltip from '~/components/shared/InfoTooltip.vue'
@@ -37,6 +37,7 @@ const emit = defineEmits<{
 	(e: 'export', payload: {
 		format: 'csv' | 'pdf'
 		mode: ExportDetailMode
+		summaryGrouping?: ExportSummaryGrouping
 		targetSales: Sale[]
 		periodTitle: string
 	}): void
@@ -47,6 +48,7 @@ const selectedTimeframe = ref<SummaryTimeframe>(props.initialTimeframe)
 const selectedQuarter = ref<number>(props.initialQuarter)
 const selectedYear = ref<number>(props.initialYear)
 const selectedMode = ref<ExportDetailMode>('breakdown')
+const selectedSummaryGrouping = ref<ExportSummaryGrouping>('global')
 
 // Available years for selection (current year and 3 prior years)
 const currentYear = new Date().getFullYear()
@@ -58,6 +60,74 @@ watch(() => props.isOpen, (open) => {
 		selectedTimeframe.value = props.initialTimeframe
 		selectedQuarter.value = props.initialQuarter
 		selectedYear.value = props.initialYear
+		selectedSummaryGrouping.value = 'global'
+	}
+})
+
+// Available summary groupings depending on selected timeframe
+const availableSummaryGroupings = computed<Array<{ id: ExportSummaryGrouping; label: string; tooltip: string }>>(() => {
+	const tf = selectedTimeframe.value
+	const allOptions: Array<{ id: ExportSummaryGrouping; label: string; tooltip: string }> = [
+		{
+			id: 'global',
+			label: 'Global',
+			tooltip: 'Un único sumatorio consolidado de todo el periodo seleccionado.',
+		},
+		{
+			id: 'day',
+			label: 'Por Día',
+			tooltip: 'Desglose cronológico día por día con bases imponibles, IVA y total diario.',
+		},
+		{
+			id: 'week',
+			label: 'Por Semana',
+			tooltip: 'Agrupación semana a semana con totales y desglose contable semanal.',
+		},
+		{
+			id: 'month',
+			label: 'Por Mes',
+			tooltip: 'Agrupación mes a mes con totales mensuales de facturación e impuestos.',
+		},
+		{
+			id: 'year',
+			label: 'Por Año',
+			tooltip: 'Agrupación anual con sumatorios consolidados año a año.',
+		},
+	]
+
+	if (tf === 'day') {
+		return allOptions.filter(o => o.id === 'global' || o.id === 'day')
+	}
+	if (tf === 'week') {
+		return allOptions.filter(o => o.id === 'global' || o.id === 'day' || o.id === 'week')
+	}
+	if (tf === 'month' || tf === 'quarter') {
+		return allOptions.filter(o => o.id === 'global' || o.id === 'day' || o.id === 'week' || o.id === 'month')
+	}
+	// year or all
+	return allOptions
+})
+
+// Auto-adjust selected summary grouping if not valid for active timeframe
+watch(selectedTimeframe, () => {
+	const isStillValid = availableSummaryGroupings.value.some(g => g.id === selectedSummaryGrouping.value)
+	if (!isStillValid) {
+		selectedSummaryGrouping.value = 'global'
+	}
+})
+
+const currentGroupingDescription = computed(() => {
+	switch (selectedSummaryGrouping.value) {
+		case 'day':
+			return 'Generará una fila de sumatorio por cada día del período con sus bases imponibles, IVA y métodos de cobro.'
+		case 'week':
+			return 'Generará una fila de sumatorio por cada semana contable con sus bases imponibles y totales semanales.'
+		case 'month':
+			return 'Generará una fila de sumatorio por cada mes del período con sus bases imponibles y totales consolidados.'
+		case 'year':
+			return 'Generará una fila de sumatorio por cada año con sus totales fiscales y facturación acumulada.'
+		default:
+			return 'Generará un único bloque fiscal consolidado de todo el período seleccionado (ideal para Modelos 303 y 130).'
 	}
 })
 
@@ -115,6 +185,7 @@ const triggerExport = (format: 'csv' | 'pdf') => {
 	emit('export', {
 		format,
 		mode: selectedMode.value,
+		summaryGrouping: selectedMode.value === 'summary' ? selectedSummaryGrouping.value : undefined,
 		targetSales: targetSales.value,
 		periodTitle: computedPeriodTitle.value,
 	})
@@ -395,6 +466,52 @@ const triggerExport = (format: 'csv' | 'pdf') => {
 								</span>
 							</div>
 						</div>
+					</div>
+
+					<!-- Sub-selector de Agrupación de Sumatorio (Global, Día, Semana, Mes, Año) -->
+					<div
+						v-if="selectedMode === 'summary'"
+						class="mt-3.5 p-4 bg-[#922c88]/5 border border-[#922c88]/20 rounded-2xl space-y-3 animate-in fade-in zoom-in-95 duration-200"
+					>
+						<div class="flex items-center justify-between">
+							<span class="text-xs font-bold text-[#922c88] uppercase tracking-wide flex items-center gap-1.5">
+								<Calculator class="size-3.5" />
+								<span>Frecuencia de Agrupación del Sumatorio</span>
+								<InfoTooltip
+									title="Granularidad del Sumatorio"
+									what="Permite elegir si el reporte consolidará todo el período en un único sumatorio o si generará renglones periódicos (por día, semana, mes o año)."
+									why="Facilita el control de caja diario, la evolución semanal o la comparativa mensual/anual para el autónomo y la gestoría sin tener que calcular manualmente renglón por renglón."
+									how="Calcula automáticamente la base imponible, cuotas de IVA (21% y 10%) y desglose de cobros para cada intervalo cronológico."
+									position="bottom"
+									align="start"
+								/>
+							</span>
+							<span class="text-[10px] font-bold text-text-muted">
+								{{ availableSummaryGroupings.length }} opciones
+							</span>
+						</div>
+
+						<!-- Granularity Pills -->
+						<div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 p-1 bg-bg-card/80 rounded-xl border border-border-default/60">
+							<button
+								v-for="grp in availableSummaryGroupings"
+								:key="grp.id"
+								type="button"
+								class="py-2 px-2 text-xs font-extrabold rounded-lg transition-all text-center uppercase tracking-wider cursor-pointer active:scale-95"
+								:class="selectedSummaryGrouping === grp.id
+									? 'bg-[#922c88] text-white shadow-sm ring-1 ring-[#922c88]'
+									: 'text-text-muted hover:text-text-primary hover:bg-bg-muted/60'"
+								@click="selectedSummaryGrouping = grp.id"
+							>
+								{{ grp.label }}
+							</button>
+						</div>
+
+						<!-- Selected grouping dynamic explanation note -->
+						<p class="text-[11px] text-text-secondary flex items-center gap-1.5 font-medium pl-1">
+							<span class="size-1.5 rounded-full bg-[#922c88] inline-block" />
+							<span>{{ currentGroupingDescription }}</span>
+						</p>
 					</div>
 				</div>
 			</div>

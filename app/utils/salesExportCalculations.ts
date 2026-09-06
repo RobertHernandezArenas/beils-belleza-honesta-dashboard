@@ -1,12 +1,28 @@
 import type { Sale, SaleItem } from '~~/shared/types/domain'
 
 export type ExportDetailMode = 'breakdown' | 'individual' | 'summary'
+export type ExportSummaryGrouping = 'global' | 'day' | 'week' | 'month' | 'year'
 
 export interface FiscalTaxBucket {
 	taxRate: number
 	baseAmount: number
 	taxAmount: number
 	totalAmount: number
+}
+
+export interface PeriodicSummaryRow {
+	key: string
+	label: string
+	sortDate: Date
+	salesCount: number
+	baseAmount: number
+	tax21Base: number
+	tax21Amount: number
+	tax10Base: number
+	tax10Amount: number
+	totalTaxAmount: number
+	grandTotal: number
+	methodsSummary: Record<string, number>
 }
 
 export interface FiscalSummary {
@@ -161,6 +177,126 @@ export function calculateFiscalSummary(sales: Sale[]): FiscalSummary {
 	}
 }
 
+export function getStartOfWeek(date: Date): Date {
+	const d = new Date(date)
+	d.setHours(0, 0, 0, 0)
+	const day = d.getDay() || 7 // 1 Monday, 7 Sunday
+	d.setDate(d.getDate() - day + 1)
+	return d
+}
+
+export function getEndOfWeek(date: Date): Date {
+	const start = getStartOfWeek(date)
+	const end = new Date(start)
+	end.setDate(end.getDate() + 6)
+	end.setHours(23, 59, 59, 999)
+	return end
+}
+
+export function getWeekNumber(date: Date): number {
+	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+	const dayNum = d.getUTCDay() || 7
+	d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+	const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+	return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+}
+
+export function calculatePeriodicSummaries(
+	sales: Sale[],
+	grouping: ExportSummaryGrouping
+): PeriodicSummaryRow[] {
+	if (grouping === 'global' || !sales.length) {
+		return []
+	}
+
+	const groups = new Map<string, {
+		key: string
+		label: string
+		sortDate: Date
+		sales: Sale[]
+	}>()
+
+	const monthNames = [
+		'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+		'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+	]
+
+	for (const sale of sales) {
+		const d = new Date(sale.created_at)
+		let key = ''
+		let label = ''
+		let sortDate = new Date(d)
+
+		if (grouping === 'day') {
+			const year = d.getFullYear()
+			const month = String(d.getMonth() + 1).padStart(2, '0')
+			const day = String(d.getDate()).padStart(2, '0')
+			key = `${year}-${month}-${day}`
+			label = `${day}/${month}/${year}`
+			sortDate = new Date(year, d.getMonth(), d.getDate(), 0, 0, 0, 0)
+		} else if (grouping === 'week') {
+			const weekStart = getStartOfWeek(d)
+			const weekEnd = getEndOfWeek(d)
+			const weekNum = getWeekNumber(d)
+			const sDay = String(weekStart.getDate()).padStart(2, '0')
+			const sMonth = String(weekStart.getMonth() + 1).padStart(2, '0')
+			const eDay = String(weekEnd.getDate()).padStart(2, '0')
+			const eMonth = String(weekEnd.getMonth() + 1).padStart(2, '0')
+			const sYear = weekStart.getFullYear()
+
+			key = `${sYear}-W${String(weekNum).padStart(2, '0')}`
+			label = `Semana ${weekNum} (${sDay}/${sMonth} - ${eDay}/${eMonth})`
+			sortDate = weekStart
+		} else if (grouping === 'month') {
+			const year = d.getFullYear()
+			const month = d.getMonth()
+			key = `${year}-${String(month + 1).padStart(2, '0')}`
+			label = `${monthNames[month]} ${year}`
+			sortDate = new Date(year, month, 1, 0, 0, 0, 0)
+		} else if (grouping === 'year') {
+			const year = d.getFullYear()
+			key = String(year)
+			label = `Año ${year}`
+			sortDate = new Date(year, 0, 1, 0, 0, 0, 0)
+		}
+
+		if (!groups.has(key)) {
+			groups.set(key, { key, label, sortDate, sales: [] })
+		}
+		groups.get(key)!.sales.push(sale)
+	}
+
+	const sortedEntries = Array.from(groups.values()).sort(
+		(a, b) => a.sortDate.getTime() - b.sortDate.getTime()
+	)
+
+	return sortedEntries.map(group => {
+		const fiscal = calculateFiscalSummary(group.sales)
+		const tax21 = fiscal.taxesByRate[21]
+		const tax10 = fiscal.taxesByRate[10]
+
+		const methodsSummary: Record<string, number> = {}
+		for (const [mKey, mVal] of Object.entries(fiscal.methodsSummary)) {
+			methodsSummary[mKey] = mVal.total
+		}
+
+		return {
+			key: group.key,
+			label: group.label,
+			sortDate: group.sortDate,
+			salesCount: fiscal.totalSalesCount,
+			baseAmount: fiscal.totalBaseAmount,
+			tax21Base: tax21 ? Number(tax21.baseAmount.toFixed(2)) : 0,
+			tax21Amount: tax21 ? Number(tax21.taxAmount.toFixed(2)) : 0,
+			tax10Base: tax10 ? Number(tax10.baseAmount.toFixed(2)) : 0,
+			tax10Amount: tax10 ? Number(tax10.taxAmount.toFixed(2)) : 0,
+			totalTaxAmount: fiscal.totalTaxAmount,
+			grandTotal: fiscal.grandTotal,
+			methodsSummary,
+		}
+	})
+}
+
 export function escapeCsvValue(value: unknown): string {
 	const str = String(value ?? '')
 	if (/[";\n\r]/.test(str)) {
@@ -195,10 +331,12 @@ export function buildSalesCsvContent({
 	sales,
 	mode,
 	periodTitle,
+	summaryGrouping,
 }: {
 	sales: Sale[]
 	mode: ExportDetailMode
 	periodTitle: string
+	summaryGrouping?: ExportSummaryGrouping
 }): string {
 	const lines: string[][] = []
 
@@ -207,7 +345,16 @@ export function buildSalesCsvContent({
 	lines.push(['INFORME DE VENTAS Y FACTURACIÓN'])
 	lines.push([`Periodo: ${periodTitle}`])
 	lines.push([`Fecha de generación: ${new Date().toLocaleString('es-ES')}`])
-	lines.push([`Modo de informe: ${mode === 'breakdown' ? 'Desglose total por línea' : mode === 'individual' ? 'Venta individual' : 'Sumatorio fiscal'}`])
+
+	const modeLabel = mode === 'breakdown'
+		? 'Desglose total por línea'
+		: mode === 'individual'
+			? 'Venta individual'
+			: summaryGrouping && summaryGrouping !== 'global'
+				? `Sumatorio periódico (${summaryGrouping === 'day' ? 'por día' : summaryGrouping === 'week' ? 'por semana' : summaryGrouping === 'month' ? 'por mes' : 'por año'})`
+				: 'Sumatorio fiscal global'
+
+	lines.push([`Modo de informe: ${modeLabel}`])
 	lines.push([])
 
 	const fiscalSummary = calculateFiscalSummary(sales)
@@ -311,38 +458,102 @@ export function buildSalesCsvContent({
 		lines.push(['TOTAL FACTURADO (€)', formatNumberEs(fiscalSummary.grandTotal)])
 
 	} else if (mode === 'summary') {
-		lines.push(['RESUMEN FISCAL Y FACTURACIÓN'])
-		lines.push(['Concepto', 'Valor'])
-		lines.push(['Número de tickets emitidos', String(fiscalSummary.totalSalesCount)])
-		lines.push(['BASE IMPONIBLE TOTAL (€)', formatNumberEs(fiscalSummary.totalBaseAmount)])
-		lines.push(['TOTAL IVA (€)', formatNumberEs(fiscalSummary.totalTaxAmount)])
-		lines.push(['TOTAL FACTURACIÓN (€)', formatNumberEs(fiscalSummary.grandTotal)])
-		lines.push(['Ticket promedio (€)', formatNumberEs(fiscalSummary.averageTicket)])
-		lines.push(['Descuentos aplicados (€)', formatNumberEs(fiscalSummary.totalDiscount)])
+		if (summaryGrouping && summaryGrouping !== 'global') {
+			const periodicRows = calculatePeriodicSummaries(sales, summaryGrouping)
+			const groupingTitle = summaryGrouping === 'day' ? 'DÍA' : summaryGrouping === 'week' ? 'SEMANA' : summaryGrouping === 'month' ? 'MES' : 'AÑO'
 
-		lines.push([])
-		lines.push(['DESGLOSE POR TIPO DE IVA'])
-		lines.push(['Tipo IVA (%)', 'Base Imponible (€)', 'Cuota IVA (€)', 'Total (€)'])
-		for (const [rate, bucket] of Object.entries(fiscalSummary.taxesByRate)) {
+			lines.push([`SUMATORIO PERIÓDICO AGRUPADO POR ${groupingTitle}`])
+			lines.push([])
 			lines.push([
-				`${rate}%`,
-				formatNumberEs(bucket.baseAmount),
-				formatNumberEs(bucket.taxAmount),
-				formatNumberEs(bucket.totalAmount),
+				'Intervalo / Periodo',
+				'Nº Tickets',
+				'Base Imponible (€)',
+				'IVA 21% (€)',
+				'IVA 10% (€)',
+				'Total IVA (€)',
+				'Total Facturado (€)',
+				'Efectivo (€)',
+				'Tarjeta (€)',
+				'Otros (€)',
 			])
-		}
 
-		lines.push([])
-		lines.push(['DESGLOSE POR MÉTODO DE PAGO'])
-		lines.push(['Método de pago', 'Nº Operaciones', 'Total (€)', '% Facturación'])
-		for (const [method, info] of Object.entries(fiscalSummary.methodsSummary)) {
-			const pct = fiscalSummary.grandTotal > 0 ? (info.total / fiscalSummary.grandTotal) * 100 : 0
-			lines.push([
-				method.toUpperCase(),
-				String(info.count),
-				formatNumberEs(info.total),
-				`${pct.toFixed(1).replace('.', ',')}%`,
-			])
+			for (const row of periodicRows) {
+				const cash = row.methodsSummary['cash'] || 0
+				const card = row.methodsSummary['card'] || 0
+				let others = 0
+				for (const [mKey, mVal] of Object.entries(row.methodsSummary)) {
+					if (mKey !== 'cash' && mKey !== 'card') {
+						others += mVal
+					}
+				}
+
+				lines.push([
+					row.label,
+					String(row.salesCount),
+					formatNumberEs(row.baseAmount),
+					formatNumberEs(row.tax21Amount),
+					formatNumberEs(row.tax10Amount),
+					formatNumberEs(row.totalTaxAmount),
+					formatNumberEs(row.grandTotal),
+					formatNumberEs(cash),
+					formatNumberEs(card),
+					formatNumberEs(others),
+				])
+			}
+
+			lines.push([])
+			lines.push(['TOTALES ACUMULADOS DEL PERIODO'])
+			lines.push(['Total de tickets', String(fiscalSummary.totalSalesCount)])
+			lines.push(['Base imponible total (€)', formatNumberEs(fiscalSummary.totalBaseAmount)])
+			lines.push(['Total IVA (€)', formatNumberEs(fiscalSummary.totalTaxAmount)])
+			lines.push(['TOTAL FACTURADO (€)', formatNumberEs(fiscalSummary.grandTotal)])
+
+			lines.push([])
+			lines.push(['DESGLOSE POR MÉTODO DE PAGO DEL PERIODO'])
+			lines.push(['Método de pago', 'Nº Operaciones', 'Total (€)', '% Facturación'])
+			for (const [method, info] of Object.entries(fiscalSummary.methodsSummary)) {
+				const pct = fiscalSummary.grandTotal > 0 ? (info.total / fiscalSummary.grandTotal) * 100 : 0
+				lines.push([
+					method.toUpperCase(),
+					String(info.count),
+					formatNumberEs(info.total),
+					`${pct.toFixed(1).replace('.', ',')}%`,
+				])
+			}
+		} else {
+			lines.push(['RESUMEN FISCAL Y FACTURACIÓN'])
+			lines.push(['Concepto', 'Valor'])
+			lines.push(['Número de tickets emitidos', String(fiscalSummary.totalSalesCount)])
+			lines.push(['BASE IMPONIBLE TOTAL (€)', formatNumberEs(fiscalSummary.totalBaseAmount)])
+			lines.push(['TOTAL IVA (€)', formatNumberEs(fiscalSummary.totalTaxAmount)])
+			lines.push(['TOTAL FACTURACIÓN (€)', formatNumberEs(fiscalSummary.grandTotal)])
+			lines.push(['Ticket promedio (€)', formatNumberEs(fiscalSummary.averageTicket)])
+			lines.push(['Descuentos aplicados (€)', formatNumberEs(fiscalSummary.totalDiscount)])
+
+			lines.push([])
+			lines.push(['DESGLOSE POR TIPO DE IVA'])
+			lines.push(['Tipo IVA (%)', 'Base Imponible (€)', 'Cuota IVA (€)', 'Total (€)'])
+			for (const [rate, bucket] of Object.entries(fiscalSummary.taxesByRate)) {
+				lines.push([
+					`${rate}%`,
+					formatNumberEs(bucket.baseAmount),
+					formatNumberEs(bucket.taxAmount),
+					formatNumberEs(bucket.totalAmount),
+				])
+			}
+
+			lines.push([])
+			lines.push(['DESGLOSE POR MÉTODO DE PAGO'])
+			lines.push(['Método de pago', 'Nº Operaciones', 'Total (€)', '% Facturación'])
+			for (const [method, info] of Object.entries(fiscalSummary.methodsSummary)) {
+				const pct = fiscalSummary.grandTotal > 0 ? (info.total / fiscalSummary.grandTotal) * 100 : 0
+				lines.push([
+					method.toUpperCase(),
+					String(info.count),
+					formatNumberEs(info.total),
+					`${pct.toFixed(1).replace('.', ',')}%`,
+				])
+			}
 		}
 	}
 

@@ -9,6 +9,7 @@ import {
 import {
 	getPeriodDateBounds,
 	type ExportDetailMode,
+	type ExportSummaryGrouping,
 } from '~/utils/salesExportCalculations'
 
 export interface SalesMonthGroup {
@@ -269,11 +270,13 @@ export function useSales() {
 	const executeExport = async ({
 		format,
 		mode,
+		summaryGrouping,
 		targetSales,
 		periodTitle,
 	}: {
 		format: 'csv' | 'pdf'
 		mode: ExportDetailMode
+		summaryGrouping?: ExportSummaryGrouping
 		targetSales?: Sale[]
 		periodTitle?: string
 	}) => {
@@ -289,6 +292,7 @@ export function useSales() {
 			downloadSalesExportCsv({
 				sales: salesToExport,
 				mode,
+				summaryGrouping,
 				periodTitle: title,
 				displayToast,
 			})
@@ -296,6 +300,7 @@ export function useSales() {
 			await downloadSalesExportPdf({
 				sales: salesToExport,
 				mode,
+				summaryGrouping,
 				periodTitle: title,
 				isGeneratingPdf,
 				displayToast,
