@@ -78,7 +78,7 @@
 <template>
 	<div
 		class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:flex lg:h-[calc(100dvh-73px)] lg:flex-col lg:overflow-hidden lg:p-10">
-		<div class="mx-auto flex h-full w-full max-w-[1400px] flex-col lg:overflow-hidden">
+		<div class="mx-auto flex size-full max-w-350 flex-col lg:overflow-hidden">
 			<header class="mb-6 flex flex-col justify-between gap-4 lg:mb-10 lg:flex-row lg:items-center">
 				<div>
 					<h1 class="text-text-primary mb-1 text-3xl font-medium tracking-tight">Revocaciones</h1>
@@ -87,7 +87,7 @@
 
 				<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
 					<div class="relative w-full sm:w-3/4 lg:w-auto">
-						<Search class="text-text-muted absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2" />
+						<Search class="text-text-muted absolute top-1/2 left-4 size-4 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
 							type="text"
@@ -97,7 +97,7 @@
 					<button
 						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
 						@click="openCreate">
-						<Plus class="h-5 w-5" />
+						<Plus class="size-5" />
 						<span class="font-bold">Nueva Revocación</span>
 					</button>
 				</div>
@@ -118,8 +118,8 @@
 			<div
 				v-else-if="filteredItems.length === 0"
 				class="bg-bg-card border-border-subtle flex flex-col items-center justify-center rounded-3xl border py-24 text-center shadow-sm">
-				<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-					<ShieldOff class="text-text-muted/50 h-10 w-10" />
+				<div class="bg-bg-muted mb-4 flex size-20 items-center justify-center rounded-full">
+					<ShieldOff class="text-text-muted/50 size-10" />
 				</div>
 				<p class="text-text-primary text-xl font-bold">No hay revocaciones registradas</p>
 				<p class="text-text-muted mt-2 max-w-sm">
@@ -131,7 +131,7 @@
 				v-else
 				class="bg-bg-card border-border-subtle flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border shadow-sm">
 				<div class="w-full flex-1 overflow-auto">
-					<table class="relative w-full min-w-[700px] text-left text-sm">
+					<table class="relative w-full min-w-175 text-left text-sm">
 						<thead
 							class="bg-bg-muted/50 text-text-secondary border-border-subtle sticky top-0 z-10 border-b backdrop-blur-md">
 							<tr>
@@ -159,7 +159,7 @@
 									</div>
 								</td>
 								<td class="px-6 py-4">
-									<span class="text-text-primary max-w-[300px] truncate font-medium">
+									<span class="text-text-primary max-w-75 truncate font-medium">
 										{{ item.reason || '—' }}
 									</span>
 								</td>
@@ -175,14 +175,14 @@
 											data-tip="Editar"
 											aria-label="Editar"
 											@click.stop="openEdit(item)">
-											<Edit class="h-4 w-4" />
+											<Edit class="size-4" />
 										</button>
 										<button
 											class="btn btn-sm btn-circle btn-ghost text-error/70 hover:bg-error/10 hover:text-error tooltip tooltip-left transition-colors"
 											data-tip="Eliminar"
 											aria-label="Eliminar"
 											@click.stop="openDelete(item)">
-											<Trash2 class="h-4 w-4" />
+											<Trash2 class="size-4" />
 										</button>
 									</div>
 								</td>

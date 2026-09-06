@@ -144,7 +144,7 @@ const { mutate: createZone, isPending } = useMutation({
 			<div class="flex items-center justify-between border-b border-border-subtle pb-4">
 				<div class="flex items-center gap-3">
 					<div class="p-2.5 bg-primary/15 text-primary rounded-2xl">
-						<Plus class="w-6 h-6" />
+						<Plus class="size-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-lg font-black tracking-tight flex items-center gap-2">
@@ -157,13 +157,13 @@ const { mutate: createZone, isPending } = useMutation({
 					</div>
 				</div>
 				<button class="btn btn-ghost btn-circle btn-sm text-text-muted hover:text-text-primary" @click="handleClose">
-					<X class="w-5 h-5" />
+					<X class="size-5" />
 				</button>
 			</div>
 
 			<!-- ERROR ALERT -->
 			<div v-if="error" class="alert alert-error text-xs rounded-2xl flex items-center gap-2">
-				<AlertCircle class="w-4 h-4 shrink-0" />
+				<AlertCircle class="size-4 shrink-0" />
 				<span>{{ error }}</span>
 			</div>
 
@@ -205,7 +205,7 @@ const { mutate: createZone, isPending } = useMutation({
 					<!-- Fototipo -->
 					<div class="space-y-1.5">
 						<label class="text-xs font-bold text-text-primary uppercase tracking-wider flex items-center gap-1.5">
-							<Sparkles class="w-3.5 h-3.5 text-primary" />
+							<Sparkles class="size-3.5 text-primary" />
 							Fototipo Cutáneo (Fitzpatrick)
 						</label>
 						<AppSelect
@@ -270,7 +270,7 @@ const { mutate: createZone, isPending } = useMutation({
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5"
 						:disabled="isPending || !form.zone_name"
 					>
-						<Save class="w-4 h-4" />
+						<Save class="size-4" />
 						{{ isPending ? 'Guardando...' : 'Crear Zona' }}
 					</button>
 				</div>

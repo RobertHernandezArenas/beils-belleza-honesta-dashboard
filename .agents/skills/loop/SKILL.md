@@ -1,6 +1,11 @@
 ---
 name: loop
-description: Orquestación del ciclo iterativo de desarrollo basado en una máquina de estados finitos (Grill-Me, Maker, Verifier, Memory). Activar para gestionar tareas multi-paso complejas con control estricto de progreso.
+description: "Trigger: loop mode, /loop, ciclo iterativo, orquestación de desarrollo, máquina de estados. Orquestación del ciclo iterativo de desarrollo basado en una máquina de estados finitos (Grill-Me, Maker, Verifier, Memory)."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🔄 SKILL: Loop Mode (Orquestación Iterativa)

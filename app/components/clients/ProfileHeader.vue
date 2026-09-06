@@ -143,7 +143,7 @@ const blurActiveElement = () => {
 				<!-- Avatar -->
 				<div class="relative">
 					<div
-						class="avatar cursor-pointer group relative overflow-hidden rounded-full ring-4 ring-primary/20 ring-offset-4 ring-offset-bg-card transition-all duration-300 hover:scale-105 shadow-xl w-20 h-20 lg:w-24 lg:h-24"
+						class="avatar cursor-pointer group relative overflow-hidden rounded-full ring-4 ring-primary/20 ring-offset-4 ring-offset-bg-card transition-all duration-300 hover:scale-105 shadow-xl size-20 lg:w-24 lg:h-24"
 						role="button"
 						:aria-label="$t('common.edit') + ' ' + $t('users.avatar')"
 						@click="triggerAvatarUpload"
@@ -152,11 +152,11 @@ const blurActiveElement = () => {
 							<span class="loading loading-spinner loading-md"/>
 						</div>
 						<div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-[2px]">
-							<Camera class="h-6 w-6 mb-0.5" />
+							<Camera class="size-6 mb-0.5" />
 							<span class="text-[9px] font-black uppercase tracking-wider">{{ $t('common.edit') }}</span>
 						</div>
-						<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="object-cover w-full h-full" @error="handleAvatarError" >
-						<div v-else class="bg-bg-muted text-primary flex h-full w-full items-center justify-center text-2xl font-black">
+						<img v-if="displayAvatar && !avatarError" :src="displayAvatar" class="object-cover size-full" @error="handleAvatarError" >
+						<div v-else class="bg-bg-muted text-primary flex size-full items-center justify-center text-2xl font-black">
 							{{ client.name.charAt(0) }}{{ client.surname?.charAt(0) || '' }}
 						</div>
 					</div>
@@ -198,7 +198,7 @@ const blurActiveElement = () => {
 							placeholder="Correo..."
 							@save="$emit('update', 'email', $event)">
 							<template #display="{ value }">
-								<span class="flex items-center gap-1.5"><Mail class="w-3.5 h-3.5 text-primary opacity-80" /> {{ value || 'Sin correo' }}</span>
+								<span class="flex items-center gap-1.5"><Mail class="size-3.5 text-primary opacity-80" /> {{ value || 'Sin correo' }}</span>
 							</template>
 						</EditableField>
 						<!-- Phone (click to edit) -->
@@ -209,7 +209,7 @@ const blurActiveElement = () => {
 							placeholder="Teléfono..."
 							@save="$emit('update', 'phone', $event)">
 							<template #display="{ value }">
-								<span class="flex items-center gap-1.5"><Phone class="w-3.5 h-3.5 text-primary opacity-80" /> {{ value || 'Sin teléfono' }}</span>
+								<span class="flex items-center gap-1.5"><Phone class="size-3.5 text-primary opacity-80" /> {{ value || 'Sin teléfono' }}</span>
 							</template>
 						</EditableField>
 						<div class="flex items-center gap-3 text-[11px] font-medium opacity-70 flex-wrap mt-0.5">
@@ -226,10 +226,10 @@ const blurActiveElement = () => {
 				<div class="stat overflow-visible p-3 flex items-center justify-between gap-4">
 					<div class="space-y-1">
 						<div class="stat-title text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-text-muted">
-							<Sparkles class="w-3.5 h-3.5 text-amber-500" />
+							<Sparkles class="size-3.5 text-amber-500" />
 							Frecuencia & Compromiso
 							<div class="tooltip tooltip-left z-50" data-tip="Índice de 0 a 100 calculado a partir de la frecuencia de visitas, total consumido y estado de cumplimientos legales.">
-								<AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
+								<AlertCircle class="size-3.5 text-text-muted/60 cursor-help" />
 							</div>
 						</div>
 						<div class="stat-value text-3xl font-black text-text-primary flex items-baseline gap-1 tabular-nums">
@@ -267,7 +267,7 @@ const blurActiveElement = () => {
 						aria-haspopup="menu"
 						:aria-label="$t('users.table.actions')"
 					>
-						<MoreVertical class="w-5 h-5" />
+						<MoreVertical class="size-5" />
 					</button>
 					<ul
 						tabindex="0"
@@ -275,25 +275,25 @@ const blurActiveElement = () => {
 					>
 						<li>
 							<a class="py-3 font-bold rounded-xl active:bg-primary" @click="$emit('new-booking'); blurActiveElement()">
-								<CalendarPlus class="text-primary mr-2 h-4 w-4" />
+								<CalendarPlus class="text-primary mr-2 size-4" />
 								Nueva Cita
 							</a>
 						</li>
 						<li class="border-t border-base-200/80 pt-1">
 							<a class="py-3 font-bold rounded-xl active:bg-primary" @click="$emit('add-consent'); blurActiveElement()">
-								<FileSignature class="text-success mr-2 h-4 w-4" />
+								<FileSignature class="text-success mr-2 size-4" />
 								{{ $t('catalog.clients.profile.compliance.consents') }}
 							</a>
 						</li>
 						<li>
 							<a class="py-3 font-bold rounded-xl active:bg-primary" @click="$emit('add-questionnaire'); blurActiveElement()">
-								<FileText class="text-info mr-2 h-4 w-4" />
+								<FileText class="text-info mr-2 size-4" />
 								{{ $t('catalog.clients.profile.compliance.questionnaires') }}
 							</a>
 						</li>
 						<li class="border-t border-base-200/80 pt-1">
 							<a class="py-3 font-bold text-error rounded-xl hover:bg-error/10 active:bg-error" @click="$emit('add-revoke'); blurActiveElement()">
-								<ShieldOff class="mr-2 h-4 w-4" />
+								<ShieldOff class="mr-2 size-4" />
 								{{ $t('catalog.clients.profile.compliance.revocations') }}
 							</a>
 						</li>

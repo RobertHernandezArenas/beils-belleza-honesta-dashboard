@@ -14,14 +14,14 @@ const props = withDefaults(defineProps<Props>(), {
 const sizeClasses = computed(() => {
 	switch (props.size) {
 		case 'sm':
-			return { container: 'h-10 w-10', svg: 'h-10 w-10', text: 'text-xs' }
+			return { container: 'size-10', svg: 'size-10', text: 'text-xs' }
 		case 'lg':
-			return { container: 'h-24 w-24', svg: 'h-24 w-24', text: 'text-base' }
+			return { container: 'size-24', svg: 'size-24', text: 'text-base' }
 		case 'xl':
-			return { container: 'h-32 w-32', svg: 'h-32 w-32', text: 'text-lg' }
+			return { container: 'size-32', svg: 'size-32', text: 'text-lg' }
 		case 'md':
 		default:
-			return { container: 'h-16 w-16', svg: 'h-16 w-16', text: 'text-sm' }
+			return { container: 'size-16', svg: 'size-16', text: 'text-sm' }
 	}
 })
 </script>

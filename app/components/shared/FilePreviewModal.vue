@@ -48,14 +48,14 @@ const downloadFile = () => {
 </script>
 
 <template>
-	<dialog ref="dialogRef" class="modal modal-bottom sm:modal-middle z-[7000]">
+	<dialog ref="dialogRef" class="modal modal-bottom sm:modal-middle z-7000">
 		<div class="modal-box bg-bg-card border border-border-default/80 max-w-4xl w-full p-0 rounded-3xl shadow-2xl flex flex-col max-h-[94dvh] overflow-hidden">
 			
 			<!-- HEADER FIJO -->
 			<div class="flex items-center justify-between p-4 sm:p-5 border-b border-border-subtle bg-bg-card shrink-0">
 				<div class="flex items-center gap-2.5">
 					<div class="p-2 bg-primary/15 text-primary rounded-xl">
-						<Eye class="w-5 h-5" />
+						<Eye class="size-5" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-sm sm:text-base font-black tracking-tight">
@@ -75,21 +75,21 @@ const downloadFile = () => {
 						title="Descargar documento"
 						@click="downloadFile"
 					>
-						<Download class="w-4 h-4" />
+						<Download class="size-4" />
 					</button>
 					<button
 						class="btn btn-ghost btn-circle btn-sm text-text-muted hover:text-text-primary"
 						@click="handleClose"
 					>
-						<X class="w-5 h-5" />
+						<X class="size-5" />
 					</button>
 				</div>
 			</div>
 
 			<!-- BODY CON VISOR RESPONSIVE -->
-			<div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-bg-muted/10 flex items-center justify-center min-h-[350px] sm:min-h-[500px]">
+			<div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-bg-muted/10 flex items-center justify-center min-h-87.5 sm:min-h-125">
 				<div v-if="!fileUrl" class="text-center text-text-muted space-y-2">
-					<FileText class="w-10 h-10 mx-auto opacity-40" />
+					<FileText class="size-10 mx-auto opacity-40" />
 					<p class="text-xs font-semibold">No hay archivo para previsualizar</p>
 				</div>
 
@@ -119,7 +119,7 @@ const downloadFile = () => {
 					target="_blank"
 					class="btn btn-ghost btn-xs text-text-muted hover:text-primary gap-1.5 font-bold"
 				>
-					<ExternalLink class="w-3.5 h-3.5" />
+					<ExternalLink class="size-3.5" />
 					Abrir en pestaña nueva
 				</a>
 				<div v-else></div>

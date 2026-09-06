@@ -157,7 +157,7 @@ defineExpose({
         <div v-if="clientPackages && clientPackages.length > 0" class="bg-primary/10 border border-primary/30 rounded-xl p-3 space-y-2">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
-                    <Sparkles class="w-3.5 h-3.5" />
+                    <Sparkles class="size-3.5" />
                     Bonos / Paquetes Disponibles del Cliente
                 </span>
                 <span class="badge badge-primary badge-sm font-black text-[9px]">
@@ -174,7 +174,7 @@ defineExpose({
                     <!-- Header Card del Paquete -->
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
-                            <Package class="w-4 h-4 text-primary shrink-0" />
+                            <Package class="size-4 text-primary shrink-0" />
                             <div>
                                 <div class="flex items-center gap-1.5">
                                     <p class="text-xs font-bold text-text-primary leading-snug">{{ pkg.name }}</p>
@@ -213,8 +213,8 @@ defineExpose({
                             @click="toggleExpandPackage((pkg.client_package_id || pkg.package_id) || '')"
                         >
                             <span>{{ expandedPackages[(pkg.client_package_id || pkg.package_id) || ''] ? 'Ocultar Items' : 'Ver Items Incluidos' }}</span>
-                            <ChevronUp v-if="expandedPackages[(pkg.client_package_id || pkg.package_id) || '']" class="w-3 h-3" />
-                            <ChevronDown v-else class="w-3 h-3" />
+                            <ChevronUp v-if="expandedPackages[(pkg.client_package_id || pkg.package_id) || '']" class="size-3" />
+                            <ChevronDown v-else class="size-3" />
                         </button>
                     </div>
 
@@ -233,8 +233,8 @@ defineExpose({
                             class="flex items-center justify-between p-2 rounded-lg bg-bg-muted/40 border border-border-subtle/50 hover:border-primary/40 transition-all"
                         >
                             <div class="flex items-center gap-2">
-                                <Scissors v-if="subItem.item_type === 'SERVICE'" class="w-3.5 h-3.5 text-primary shrink-0" />
-                                <ShoppingBag v-else class="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                <Scissors v-if="subItem.item_type === 'SERVICE'" class="size-3.5 text-primary shrink-0" />
+                                <ShoppingBag v-else class="size-3.5 text-amber-600 shrink-0" />
                                 <div>
                                     <p class="text-[11px] font-bold text-text-primary leading-tight">{{ subItem.name }}</p>
                                     <div class="flex items-center gap-1.5 text-[9px] text-text-muted font-semibold">
@@ -264,7 +264,7 @@ defineExpose({
 
         <!-- Item Search Input & Dropdown -->
         <div class="relative z-40">
-            <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Search class="text-text-muted absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <input
 v-model="itemSearch" type="text" placeholder="Añadir otro servicio del catálogo..." :disabled="disabled"
                 class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"
@@ -280,7 +280,7 @@ v-for="it in filteredItems" :key="it.service_id"
                         <span class="text-xs font-bold text-text-primary">{{ it.name }}</span>
                         <span class="text-text-muted text-[10px] uppercase font-bold mt-0.5">{{ it.duration || 0 }} min</span>
                     </div>
-                    <Plus class="h-4 w-4 text-primary" />
+                    <Plus class="size-4 text-primary" />
                 </button>
                 <div v-if="filteredItems.length === 0" class="px-4 py-4 text-center text-xs text-text-muted italic">No hay resultados</div>
             </div>
@@ -288,7 +288,7 @@ v-for="it in filteredItems" :key="it.service_id"
 
         <!-- Vender Bono / Paquete -->
         <div v-if="catalogPackages && catalogPackages.length > 0" class="relative z-30">
-            <Package class="text-primary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Package class="text-primary absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <input
 v-model="pkgSearch" type="text" placeholder="Vender bono / paquete..." :disabled="disabled"
                 class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"

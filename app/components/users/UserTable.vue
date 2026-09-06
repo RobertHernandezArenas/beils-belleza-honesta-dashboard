@@ -3,7 +3,7 @@
 		<!-- Glow interno del contenedor -->
 		<div class="from-bg-app pointer-events-none absolute inset-0 z-0 bg-linear-to-b to-transparent"/>
 
-		<div class="relative z-10 w-full overflow-hidden overflow-x-auto rounded-[1.75rem]">
+		<div class="relative z-10 w-full overflow-x-auto rounded-[1.75rem]">
 			<table class="table w-full border-collapse">
 				<thead class="bg-bg-muted">
 					<tr
@@ -14,7 +14,7 @@
 						<th class="px-6 py-5 text-right">{{ $t('users.table.actions') }}</th>
 					</tr>
 				</thead>
-				<tbody v-if="pending" class="min-h-[400px]">
+				<tbody v-if="pending" class="min-h-100">
 					<tr v-for="i in 5" :key="i" class="border-b border-transparent/60">
 						<td class="px-6 py-4">
 							<div class="skeleton bg-bg-hover h-12 w-48 rounded"/>
@@ -30,7 +30,7 @@
 						</td>
 					</tr>
 				</tbody>
-				<tbody v-else class="min-h-[400px]">
+				<tbody v-else class="min-h-100">
 					<tr
 						v-for="user in users"
 						:key="user.user_id"
@@ -61,9 +61,9 @@
 						</td>
 						<td class="px-6 py-4">
 							<div class="flex items-center gap-2">
-								<ShieldCheck v-if="user.role === 'ADMIN'" class="text-text-secondary h-4 w-4" />
-								<Contact v-else-if="user.role === 'STAFF'" class="text-primary h-4 w-4" />
-								<User v-else class="text-text-light h-4 w-4" />
+								<ShieldCheck v-if="user.role === 'ADMIN'" class="text-text-secondary size-4" />
+								<Contact v-else-if="user.role === 'STAFF'" class="text-primary size-4" />
+								<User v-else class="text-text-light size-4" />
 								<span class="text-text-muted text-sm font-bold">
 									{{ $t('users.constants.roles.' + user.role) }}
 								</span>
@@ -78,7 +78,7 @@
 										: 'bg-bg-app text-text-light border-transparent'
 								">
 								<div
-									class="h-1.5 w-1.5 rounded-full"
+									class="size-1.5 rounded-full"
 									:class="
 										user.status === 'ON' ? 'animate-pulse bg-green-500' : 'bg-border-strong'
 									"/>
@@ -103,8 +103,8 @@
 												: $t('users.messages.statusOn')
 										"
 										@click.stop="$emit('toggle-status', user)">
-										<ToggleRight v-if="user.status === 'ON'" class="h-5 w-5 text-green-600" />
-										<ToggleLeft v-else class="text-text-light h-5 w-5" />
+										<ToggleRight v-if="user.status === 'ON'" class="size-5 text-green-600" />
+										<ToggleLeft v-else class="text-text-light size-5" />
 									</button>
 								</div>
 
@@ -114,7 +114,7 @@
 										class="btn btn-circle btn-sm btn-ghost hover:bg-bg-hover"
 										:aria-label="$t('users.form.editTitle')"
 										@click.stop="$emit('edit', user)">
-										<Pencil class="text-text-muted h-4 w-4" />
+										<Pencil class="text-text-muted size-4" />
 									</button>
 								</div>
 
@@ -124,7 +124,7 @@
 										class="btn btn-circle btn-sm btn-ghost hover:bg-red-100"
 										:aria-label="$t('users.delete.title')"
 										@click.stop="$emit('delete', user)">
-										<Trash2 class="h-4 w-4 text-red-600" />
+										<Trash2 class="size-4 text-red-600" />
 									</button>
 								</div>
 							</div>
@@ -136,7 +136,7 @@
 						<tr
 							v-for="i in itemsPerPage - users.length"
 							:key="`empty-${i}`"
-							class="pointer-events-none h-[81px] border-b border-transparent">
+							class="pointer-events-none h-20.25 border-b border-transparent">
 							<td class="px-6 py-4"/>
 							<td class="px-6 py-4"/>
 							<td class="px-6 py-4"/>
@@ -149,9 +149,9 @@
 			<!-- Empty State -->
 			<div
 				v-if="!pending && users.length === 0"
-				class="flex min-h-[400px] flex-col items-center justify-center py-16 text-center">
+				class="flex min-h-100 flex-col items-center justify-center py-16 text-center">
 				<div class="bg-bg-app ring-border-default mb-4 rounded-full p-6 ring-1">
-					<Users class="text-border-strong h-12 w-12" />
+					<Users class="text-border-strong size-12" />
 				</div>
 				<h3 class="text-text-secondary text-xl font-bold">{{ $t('users.table.empty') }}</h3>
 			</div>

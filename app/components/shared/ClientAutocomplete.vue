@@ -61,7 +61,7 @@ const removeClient = () => {
 		
 		<div class="relative w-full">
 			<div v-if="!selectedClient" class="relative">
-				<Search class="text-text-muted absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
+				<Search class="text-text-muted absolute top-1/2 left-4 size-5 -translate-y-1/2" />
 				<input
 					v-model="clientSearch"
 					type="text"
@@ -84,7 +84,7 @@ const removeClient = () => {
 								<span class="text-text-primary text-sm font-bold">{{ c.name }} {{ c.surname }}</span>
 								<span class="text-text-muted text-xs">{{ c.phone }} — {{ c.document_number }}</span>
 							</div>
-							<FileCheck class="text-primary h-4 w-4" />
+							<FileCheck class="text-primary size-4" />
 						</button>
 					</li>
 				</ul>
@@ -96,8 +96,8 @@ const removeClient = () => {
 				:class="{ 'bg-primary/5 border-primary/20': disabled }">
 				<div class="flex items-center gap-3">
 					<div
-						class="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-full">
-						<UserIcon class="h-5 w-5" />
+						class="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-full">
+						<UserIcon class="size-5" />
 					</div>
 					<div class="flex flex-col">
 						<span class="text-text-primary text-sm leading-none font-bold">
@@ -113,7 +113,7 @@ const removeClient = () => {
 					type="button"
 					class="btn btn-ghost btn-circle btn-sm text-text-muted hover:bg-error/10 hover:text-error"
 					@click="removeClient">
-					<Trash2 class="h-4 w-4" />
+					<Trash2 class="size-4" />
 				</button>
 			</div>
 		</div>

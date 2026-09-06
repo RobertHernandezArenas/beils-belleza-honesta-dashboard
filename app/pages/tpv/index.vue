@@ -51,11 +51,11 @@ import type { CatalogItem } from '~~/shared/types/domain'
 </script>
 
 <template>
-	<div class="bg-bg-app text-text-secondary flex h-full w-full flex-col overflow-hidden md:flex-row">
+	<div class="bg-bg-app text-text-secondary flex size-full flex-col overflow-hidden md:flex-row">
 		<!-- MOBILE TOP NAVIGATION SWITCHER (< md) -->
 		<div class="bg-bg-card/95 border-border-default/80 flex shrink-0 items-center justify-between border-b px-4 py-2.5 backdrop-blur-md md:hidden z-30 shadow-xs">
 			<div class="flex items-center gap-2">
-				<div class="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg font-black text-xs">
+				<div class="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg font-black text-xs">
 					TPV
 				</div>
 				<span class="text-text-primary text-xs font-black uppercase tracking-wider">Terminal de Venta</span>
@@ -68,7 +68,7 @@ import type { CatalogItem } from '~~/shared/types/domain'
 					class="flex items-center justify-center rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase transition-all duration-200 select-none"
 					:class="mobileTab === 'catalog' ? 'bg-text-primary text-bg-card shadow-xs' : 'bg-transparent text-text-muted hover:text-text-primary'"
 					@click="mobileTab = 'catalog'">
-					<LayoutGrid class="h-3 w-3 mr-1" />
+					<LayoutGrid class="size-3 mr-1" />
 					Catálogo
 				</button>
 				<button
@@ -76,7 +76,7 @@ import type { CatalogItem } from '~~/shared/types/domain'
 					class="flex items-center justify-center rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase transition-all duration-200 select-none relative"
 					:class="mobileTab === 'cart' ? 'bg-text-primary text-bg-card shadow-xs' : 'bg-transparent text-text-muted hover:text-text-primary'"
 					@click="mobileTab = 'cart'">
-					<ShoppingBag class="h-3 w-3 mr-1" />
+					<ShoppingBag class="size-3 mr-1" />
 					Carrito
 					<span
 						v-if="totalCartCount > 0"
@@ -137,7 +137,7 @@ import type { CatalogItem } from '~~/shared/types/domain'
 			class="bg-text-primary text-bg-card border-border-default/20 fixed bottom-4 left-4 right-4 z-40 flex items-center justify-between rounded-2xl p-3.5 shadow-2xl backdrop-blur-lg md:hidden animate-in fade-in slide-in-from-bottom-4 duration-300"
 			@click="mobileTab = 'cart'">
 			<div class="flex items-center gap-3">
-				<div class="bg-bg-card/10 flex h-9 w-9 items-center justify-center rounded-xl font-mono text-xs font-black">
+				<div class="bg-bg-card/10 flex size-9 items-center justify-center rounded-xl font-mono text-xs font-black">
 					{{ totalCartCount }}
 				</div>
 				<div class="flex flex-col">
@@ -147,7 +147,7 @@ import type { CatalogItem } from '~~/shared/types/domain'
 			</div>
 			<button class="btn btn-sm bg-bg-card text-text-primary hover:bg-bg-card/90 border-none rounded-xl font-extrabold uppercase text-[11px] flex items-center gap-1.5 shadow-sm">
 				Ver Ticket
-				<ArrowRight class="h-3.5 w-3.5" />
+				<ArrowRight class="size-3.5" />
 			</button>
 		</div>
 

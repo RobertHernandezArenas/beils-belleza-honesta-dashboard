@@ -18,6 +18,7 @@
 		ChevronRight,
 	} from 'lucide-vue-next'
 	import { formatCurrency } from '~/utils/format'
+	import InfoTooltip from '~/components/shared/InfoTooltip.vue'
 
 	interface ReportsOverview {
 		period: {
@@ -184,7 +185,7 @@
 								: `${it.value} tickets`
 						str += `<div class="flex items-center justify-between gap-4 text-xs my-0.5">
 							<span class="flex items-center gap-1.5">
-								<span class="inline-block w-2 h-2 rounded-full" style="background-color: ${it.color};"></span>
+								<span class="inline-block size-2 rounded-full" style="background-color: ${it.color};"></span>
 								<span>${it.seriesName}:</span>
 							</span>
 							<b class="tabular-nums font-mono">${valFormatted}</b>
@@ -592,7 +593,7 @@
 
 <template>
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10">
-		<div class="mx-auto max-w-[1500px]">
+		<div class="mx-auto max-w-375">
 			<!-- Header & Period Switcher -->
 			<header class="mb-8 flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
 				<div>
@@ -608,7 +609,7 @@
 						Control analítico integral: finanzas, ventas comerciales, retención y operativa de cabinas
 					</p>
 					<p v-if="periodLabel" class="text-text-muted/80 mt-1 flex items-center gap-1.5 text-xs font-mono">
-						<Clock class="h-3.5 w-3.5" />
+						<Clock class="size-3.5" />
 						<span>Periodo analizado: <b>{{ periodLabel }}</b></span>
 					</p>
 				</div>
@@ -637,7 +638,7 @@
 						title="Exportar a CSV para Excel o Contabilidad"
 						class="btn bg-bg-card text-text-primary hover:bg-bg-subtle border-border-default flex h-10 items-center gap-2 rounded-xl border px-3.5 text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
 						@click="exportToCSV">
-						<FileSpreadsheet class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+						<FileSpreadsheet class="size-4 text-emerald-600 dark:text-emerald-400" />
 						<span>CSV</span>
 					</button>
 
@@ -647,7 +648,7 @@
 						title="Generar informe para impresión o PDF"
 						class="btn bg-bg-card text-text-primary hover:bg-bg-subtle border-border-default flex h-10 items-center gap-2 rounded-xl border px-4 text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
 						@click="exportToPDF">
-						<Printer class="h-4 w-4 text-accent" />
+						<Printer class="size-4 text-accent" />
 						<span>{{ isExporting ? 'Preparando...' : 'Informe PDF' }}</span>
 					</button>
 				</div>
@@ -671,7 +672,7 @@
 			<div
 				v-else-if="isError"
 				class="bg-error/10 text-error border-error/20 flex flex-col items-center justify-center rounded-3xl border p-12 text-center">
-				<AlertCircle class="mb-3 h-10 w-10 opacity-80" />
+				<AlertCircle class="mb-3 size-10 opacity-80" />
 				<h2 class="text-lg font-bold">Error al sincronizar datos analíticos</h2>
 				<p class="text-text-muted mt-1 max-w-md text-sm">
 					No se pudieron calcular las métricas para el periodo seleccionado. Por favor revisa la conexión con el servidor.
@@ -690,63 +691,137 @@
 					<!-- KPI 1: Facturación Bruta & Neta -->
 					<div class="bg-bg-card border-border-default flex flex-col justify-between rounded-3xl border p-6 shadow-xs transition-shadow hover:shadow-md">
 						<div class="flex items-start justify-between">
-							<div class="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex h-12 w-12 items-center justify-center rounded-2xl">
-								<TrendingUp class="h-6 w-6" />
+							<div class="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex size-12 items-center justify-center rounded-2xl">
+								<TrendingUp class="size-6" />
 							</div>
-							<!-- Delta Badge -->
-							<div
+							<!-- Delta Badge with Tooltip -->
+							<InfoTooltip
 								v-if="reports?.kpis.revenueDelta !== null"
-								:class="[
-									'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold',
-									(reports?.kpis.revenueDelta ?? 0) >= 0
-										? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-										: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-								]">
-								<ArrowUpRight v-if="(reports?.kpis.revenueDelta ?? 0) >= 0" class="h-3.5 w-3.5" />
-								<ArrowDownRight v-else class="h-3.5 w-3.5" />
-								<span>{{ (reports?.kpis.revenueDelta ?? 0) > 0 ? '+' : '' }}{{ reports?.kpis.revenueDelta }}%</span>
-							</div>
+								title="Variación de Facturación (%)"
+								what="Porcentaje de variación de los ingresos brutos comparado con el periodo anterior de igual duración."
+								why="Permite saber al instante si la facturación del centro crece (verde con flecha hacia arriba) o se contrae (rojo con flecha hacia abajo) respecto al periodo equivalente previo."
+								how="((Facturación actual - Facturación anterior) / Facturación anterior) * 100."
+								position="bottom"
+								align="end"
+							>
+								<template #trigger="{ toggle, isOpen }">
+									<button
+										type="button"
+										:class="[
+											'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold cursor-help transition-all hover:scale-105',
+											(reports?.kpis.revenueDelta ?? 0) >= 0
+												? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+												: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20',
+											isOpen ? 'ring-2 ring-accent/30' : ''
+										]"
+										@click.stop="toggle"
+									>
+										<ArrowUpRight v-if="(reports?.kpis.revenueDelta ?? 0) >= 0" class="size-3.5" />
+										<ArrowDownRight v-else class="size-3.5" />
+										<span>{{ (reports?.kpis.revenueDelta ?? 0) > 0 ? '+' : '' }}{{ reports?.kpis.revenueDelta }}%</span>
+									</button>
+								</template>
+							</InfoTooltip>
 						</div>
 
 						<div class="mt-4">
-							<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
-								Facturación Bruta
-							</p>
+							<div class="flex items-center gap-1.5">
+								<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
+									Facturación Bruta
+								</p>
+								<InfoTooltip
+									title="Facturación Bruta y Neta"
+									what="Total monetario facturado en el periodo antes y después de aplicar descuentos comerciales y promociones."
+									why="Permite evaluar la masa total de ventas del centro y vigilar el impacto real de las promociones sobre el margen operativo."
+									how="Facturación Bruta = sumatorio de todos los importes de venta. Facturación Neta = Facturación Bruta menos descuentos otorgados."
+									position="bottom"
+									align="start"
+								/>
+							</div>
 							<p class="text-text-primary text-2xl font-black tracking-tight tabular-nums lg:text-3xl">
 								{{ formatCurrency(reports?.kpis.grossRevenue ?? 0) }}
 							</p>
 						</div>
 
 						<div class="border-border-subtle text-text-muted mt-3 flex items-center justify-between border-t pt-3 text-xs">
-							<span>Neto: <b>{{ formatCurrency(reports?.kpis.netRevenue ?? 0) }}</b></span>
-							<span>Desc: <b>{{ formatCurrency(reports?.kpis.totalDiscounts ?? 0) }}</b></span>
+							<span class="inline-flex items-center gap-1">
+								<span>Neto: <b>{{ formatCurrency(reports?.kpis.netRevenue ?? 0) }}</b></span>
+								<InfoTooltip
+									title="Facturación Neta"
+									what="Ingreso neto real cobrado en caja una vez descontadas las promociones, cupones o rebajas aplicadas."
+									why="Refleja el dinero efectivo real que entra al negocio, distinguiendo la venta nominal o de catálogo de la cobrada."
+									how="Facturación Bruta menos Total de Descuentos concedidos. Es la base real de liquidez operativa."
+									position="top"
+									align="start"
+									size="xs"
+								/>
+							</span>
+							<span class="inline-flex items-center gap-1">
+								<span>Desc: <b>{{ formatCurrency(reports?.kpis.totalDiscounts ?? 0) }}</b></span>
+								<InfoTooltip
+									title="Descuentos Totales Concedidos"
+									what="Suma en euros del importe rebajado o bonificado a los clientes durante el periodo seleccionado."
+									why="Controla el coste comercial de las promociones y evita que rebajas excesivas erosionen el margen de los tratamientos."
+									how="Sumatorio directo de todos los importes de descuento aplicados en los carritos de venta cobrados."
+									position="top"
+									align="end"
+									size="xs"
+								/>
+							</span>
 						</div>
 					</div>
 
 					<!-- KPI 2: Ticket Medio (AOV) -->
 					<div class="bg-bg-card border-border-default flex flex-col justify-between rounded-3xl border p-6 shadow-xs transition-shadow hover:shadow-md">
 						<div class="flex items-start justify-between">
-							<div class="bg-blue-500/10 text-blue-600 dark:text-blue-400 flex h-12 w-12 items-center justify-center rounded-2xl">
-								<Receipt class="h-6 w-6" />
+							<div class="bg-blue-500/10 text-blue-600 dark:text-blue-400 flex size-12 items-center justify-center rounded-2xl">
+								<Receipt class="size-6" />
 							</div>
-							<div
+							<!-- Delta Badge with Tooltip -->
+							<InfoTooltip
 								v-if="reports?.kpis.aovDelta !== null"
-								:class="[
-									'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold',
-									(reports?.kpis.aovDelta ?? 0) >= 0
-										? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-										: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-								]">
-								<ArrowUpRight v-if="(reports?.kpis.aovDelta ?? 0) >= 0" class="h-3.5 w-3.5" />
-								<ArrowDownRight v-else class="h-3.5 w-3.5" />
-								<span>{{ (reports?.kpis.aovDelta ?? 0) > 0 ? '+' : '' }}{{ reports?.kpis.aovDelta }}%</span>
-							</div>
+								title="Variación del Ticket Medio (%)"
+								what="Comparativa porcentual del gasto medio por cliente frente al periodo anterior de igual duración."
+								why="Evalúa si los clientes están consumiendo servicios de mayor valor (upselling) o añadiendo productos de cuidado en casa (cross-selling)."
+								how="((AOV actual - AOV anterior) / AOV anterior) * 100."
+								position="bottom"
+								align="end"
+							>
+								<template #trigger="{ toggle, isOpen }">
+									<button
+										type="button"
+										:class="[
+											'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold cursor-help transition-all hover:scale-105',
+											(reports?.kpis.aovDelta ?? 0) >= 0
+												? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+												: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20',
+											isOpen ? 'ring-2 ring-accent/30' : ''
+										]"
+										@click.stop="toggle"
+									>
+										<ArrowUpRight v-if="(reports?.kpis.aovDelta ?? 0) >= 0" class="size-3.5" />
+										<ArrowDownRight v-else class="size-3.5" />
+										<span>{{ (reports?.kpis.aovDelta ?? 0) > 0 ? '+' : '' }}{{ reports?.kpis.aovDelta }}%</span>
+									</button>
+								</template>
+							</InfoTooltip>
 						</div>
 
 						<div class="mt-4">
-							<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
-								Ticket Medio (AOV)
-							</p>
+							<div class="flex items-center gap-1.5">
+								<p class="text-text-muted text-xs font-bold tracking-wider uppercase flex items-center gap-1">
+									<span>Ticket Medio</span>
+									<span class="text-accent underline decoration-dotted underline-offset-2 font-black cursor-help" title="Average Order Value">(AOV)</span>
+								</p>
+								<InfoTooltip
+									title="Ticket Medio (AOV - Average Order Value)"
+									what="AOV significa 'Average Order Value': es el gasto medio que realiza un cliente en cada visita o paso por caja."
+									why="Es la palanca más eficaz para facturar más sin saturar la agenda ni elevar costes fijos."
+									how="Facturación bruta total del periodo dividida entre el número de operaciones de venta cerradas."
+									position="bottom"
+									align="start"
+								/>
+							</div>
 							<p class="text-text-primary text-2xl font-black tracking-tight tabular-nums lg:text-3xl">
 								{{ formatCurrency(reports?.kpis.aov ?? 0) }}
 							</p>
@@ -754,34 +829,71 @@
 
 						<div class="border-border-subtle text-text-muted mt-3 flex items-center justify-between border-t pt-3 text-xs">
 							<span>Volumen: <b>{{ reports?.kpis.totalSales ?? 0 }} ventas</b></span>
-							<span>Desc/venta: <b>{{ reports?.kpis.discountRate ?? 0 }}%</b></span>
+							<span class="inline-flex items-center gap-1">
+								<span>Desc/venta: <b>{{ reports?.kpis.discountRate ?? 0 }}%</b></span>
+								<InfoTooltip
+									title="Tasa de Descuento por Venta"
+									what="Porcentaje medio de descuento que se absorbe sobre el importe bruto total."
+									why="Vigila que las rebajas no superen el límite sostenible fijado para el salón (se recomienda mantenerlo < 5%)."
+									how="(Total Descuentos / Facturación Bruta) * 100."
+									position="top"
+									align="end"
+									size="xs"
+								/>
+							</span>
 						</div>
 					</div>
 
 					<!-- KPI 3: Clientes & Marketing -->
 					<div class="bg-bg-card border-border-default flex flex-col justify-between rounded-3xl border p-6 shadow-xs transition-shadow hover:shadow-md">
 						<div class="flex items-start justify-between">
-							<div class="bg-purple-500/10 text-purple-600 dark:text-purple-400 flex h-12 w-12 items-center justify-center rounded-2xl">
-								<UserCheck class="h-6 w-6" />
+							<div class="bg-purple-500/10 text-purple-600 dark:text-purple-400 flex size-12 items-center justify-center rounded-2xl">
+								<UserCheck class="size-6" />
 							</div>
-							<div
+							<!-- Delta Badge with Tooltip -->
+							<InfoTooltip
 								v-if="reports?.kpis.newClientsDelta !== null"
-								:class="[
-									'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold',
-									(reports?.kpis.newClientsDelta ?? 0) >= 0
-										? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-										: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-								]">
-								<ArrowUpRight v-if="(reports?.kpis.newClientsDelta ?? 0) >= 0" class="h-3.5 w-3.5" />
-								<ArrowDownRight v-else class="h-3.5 w-3.5" />
-								<span>{{ (reports?.kpis.newClientsDelta ?? 0) > 0 ? '+' : '' }}{{ reports?.kpis.newClientsDelta }}%</span>
-							</div>
+								title="Variación de Nuevos Clientes (%)"
+								what="Variación porcentual en captación de nuevos clientes respecto al periodo homólogo anterior."
+								why="Mide la eficacia de las campañas de marketing, redes sociales y recomendaciones en la entrada de clientes por primera vez."
+								how="((Nuevos clientes actuales - anteriores) / anteriores) * 100."
+								position="bottom"
+								align="end"
+							>
+								<template #trigger="{ toggle, isOpen }">
+									<button
+										type="button"
+										:class="[
+											'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold cursor-help transition-all hover:scale-105',
+											(reports?.kpis.newClientsDelta ?? 0) >= 0
+												? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+												: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20',
+											isOpen ? 'ring-2 ring-accent/30' : ''
+										]"
+										@click.stop="toggle"
+									>
+										<ArrowUpRight v-if="(reports?.kpis.newClientsDelta ?? 0) >= 0" class="size-3.5" />
+										<ArrowDownRight v-else class="size-3.5" />
+										<span>{{ (reports?.kpis.newClientsDelta ?? 0) > 0 ? '+' : '' }}{{ reports?.kpis.newClientsDelta }}%</span>
+									</button>
+								</template>
+							</InfoTooltip>
 						</div>
 
 						<div class="mt-4">
-							<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
-								Nuevos Clientes Captados
-							</p>
+							<div class="flex items-center gap-1.5">
+								<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
+									Nuevos Clientes Captados
+								</p>
+								<InfoTooltip
+									title="Nuevos Clientes Captados"
+									what="Número de clientes que han realizado su primera compra o recibido su primer tratamiento dentro del periodo."
+									why="Evalúa el retorno y la tracción de las campañas de captación y marketing frente a la cartera de clientes recurrente."
+									how="Conteo de compradores únicos cuya fecha de registro o primer ticket coincide con el intervalo seleccionado."
+									position="bottom"
+									align="start"
+								/>
+							</div>
 							<p class="text-text-primary text-2xl font-black tracking-tight tabular-nums lg:text-3xl">
 								{{ reports?.kpis.newClients ?? 0 }}
 							</p>
@@ -789,25 +901,65 @@
 
 						<div class="border-border-subtle text-text-muted mt-3 flex items-center justify-between border-t pt-3 text-xs">
 							<span>Compradores: <b>{{ reports?.kpis.uniqueBuyers ?? 0 }}</b></span>
-							<span>Retención: <b>{{ reports?.kpis.retentionRate ?? 0 }}%</b></span>
+							<span class="inline-flex items-center gap-1">
+								<span>Retención: <b>{{ reports?.kpis.retentionRate ?? 0 }}%</b></span>
+								<InfoTooltip
+									title="Tasa de Retención de Clientes"
+									what="Porcentaje de clientes que vuelven al centro a realizar una segunda o sucesiva compra tras su primera visita."
+									why="Retener clientes es 5 veces más económico que captar nuevos. Es la base de la solidez y recomendación del salón."
+									how="((Clientes con 2 o más operaciones / Total de compradores en el periodo) * 100). En estética, valores > 60% reflejan alta satisfacción."
+									position="top"
+									align="end"
+									size="xs"
+								/>
+							</span>
 						</div>
 					</div>
 
 					<!-- KPI 4: Operativa & Cabinas -->
 					<div class="bg-bg-card border-border-default flex flex-col justify-between rounded-3xl border p-6 shadow-xs transition-shadow hover:shadow-md">
 						<div class="flex items-start justify-between">
-							<div class="bg-amber-500/10 text-amber-600 dark:text-amber-400 flex h-12 w-12 items-center justify-center rounded-2xl">
-								<CalendarCheck class="h-6 w-6" />
+							<div class="bg-amber-500/10 text-amber-600 dark:text-amber-400 flex size-12 items-center justify-center rounded-2xl">
+								<CalendarCheck class="size-6" />
 							</div>
-							<div class="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
-								<span>{{ reports?.kpis.cancellationRate ?? 0 }}% cancel.</span>
-							</div>
+							<!-- Cancellation Badge with Tooltip -->
+							<InfoTooltip
+								title="Tasa de Cancelación de Citas"
+								what="Porcentaje de citas programadas que fueron canceladas o en las que el cliente no acudió a cabina."
+								why="Identifica huecos de ineficiencia en cabina para reforzar recordatorios automáticos por WhatsApp o políticas de depósito previo."
+								how="(Citas canceladas / Total de citas agendadas) * 100."
+								position="bottom"
+								align="end"
+							>
+								<template #trigger="{ toggle, isOpen }">
+									<button
+										type="button"
+										:class="[
+											'flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400 cursor-help transition-all hover:scale-105 hover:bg-amber-500/20',
+											isOpen ? 'ring-2 ring-amber-500/40' : ''
+										]"
+										@click.stop="toggle"
+									>
+										<span>{{ reports?.kpis.cancellationRate ?? 0 }}% cancel.</span>
+									</button>
+								</template>
+							</InfoTooltip>
 						</div>
 
 						<div class="mt-4">
-							<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
-								Citas Agendadas
-							</p>
+							<div class="flex items-center gap-1.5">
+								<p class="text-text-muted text-xs font-bold tracking-wider uppercase">
+									Citas Agendadas
+								</p>
+								<InfoTooltip
+									title="Citas Agendadas y Ocupación"
+									what="Volumen global de citas agendadas en cabina y tasa de cancelación o inasistencia (no-shows)."
+									why="Optimiza la ocupación de cabinas, ayuda a programar turnos del equipo y previene pérdidas de tiempo no facturable."
+									how="Citas totales registradas en agenda comparadas con el porcentaje de citas canceladas o no presentadas."
+									position="bottom"
+									align="end"
+								/>
+							</div>
 							<p class="text-text-primary text-2xl font-black tracking-tight tabular-nums lg:text-3xl">
 								{{ reports?.kpis.totalBookings ?? 0 }}
 							</p>
@@ -826,16 +978,26 @@
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs lg:col-span-8">
 						<div class="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
 							<div>
-								<h2 class="text-text-primary text-base font-bold tracking-tight">
-									Evolución de Ingresos y Volumen Transaccional
-								</h2>
+								<div class="flex items-center gap-2">
+									<h2 class="text-text-primary text-base font-bold tracking-tight">
+										Evolución de Ingresos y Volumen Transaccional
+									</h2>
+									<InfoTooltip
+										title="Evolución de Ingresos y Tickets"
+										what="Gráfico temporal de doble eje que correlaciona los ingresos en euros (€) con la cantidad de tickets emitidos."
+										why="Identifica los días de la semana y momentos del mes de máxima facturación y detecta anomalías de afluencia."
+										how="Eje izquierdo: importe acumulado (€). Eje derecho: número de tickets. Picos de barras con curvas bajas indican días de compras de menor cuantía."
+										position="bottom"
+										align="start"
+									/>
+								</div>
 								<p class="text-text-muted text-xs">
 									Facturación diaria/mensual combinada con la cantidad de tickets por fecha de servicio
 								</p>
 							</div>
 						</div>
 
-						<div class="h-[340px] w-full">
+						<div class="h-85 w-full">
 							<ClientChart v-if="revenueTrendOptions" :option="revenueTrendOptions" />
 						</div>
 					</div>
@@ -843,15 +1005,25 @@
 					<!-- Sales Mix (Services vs Retail vs Packages) -->
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs lg:col-span-4">
 						<div class="mb-2">
-							<h2 class="text-text-primary text-base font-bold tracking-tight">
-								Mix de Negocio
-							</h2>
+							<div class="flex items-center justify-between">
+								<h2 class="text-text-primary text-base font-bold tracking-tight">
+									Mix de Negocio
+								</h2>
+								<InfoTooltip
+									title="Mix de Negocio"
+									what="Distribución porcentual de los ingresos entre Servicios en Cabina, Cosmética Retail (para casa) y Bonos/Packs."
+									why="Ayuda a equilibrar los ingresos por mano de obra (cabina) con ventas de producto retail de alto margen."
+									how="Porcentaje que representa la facturación de cada tipología de producto o servicio sobre el total recaudado."
+									position="bottom"
+									align="end"
+								/>
+							</div>
 							<p class="text-text-muted text-xs">
 								Desglose por Servicios en Cabina, Cosmética Retail y Bonos
 							</p>
 						</div>
 
-						<div class="relative h-[240px] w-full">
+						<div class="relative h-60 w-full">
 							<ClientChart v-if="salesMixOptions" :option="salesMixOptions" />
 						</div>
 
@@ -863,7 +1035,7 @@
 								class="flex items-center justify-between text-xs">
 								<span class="text-text-secondary flex items-center gap-2">
 									<span
-										class="h-2.5 w-2.5 shrink-0 rounded-full"
+										class="size-2.5 shrink-0 rounded-full"
 										:style="{ backgroundColor: salesMixColors[idx] || 'var(--color-accent)' }" />
 									<span>{{ mix.label }}</span>
 								</span>
@@ -881,16 +1053,26 @@
 					<!-- Payment Methods Breakdown -->
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs lg:col-span-6">
 						<div class="mb-4">
-							<h2 class="text-text-primary text-base font-bold tracking-tight">
-								Distribución de Métodos de Pago
-							</h2>
+							<div class="flex items-center gap-2">
+								<h2 class="text-text-primary text-base font-bold tracking-tight">
+									Distribución de Métodos de Pago
+								</h2>
+								<InfoTooltip
+									title="Métodos de Pago"
+									what="Desglose del dinero cobrado según la vía financiera utilizada: Tarjeta, Efectivo, Bizum o Transferencia."
+									why="Esencial para el arqueo de caja diario, la previsión de comisiones bancarias y el control de liquidez inmediata."
+									how="Sumatorio de importes agrupados por la pasarela o método de liquidación seleccionado en el TPV."
+									position="bottom"
+									align="start"
+								/>
+							</div>
 							<p class="text-text-muted text-xs">
 								Volumen económico y porcentaje recaudado por cada vía
 							</p>
 						</div>
 
 						<div class="grid grid-cols-1 items-center gap-4 sm:grid-cols-2">
-							<div class="h-[220px] w-full">
+							<div class="h-55 w-full">
 								<ClientChart v-if="paymentMethodsOptions" :option="paymentMethodsOptions" />
 							</div>
 
@@ -902,7 +1084,7 @@
 									class="bg-bg-subtle border-border-subtle flex items-center justify-between rounded-xl border p-2.5 text-xs">
 									<div class="flex items-center gap-2">
 										<span
-											class="h-2.5 w-2.5 shrink-0 rounded-full"
+											class="size-2.5 shrink-0 rounded-full"
 											:style="{ backgroundColor: paymentMethodColors[pm.name] || '#6b7280' }" />
 										<div>
 											<p class="text-text-primary font-bold">{{ pm.name }}</p>
@@ -921,16 +1103,26 @@
 					<!-- Bookings Status Distribution -->
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs lg:col-span-6">
 						<div class="mb-4">
-							<h2 class="text-text-primary text-base font-bold tracking-tight">
-								Control de Agenda & No-Shows
-							</h2>
+							<div class="flex items-center justify-between">
+								<h2 class="text-text-primary text-base font-bold tracking-tight">
+									Control de Agenda & No-Shows
+								</h2>
+								<InfoTooltip
+									title="Control de Agenda y No-Shows"
+									what="Clasificación porcentual del estado final de las reservas de cabina (Completadas, Canceladas, Ausencias)."
+									why="Permite afinar políticas de reserva, recordatorios automáticos por WhatsApp y posibles fianzas de cita previa."
+									how="Proporción matemática de cada estado de reserva sobre el total de citas gestionadas en el periodo."
+									position="bottom"
+									align="end"
+								/>
+							</div>
 							<p class="text-text-muted text-xs">
 								Eficiencia de citas: cumplimiento vs ausencias y cancelaciones
 							</p>
 						</div>
 
 						<div class="grid grid-cols-1 items-center gap-4 sm:grid-cols-2">
-							<div class="h-[220px] w-full">
+							<div class="h-55 w-full">
 								<ClientChart v-if="bookingStatusOptions" :option="bookingStatusOptions" />
 							</div>
 
@@ -941,7 +1133,7 @@
 									class="bg-bg-subtle border-border-subtle flex items-center justify-between rounded-xl border p-2.5 text-xs">
 									<div class="flex items-center gap-2">
 										<span
-											class="h-2.5 w-2.5 shrink-0 rounded-full"
+											class="size-2.5 shrink-0 rounded-full"
 											:style="{ backgroundColor: bookingStatusColors[bs.status] || '#6b7280' }" />
 										<p class="text-text-primary font-bold">{{ bs.label }}</p>
 									</div>
@@ -963,12 +1155,22 @@
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs">
 						<div class="mb-4 flex items-center justify-between">
 							<div>
-								<h2 class="text-text-primary text-base font-bold tracking-tight">
-									Top Tratamientos en Cabina
-								</h2>
+								<div class="flex items-center gap-1.5">
+									<h2 class="text-text-primary text-base font-bold tracking-tight">
+										Top Tratamientos en Cabina
+									</h2>
+									<InfoTooltip
+										title="Tratamientos Estrella"
+										what="Ranking de los tratamientos estéticos con mayor facturación bruta y número de sesiones ejecutadas."
+										why="Permite priorizar la agenda, optimizar el uso de cabinas especializadas y planificar la compra de consumibles técnicos."
+										how="Ordenados de mayor a menor según la facturación total acumulada de cada servicio en el periodo."
+										position="bottom"
+										align="start"
+									/>
+								</div>
 								<p class="text-text-muted text-xs">Mayor volumen de facturación</p>
 							</div>
-							<Sparkles class="text-accent h-5 w-5" />
+							<Sparkles class="text-accent size-5" />
 						</div>
 
 						<div v-if="reports?.topServices.length" class="flex flex-col gap-3">
@@ -1000,12 +1202,22 @@
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs">
 						<div class="mb-4 flex items-center justify-between">
 							<div>
-								<h2 class="text-text-primary text-base font-bold tracking-tight">
-									Top Cosmética Retail
-								</h2>
+								<div class="flex items-center gap-1.5">
+									<h2 class="text-text-primary text-base font-bold tracking-tight">
+										Top Cosmética Retail
+									</h2>
+									<InfoTooltip
+										title="Cosmética de Apoyo Domiciliario"
+										what="Ranking de productos de cosmética y cuidado facial/corporal vendidos en mostrador."
+										why="Indica qué marcas y productos tienen mayor tracción comercial para optimizar pedidos a laboratorios y rotación de stock."
+										how="Ordenados por volumen total de facturación (€) y unidades físicas despachadas."
+										position="bottom"
+										align="center"
+									/>
+								</div>
 								<p class="text-text-muted text-xs">Venta cruzada para el hogar</p>
 							</div>
-							<ShoppingBag class="h-5 w-5 text-amber-500" />
+							<ShoppingBag class="size-5 text-amber-500" />
 						</div>
 
 						<div v-if="reports?.topProducts.length" class="flex flex-col gap-3">
@@ -1037,12 +1249,22 @@
 					<div class="bg-bg-card border-border-default flex flex-col rounded-3xl border p-6 shadow-xs">
 						<div class="mb-4 flex items-center justify-between">
 							<div>
-								<h2 class="text-text-primary text-base font-bold tracking-tight">
-									Clientes con Mayor Gasto
-								</h2>
+								<div class="flex items-center gap-1.5">
+									<h2 class="text-text-primary text-base font-bold tracking-tight">
+										Clientes con Mayor Gasto
+									</h2>
+									<InfoTooltip
+										title="Clientes VIP (Alto Valor LTV)"
+										what="Listado de los clientes con mayor aportación económica acumulada en el intervalo de tiempo seleccionado."
+										why="Clave para aplicar programas de fidelización, invitaciones exclusivas y protocolos de retención personalizada."
+										how="Clasificados por la suma total de sus compras y citas en el periodo, con enlace directo a su expediente."
+										position="bottom"
+										align="end"
+									/>
+								</div>
 								<p class="text-text-muted text-xs">Fidelización y alto valor (LTV)</p>
 							</div>
-							<Award class="h-5 w-5 text-purple-500" />
+							<Award class="size-5 text-purple-500" />
 						</div>
 
 						<div v-if="reports?.topClients.length" class="flex flex-col gap-3">
@@ -1053,7 +1275,7 @@
 								class="hover:bg-bg-subtle -mx-2 flex items-center justify-between rounded-xl p-2 transition-colors">
 								<div class="flex items-center gap-2.5 min-w-0">
 									<span class="text-text-muted w-3 font-mono text-xs font-bold">{{ idx + 1 }}</span>
-									<div class="bg-accent/10 text-accent flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+									<div class="bg-accent/10 text-accent flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
 										{{ c.name.charAt(0).toUpperCase() }}
 									</div>
 									<div class="min-w-0">
@@ -1066,7 +1288,7 @@
 										{{ formatCurrency(c.totalSpend) }}
 									</p>
 									<span class="text-accent flex items-center justify-end text-[10px] font-bold">
-										Ver ficha <ChevronRight class="h-3 w-3" />
+										Ver ficha <ChevronRight class="size-3" />
 									</span>
 								</div>
 							</NuxtLink>
@@ -1095,14 +1317,24 @@
 									Profundidad de cesta, sinergia entre tratamientos en cabina y cosmética para casa, y velocidad financiera
 								</p>
 							</div>
-							<Sparkles class="text-accent h-5 w-5 shrink-0" />
+							<Sparkles class="text-accent size-5 shrink-0" />
 						</div>
 
 						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 							<!-- Metric 1: Venta Cruzada (Attach Rate) -->
 							<div class="bg-bg-subtle border-border-subtle flex flex-col justify-between rounded-2xl border p-4.5">
 								<div class="flex items-start justify-between">
-									<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Venta Cruzada (Attach Rate)</span>
+									<div class="flex items-center gap-1.5">
+										<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Venta Cruzada (Attach Rate)</span>
+										<InfoTooltip
+											title="Venta Cruzada (Attach Rate)"
+											what="Porcentaje de transacciones que combinan al menos un servicio en cabina y al menos un producto cosmético de retail."
+											why="Mide la eficacia del equipo técnico asesorando rutinas de cuidado domiciliario tras finalizar el tratamiento."
+											how="(Tickets con Servicio + Producto Retail / Total de tickets con servicio) × 100."
+											position="bottom"
+											align="start"
+										/>
+									</div>
 									<span class="rounded-lg bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">
 										{{ reports?.commercialMetrics?.crossSellingRate ?? 0 }}%
 									</span>
@@ -1128,7 +1360,17 @@
 							<!-- Metric 2: Unidades por Ticket (UPT) -->
 							<div class="bg-bg-subtle border-border-subtle flex flex-col justify-between rounded-2xl border p-4.5">
 								<div class="flex items-start justify-between">
-									<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Profundidad de Cesta (UPT)</span>
+									<div class="flex items-center gap-1.5">
+										<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Profundidad de Cesta (UPT)</span>
+										<InfoTooltip
+											title="Unidades por Transacción (UPT)"
+											what="Media de artículos o líneas de venta individuales despachadas por cada ticket emitido."
+											why="Evalúa la habilidad comercial para aumentar el valor de la visita ofreciendo productos complementarios o bonos."
+											how="Total de unidades físicas y sesiones vendidas dividido entre el número total de tickets generados."
+											position="bottom"
+											align="end"
+										/>
+									</div>
 									<span class="rounded-lg bg-blue-500/10 px-2 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-400">
 										{{ reports?.commercialMetrics?.unitsPerTransaction ?? 0 }} arts/ticket
 									</span>
@@ -1147,8 +1389,18 @@
 							<!-- Metric 3: Ticket Medio Segmentado (Cabina vs Retail) -->
 							<div class="bg-bg-subtle border-border-subtle flex flex-col justify-between rounded-2xl border p-4.5">
 								<div class="flex items-start justify-between">
-									<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Ticket Medio por Línea</span>
-									<ShoppingBag class="h-4 w-4 text-amber-500" />
+									<div class="flex items-center gap-1.5">
+										<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Ticket Medio por Línea</span>
+										<InfoTooltip
+											title="Ticket Medio Segmentado"
+											what="Gasto promedio segregado entre tratamientos aplicados en camilla y productos de cosmética adquiridos en recepción."
+											why="Permite comparar la rentabilidad por minuto de cabina frente a la venta pasiva de cosmética de alta gama."
+											how="Facturación total de cada categoría dividida por la cantidad de transacciones donde figura dicha categoría."
+											position="bottom"
+											align="start"
+										/>
+									</div>
+									<ShoppingBag class="size-4 text-amber-500" />
 								</div>
 								<div class="my-3 flex flex-col gap-2">
 									<div class="flex items-center justify-between text-xs">
@@ -1172,8 +1424,18 @@
 							<!-- Metric 4: Velocidad Diaria & Proyección Mensual -->
 							<div class="bg-bg-subtle border-border-subtle flex flex-col justify-between rounded-2xl border p-4.5">
 								<div class="flex items-start justify-between">
-									<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Velocidad Financiera</span>
-									<TrendingUp class="h-4 w-4 text-emerald-500" />
+									<div class="flex items-center gap-1.5">
+										<span class="text-text-muted text-xs font-bold tracking-wider uppercase">Velocidad Financiera</span>
+										<InfoTooltip
+											title="Velocidad y Proyección (Run Rate)"
+											what="Ritmo medio de facturación diaria alcanzado y su extrapolación matemática a mes completo."
+											why="Anticipa si el centro alcanzará sus objetivos de facturación y el punto de equilibrio financiero con antelación."
+											how="Ritmo diario = facturación periodo / días transcurridos. Proyección = ritmo diario × días totales del mes."
+											position="bottom"
+											align="end"
+										/>
+									</div>
+									<TrendingUp class="size-4 text-emerald-500" />
 								</div>
 								<div class="my-3 flex flex-col gap-1.5">
 									<div class="flex items-center justify-between text-xs">
@@ -1201,12 +1463,22 @@
 						<div>
 							<div class="mb-4 flex items-center justify-between">
 								<div>
-									<h2 class="text-text-primary text-base font-bold tracking-tight">
-										Salud de Cartera & Deuda
-									</h2>
+									<div class="flex items-center gap-1.5">
+										<h2 class="text-text-primary text-base font-bold tracking-tight">
+											Salud de Cartera & Deuda
+										</h2>
+										<InfoTooltip
+											title="Salud de Cartera y Deuda"
+											what="Volumen de cobros pendientes generado por ventas aplazadas, tratamientos en bono o financiación directa."
+											why="Previene problemas de flujo de caja y reduce el riesgo de morosidad mediante seguimiento activo de vencimientos."
+											how="Sumatorio de los importes pendientes de cobro (saldo deudor) de todas las operaciones registradas en el periodo."
+											position="bottom"
+											align="end"
+										/>
+									</div>
 									<p class="text-text-muted text-xs">Saldos pendientes de cobro</p>
 								</div>
-								<ShieldAlert class="h-5 w-5 text-rose-500" />
+								<ShieldAlert class="size-5 text-rose-500" />
 							</div>
 
 							<div class="bg-rose-500/10 border-rose-500/20 rounded-2xl border p-4">
@@ -1227,7 +1499,7 @@
 								to="/finanzas/deudas"
 								class="btn bg-bg-subtle hover:bg-bg-muted border-border-default text-text-primary flex w-full items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition-colors">
 								<span>Gestionar Cartera de Deudas</span>
-								<ChevronRight class="h-4 w-4" />
+								<ChevronRight class="size-4" />
 							</NuxtLink>
 						</div>
 					</div>
@@ -1239,36 +1511,53 @@
 
 <style scoped>
 	@media print {
+		:global(html),
 		:global(body),
-		:global(html) {
-			background-color: white !important;
-			color: #111827 !important;
-		}
+		:global(#__nuxt),
 		:global(.drawer),
 		:global(.drawer-content),
 		:global(main) {
 			height: auto !important;
+			min-height: auto !important;
+			max-height: none !important;
 			overflow: visible !important;
 			background-color: white !important;
+			color: #111827 !important;
+			-webkit-print-color-adjust: exact !important;
+			print-color-adjust: exact !important;
 		}
+
+		:global(body *) {
+			visibility: visible !important;
+		}
+
 		:global(.drawer-side),
 		:global(nav),
 		:global(header button),
 		.print\:hidden {
 			display: none !important;
 		}
+
 		#report-container {
+			visibility: visible !important;
 			box-shadow: none !important;
 			margin: 0 !important;
 			padding: 0 !important;
 			width: 100% !important;
 		}
+
+		#report-container * {
+			visibility: visible !important;
+		}
+
 		/* Avoid page breaks inside cards */
 		.grid > div {
 			break-inside: avoid !important;
 			page-break-inside: avoid !important;
 			box-shadow: none !important;
 			border: 1px solid #e5e7eb !important;
+			-webkit-print-color-adjust: exact !important;
+			print-color-adjust: exact !important;
 		}
 	}
 </style>

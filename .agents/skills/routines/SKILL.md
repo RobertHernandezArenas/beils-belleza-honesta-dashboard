@@ -1,6 +1,11 @@
 ---
 name: routines
-description: Automatización de tareas periódicas, eventos de fondo y rutinas desatendidas (CI triage, revisión automática de PRs, QA visual programado). Activar para diseñar o ejecutar flujos desatendidos.
+description: "Trigger: routines, automatización desatendida, ci triage, pr review automático, tareas periódicas. Automatización de tareas periódicas, eventos de fondo y rutinas desatendidas."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🔁 SKILL: Routines (Automatización Desatendida)

@@ -149,7 +149,7 @@ class="grid flex-1 grid-cols-7 border-border-subtle overflow-hidden"
                 <!-- Day Number -->
                 <div class="flex items-center justify-between p-0.5 md:p-1">
                     <div 
-                        class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black transition-all md:h-8 md:w-8 md:text-sm"
+                        class="flex size-6 items-center justify-center rounded-full text-[10px] font-black transition-all md:h-8 md:w-8 md:text-sm"
                         :class="[
                             isToday(date) ? 'bg-primary text-white shadow-lg' : 
                             isSelected(date) ? 'bg-text-primary text-bg-card shadow-md scale-105' : 'text-text-primary hover:bg-bg-muted'
@@ -169,7 +169,7 @@ class="grid flex-1 grid-cols-7 border-border-subtle overflow-hidden"
                         class="flex w-full items-center gap-1.5 truncate rounded px-1.5 py-0.5 text-[9px] font-bold tracking-tight transition-all hover:opacity-80"
                         :class="getStatusColorClip(booking.status)"
                         @click.stop="emit('edit', booking)">
-                        <div class="w-1.5 h-1.5 rounded-full bg-current opacity-60"/>
+                        <div class="size-1.5 rounded-full bg-current opacity-60"/>
                         <span class="shrink-0 tabular-nums opacity-80">{{ booking.start_time }}</span>
                         <span class="truncate uppercase">{{ booking.client?.name }}</span>
                     </button>

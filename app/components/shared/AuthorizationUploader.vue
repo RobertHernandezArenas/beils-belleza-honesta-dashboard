@@ -34,16 +34,18 @@ const triggerFileInput = () => {
 
 const handleFileSelect = async (e: Event) => {
 	const target = e.target as HTMLInputElement
-	if (!target.files?.length) return
-	await uploadFile(target.files[0])
+	const file = target.files?.[0]
+	if (!file) return
+	await uploadFile(file)
 	target.value = ''
 }
 
 const handleDrop = async (e: DragEvent) => {
 	isDragging.value = false
 	if (props.disabled || isUploading.value) return
-	if (e.dataTransfer?.files?.length) {
-		await uploadFile(e.dataTransfer.files[0])
+	const file = e.dataTransfer?.files?.[0]
+	if (file) {
+		await uploadFile(file)
 	}
 }
 
@@ -103,7 +105,7 @@ const openPreview = () => {
 				{{ title }}
 			</label>
 			<span v-if="modelValue" class="text-[10px] text-success font-bold flex items-center gap-1">
-				<CheckCircle2 class="w-3.5 h-3.5" />
+				<CheckCircle2 class="size-3.5" />
 				Archivo Adjuntado
 			</span>
 		</div>
@@ -115,8 +117,8 @@ const openPreview = () => {
 		>
 			<div class="flex items-center gap-2.5 min-w-0">
 				<div class="p-2 bg-primary/10 text-primary rounded-xl shrink-0">
-					<FileText v-if="modelValue.toLowerCase().endsWith('.pdf')" class="w-4 h-4" />
-					<ImageIcon v-else class="w-4 h-4" />
+					<FileText v-if="modelValue.toLowerCase().endsWith('.pdf')" class="size-4" />
+					<ImageIcon v-else class="size-4" />
 				</div>
 				<div class="truncate">
 					<p class="text-xs font-bold text-text-primary truncate">
@@ -134,7 +136,7 @@ const openPreview = () => {
 					class="btn btn-ghost btn-xs text-primary hover:bg-primary/10 gap-1 rounded-xl font-bold"
 					@click="openPreview"
 				>
-					<Eye class="w-3.5 h-3.5" />
+					<Eye class="size-3.5" />
 					Previsualizar
 				</button>
 				<button
@@ -144,7 +146,7 @@ const openPreview = () => {
 					title="Eliminar archivo"
 					@click="removeFile"
 				>
-					<Trash2 class="w-3.5 h-3.5" />
+					<Trash2 class="size-3.5" />
 				</button>
 			</div>
 		</div>
@@ -173,10 +175,10 @@ const openPreview = () => {
 
 			<div class="flex flex-col items-center justify-center gap-1.5">
 				<div v-if="isUploading" class="p-2.5 bg-primary/15 text-primary rounded-2xl animate-spin">
-					<Loader2 class="w-5 h-5" />
+					<Loader2 class="size-5" />
 				</div>
 				<div v-else class="p-2.5 bg-primary/10 text-primary rounded-2xl">
-					<UploadCloud class="w-5 h-5" />
+					<UploadCloud class="size-5" />
 				</div>
 
 				<div class="space-y-0.5">

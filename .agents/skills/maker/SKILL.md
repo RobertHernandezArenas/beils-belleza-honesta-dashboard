@@ -1,6 +1,11 @@
 ---
 name: maker
-description: Ejecución precisa de cambios de código, refactorizaciones, implementación de features y creación de tests según la arquitectura del proyecto. Activar una vez finalizado el análisis previo de Grill-Me.
+description: "Trigger: maker, implementar feature, refactorizar código, escribir código, maker mode. Ejecución precisa de cambios de código, refactorizaciones, implementación de features y creación de tests según la arquitectura del proyecto."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🔧 SKILL: Maker (Implementación y Código)

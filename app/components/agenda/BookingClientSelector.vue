@@ -79,7 +79,7 @@ defineExpose({
         <div class="form-control">
             <label class="label pb-1"><span class="label-text text-primary text-[10px] font-bold uppercase tracking-widest">Cliente *</span></label>
             <div class="relative">
-                <Search class="text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <Search class="text-text-muted absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                 <input
 v-model="clientSearch" type="text" required placeholder="Buscar cliente..." autocomplete="off" :disabled="disabled"
                     class="input bg-bg-card border-border-default focus:border-primary/50 h-11 w-full rounded-xl pl-9 text-xs font-bold shadow-sm transition-all focus:outline-none disabled:opacity-60"

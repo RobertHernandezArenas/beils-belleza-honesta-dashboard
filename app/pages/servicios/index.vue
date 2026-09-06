@@ -143,8 +143,8 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 			<!-- Header -->
 			<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div class="flex items-center gap-3">
-					<div class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl">
-						<Scissors class="h-6 w-6" />
+					<div class="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl">
+						<Scissors class="size-6" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold tracking-tight">Catálogo de Servicios y Bonos</h1>
@@ -154,7 +154,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 
 				<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
 					<div class="relative w-full sm:w-3/4 lg:w-64">
-						<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+						<Search class="text-text-muted absolute top-1/2 left-3 size-5 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
 							type="text"
@@ -164,7 +164,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 					<button
 						class="btn bg-text-primary text-bg-card hover:bg-text-secondary h-12 w-full shrink-0 flex items-center justify-center rounded-2xl border-none px-6 font-bold shadow-sm sm:w-1/4 lg:w-auto"
 						@click="openCreateModal">
-						<Plus class="h-5 w-5" />
+						<Plus class="size-5" />
 						{{ activeTab === 'services' ? 'Nuevo Servicio' : 'Nuevo Paquete / Bono' }}
 					</button>
 				</div>
@@ -177,7 +177,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 					class="flex items-center gap-2 pb-3 px-1 text-sm font-black uppercase transition-all relative border-b-2"
 					:class="activeTab === 'services' ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text-primary'"
 					@click="activeTab = 'services'">
-					<Scissors class="h-4 w-4" />
+					<Scissors class="size-4" />
 					Servicios Individuales
 				</button>
 				<button
@@ -185,7 +185,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 					class="flex items-center gap-2 pb-3 px-1 text-sm font-black uppercase transition-all relative border-b-2"
 					:class="activeTab === 'packages' ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text-primary'"
 					@click="activeTab = 'packages'">
-					<PackageIcon class="h-4 w-4" />
+					<PackageIcon class="size-4" />
 					Bonos y Paquetes
 					<span v-if="packages?.length" class="badge badge-primary badge-xs font-mono font-bold">{{ packages.length }}</span>
 				</button>
@@ -231,14 +231,14 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 								<!-- Menu dropdown -->
 								<div class="dropdown dropdown-end">
 									<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted -mr-2">
-										<MoreVertical class="h-4 w-4" />
+										<MoreVertical class="size-4" />
 									</button>
 									<ul
 										tabindex="0"
 										class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 										<li>
 											<a class="hover:bg-bg-muted font-medium" @click="openEditModal(service)">
-												<Edit2 class="h-4 w-4" />
+												<Edit2 class="size-4" />
 												Editar
 											</a>
 										</li>
@@ -246,7 +246,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 											<a
 												class="text-error hover:bg-error/10 font-medium"
 												@click="confirmDelete(service.service_id)">
-												<Trash2 class="h-4 w-4" />
+												<Trash2 class="size-4" />
 												Eliminar
 											</a>
 										</li>
@@ -263,7 +263,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 						<div class="mt-auto flex items-end justify-between">
 							<div
 								class="text-text-muted bg-bg-muted flex w-fit items-center gap-1.5 rounded-xl px-3 py-1.5">
-								<Clock class="h-4 w-4" />
+								<Clock class="size-4" />
 								<span class="text-sm font-bold tabular-nums">
 									{{ formatDuration(service.duration) }}
 								</span>
@@ -286,8 +286,8 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 				<div
 					v-else
 					class="bg-bg-card border-border-default flex flex-col items-center justify-center rounded-3xl border border-dashed px-4 py-20 text-center">
-					<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-						<Scissors class="text-text-muted h-10 w-10" />
+					<div class="bg-bg-muted mb-4 flex size-20 items-center justify-center rounded-full">
+						<Scissors class="text-text-muted size-10" />
 					</div>
 					<h3 class="mb-1 text-xl font-bold">No hay servicios registrados</h3>
 					<p class="text-text-muted mb-6 max-w-sm text-sm">
@@ -335,14 +335,14 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 								<!-- Dropdown menu -->
 								<div class="dropdown dropdown-end">
 									<button tabindex="0" class="btn btn-ghost btn-sm btn-circle text-text-muted -mr-2">
-										<MoreVertical class="h-4 w-4" />
+										<MoreVertical class="size-4" />
 									</button>
 									<ul
 										tabindex="0"
 										class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-1 mt-1 w-40 rounded-xl border p-2 shadow-lg">
 										<li>
 											<a class="hover:bg-bg-muted font-medium" @click="openEditPackageModal(pkg)">
-												<Edit2 class="h-4 w-4" />
+												<Edit2 class="size-4" />
 												Editar
 											</a>
 										</li>
@@ -350,7 +350,7 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 											<a
 												class="text-error hover:bg-error/10 font-medium"
 												@click="confirmDeletePackage(pkg.package_id || '')">
-												<Trash2 class="h-4 w-4" />
+												<Trash2 class="size-4" />
 												Eliminar
 											</a>
 										</li>
@@ -393,8 +393,8 @@ import type { CatalogItem, FetchError } from '~~/shared/types/domain'
 				<div
 					v-else
 					class="bg-bg-card border-border-default flex flex-col items-center justify-center rounded-3xl border border-dashed px-4 py-20 text-center">
-					<div class="bg-bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-						<PackageIcon class="text-text-muted h-10 w-10" />
+					<div class="bg-bg-muted mb-4 flex size-20 items-center justify-center rounded-full">
+						<PackageIcon class="text-text-muted size-10" />
 					</div>
 					<h3 class="mb-1 text-xl font-bold">No hay bonos creados en el catálogo</h3>
 					<p class="text-text-muted mb-6 max-w-sm text-sm">

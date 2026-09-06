@@ -21,7 +21,7 @@
 
 <template>
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 font-sans lg:p-10">
-		<div class="mx-auto max-w-[1400px]">
+		<div class="mx-auto max-w-350">
 			<!-- Header -->
 			<header class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 				<div>
@@ -44,7 +44,7 @@
 										: 'text-text-muted hover:bg-bg-card/50 font-medium'
 								"
 								@click="activeSection = s.id as typeof activeSection">
-								<component :is="s.icon" class="h-5 w-5" />
+								<component :is="s.icon" class="size-5" />
 								{{ s.label }}
 							</button>
 						</li>
@@ -58,8 +58,8 @@
 						<!-- Apartado: Apariencia (tema) -->
 						<section class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] lg:p-8">
 							<div class="mb-6 flex items-center gap-3">
-								<div class="bg-bg-muted text-text-primary flex h-10 w-10 items-center justify-center rounded-xl">
-									<Palette class="h-5 w-5" />
+								<div class="bg-bg-muted text-text-primary flex size-10 items-center justify-center rounded-xl">
+									<Palette class="size-5" />
 								</div>
 								<div>
 									<h2 class="text-text-primary text-lg font-bold">Apariencia</h2>
@@ -72,7 +72,7 @@
 								<div class="flex items-center gap-3">
 									<component
 										:is="isDark ? Moon : Sun"
-										class="text-text-secondary h-5 w-5" />
+										class="text-text-secondary size-5" />
 									<div>
 										<p class="text-text-primary text-sm font-bold">
 											{{ isDark ? 'Modo oscuro' : 'Modo claro' }}
@@ -89,8 +89,8 @@
 						<!-- Apartado: Idioma -->
 						<section class="bg-bg-card rounded-3xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] lg:p-8">
 							<div class="mb-6 flex items-center gap-3">
-								<div class="bg-bg-muted text-text-primary flex h-10 w-10 items-center justify-center rounded-xl">
-									<Languages class="h-5 w-5" />
+								<div class="bg-bg-muted text-text-primary flex size-10 items-center justify-center rounded-xl">
+									<Languages class="size-5" />
 								</div>
 								<div>
 									<h2 class="text-text-primary text-lg font-bold">Idioma</h2>
@@ -114,8 +114,8 @@
 						v-else
 						class="bg-bg-card rounded-3xl p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 						<div class="flex flex-col items-center justify-center py-16 text-center">
-							<div class="bg-bg-muted mb-6 flex h-24 w-24 items-center justify-center rounded-full">
-								<SlidersHorizontal class="text-text-muted/50 h-10 w-10" />
+							<div class="bg-bg-muted mb-6 flex size-24 items-center justify-center rounded-full">
+								<SlidersHorizontal class="text-text-muted/50 size-10" />
 							</div>
 							<h3 class="text-text-primary mb-2 text-xl font-bold">Panel de Ajustes</h3>
 							<p class="text-text-muted max-w-md text-sm">

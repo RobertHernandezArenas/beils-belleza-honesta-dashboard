@@ -10,6 +10,7 @@ import { useI18n } from 'vue-i18n'
 import { useDataPrivacy } from '~/composables/useDataPrivacy'
 import EditableField from '~/components/shared/EditableField.vue'
 import ClientChart from '~/components/ClientChart.client.vue'
+import InfoTooltip from '~/components/shared/InfoTooltip.vue'
 
 const props = defineProps({
 	client: { type: Object as PropType<ClientProfile>, required: true },
@@ -142,14 +143,19 @@ const pendingDebtTotal = computed(() => {
 		<div v-if="pendingDebtTotal > 0" class="alert bg-error/10 border border-error/30 text-error shadow-md rounded-2xl p-4 flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<div class="p-2 bg-error text-white rounded-xl">
-					<Wallet class="w-5 h-5" />
+					<Wallet class="size-5" />
 				</div>
 				<div>
 					<h4 class="text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
 						Deuda Pendiente de Pago
-						<div class="tooltip tooltip-right z-50" data-tip="El cliente posee tickets o consumos pendientes de cobro en el TPV o deudas registradas.">
-							<AlertCircle class="w-3.5 h-3.5 opacity-80 cursor-help" />
-						</div>
+						<InfoTooltip
+							title="Saldo Deudor Pendiente"
+							what="Total monetario pendiente de cobro por ventas aplazadas, bonos fraccionados o liquidaciones incompletas."
+							why="Permite gestionar el cobro en la siguiente visita del cliente antes de iniciar nuevos tratamientos."
+							how="Sumatorio de los importes pendientes (remaining) de todas las deudas activas registradas a su nombre."
+							position="bottom"
+							align="start"
+						/>
 					</h4>
 					<p class="text-xs font-semibold opacity-90">Este cliente tiene un saldo pendiente de <strong>{{ formatCurrency(pendingDebtTotal) }}</strong>.</p>
 				</div>
@@ -167,11 +173,16 @@ const pendingDebtTotal = computed(() => {
 				<div>
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-							<CalendarClock class="w-4 h-4 text-primary" />
+							<CalendarClock class="size-4 text-primary" />
 							Próxima Cita
-							<div class="tooltip tooltip-right z-50" data-tip="Próxima visita agendada en la agenda del centro para este cliente.">
-								<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
-							</div>
+							<InfoTooltip
+								title="Próxima Cita Agendada"
+								what="Siguiente reserva confirmada o pendiente en la agenda del centro para este cliente."
+								why="Permite anticipar la preparación de cabina, asignación de especialista y confirmación por WhatsApp."
+								how="Muestra la cita futura más inmediata, su horario de inicio y los servicios programados."
+								position="bottom"
+								align="start"
+							/>
 						</span>
 						<span v-if="nextBookingData" class="badge badge-primary badge-sm font-black text-[9px] uppercase">
 							{{ nextBookingData.status }}
@@ -203,14 +214,14 @@ const pendingDebtTotal = computed(() => {
 					</div>
 
 					<div v-else class="py-8 text-center flex flex-col items-center justify-center text-text-muted opacity-60">
-						<Calendar class="w-10 h-10 mb-2 stroke-[1.5]" />
+						<Calendar class="size-10 mb-2 stroke-[1.5]" />
 						<p class="text-xs font-bold uppercase tracking-wider">Sin citas agendadas</p>
 					</div>
 				</div>
 
 				<div class="pt-4 border-t border-border-subtle mt-4">
 					<button class="btn btn-neutral btn-sm w-full rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center justify-center gap-2" @click="$emit('open-booking')">
-						<Plus class="w-4 h-4" />
+						<Plus class="size-4" />
 						Agendar Nueva Cita
 					</button>
 				</div>
@@ -220,7 +231,7 @@ const pendingDebtTotal = computed(() => {
 			<div class="xl:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 flex flex-col justify-between hover:shadow-xl transition-all">
 				<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 					<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-						<TrendingUp class="w-4 h-4 text-primary" />
+						<TrendingUp class="size-4 text-primary" />
 						Rendimiento Financiero
 					</span>
 					<span class="text-[10px] font-black text-text-muted uppercase">Beils CRM</span>
@@ -231,13 +242,18 @@ const pendingDebtTotal = computed(() => {
 					<div class="bg-bg-muted/40 border border-border-subtle rounded-2xl p-4 space-y-1">
 						<div class="flex items-center justify-between">
 							<span class="text-[10px] font-black uppercase text-text-muted tracking-wider">LTV (Gasto Total)</span>
-							<div class="tooltip tooltip-bottom z-50" data-tip="Lifetime Value (LTV): Suma monetaria total acumulada de todas las compras y cobros realizados por este cliente en el centro.">
-								<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
-							</div>
+							<InfoTooltip
+								title="Lifetime Value (LTV)"
+								what="Valor histórico acumulado: masa total de ingresos generada por el cliente desde su primera visita."
+								why="Identifica a los clientes más valiosos y evalúa la rentabilidad de las acciones de fidelización."
+								how="Sumatorio total de todos los tickets cerrados y cobrados a nombre de este cliente."
+								position="top"
+								align="start"
+							/>
 						</div>
 						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.ltv || 0) }}</p>
 						<span class="text-[9px] font-bold text-success flex items-center gap-1">
-							<Sparkles class="w-3 h-3" /> Acumulado
+							<Sparkles class="size-3" /> Acumulado
 						</span>
 					</div>
 
@@ -245,9 +261,14 @@ const pendingDebtTotal = computed(() => {
 					<div class="bg-bg-muted/40 border border-border-subtle rounded-2xl p-4 space-y-1">
 						<div class="flex items-center justify-between">
 							<span class="text-[10px] font-black uppercase text-text-muted tracking-wider">AOV (Ticket Medio)</span>
-							<div class="tooltip tooltip-bottom z-50" data-tip="Average Order Value (AOV): Promedio monetario gastado en cada transacción o visita de compra.">
-								<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
-							</div>
+							<InfoTooltip
+								title="Ticket Medio (AOV)"
+								what="Average Order Value: gasto promedio generado en cada transacción o visita de compra."
+								why="Determina el nivel de consumo por visita y la efectividad de la venta complementaria."
+								how="Gasto total acumulado (LTV) dividido entre el número total de transacciones completadas."
+								position="top"
+								align="end"
+							/>
 						</div>
 						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.aov || 0) }}</p>
 						<span class="text-[9px] font-bold text-text-muted">Por transacción</span>
@@ -257,11 +278,16 @@ const pendingDebtTotal = computed(() => {
 				<!-- Frecuencia -->
 				<div class="bg-bg-muted/20 border border-border-subtle rounded-2xl p-3.5 mt-4 flex items-center justify-between">
 					<div class="flex items-center gap-2">
-						<CalendarClock class="w-4 h-4 text-primary" />
+						<CalendarClock class="size-4 text-primary" />
 						<span class="text-xs font-bold text-text-primary">Frecuencia de Citas</span>
-						<div class="tooltip tooltip-top z-50" data-tip="Promedio estimado de días transcurridos entre citas agendadas por este cliente.">
-							<AlertCircle class="w-3 h-3 text-text-muted/60 cursor-help" />
-						</div>
+						<InfoTooltip
+							title="Frecuencia entre Citas"
+							what="Cadencia media en días transcurridos entre una sesión completada y la siguiente."
+							why="Permite predecir cuándo le toca volver al cliente y activar llamadas o mensajes de reactivación a tiempo."
+							how="Promedio matemático de días transcurridos entre citas finalizadas consecutivas."
+							position="top"
+							align="start"
+						/>
 					</div>
 					<span class="text-xs font-black text-primary tabular-nums">Cada {{ kpis.bookingFrequencyDays || 30 }} días</span>
 				</div>
@@ -272,7 +298,7 @@ const pendingDebtTotal = computed(() => {
 				<div>
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-							<UserCircle class="w-4 h-4 text-primary" />
+							<UserCircle class="size-4 text-primary" />
 							Datos de Contacto
 						</span>
 						<span class="badge badge-ghost font-mono text-[9px] font-bold">PERFIL</span>
@@ -294,7 +320,7 @@ const pendingDebtTotal = computed(() => {
 							<div class="flex items-center gap-2">
 								<span class="font-mono font-bold text-text-primary">{{ revealedDocs[client.user_id] || '****' + (client.document_number?.slice(-4) || '3115') }}</span>
 								<button class="btn btn-ghost btn-xs btn-circle" aria-label="Toggle Document" @click="toggleDocumentVisibility(client.user_id, client.document_number || '')">
-									<component :is="revealedDocs[client.user_id] ? EyeOff : Eye" class="w-3.5 h-3.5 text-text-muted" />
+									<component :is="revealedDocs[client.user_id] ? EyeOff : Eye" class="size-3.5 text-text-muted" />
 								</button>
 							</div>
 						</div>
@@ -307,11 +333,16 @@ const pendingDebtTotal = computed(() => {
 				<div>
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-							<TrendingUp class="w-4 h-4 text-primary" />
+							<TrendingUp class="size-4 text-primary" />
 							Evolución de Gasto por Tiempo
-							<div class="tooltip tooltip-right z-50" data-tip="Gráfico interactivo de ingresos mensuales aportados por el cliente. Seleccioná el rango temporal deseado (3M, 6M, 1Y, Todo).">
-								<AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
-							</div>
+							<InfoTooltip
+								title="Historial de Consumo Temporal"
+								what="Gráfico interactivo de ingresos mensuales aportados por el cliente a lo largo del tiempo."
+								why="Permite analizar la estacionalidad de sus visitas, detectar periodos de inactividad y medir el impacto de nuevos tratamientos."
+								how="Agrupa las compras según el filtro seleccionado: 3M (últimos 3 meses), 6M, 1 Año o historial completo (Todo)."
+								position="bottom"
+								align="start"
+							/>
 						</span>
 						
 						<!-- Timeframe Selector Button Group -->
@@ -339,11 +370,16 @@ const pendingDebtTotal = computed(() => {
 				<div class="space-y-4">
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-							<ShoppingBag class="w-4 h-4 text-primary" />
+							<ShoppingBag class="size-4 text-primary" />
 							Favoritos Más Consumidos
-							<div class="tooltip tooltip-left z-50" data-tip="Top 3 de servicios y productos con mayor número de unidades contratadas o adquiridas por este cliente.">
-								<AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
-							</div>
+							<InfoTooltip
+								title="Tratamientos y Cosmética Favoritos"
+								what="Servicios en cabina y productos de apoyo en casa con mayor frecuencia de consumo por este cliente."
+								why="Agiliza la prescripción en cabina y permite anticipar pedidos de reposición de sus productos habituales."
+								how="Ranking ordenado por número de unidades adquiridas y facturación total acumulada."
+								position="bottom"
+								align="end"
+							/>
 						</span>
 					</div>
 
@@ -352,7 +388,7 @@ const pendingDebtTotal = computed(() => {
 						<span class="text-[10px] font-black text-primary uppercase tracking-wider">Top Servicios</span>
 						<div v-if="kpis.topServices?.length" class="space-y-1.5">
 							<div v-for="s in kpis.topServices" :key="s.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
-								<span class="font-bold text-text-primary truncate max-w-[170px]">{{ s.name }}</span>
+								<span class="font-bold text-text-primary truncate max-w-42.5">{{ s.name }}</span>
 								<span class="badge badge-sm font-black tabular-nums">{{ s.qty }}x ({{ formatCurrency(s.total || 0) }})</span>
 							</div>
 						</div>
@@ -364,7 +400,7 @@ const pendingDebtTotal = computed(() => {
 						<span class="text-[10px] font-black text-secondary uppercase tracking-wider">Top Productos</span>
 						<div v-if="kpis.topProducts?.length" class="space-y-1.5">
 							<div v-for="p in kpis.topProducts" :key="p.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
-								<span class="font-bold text-text-primary truncate max-w-[170px]">{{ p.name }}</span>
+								<span class="font-bold text-text-primary truncate max-w-42.5">{{ p.name }}</span>
 								<span class="badge badge-sm font-black tabular-nums">{{ p.qty }}x ({{ formatCurrency(p.total || 0) }})</span>
 							</div>
 						</div>
@@ -377,10 +413,10 @@ const pendingDebtTotal = computed(() => {
 			<div class="xl:col-span-12 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 hover:shadow-xl transition-all space-y-4">
 				<div class="flex items-center justify-between border-b border-border-subtle pb-3">
 					<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-						<FileText class="w-4 h-4 text-primary" />
+						<FileText class="size-4 text-primary" />
 						Anotaciones Comerciales & Ficha Técnica
 						<div class="tooltip tooltip-right z-50" data-tip="Notas privadas del equipo de recepción o estética para registrar alergias, preferencias o particularidades del cliente.">
-							<AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
+							<AlertCircle class="size-3.5 text-text-muted/60 cursor-help" />
 						</div>
 					</span>
 					<span class="text-[10px] text-text-muted font-bold">Auto-guardado habilitado</span>

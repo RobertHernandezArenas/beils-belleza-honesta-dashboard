@@ -98,12 +98,12 @@ onMounted(() => {
                 <button 
                     class="p-2 hover:bg-bg-muted rounded-xl transition-colors text-text-secondary hidden lg:block"
                     @click="store.showSidebar = !store.showSidebar">
-                    <PanelLeftClose v-if="store.showSidebar" class="h-5 w-5" />
-                    <PanelLeftOpen v-else class="h-5 w-5" />
+                    <PanelLeftClose v-if="store.showSidebar" class="size-5" />
+                    <PanelLeftOpen v-else class="size-5" />
                 </button>
                 <div class="flex items-center gap-3">
-                    <div class="bg-text-primary text-bg-app flex h-8 w-8 items-center justify-center rounded-lg shadow-sm">
-                        <CalendarDays class="h-4 w-4" />
+                    <div class="bg-text-primary text-bg-app flex size-8 items-center justify-center rounded-lg shadow-sm">
+                        <CalendarDays class="size-4" />
                     </div>
                     <h1 class="text-lg font-black tracking-wider uppercase m-0">Agenda</h1>
                 </div>
@@ -129,10 +129,10 @@ onMounted(() => {
                 <!-- Navigation Arrows -->
                 <div class="flex items-center bg-bg-muted/30 rounded-xl p-0.5 border border-border-subtle">
                     <button class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary" @click="handleDateChange('prev')">
-                        <ChevronLeft class="h-4 w-4" />
+                        <ChevronLeft class="size-4" />
                     </button>
                     <button class="p-1.5 hover:bg-bg-card hover:shadow-sm rounded-lg transition-all text-text-secondary" @click="handleDateChange('next')">
-                        <ChevronRight class="h-4 w-4" />
+                        <ChevronRight class="size-4" />
                     </button>
                 </div>
 

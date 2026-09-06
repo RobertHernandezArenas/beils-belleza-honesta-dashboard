@@ -118,7 +118,7 @@ import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 
 			<!-- Search Bar -->
 			<div class="relative w-full shrink-0 lg:w-64 xl:w-80">
-				<Search class="text-text-muted absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+				<Search class="text-text-muted absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
 				<input
 					v-model="searchQuery"
 					type="text"
@@ -129,7 +129,7 @@ import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 					type="button"
 					class="btn btn-ghost btn-xs btn-circle absolute top-1/2 right-2 -translate-y-1/2 text-text-muted hover:text-text-primary"
 					@click="searchQuery = ''">
-					<X class="h-3.5 w-3.5" />
+					<X class="size-3.5" />
 				</button>
 			</div>
 		</div>
@@ -143,7 +143,7 @@ import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 				class="mb-4 rounded-2xl border border-primary/30 bg-primary/5 p-3">
 				<div class="mb-2 flex items-center justify-between">
 					<span class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-primary">
-						<Sparkles class="h-3.5 w-3.5" />
+						<Sparkles class="size-3.5" />
 						Bonos del cliente (consumir sesión)
 					</span>
 					<span class="badge badge-primary badge-sm text-[9px] font-black">{{ clientPackages.length }} activos</span>
@@ -205,15 +205,15 @@ import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 							{{ formatCurrency(item.price || 0) }}
 						</span>
 						<div
-							class="bg-bg-muted text-text-muted group-hover:bg-text-primary group-hover:text-bg-card flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-border-default/40 transition-all duration-200">
-							<Plus class="h-3.5 w-3.5" />
+							class="bg-bg-muted text-text-muted group-hover:bg-text-primary group-hover:text-bg-card flex size-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-border-default/40 transition-all duration-200">
+							<Plus class="size-3.5" />
 						</div>
 					</div>
 
 					<!-- Background graphic subtle icon -->
 					<div class="absolute -right-2 -bottom-2 opacity-[0.03] transition-opacity group-hover:opacity-[0.07] pointer-events-none">
-						<Scissors v-if="activeTab === 'services'" class="h-14 w-14 sm:h-16 sm:w-16" />
-						<PackageIcon v-else class="h-14 w-14 sm:h-16 sm:w-16" />
+						<Scissors v-if="activeTab === 'services'" class="size-14 sm:h-16 sm:w-16" />
+						<PackageIcon v-else class="size-14 sm:h-16 sm:w-16" />
 					</div>
 				</button>
 
@@ -221,8 +221,8 @@ import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 				<div
 					v-if="filteredCatalog.length === 0"
 					class="col-span-full flex flex-col items-center justify-center py-16 text-center">
-					<div class="bg-bg-muted/50 mb-3 flex h-12 w-12 items-center justify-center rounded-full">
-						<Search class="text-text-muted h-6 w-6 opacity-40" />
+					<div class="bg-bg-muted/50 mb-3 flex size-12 items-center justify-center rounded-full">
+						<Search class="text-text-muted size-6 opacity-40" />
 					</div>
 					<p class="text-text-primary text-xs font-bold uppercase tracking-wider">No hay elementos en esta categoría</p>
 					<p class="text-text-muted mt-1 text-[11px]">Intenta cambiar el término de búsqueda o la pestaña</p>

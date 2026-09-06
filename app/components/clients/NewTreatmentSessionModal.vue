@@ -169,7 +169,7 @@ const { mutate: createSession, isPending } = useMutation({
 			<div class="flex items-center justify-between border-b border-border-subtle pb-4">
 				<div class="flex items-center gap-3">
 					<div class="p-2.5 bg-primary/15 text-primary rounded-2xl">
-						<Plus class="w-6 h-6" />
+						<Plus class="size-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-lg font-black tracking-tight flex items-center gap-2">
@@ -185,13 +185,13 @@ const { mutate: createSession, isPending } = useMutation({
 					</div>
 				</div>
 				<button class="btn btn-ghost btn-circle btn-sm text-text-muted hover:text-text-primary" @click="handleClose">
-					<X class="w-5 h-5" />
+					<X class="size-5" />
 				</button>
 			</div>
 
 			<!-- ERROR ALERT -->
 			<div v-if="error" class="alert alert-error text-xs rounded-2xl flex items-center gap-2">
-				<AlertCircle class="w-4 h-4 shrink-0" />
+				<AlertCircle class="size-4 shrink-0" />
 				<span>{{ error }}</span>
 			</div>
 
@@ -224,7 +224,7 @@ const { mutate: createSession, isPending } = useMutation({
 								class="input input-bordered input-sm w-full rounded-xl bg-bg-muted/30 text-text-primary font-medium pl-9"
 								required
 							/>
-							<Calendar class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+							<Calendar class="size-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
 						</div>
 					</div>
 				</div>
@@ -350,7 +350,7 @@ const { mutate: createSession, isPending } = useMutation({
 				<!-- VINCULACIÓN CON BONO / PAQUETE DEL CLIENTE -->
 				<div v-if="availablePackages.length > 0" class="p-4 bg-primary/5 border border-primary/20 rounded-2xl space-y-2.5">
 					<label class="text-xs font-black uppercase tracking-wider text-text-primary flex items-center gap-1.5">
-						<CheckSquare class="w-3.5 h-3.5 text-primary" />
+						<CheckSquare class="size-3.5 text-primary" />
 						Vincular a Bono / Paquete Contratado
 					</label>
 					<div class="flex flex-col sm:flex-row items-center gap-3">
@@ -379,7 +379,7 @@ const { mutate: createSession, isPending } = useMutation({
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5"
 						:disabled="isPending"
 					>
-						<Save class="w-4 h-4" />
+						<Save class="size-4" />
 						{{ isPending ? 'Guardando...' : 'Registrar Sesión' }}
 					</button>
 				</div>

@@ -2,6 +2,7 @@
 	"name": "beils-belleza-honesta-dashboard",
 	"type": "module",
 	"private": true,
+	"author": "RobertHernandezArenas",
 	"scripts": {
 		"build": "npm run prisma:generate && nuxt build",
 		"dev": "nuxt dev",

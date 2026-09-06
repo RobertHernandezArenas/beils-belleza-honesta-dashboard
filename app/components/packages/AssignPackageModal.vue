@@ -55,13 +55,13 @@ defineExpose({ openModal, closeModal })
 </script>
 
 <template>
-	<div v-if="isOpen" class="modal modal-open z-[1000] backdrop-blur-sm bg-black/40">
+	<div v-if="isOpen" class="modal modal-open z-1000 backdrop-blur-sm bg-black/40">
 		<div class="modal-box max-w-lg bg-bg-card border border-border-default rounded-3xl p-6 shadow-2xl relative">
 			<!-- Header -->
 			<div class="flex items-center justify-between border-b border-border-default pb-4">
 				<div class="flex items-center gap-3">
-					<div class="h-10 w-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">
-						<Package class="h-5 w-5" />
+					<div class="size-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">
+						<Package class="size-5" />
 					</div>
 					<div>
 						<h3 class="text-lg font-black text-text-primary uppercase tracking-wide">
@@ -73,7 +73,7 @@ defineExpose({ openModal, closeModal })
 					</div>
 				</div>
 				<button class="btn btn-sm btn-ghost btn-circle text-text-muted hover:text-text-primary" @click="closeModal">
-					<X class="h-4 w-4" />
+					<X class="size-4" />
 				</button>
 			</div>
 
@@ -99,9 +99,9 @@ defineExpose({ openModal, closeModal })
 							:class="selectedPackageId === pkg.package_id ? 'border-primary bg-primary/10 shadow-xs' : 'border-border-default bg-bg-muted/40 hover:bg-bg-muted'"
 							@click="selectedPackageId = pkg.package_id || ''">
 							<div class="flex items-center gap-3">
-								<div class="h-8 w-8 rounded-xl flex items-center justify-center font-bold text-xs" :class="pkg.type === 'MIXTO' ? 'bg-amber-500/10 text-amber-600' : 'bg-primary/10 text-primary'">
-									<Sparkles v-if="pkg.type === 'MIXTO'" class="h-4 w-4" />
-									<Package v-else class="h-4 w-4" />
+								<div class="size-8 rounded-xl flex items-center justify-center font-bold text-xs" :class="pkg.type === 'MIXTO' ? 'bg-amber-500/10 text-amber-600' : 'bg-primary/10 text-primary'">
+									<Sparkles v-if="pkg.type === 'MIXTO'" class="size-4" />
+									<Package v-else class="size-4" />
 								</div>
 								<div>
 									<h4 class="text-xs font-black text-text-primary">{{ pkg.name }}</h4>
@@ -112,8 +112,8 @@ defineExpose({ openModal, closeModal })
 							</div>
 							<div class="flex items-center gap-3">
 								<span class="text-xs font-mono font-black text-text-primary">{{ pkg.price }} €</span>
-								<div class="h-5 w-5 rounded-full border border-border-default flex items-center justify-center" :class="selectedPackageId === pkg.package_id ? 'bg-primary border-primary text-white' : ''">
-									<Check v-if="selectedPackageId === pkg.package_id" class="h-3 w-3 stroke-[3]" />
+								<div class="size-5 rounded-full border border-border-default flex items-center justify-center" :class="selectedPackageId === pkg.package_id ? 'bg-primary border-primary text-white' : ''">
+									<Check v-if="selectedPackageId === pkg.package_id" class="size-3 stroke-3" />
 								</div>
 							</div>
 						</div>

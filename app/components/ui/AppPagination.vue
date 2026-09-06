@@ -33,7 +33,7 @@
 						:disabled="currentPage <= 1"
 						class="btn btn-sm join-item bg-bg-card text-text-secondary hover:bg-bg-hover disabled:text-text-muted disabled:hover:bg-bg-card border-transparent focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
 						@click="prevPage">
-						<ChevronLeft class="h-4 w-4" />
+						<ChevronLeft class="size-4" />
 					</button>
 
 					<button
@@ -54,7 +54,7 @@
 						:disabled="currentPage >= totalPages"
 						class="btn btn-sm join-item bg-bg-card text-text-secondary hover:bg-bg-hover disabled:text-text-muted disabled:hover:bg-bg-card border-transparent focus-visible:outline-none disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
 						@click="nextPage">
-						<ChevronRight class="h-4 w-4" />
+						<ChevronRight class="size-4" />
 					</button>
 				</div>
 			</div>

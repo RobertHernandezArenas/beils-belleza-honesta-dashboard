@@ -1,14 +1,17 @@
 ---
+name: standard-typed-ts
 title: Guía de Tipado Estricto en TypeScript
-description: Estándares de modelado de dominio, fronteras seguras, uniones discriminadas y configuración estricta.
-category: Estándares de Lenguaje & Tipado
+description: "Trigger: typescript estricto, tipos seguros, tipado ts, union discriminada, inferencia ts, tipado de dominio, eliminar any. Estándares de modelado de dominio, fronteras seguras, uniones discriminadas y configuración estricta en TypeScript."
 version: 1.1.0
-last_updated: 2026-09
-tags:
-  - typescript
-  - type-safety
-  - clean-code
-  - tsconfig
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: language-standards
+  tags:
+    - typescript
+    - type-safety
+    - clean-code
+    - tsconfig
 ---
 
 # 🛡️ Tipado Estricto en TypeScript
@@ -303,5 +306,73 @@ Antes de aprobar un cambio o mergear código, verifica:
 - [ ] ¿Se evitan las aserciones de tipo innecesarias (`as Type`) prefiriendo estrechamiento con guardas o validación?
 - [ ] ¿Las constantes literales usan `as const` y los tipos se derivan de una única fuente de verdad?
 - [ ] ¿Los genéricos conectan entradas con salidas y evitan la sobreingeniería?
-- [ ] ¿El comando `npx tsc --noEmit` pasa en verde sin advertencias?
+- [ ] ¿El comando `npx tsc --noEmit` o `npx nuxi typecheck` pasa en verde sin advertencias?
+
+---
+
+## 10. 🚫 Protocolo de Erradicación: "Property does not exist on type" (TS2339 / TS2322)
+
+Este error recurrente ocurre cuando el compilador no puede garantizar que una propiedad existe en el tipo inferido. En Nuxt 4 / Vue 3 con TypeScript estricto, sigue este protocolo mandatorio:
+
+### 10.1. Sincronización Estricta entre Prisma y DTOs
+- **Problema:** En el esquema Prisma la columna se llama `birth_date`, pero en la UI se consume como `date_of_birth`.
+- **Regla:** Los DTOs en `shared/types/domain.ts` deben reflejar con precisión los nombres de columna del modelo Prisma. Si se requiere retrocompatibilidad, declara la propiedad secundaria como alias opcional tipado:
+  ```typescript
+  export interface ClientDTO {
+    birth_date?: string      // Campo canónico Prisma
+    date_of_birth?: string   // Alias retrocompatible si aplica
+  }
+  ```
+- **En el template Vue:** Nunca asumas existencia; aplica coalescencia segura:
+  ```vue
+  {{ (client.birth_date || client.date_of_birth) ? formatDate(client.birth_date || client.date_of_birth!) : 'No indicada' }}
+  ```
+
+### 10.2. Guards de Autenticación y Helpers con Retorno de Contexto
+- **Problema:** Funciones como `requireAdmin(event)` que validan y lanzan error si falla, pero retornan `void`, provocando que `adminUser.userId` falle con `Property 'userId' does not exist on type 'void'`.
+- **Regla:** Toda función de guard o aserción de contexto que valide una entidad DEBE retornar esa entidad fuertemente tipada:
+  ```typescript
+  // ❌ INCORRECTO: Retorna void
+  export const requireAdmin = (event: H3Event) => {
+    const user = event.context.user as JwtPayload | undefined
+    if (!user || user.role !== 'ADMIN') throw createError(...)
+  }
+
+  // ✅ CORRECTO: Retorna JwtPayload garantizado tras el guard
+  export const requireAdmin = (event: H3Event): JwtPayload => {
+    const user = event.context.user as JwtPayload | undefined
+    if (!user || user.role !== 'ADMIN') throw createError(...)
+    return user
+  }
+  ```
+
+### 10.3. Estrechamiento Inmediato en Colecciones Indexadas (Arrays / FileList)
+- **Problema:** Pasar `target.files[0]` a una función que espera `File`. TypeScript infiere `File | undefined` y falla con TS2345.
+- **Regla:** Extrae el elemento a una constante y aplica guard temprano (early return):
+  ```typescript
+  // ❌ INCORRECTO
+  if (target.files?.length) {
+    await uploadFile(target.files[0]) // Error: File | undefined no asignable a File
+  }
+
+  // ✅ CORRECTO
+  const file = target.files?.[0]
+  if (!file) return
+  await uploadFile(file)
+  ```
+
+### 10.4. Única Fuente de Verdad para Props de Componentes
+- **Problema:** Declarar un subconjunto de literals en el componente hijo (`'day' | 'week' | 'month' | 'year'`) mientras el componente padre envía `SummaryTimeframe` (`... | 'quarter' | 'all'`).
+- **Regla:** NUNCA dupliques ni hardcodees uniones de tipos en `defineProps`. Importa directamente el tipo canónico de dominio o composable:
+  ```typescript
+  import type { SummaryTimeframe } from '~/composables/useSalesAnalytics'
+
+  interface Props {
+    timeframeLabels: Record<string, string>
+    summaryTimeframe: SummaryTimeframe
+  }
+  ```
+
+### 10.5. Verificación Empírica Obligatoria
+Todo ciclo del agente `Maker` o refactorización DEBE ejecutar `npx nuxi typecheck` antes de solicitar aprobación o dar por concluida la tarea.
 

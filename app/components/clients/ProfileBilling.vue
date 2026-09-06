@@ -4,6 +4,7 @@ import { Receipt, CheckCircle2, ShoppingBag, Wallet, History, AlertCircle, PieCh
 import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ClientChart from '~/components/ClientChart.client.vue'
+import InfoTooltip from '~/components/shared/InfoTooltip.vue'
 
 const props = defineProps({
   client: { type: Object as PropType<ClientProfile>, required: true }
@@ -84,11 +85,16 @@ const chartOptions = computed(() => {
         <div>
           <div class="border-b border-border-subtle pb-3 mb-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <PieChart class="w-4 h-4 text-primary" />
+              <PieChart class="size-4 text-primary" />
               <h3 class="text-xs font-black uppercase tracking-wider text-text-primary">Métodos de Pago Utilizados</h3>
-              <div class="tooltip tooltip-right z-50" data-tip="Gráfico circular con el porcentaje acumulado de importes según el método de pago (Tarjeta, Efectivo, Bizum, etc.).">
-                <AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
-              </div>
+              <InfoTooltip
+                title="Métodos de Cobro del Cliente"
+                what="Distribución acumulada de los importes abonados por este cliente según el medio de pago."
+                why="Permite conocer su preferencia habitual de pago (Tarjeta, Efectivo, Bizum, etc.) para agilizar el cobro en caja."
+                how="Suma los importes de todos los tickets del cliente agrupados por el medio de pago empleado."
+                position="bottom"
+                align="start"
+              />
             </div>
             <span class="text-[10px] font-black text-text-muted uppercase">Distribución</span>
           </div>
@@ -104,12 +110,17 @@ const chartOptions = computed(() => {
         <!-- Card Header -->
         <div class="border-b border-border-subtle bg-bg-muted/20 px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-error/15 text-error shadow-xs"><Wallet class="w-4 h-4" /></div>
+            <div class="p-2 rounded-xl bg-error/15 text-error shadow-xs"><Wallet class="size-4" /></div>
             <h3 class="text-text-primary text-sm font-black tracking-tight flex items-center gap-1.5">
               {{ $t('catalog.clients.profile.billing.debts') }}
-              <div class="tooltip tooltip-right z-50" data-tip="Importes no validados o saldos que el cliente tiene pendientes de abonar en la recepción.">
-                <AlertCircle class="w-3.5 h-3.5 text-text-muted/60 cursor-help" />
-              </div>
+              <InfoTooltip
+                title="Gestión de Cobros Aplazados"
+                what="Tickets o sesiones con pagos fraccionados o importes pendientes de liquidar en mostrador."
+                why="Control de riesgo de impago y regularización inmediata de saldos deudores en recepción."
+                how="Relación individualizada de comprobantes con saldo pendiente de cobro y fecha de vencimiento."
+                position="bottom"
+                align="start"
+              />
             </h3>
           </div>
           <span v-if="(client.debts?.length ?? 0) > 0" class="badge badge-error badge-sm font-black p-2.5 shadow-xs">
@@ -131,8 +142,8 @@ const chartOptions = computed(() => {
               <tr v-for="debt in client.debts" :key="debt.debt_id" class="border-b border-border-subtle hover:bg-bg-muted/40 transition-colors cursor-pointer group" @click="emit('open-debt', debt)">
                 <td class="px-6 py-3">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs">
-                      <Receipt class="w-4 h-4 text-text-primary opacity-80" />
+                    <div class="size-8 rounded-xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs">
+                      <Receipt class="size-4 text-text-primary opacity-80" />
                     </div>
                     <div class="flex flex-col">
                       <span class="text-text-primary text-xs font-bold">{{ debt.notes || (locale === 'es' ? 'Deuda por servicio/producto' : 'Debt for service/product') }}</span>
@@ -160,8 +171,8 @@ const chartOptions = computed(() => {
 
           <!-- EMPTY STATE DEUDAS -->
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-            <div class="bg-success/15 text-success mb-3 flex h-12 w-12 items-center justify-center rounded-2xl shadow-inner">
-              <CheckCircle2 class="h-6 w-6" />
+            <div class="bg-success/15 text-success mb-3 flex size-12 items-center justify-center rounded-2xl shadow-inner">
+              <CheckCircle2 class="size-6" />
             </div>
             <p class="text-text-primary text-sm font-black">{{ $t('catalog.clients.profile.billing.empty.noDebts') }}</p>
             <p class="text-text-muted mt-0.5 text-[10px] font-medium uppercase tracking-widest">{{ $t('catalog.clients.profile.billing.empty.noDebtsSub') }}</p>
@@ -176,12 +187,17 @@ const chartOptions = computed(() => {
       <!-- Card Header -->
       <div class="border-b border-border-subtle bg-bg-muted/20 px-8 py-5 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="p-2.5 rounded-2xl bg-primary/15 text-primary shadow-xs"><History class="w-5 h-5" /></div>
+          <div class="p-2.5 rounded-2xl bg-primary/15 text-primary shadow-xs"><History class="size-5" /></div>
           <h3 class="text-text-primary text-lg font-black tracking-tight flex items-center gap-1.5">
             {{ $t('catalog.clients.profile.billing.history') }}
-            <div class="tooltip tooltip-right z-50" data-tip="Historial completo de tickets cerrados, métodos de pago utilizados y facturación generada.">
-              <AlertCircle class="w-4 h-4 text-text-muted/60 cursor-help" />
-            </div>
+            <InfoTooltip
+              title="Registro de Facturación del Cliente"
+              what="Libro histórico de tickets, estados de cobro y documentos mercantiles expedidos a este cliente."
+              why="Trazabilidad contable, emisión de duplicados de factura y comprobación de garantías comerciales."
+              how="Listado cronológico de todos los carritos y ventas procesadas en el TPV."
+              position="bottom"
+              align="start"
+            />
           </h3>
         </div>
         <span v-if="(client.carts?.length ?? 0) > 0" class="badge badge-neutral badge-sm font-black p-2.5 uppercase">
@@ -203,8 +219,8 @@ const chartOptions = computed(() => {
             <tr v-for="cart in client.carts" :key="cart.cart_id" class="border-b border-border-subtle hover:bg-bg-muted/40 transition-colors cursor-pointer group" @click="emit('open-purchase', cart)">
               <td class="px-8 py-4">
                 <div class="flex items-center gap-4">
-                  <div class="w-10 h-10 rounded-2xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs">
-                    <ShoppingBag class="w-5 h-5 text-text-primary opacity-80" />
+                  <div class="size-10 rounded-2xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs">
+                    <ShoppingBag class="size-5 text-text-primary opacity-80" />
                   </div>
                   <div class="flex flex-col">
                     <span class="text-text-primary text-sm font-bold tabular-nums">{{ formatDate(cart.created_at) }}</span>
@@ -229,8 +245,8 @@ const chartOptions = computed(() => {
 
         <!-- EMPTY STATE COMPRAS -->
         <div v-else class="flex flex-col items-center justify-center py-16 text-center">
-          <div class="bg-primary/15 text-primary mb-4 flex h-16 w-16 items-center justify-center rounded-3xl shadow-inner">
-            <AlertCircle class="h-8 w-8" />
+          <div class="bg-primary/15 text-primary mb-4 flex size-16 items-center justify-center rounded-3xl shadow-inner">
+            <AlertCircle class="size-8" />
           </div>
           <p class="text-text-primary text-lg font-black">{{ $t('catalog.clients.profile.billing.empty.noSales') }}</p>
           <p class="text-text-muted mt-1 text-xs font-medium uppercase tracking-widest">{{ $t('catalog.clients.profile.billing.empty.noSalesSub') }}</p>

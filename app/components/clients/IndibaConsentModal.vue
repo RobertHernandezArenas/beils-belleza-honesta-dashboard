@@ -231,14 +231,14 @@ const handleEmail = () => {
 </script>
 
 <template>
-	<dialog ref="dialogRef" class="modal modal-bottom sm:modal-middle z-[6000]">
+	<dialog ref="dialogRef" class="modal modal-bottom sm:modal-middle z-6000">
 		<div class="modal-box bg-bg-card border border-border-default/80 max-w-3xl p-0 rounded-3xl shadow-2xl flex flex-col max-h-[94dvh] overflow-hidden">
 			
 			<!-- HEADER FIJO -->
 			<div class="flex items-center justify-between p-4 sm:p-6 border-b border-border-subtle bg-bg-card shrink-0">
 				<div class="flex items-center gap-3">
 					<div class="p-2.5 bg-primary/15 text-primary rounded-2xl">
-						<ShieldCheck class="w-6 h-6" />
+						<ShieldCheck class="size-6" />
 					</div>
 					<div>
 						<h3 class="text-text-primary text-base sm:text-lg font-black tracking-tight flex items-center gap-2">
@@ -254,7 +254,7 @@ const handleEmail = () => {
 					</div>
 				</div>
 				<button class="btn btn-ghost btn-circle btn-sm text-text-muted hover:text-text-primary" @click="handleClose">
-					<X class="w-5 h-5" />
+					<X class="size-5" />
 				</button>
 			</div>
 
@@ -263,7 +263,7 @@ const handleEmail = () => {
 				
 				<!-- ERROR ALERT -->
 				<div v-if="error" class="alert alert-error text-xs rounded-2xl flex items-center gap-2">
-					<AlertCircle class="w-4 h-4 shrink-0" />
+					<AlertCircle class="size-4 shrink-0" />
 					<span>{{ error }}</span>
 				</div>
 
@@ -278,7 +278,7 @@ const handleEmail = () => {
 							class="btn btn-ghost btn-xs text-text-primary hover:bg-bg-muted gap-1 font-bold rounded-lg"
 							@click="$emit('open-dossier', 'INDIBA')"
 						>
-							<Printer class="w-3.5 h-3.5 text-primary" />
+							<Printer class="size-3.5 text-primary" />
 							Imprimir / PDF
 						</button>
 						<button
@@ -286,7 +286,7 @@ const handleEmail = () => {
 							class="btn btn-ghost btn-xs text-success hover:bg-success/10 gap-1 font-bold rounded-lg"
 							@click="handleWhatsApp"
 						>
-							<MessageCircle class="w-3.5 h-3.5" />
+							<MessageCircle class="size-3.5" />
 							WhatsApp
 						</button>
 						<button
@@ -294,7 +294,7 @@ const handleEmail = () => {
 							class="btn btn-ghost btn-xs text-text-muted hover:text-text-primary gap-1 font-bold rounded-lg"
 							@click="handleEmail"
 						>
-							<Mail class="w-3.5 h-3.5" />
+							<Mail class="size-3.5" />
 							Email
 						</button>
 					</div>
@@ -303,7 +303,7 @@ const handleEmail = () => {
 				<!-- VISTA DE REVOCACIÓN -->
 				<div v-if="isRevokeMode" class="p-5 bg-error/10 border border-error/30 rounded-2xl space-y-4">
 					<div class="flex items-center gap-2 text-error font-black text-sm uppercase">
-						<Ban class="w-5 h-5" />
+						<Ban class="size-5" />
 						<span>Revocación Formal del Consentimiento (Punto 5 del Documento)</span>
 					</div>
 					<p class="text-xs text-text-muted">
@@ -350,7 +350,7 @@ const handleEmail = () => {
 					<div class="space-y-3">
 						<div class="flex items-center justify-between">
 							<span class="text-xs font-black uppercase tracking-wider text-text-primary flex items-center gap-1.5">
-								<CheckSquare class="w-4 h-4 text-primary" />
+								<CheckSquare class="size-4 text-primary" />
 								Objetivos del Tratamiento Acordados (Marcar Casilla)
 							</span>
 							<span class="text-[11px] font-bold text-text-muted">
@@ -471,7 +471,7 @@ const handleEmail = () => {
 						class="btn btn-ghost btn-xs text-error hover:bg-error/10 font-bold uppercase tracking-wider"
 						@click="isRevokeMode = true"
 					>
-						<Ban class="w-3.5 h-3.5 mr-1" />
+						<Ban class="size-3.5 mr-1" />
 						Revocar Consentimiento
 					</button>
 				</div>
@@ -492,7 +492,7 @@ const handleEmail = () => {
 						:disabled="isSaving || form.selectedObjectives.length === 0"
 						@click="saveConsent(true)"
 					>
-						<FileSignature class="w-4 h-4" />
+						<FileSignature class="size-4" />
 						Firmar Consentimiento
 					</button>
 
@@ -503,7 +503,7 @@ const handleEmail = () => {
 						:disabled="isSaving"
 						@click="saveConsent(false)"
 					>
-						<Save class="w-4 h-4" />
+						<Save class="size-4" />
 						Guardar Cambios
 					</button>
 				</div>

@@ -171,3 +171,7 @@ prisma/prisma/generated/prisma
 
 # Excalidraw MCP temporal (repo embebido accidental)
 tmp-excalidraw-mcp/
+
+# Agent Teams Lite index
+.atl/
+

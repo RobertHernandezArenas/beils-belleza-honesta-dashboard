@@ -46,7 +46,7 @@ const formatDate = (dateStr: string) => {
     <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
       <div class="border-border-subtle bg-text-secondary  border-b px-6 py-4">
         <h3 class="text-bg-card flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
-          <MapPin class="h-4 w-4 text-bg-card" />
+          <MapPin class="size-4 text-bg-card" />
           {{ $t('catalog.clients.profile.sections.insights') }}
         </h3>
       </div>
@@ -100,7 +100,7 @@ const formatDate = (dateStr: string) => {
     <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm">
       <div class="border-border-subtle bg-text-secondary border-b px-6 py-4">
         <h3 class="text-bg-card flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
-          <FileSignature class="h-4 w-4 text-bg-card" />
+          <FileSignature class="size-4 text-bg-card" />
           {{ $t('users.filters.document') }}
         </h3>
       </div>
@@ -140,16 +140,16 @@ const formatDate = (dateStr: string) => {
             :title="$t('overview.charts.details')"
             @click="toggleDocumentVisibility(client.user_id, client.document_number || '')"
           >
-            <span v-if="revealedLoading[client.user_id]" class="loading loading-spinner h-3 w-3"/>
+            <span v-if="revealedLoading[client.user_id]" class="loading loading-spinner size-3"/>
             <component 
               :is="revealedDocs[client.user_id] ? EyeOff : Eye" 
               v-else 
-              class="h-3.5 w-3.5"
+              class="size-3.5"
             />
           </button>
         </div>
         <div class="bg-primary/5 flex items-center gap-3 rounded-2xl p-4">
-           <User class="h-8 w-8 text-primary opacity-20 shrink-0" />
+           <User class="size-8 text-primary opacity-20 shrink-0" />
            <p class="text-primary text-[11px] font-bold leading-relaxed">
              {{ $t('catalog.clients.profile.kpis.verifyId') }}
            </p>
@@ -161,7 +161,7 @@ const formatDate = (dateStr: string) => {
     <div class="bg-bg-card border-border-subtle overflow-hidden rounded-3xl border shadow-sm md:col-span-2 xl:col-span-1">
       <div class="border-border-subtle bg-text-secondary border-b px-6 py-4">
         <h3 class="text-bg-card flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
-          <Calendar class="h-4 w-4 text-bg-card" />
+          <Calendar class="size-4 text-bg-card" />
           {{ $t('catalog.clients.profile.sections.insights') }}
         </h3>
       </div>

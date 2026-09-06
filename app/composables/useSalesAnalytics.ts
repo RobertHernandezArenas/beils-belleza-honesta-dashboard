@@ -1,13 +1,22 @@
 import { computed, type Ref } from 'vue'
 import type { Sale } from '~~/shared/types/domain'
+import { getQuarterDateBounds } from '~/utils/salesExportCalculations'
+
+export type SummaryTimeframe = 'day' | 'week' | 'month' | 'quarter' | 'year' | 'all'
 
 export function useSalesAnalytics(
 	sales: Ref<Sale[] | undefined>,
-	summaryTimeframe: Ref<'day' | 'week' | 'month' | 'year'>
+	summaryTimeframe: Ref<SummaryTimeframe>,
+	selectedQuarter?: Ref<number>,
+	selectedYear?: Ref<number>
 ) {
-	const getStartOfDate = (type: 'day' | 'week' | 'month' | 'year') => {
+	const getTargetQuarter = () => selectedQuarter?.value || Math.floor(new Date().getMonth() / 3) + 1
+	const getTargetYear = () => selectedYear?.value || new Date().getFullYear()
+
+	const getStartOfDate = (type: SummaryTimeframe) => {
 		const now = new Date()
 		now.setHours(0, 0, 0, 0)
+		const year = getTargetYear()
 
 		if (type === 'day') return now
 		if (type === 'week') {
@@ -16,31 +25,51 @@ export function useSalesAnalytics(
 			return now
 		}
 		if (type === 'month') {
-			now.setDate(1)
-			return now
+			return new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
+		}
+		if (type === 'quarter') {
+			const q = getTargetQuarter()
+			return getQuarterDateBounds(q, year).start
 		}
 		if (type === 'year') {
-			now.setMonth(0, 1)
-			return now
+			return new Date(year, 0, 1, 0, 0, 0, 0)
+		}
+		if (type === 'all') {
+			return new Date(2000, 0, 1, 0, 0, 0, 0)
 		}
 		return now
 	}
 
-	const getEndOfDate = (type: 'day' | 'week' | 'month' | 'year', start: Date) => {
+	const getEndOfDate = (type: SummaryTimeframe, start: Date) => {
 		const end = new Date(start)
 		if (type === 'day') end.setDate(end.getDate() + 1)
-		if (type === 'week') end.setDate(end.getDate() + 7)
-		if (type === 'month') end.setMonth(end.getMonth() + 1)
-		if (type === 'year') end.setFullYear(end.getFullYear() + 1)
+		else if (type === 'week') end.setDate(end.getDate() + 7)
+		else if (type === 'month') end.setMonth(end.getMonth() + 1)
+		else if (type === 'quarter') {
+			const q = getTargetQuarter()
+			const year = getTargetYear()
+			return getQuarterDateBounds(q, year).end
+		}
+		else if (type === 'year') end.setFullYear(end.getFullYear() + 1)
+		else if (type === 'all') return new Date(Date.now() + 86400000)
 		return end
 	}
 
-	const getPreviousPeriodBounds = (type: 'day' | 'week' | 'month' | 'year', currentStart: Date, elapsedMs: number) => {
+	const getPreviousPeriodBounds = (type: SummaryTimeframe, currentStart: Date, elapsedMs: number) => {
 		const prevStart = new Date(currentStart)
-		if (type === 'day') prevStart.setDate(prevStart.getDate() - 1)
-		if (type === 'week') prevStart.setDate(prevStart.getDate() - 7)
-		if (type === 'month') prevStart.setMonth(prevStart.getMonth() - 1)
-		if (type === 'year') prevStart.setFullYear(prevStart.getFullYear() - 1)
+		if (type === 'day') {
+			prevStart.setDate(prevStart.getDate() - 1)
+		} else if (type === 'week') {
+			prevStart.setDate(prevStart.getDate() - 7)
+		} else if (type === 'month') {
+			prevStart.setMonth(prevStart.getMonth() - 1)
+		} else if (type === 'quarter') {
+			prevStart.setMonth(prevStart.getMonth() - 3)
+		} else if (type === 'year') {
+			prevStart.setFullYear(prevStart.getFullYear() - 1)
+		} else if (type === 'all') {
+			return { start: new Date(0), end: new Date(0) }
+		}
 		const prevEnd = new Date(prevStart.getTime() + elapsedMs)
 		return { start: prevStart, end: prevEnd }
 	}
@@ -50,12 +79,18 @@ export function useSalesAnalytics(
 		return curr > 0 ? 100 : 0
 	}
 
-	const timeframeLabels: Record<'day' | 'week' | 'month' | 'year', string> = {
-		day: 'HOY',
-		week: 'ESTA SEMANA',
-		month: 'ESTE MES',
-		year: 'ESTE AÑO',
-	}
+	const timeframeLabels = computed<Record<SummaryTimeframe, string>>(() => {
+		const q = getTargetQuarter()
+		const y = getTargetYear()
+		return {
+			day: 'HOY',
+			week: 'ESTA SEMANA',
+			month: 'ESTE MES',
+			quarter: `${q}T ${y}`,
+			year: `AÑO ${y}`,
+			all: 'HISTÓRICO',
+		}
+	})
 
 	const summaryStats = computed(() => {
 		const empty = { total: 0, count: 0, average: 0, totalChange: 0, countChange: 0, averageChange: 0 }
@@ -63,11 +98,12 @@ export function useSalesAnalytics(
 
 		const now = new Date()
 		const startDate = getStartOfDate(summaryTimeframe.value)
-		const elapsed = now.getTime() - startDate.getTime()
+		const endDate = getEndOfDate(summaryTimeframe.value, startDate)
+		const elapsed = Math.max(1, Math.min(now.getTime(), endDate.getTime()) - startDate.getTime())
 
 		const current = sales.value.filter((s: Sale) => {
 			const d = new Date(s.created_at)
-			return d >= startDate && d <= now
+			return d >= startDate && d <= endDate
 		})
 
 		const { start: prevStart, end: prevEnd } = getPreviousPeriodBounds(summaryTimeframe.value, startDate, elapsed)
@@ -101,6 +137,8 @@ export function useSalesAnalytics(
 			const now = new Date()
 			return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
 		}
+		if (summaryTimeframe.value === 'quarter') return 12 // 12 weeks in a quarter
+		if (summaryTimeframe.value === 'year') return 12 // 12 months
 		return 12
 	})
 
@@ -112,7 +150,7 @@ export function useSalesAnalytics(
 		if (sales.value) {
 			const start = getStartOfDate(summaryTimeframe.value)
 			const end = getEndOfDate(summaryTimeframe.value, start)
-			const bucketMs = (end.getTime() - start.getTime()) / buckets
+			const bucketMs = Math.max(1, (end.getTime() - start.getTime()) / buckets)
 
 			sales.value.forEach((s: Sale) => {
 				const t = new Date(s.created_at).getTime()

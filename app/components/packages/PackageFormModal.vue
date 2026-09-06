@@ -171,13 +171,13 @@ defineExpose({ openModal, closeModal })
 </script>
 
 <template>
-	<div v-if="isOpen" class="modal modal-open z-[1000] backdrop-blur-sm bg-black/40">
+	<div v-if="isOpen" class="modal modal-open z-1000 backdrop-blur-sm bg-black/40">
 		<div class="modal-box max-w-2xl bg-bg-card border border-border-default rounded-3xl p-6 shadow-2xl relative">
 			<!-- Header -->
 			<div class="flex items-center justify-between border-b border-border-default pb-4">
 				<div class="flex items-center gap-3">
-					<div class="h-10 w-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black">
-						<Package class="h-5 w-5" />
+					<div class="size-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black">
+						<Package class="size-5" />
 					</div>
 					<div>
 						<h3 class="text-lg font-black text-text-primary uppercase tracking-wide">
@@ -187,7 +187,7 @@ defineExpose({ openModal, closeModal })
 					</div>
 				</div>
 				<button class="btn btn-sm btn-ghost btn-circle text-text-muted hover:text-text-primary" @click="closeModal">
-					<X class="h-4 w-4" />
+					<X class="size-4" />
 				</button>
 			</div>
 
@@ -228,7 +228,7 @@ defineExpose({ openModal, closeModal })
 							class="flex items-center justify-center gap-2 p-3 rounded-2xl border transition-all text-xs font-black uppercase"
 							:class="form.type === 'INDIVIDUAL' ? 'border-primary bg-primary/10 text-primary shadow-xs' : 'border-border-default text-text-muted bg-bg-muted/50 hover:bg-bg-muted'"
 							@click="form.type = 'INDIVIDUAL'">
-							<Scissors class="h-4 w-4" />
+							<Scissors class="size-4" />
 							Bono Individual (1 Tratamiento)
 						</button>
 						<button
@@ -236,7 +236,7 @@ defineExpose({ openModal, closeModal })
 							class="flex items-center justify-center gap-2 p-3 rounded-2xl border transition-all text-xs font-black uppercase"
 							:class="form.type === 'MIXTO' ? 'border-amber-500 bg-amber-500/10 text-amber-600 shadow-xs' : 'border-border-default text-text-muted bg-bg-muted/50 hover:bg-bg-muted'"
 							@click="form.type = 'MIXTO'">
-							<Sparkles class="h-4 w-4" />
+							<Sparkles class="size-4" />
 							Bono Mixto (Tratamientos + Productos)
 						</button>
 					</div>
@@ -299,8 +299,8 @@ defineExpose({ openModal, closeModal })
 					<div v-for="(item, idx) in form.items" :key="idx" class="flex items-center gap-2 bg-bg-card p-2.5 rounded-xl border border-border-default">
 						<!-- Icon -->
 						<div class="shrink-0">
-							<Scissors v-if="item.item_type === 'SERVICE'" class="h-4 w-4 text-primary" />
-							<Box v-else class="h-4 w-4 text-amber-500" />
+							<Scissors v-if="item.item_type === 'SERVICE'" class="size-4 text-primary" />
+							<Box v-else class="size-4 text-amber-500" />
 						</div>
 
 						<!-- Selector -->
@@ -336,7 +336,7 @@ defineExpose({ openModal, closeModal })
 
 						<!-- Delete Button -->
 						<button type="button" class="btn btn-sm btn-ghost btn-circle text-rose-500" @click="removeItemRow(idx)">
-							<Trash2 class="h-3.5 w-3.5" />
+							<Trash2 class="size-3.5" />
 						</button>
 					</div>
 				</div>

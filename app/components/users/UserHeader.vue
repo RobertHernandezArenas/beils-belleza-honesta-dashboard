@@ -18,13 +18,13 @@
 						: 'border-border-default bg-bg-card text-text-secondary hover:bg-bg-muted hover:shadow-sm'
 				"
 				@click="$emit('toggle-filters')">
-				<Filter class="mr-2 h-5 w-5" />
+				<Filter class="mr-2 size-5" />
 				{{ $t('users.header.filters') }}
 				<!-- Punto indicador -->
-				<span v-if="filtersActive" class="absolute -top-1 -right-1 flex h-3 w-3">
+				<span v-if="filtersActive" class="absolute -top-1 -right-1 flex size-3">
 					<span
-						class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"/>
-					<span class="relative inline-flex h-3 w-3 rounded-full bg-green-600"/>
+						class="absolute inline-flex size-full animate-ping rounded-full bg-green-500 opacity-75"/>
+					<span class="relative inline-flex size-3 rounded-full bg-green-600"/>
 				</span>
 			</button>
 			<button
@@ -49,7 +49,7 @@
 			:placeholder="$t('users.header.search')"
 			class="input bg-bg-card text-text-primary placeholder:text-text-light focus:bg-bg-card focus:ring-border-subtle/40 h-12 w-full rounded-2xl border-transparent pr-5 pl-11 text-sm font-medium shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-colors duration-300 placeholder:font-normal hover:shadow-md focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:ring-4 focus-visible:outline-none sm:h-14 sm:pl-12 sm:text-base lg:text-lg" >
 		<Search
-			class="text-text-light group-focus-within:text-text-secondary absolute left-4 h-5 w-5 transition-colors duration-300 sm:h-6 sm:w-6"
+			class="text-text-light group-focus-within:text-text-secondary absolute left-4 size-5 transition-colors duration-300 sm:h-6 sm:w-6"
 			aria-hidden="true" />
 	</div>
 </template>

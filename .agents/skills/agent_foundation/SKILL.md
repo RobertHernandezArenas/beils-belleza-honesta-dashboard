@@ -1,6 +1,11 @@
 ---
 name: agent_foundation
-description: Base unificada para coordinar agentes de desarrollo: Maker, Verifier, Memoria, Evaluaciones y Loop. Usar como marco conceptual y operativo para estructurar flujos de trabajo autónomos o asistidos.
+description: "Trigger: agent foundation, skillforge, arquitectura de agentes, ciclo de vida de desarrollo con IA. Base unificada para coordinar agentes de desarrollo: Maker, Verifier, Memoria, Evaluaciones y Loop."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: workflow
 ---
 
 # 🧠 SKILL: Agent Foundation

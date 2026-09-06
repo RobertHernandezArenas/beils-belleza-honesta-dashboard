@@ -8,7 +8,7 @@ import type { JwtPayload } from './jwt'
  * Throws a 403 Forbidden error if not.
  * Assumes the user info is attached to event.context.user by the auth middleware.
  */
-export const requireAdmin = (event: TH3Event) => {
+export const requireAdmin = (event: TH3Event): JwtPayload => {
 	const user = event.context.user as JwtPayload | undefined
 
 	if (!user || user.role !== 'ADMIN') {
@@ -17,4 +17,6 @@ export const requireAdmin = (event: TH3Event) => {
 			statusMessage: 'Acceso restringido: Se require rol de Administrador',
 		})
 	}
+
+	return user
 }

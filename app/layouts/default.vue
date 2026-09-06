@@ -14,8 +14,8 @@
 								aria-label="open sidebar"
 								class="btn btn-square btn-ghost text-text-secondary hover:bg-bg-muted hover:text-text-secondary">
 								<Transition name="swap" mode="out-in">
-									<PanelLeftClose v-if="isDrawerOpen" class="h-6 w-6" />
-									<PanelLeftOpen v-else class="h-6 w-6" />
+									<PanelLeftClose v-if="isDrawerOpen" class="size-6" />
+									<PanelLeftOpen v-else class="size-6" />
 								</Transition>
 							</label>
 						</div>
@@ -87,7 +87,7 @@
 										@click="closeDrawerMobile">
 										<component
 											:is="item.icon"
-											class="h-4 w-4 transition-transform group-hover/link:scale-110"
+											class="size-4 transition-transform group-hover/link:scale-110"
 											:class="currentActivePath === item.to ? 'text-bg-card' : ''" />
 										<span
 											class="text-[13px] tracking-wider uppercase"
@@ -99,7 +99,7 @@
 									<button
 										v-else
 										class="group/btn text-text-muted hover:bg-bg-muted hover:text-text-secondary flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-2 text-left transition-colors duration-300">
-										<component :is="item.icon" class="h-4 w-4 transition-transform group-hover/btn:scale-110" />
+										<component :is="item.icon" class="size-4 transition-transform group-hover/btn:scale-110" />
 										<span class="text-[13px] font-bold tracking-wider uppercase">
 											{{ t(item.label) }}
 										</span>
@@ -143,7 +143,7 @@
 						<button
 							class="group hover:text-white flex w-full items-center justify-center gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-2 font-bold text-error transition-[background-color,border-color,color,transform,box-shadow] hover:border-error hover:bg-error hover:shadow-md"
 							@click="handleLogout">
-							<LogOut class="h-4 w-4 group-hover:-translate-x-0.5" />
+							<LogOut class="size-4 group-hover:-translate-x-0.5" />
 							<span class="text-[11px] tracking-wider uppercase">
 								{{ $t('nav.logout') || 'Cerrar Sesión' }}
 							</span>

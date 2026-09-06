@@ -1,294 +1,493 @@
 import type { Ref } from 'vue'
-import type { TicketSeriesRow, SalesMonthGroup } from '~/composables/useSales'
 import type { Sale } from '~~/shared/types/domain'
+import {
+	buildSalesCsvContent,
+	calculateFiscalSummary,
+	formatDateEs,
+	formatNumberEs,
+	getTicketDisplayLabel,
+	type ExportDetailMode,
+} from './salesExportCalculations'
 
-export function exportVentasCsv({
-	filteredSales,
-	reportData,
-	dailySeries,
-	weeklySeries,
-	monthlySeries,
-	getTicketDisplay,
-	formatCustomDate,
-	getPaymentMethodBadge,
-	displayToast
-}: {
-	filteredSales: Sale[]
-	reportData: { months: SalesMonthGroup[]; grandTotal: number }
-	dailySeries: TicketSeriesRow[]
-	weeklySeries: TicketSeriesRow[]
-	monthlySeries: TicketSeriesRow[]
-	getTicketDisplay: (sale: Sale) => string
-	formatCustomDate: (dateString: string) => string
-	getPaymentMethodBadge: (method: string | null | undefined) => { label: string; class: string }
-	displayToast: (msg: string, type: 'success' | 'error') => void
-}) {
-	if (!filteredSales.length) return
+export interface ExportSalesOptions {
+	sales: Sale[]
+	mode: ExportDetailMode
+	periodTitle: string
+	isGeneratingPdf?: Ref<boolean>
+	displayToast?: (msg: string, type: 'success' | 'error') => void
+}
 
-	const formatMethodBreakdown = (methodCounts: Map<string, number>) =>
-		Array.from(methodCounts.entries())
-			.map(([method, count]) => `${count} ${method}`)
-			.join(', ')
+function triggerDownload(blob: Blob, filename: string) {
+	const url = URL.createObjectURL(blob)
+	const link = document.createElement('a')
+	link.href = url
+	link.download = filename
+	document.body.appendChild(link)
+	link.click()
+	document.body.removeChild(link)
+	URL.revokeObjectURL(url)
+}
 
-	const escapeCsvValue = (value: unknown) => {
-		const str = String(value ?? '')
-		if (/[";\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`
-		return str
-	}
-
-	const triggerDownload = (blob: Blob, filename: string) => {
-		const url = URL.createObjectURL(blob)
-		const link = document.createElement('a')
-		link.href = url
-		link.download = filename
-		document.body.appendChild(link)
-		link.click()
-		document.body.removeChild(link)
-		URL.revokeObjectURL(url)
+export function downloadSalesExportCsv({
+	sales,
+	mode,
+	periodTitle,
+	displayToast,
+}: ExportSalesOptions): void {
+	if (!sales.length) {
+		displayToast?.('No hay ventas para exportar en este periodo.', 'error')
+		return
 	}
 
 	try {
-		const header = ['ID Ticket', 'Fecha y hora', 'Método de pago', 'Total (€)']
-		const rows = filteredSales.map((s: Sale) => [
-			getTicketDisplay(s),
-			formatCustomDate(s.created_at),
-			getPaymentMethodBadge(s.payment_method).label,
-			s.total.toFixed(2).replace('.', ','),
-		])
-
-		const lines = [header, ...rows]
-		lines.push([])
-		lines.push(['TOTAL GENERAL', '', '', reportData.grandTotal.toFixed(2).replace('.', ',')])
-		lines.push([])
-		lines.push(['RESUMEN POR MES Y MÉTODO DE PAGO'])
-
-		reportData.months.forEach(month => {
-			lines.push([])
-			lines.push([month.label.toUpperCase()])
-			month.methods.forEach((sum: number, method: string) => {
-				lines.push([method, sum.toFixed(2).replace('.', ',')])
-			})
-			lines.push([`Total ${month.label}`, month.total.toFixed(2).replace('.', ',')])
-		})
-
-		const seriesHeader = ['Periodo', 'Rango de tickets', 'Nº tickets', 'Desglose métodos de pago', 'Total (€)']
-		const pushSeries = (title: string, rows: TicketSeriesRow[]) => {
-			lines.push([])
-			lines.push([title])
-			lines.push(seriesHeader)
-			rows.forEach(row => {
-				lines.push([row.label, `${row.firstTicket} - ${row.lastTicket}`, String(row.count), formatMethodBreakdown(row.methodCounts), row.total.toFixed(2).replace('.', ',')])
-			})
-		}
-
-		pushSeries('SERIE DIARIA DE TICKETS', dailySeries)
-		pushSeries('SERIE SEMANAL DE TICKETS', weeklySeries)
-		pushSeries('SERIE MENSUAL DE TICKETS', monthlySeries)
-
-		const csvContent = lines.map(row => row.map(escapeCsvValue).join(';')).join('\n')
-		const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-		triggerDownload(blob, `ventas_${new Date().toISOString().split('T')[0]}.csv`)
+		const csvContent = buildSalesCsvContent({ sales, mode, periodTitle })
+		const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+		const cleanTitle = periodTitle.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase()
+		triggerDownload(blob, `ventas_${cleanTitle}_${mode}.csv`)
+		displayToast?.('Archivo CSV descargado correctamente.', 'success')
 	} catch (err) {
-		console.error('Error generando el CSV de ventas:', err)
-		displayToast('No se pudo generar el CSV. Inténtalo de nuevo.', 'error')
+		console.error('Error generando CSV:', err)
+		displayToast?.('No se pudo generar el archivo CSV. Inténtalo de nuevo.', 'error')
 	}
 }
 
-export async function exportVentasPdf({
-	filteredSales,
-	reportData,
-	dailySeries,
-	weeklySeries,
-	monthlySeries,
+export async function downloadSalesExportPdf({
+	sales,
+	mode,
+	periodTitle,
 	isGeneratingPdf,
-	getTicketDisplay,
-	formatCustomDate,
-	getPaymentMethodBadge,
-	formatCurrency,
-	displayToast
-}: {
-	filteredSales: Sale[]
-	reportData: { months: SalesMonthGroup[]; grandTotal: number }
-	dailySeries: TicketSeriesRow[]
-	weeklySeries: TicketSeriesRow[]
-	monthlySeries: TicketSeriesRow[]
-	isGeneratingPdf: Ref<boolean>
-	getTicketDisplay: (sale: Sale) => string
-	formatCustomDate: (dateString: string) => string
-	getPaymentMethodBadge: (method: string | null | undefined) => { label: string; class: string }
-	formatCurrency: (val: number) => string
-	displayToast: (msg: string, type: 'success' | 'error') => void
-}) {
-	if (!filteredSales.length || isGeneratingPdf.value) return
-	isGeneratingPdf.value = true
+	displayToast,
+}: ExportSalesOptions): Promise<void> {
+	if (!sales.length) {
+		displayToast?.('No hay ventas para exportar en este periodo.', 'error')
+		return
+	}
 
-	const formatMethodBreakdown = (methodCounts: Map<string, number>) =>
-		Array.from(methodCounts.entries())
-			.map(([method, count]) => `${count} ${method}`)
-			.join(', ')
+	if (isGeneratingPdf && isGeneratingPdf.value) return
+	if (isGeneratingPdf) isGeneratingPdf.value = true
 
 	try {
 		const { jsPDF } = await import('jspdf')
-		const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+		const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
+
 		const pageWidth = doc.internal.pageSize.getWidth()
 		const pageHeight = doc.internal.pageSize.getHeight()
 		const marginX = 14
 		const contentWidth = pageWidth - marginX * 2
-		let y = 18
+		const bottomMargin = 16
+		let y = 16
 
-		const ensureSpace = (needed: number) => {
-			if (y + needed > pageHeight - 14) {
-				doc.addPage()
-				y = 18
-			}
-		}
+		const summary = calculateFiscalSummary(sales)
 
-		doc.setFont('helvetica', 'bold')
-		doc.setFontSize(16)
-		doc.text('Historial de tickets y facturación', marginX, y)
-		y += 6
-		doc.setFont('helvetica', 'normal')
-		doc.setFontSize(9)
-		doc.setTextColor(120)
-		doc.text(`Generado el ${new Date().toLocaleString('es-ES')}`, marginX, y)
-		doc.setTextColor(20)
-		y += 8
-
-		const columns = [
-			{ label: 'ID Ticket', width: 44 },
-			{ label: 'Fecha y hora', width: 46 },
-			{ label: 'Método pago', width: 30 },
-			{ label: 'Total', width: 26 },
-		]
-
-		const drawTableHeader = () => {
-			doc.setFillColor(242, 242, 242)
-			doc.rect(marginX, y - 4, contentWidth, 6, 'F')
+		// Page header helper
+		const drawDocumentHeader = () => {
+			// Brand & Title
 			doc.setFont('helvetica', 'bold')
-			doc.setFontSize(8)
-			let x = marginX
-			columns.forEach(col => {
-				doc.text(col.label, x + 1, y)
-				x += col.width
-			})
-			y += 5
+			doc.setFontSize(15)
+			doc.setTextColor(146, 44, 136) // Brand accent #922c88
+			doc.text('BEILS - BELLEZA HONESTA', marginX, y)
+			
+			doc.setFontSize(9)
 			doc.setFont('helvetica', 'normal')
-			doc.setFontSize(7.5)
-		}
+			doc.setTextColor(100, 116, 139)
+			doc.text(`Generado: ${new Date().toLocaleDateString('es-ES')} ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`, pageWidth - marginX, y, { align: 'right' })
+			y += 6
 
-		ensureSpace(10)
-		drawTableHeader()
-
-		const totalColWidth = columns[3]!.width
-
-		filteredSales.forEach((s: Sale) => {
-			ensureSpace(6)
-			const cells = [getTicketDisplay(s), formatCustomDate(s.created_at), getPaymentMethodBadge(s.payment_method).label]
-
-			let x = marginX
-			cells.forEach((text, i) => {
-				const width = columns[i]!.width
-				const fitted = doc.splitTextToSize(text, width - 2)[0] || ''
-				doc.text(fitted, x + 1, y)
-				x += width
-			})
-			doc.text(formatCurrency(s.total), x + totalColWidth - 1, y, { align: 'right' })
-
-			y += 5
-			doc.setDrawColor(230)
-			doc.line(marginX, y - 3.5, marginX + contentWidth, y - 3.5)
-		})
-
-		ensureSpace(8)
-		y += 2
-		doc.setFont('helvetica', 'bold')
-		doc.setFontSize(9)
-		doc.text('TOTAL GENERAL', marginX + contentWidth - totalColWidth - 1, y, { align: 'right' })
-		doc.text(formatCurrency(reportData.grandTotal), marginX + contentWidth - 1, y, { align: 'right' })
-		y += 10
-
-		ensureSpace(8)
-		doc.setFontSize(12)
-		doc.text('Resumen por mes y método de pago', marginX, y)
-		y += 7
-
-		reportData.months.forEach(month => {
-			ensureSpace(8)
-			doc.setFont('helvetica', 'bold')
-			doc.setFontSize(9.5)
-			doc.text(month.label.charAt(0).toUpperCase() + month.label.slice(1), marginX, y)
-			y += 5.5
-
-			doc.setFont('helvetica', 'normal')
-			doc.setFontSize(8.5)
-			month.methods.forEach((sum: number, method: string) => {
-				ensureSpace(5.5)
-				doc.text(method, marginX + 4, y)
-				doc.text(formatCurrency(sum), marginX + contentWidth - 1, y, { align: 'right' })
-				y += 5
-			})
-
-			ensureSpace(6)
-			doc.setFont('helvetica', 'bold')
-			doc.text(`Total ${month.label}`, marginX + 4, y)
-			doc.text(formatCurrency(month.total), marginX + contentWidth - 1, y, { align: 'right' })
-			y += 8
-		})
-
-		const seriesColumns = [
-			{ label: 'Periodo', width: 34 },
-			{ label: 'Rango de tickets', width: 38 },
-			{ label: 'Nº tickets (desglose)', width: 76 },
-			{ label: 'Total', width: 24 },
-		]
-		const seriesTotalWidth = seriesColumns[3]!.width
-
-		const drawSeriesSection = (title: string, rows: TicketSeriesRow[]) => {
-			ensureSpace(15)
 			doc.setFont('helvetica', 'bold')
 			doc.setFontSize(12)
-			doc.text(title, marginX, y)
-			y += 7
-
-			doc.setFillColor(242, 242, 242)
-			doc.rect(marginX, y - 4, contentWidth, 6, 'F')
-			doc.setFontSize(8)
-			let hx = marginX
-			seriesColumns.forEach(col => {
-				doc.text(col.label, hx + 1, y)
-				hx += col.width
-			})
+			doc.setTextColor(30, 41, 59)
+			doc.text('INFORME DE VENTAS Y FACTURACIÓN', marginX, y)
 			y += 5
-			doc.setFont('helvetica', 'normal')
-			doc.setFontSize(7.5)
 
-			rows.forEach(row => {
-				ensureSpace(6)
-				const cells = [row.label, `${row.firstTicket} - ${row.lastTicket}`, `${row.count} (${formatMethodBreakdown(row.methodCounts)})`]
-				let x = marginX
-				cells.forEach((text, i) => {
-					const width = seriesColumns[i]!.width
-					const fitted = doc.splitTextToSize(text, width - 2)[0] || ''
-					doc.text(fitted, x + 1, y)
-					x += width
-				})
-				doc.text(formatCurrency(row.total), x + seriesTotalWidth - 1, y, { align: 'right' })
-				y += 5
-				doc.setDrawColor(230)
-				doc.line(marginX, y - 3.5, marginX + contentWidth, y - 3.5)
-			})
+			// Subtitle pills info
+			doc.setFont('helvetica', 'normal')
+			doc.setFontSize(8.5)
+			doc.setTextColor(71, 85, 105)
+			const modeLabel = mode === 'breakdown' ? 'Desglose detallado por ítem' : mode === 'individual' ? 'Listado de tickets individuales' : 'Sumatorio fiscal para autónomos'
+			doc.text(`Periodo: ${periodTitle}   |   Modalidad: ${modeLabel}`, marginX, y)
+			y += 6
+
+			// Subtle divider line
+			doc.setDrawColor(226, 232, 240)
+			doc.setLineWidth(0.3)
+			doc.line(marginX, y, marginX + contentWidth, y)
 			y += 6
 		}
 
-		drawSeriesSection('Serie diaria de tickets', dailySeries)
-		drawSeriesSection('Serie semanal de tickets', weeklySeries)
-		drawSeriesSection('Serie mensual de tickets', monthlySeries)
+		// Ensure space on current page or add new page
+		const ensureSpace = (needed: number, onNewPage?: () => void) => {
+			if (y + needed > pageHeight - bottomMargin) {
+				doc.addPage()
+				y = 16
+				onNewPage?.()
+			}
+		}
 
-		doc.save(`ventas_${new Date().toISOString().split('T')[0]}.pdf`)
+		// Draw top summary KPIs box
+		const drawKpiSummaryBoxes = () => {
+			ensureSpace(22)
+			const boxWidth = (contentWidth - 9) / 4
+			const boxHeight = 16
+
+			const boxes = [
+				{ label: 'FACTURACIÓN TOTAL', value: `${formatNumberEs(summary.grandTotal)} EUR` },
+				{ label: 'BASE IMPONIBLE', value: `${formatNumberEs(summary.totalBaseAmount)} EUR` },
+				{ label: 'TOTAL CUOTA IVA', value: `${formatNumberEs(summary.totalTaxAmount)} EUR` },
+				{ label: 'Nº DE TICKETS', value: `${summary.totalSalesCount}` },
+			]
+
+			boxes.forEach((box, i) => {
+				const bx = marginX + i * (boxWidth + 3)
+				doc.setFillColor(248, 250, 252)
+				doc.setDrawColor(226, 232, 240)
+				doc.roundedRect(bx, y, boxWidth, boxHeight, 2, 2, 'FD')
+
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(6.5)
+				doc.setTextColor(100, 116, 139)
+				doc.text(box.label, bx + 3, y + 5)
+
+				doc.setFontSize(10.5)
+				doc.setTextColor(15, 23, 42)
+				doc.text(box.value, bx + 3, y + 12)
+			})
+
+			y += boxHeight + 8
+		}
+
+		drawDocumentHeader()
+		drawKpiSummaryBoxes()
+
+		// -------------------------------------------------------------
+		// MODE 1: BREAKDOWN (Desglose total con líneas de ítem)
+		// -------------------------------------------------------------
+		if (mode === 'breakdown') {
+			const ticketCols = [
+				{ label: 'ID Ticket / Factura', width: 42 },
+				{ label: 'Fecha y hora', width: 38 },
+				{ label: 'Cliente', width: 44 },
+				{ label: 'Método', width: 28 },
+				{ label: 'Total Ticket (EUR)', width: 30, align: 'right' as const },
+			]
+
+			const drawTicketTableHeader = () => {
+				doc.setFillColor(241, 245, 249)
+				doc.rect(marginX, y, contentWidth, 6, 'F')
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(7.5)
+				doc.setTextColor(51, 65, 85)
+
+				let cx = marginX
+				ticketCols.forEach(col => {
+					if (col.align === 'right') {
+						doc.text(col.label, cx + col.width - 2, y + 4.2, { align: 'right' })
+					} else {
+						doc.text(col.label, cx + 2, y + 4.2)
+					}
+					cx += col.width
+				})
+				y += 6.5
+			}
+
+			drawTicketTableHeader()
+
+			for (const sale of sales) {
+				const itemsCount = sale.items?.length || 1
+				const neededSpace = 6 + itemsCount * 5 + 4
+				ensureSpace(neededSpace, () => {
+					drawTicketTableHeader()
+				})
+
+				// Ticket primary row
+				doc.setFillColor(248, 250, 252)
+				doc.rect(marginX, y, contentWidth, 5.5, 'F')
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(7.5)
+				doc.setTextColor(30, 41, 59)
+
+				const clientName = sale.user ? `${sale.user.name || ''} ${sale.user.surname || ''}`.trim() : 'Cliente general'
+				const ticketLabel = getTicketDisplayLabel(sale)
+
+				doc.text(ticketLabel, marginX + 2, y + 3.8)
+				doc.setFont('helvetica', 'normal')
+				doc.text(formatDateEs(sale.created_at), marginX + 44, y + 3.8)
+				doc.text(doc.splitTextToSize(clientName, 42)[0] || '', marginX + 82, y + 3.8)
+				doc.text((sale.payment_method || 'N/A').toUpperCase(), marginX + 126, y + 3.8)
+
+				doc.setFont('helvetica', 'bold')
+				doc.text(`${formatNumberEs(sale.total)} EUR`, marginX + contentWidth - 2, y + 3.8, { align: 'right' })
+				y += 5.5
+
+				// Items sub-table
+				if (sale.items && sale.items.length > 0) {
+					for (const item of sale.items) {
+						doc.setFont('helvetica', 'normal')
+						doc.setFontSize(7)
+						doc.setTextColor(71, 85, 105)
+
+						const itemName = `${item.quantity}x ${item.name || 'Servicio/Producto'}`
+						const itemUnitPrice = `${formatNumberEs(item.unit_price || 0)} EUR/ud`
+						const itemTax = `IVA ${item.tax_rate ?? 21}%`
+						const itemSubtotal = `${formatNumberEs(item.subtotal || 0)} EUR`
+
+						// Left indent dash
+						doc.text('-', marginX + 5, y + 3.5)
+						doc.text(doc.splitTextToSize(itemName, 75)[0] || '', marginX + 8, y + 3.5)
+						doc.text(itemUnitPrice, marginX + 85, y + 3.5)
+						doc.text(itemTax, marginX + 115, y + 3.5)
+						doc.text(itemSubtotal, marginX + contentWidth - 6, y + 3.5, { align: 'right' })
+
+						y += 4.5
+					}
+				} else {
+					doc.setFont('helvetica', 'normal')
+					doc.setFontSize(7)
+					doc.setTextColor(100, 116, 139)
+					doc.text('- Venta directa sin desglose de líneas', marginX + 8, y + 3.5)
+					y += 4.5
+				}
+
+				doc.setDrawColor(226, 232, 240)
+				doc.setLineWidth(0.2)
+				doc.line(marginX, y, marginX + contentWidth, y)
+				y += 2
+			}
+		}
+
+		// -------------------------------------------------------------
+		// MODE 2: INDIVIDUAL (Solo venta individual en filas limpias)
+		// -------------------------------------------------------------
+		else if (mode === 'individual') {
+			const cols = [
+				{ label: 'ID Ticket / Factura', width: 44 },
+				{ label: 'Fecha y hora', width: 40 },
+				{ label: 'Cliente', width: 42 },
+				{ label: 'Items', width: 14, align: 'center' as const },
+				{ label: 'Método de pago', width: 22 },
+				{ label: 'Total (EUR)', width: 20, align: 'right' as const },
+			]
+
+			const drawIndividualHeader = () => {
+				doc.setFillColor(241, 245, 249)
+				doc.rect(marginX, y, contentWidth, 6, 'F')
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(7.5)
+				doc.setTextColor(51, 65, 85)
+
+				let cx = marginX
+				cols.forEach(col => {
+					if (col.align === 'right') {
+						doc.text(col.label, cx + col.width - 2, y + 4.2, { align: 'right' })
+					} else if (col.align === 'center') {
+						doc.text(col.label, cx + col.width / 2, y + 4.2, { align: 'center' })
+					} else {
+						doc.text(col.label, cx + 2, y + 4.2)
+					}
+					cx += col.width
+				})
+				y += 6.5
+			}
+
+			drawIndividualHeader()
+
+			sales.forEach((sale, idx) => {
+				ensureSpace(6, () => {
+					drawIndividualHeader()
+				})
+
+				if (idx % 2 === 1) {
+					doc.setFillColor(248, 250, 252)
+					doc.rect(marginX, y, contentWidth, 5.2, 'F')
+				}
+
+				doc.setFont('helvetica', 'normal')
+				doc.setFontSize(7.5)
+				doc.setTextColor(30, 41, 59)
+
+				const clientName = sale.user ? `${sale.user.name || ''} ${sale.user.surname || ''}`.trim() : 'Cliente general'
+				const itemsCount = sale.items?.reduce((acc, it) => acc + (it.quantity || 1), 0) || 1
+
+				doc.setFont('helvetica', 'bold')
+				doc.text(getTicketDisplayLabel(sale), marginX + 2, y + 3.8)
+				doc.setFont('helvetica', 'normal')
+				doc.text(formatDateEs(sale.created_at), marginX + 46, y + 3.8)
+				doc.text(doc.splitTextToSize(clientName, 40)[0] || '', marginX + 86, y + 3.8)
+				doc.text(String(itemsCount), marginX + 135, y + 3.8, { align: 'center' })
+				doc.text((sale.payment_method || 'N/A').toUpperCase(), marginX + 144, y + 3.8)
+
+				doc.setFont('helvetica', 'bold')
+				doc.text(formatNumberEs(sale.total), marginX + contentWidth - 2, y + 3.8, { align: 'right' })
+
+				y += 5.5
+				doc.setDrawColor(241, 245, 249)
+				doc.setLineWidth(0.2)
+				doc.line(marginX, y, marginX + contentWidth, y)
+			})
+		}
+
+		// -------------------------------------------------------------
+		// MODE 3: SUMMARY (Solo sumatorio / Declaración de Autónomos)
+		// -------------------------------------------------------------
+		else if (mode === 'summary') {
+			// Tax breakdown table
+			ensureSpace(40)
+			doc.setFont('helvetica', 'bold')
+			doc.setFontSize(11)
+			doc.setTextColor(30, 41, 59)
+			doc.text('Desglose de Bases Imponibles y Cuotas de IVA', marginX, y)
+			y += 5
+
+			const taxCols = [
+				{ label: 'Tipo Impositivo', width: 40 },
+				{ label: 'Base Imponible (EUR)', width: 45, align: 'right' as const },
+				{ label: 'Cuota IVA (EUR)', width: 50, align: 'right' as const },
+				{ label: 'Total Facturado (EUR)', width: 47, align: 'right' as const },
+			]
+
+			doc.setFillColor(241, 245, 249)
+			doc.rect(marginX, y, contentWidth, 6, 'F')
+			doc.setFontSize(7.5)
+			doc.setTextColor(51, 65, 85)
+
+			let cx = marginX
+			taxCols.forEach(col => {
+				if (col.align === 'right') {
+					doc.text(col.label, cx + col.width - 2, y + 4.2, { align: 'right' })
+				} else {
+					doc.text(col.label, cx + 2, y + 4.2)
+				}
+				cx += col.width
+			})
+			y += 6.5
+
+			for (const [rate, bucket] of Object.entries(summary.taxesByRate)) {
+				doc.setFont('helvetica', 'normal')
+				doc.setFontSize(8)
+				doc.setTextColor(30, 41, 59)
+
+				doc.text(`Régimen General (${rate}%)`, marginX + 2, y + 4)
+				doc.text(`${formatNumberEs(bucket.baseAmount)} EUR`, marginX + 85 - 2, y + 4, { align: 'right' })
+				doc.text(`${formatNumberEs(bucket.taxAmount)} EUR`, marginX + 135 - 2, y + 4, { align: 'right' })
+				doc.text(`${formatNumberEs(bucket.totalAmount)} EUR`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+
+				y += 6
+				doc.setDrawColor(226, 232, 240)
+				doc.line(marginX, y, marginX + contentWidth, y)
+			}
+
+			// Total row for taxes
+			y += 1
+			doc.setFont('helvetica', 'bold')
+			doc.text('TOTALES FISCALES', marginX + 2, y + 4)
+			doc.text(`${formatNumberEs(summary.totalBaseAmount)} EUR`, marginX + 85 - 2, y + 4, { align: 'right' })
+			doc.text(`${formatNumberEs(summary.totalTaxAmount)} EUR`, marginX + 135 - 2, y + 4, { align: 'right' })
+			doc.text(`${formatNumberEs(summary.grandTotal)} EUR`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+			y += 12
+
+			// Payment methods summary table
+			ensureSpace(45)
+			doc.setFont('helvetica', 'bold')
+			doc.setFontSize(11)
+			doc.setTextColor(30, 41, 59)
+			doc.text('Desglose de Facturación por Método de Cobro', marginX, y)
+			y += 5
+
+			const payCols = [
+				{ label: 'Método de Cobro', width: 60 },
+				{ label: 'Operaciones', width: 35, align: 'center' as const },
+				{ label: 'Importe Total (EUR)', width: 47, align: 'right' as const },
+				{ label: '% sobre Total', width: 40, align: 'right' as const },
+			]
+
+			doc.setFillColor(241, 245, 249)
+			doc.rect(marginX, y, contentWidth, 6, 'F')
+			doc.setFontSize(7.5)
+			doc.setTextColor(51, 65, 85)
+
+			let px = marginX
+			payCols.forEach(col => {
+				if (col.align === 'right') {
+					doc.text(col.label, px + col.width - 2, y + 4.2, { align: 'right' })
+				} else if (col.align === 'center') {
+					doc.text(col.label, px + col.width / 2, y + 4.2, { align: 'center' })
+				} else {
+					doc.text(col.label, px + 2, y + 4.2)
+				}
+				px += col.width
+			})
+			y += 6.5
+
+			for (const [method, info] of Object.entries(summary.methodsSummary)) {
+				doc.setFont('helvetica', 'normal')
+				doc.setFontSize(8)
+				doc.setTextColor(30, 41, 59)
+
+				const pct = summary.grandTotal > 0 ? (info.total / summary.grandTotal) * 100 : 0
+				doc.text(method.toUpperCase(), marginX + 2, y + 4)
+				doc.text(String(info.count), marginX + 77.5, y + 4, { align: 'center' })
+				doc.text(`${formatNumberEs(info.total)} EUR`, marginX + 142 - 2, y + 4, { align: 'right' })
+				doc.text(`${pct.toFixed(1).replace('.', ',')} %`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+
+				y += 6
+				doc.setDrawColor(226, 232, 240)
+				doc.line(marginX, y, marginX + contentWidth, y)
+			}
+		}
+
+		// Add page numbers at the footer of all pages
+		const totalPages = doc.getNumberOfPages()
+		for (let i = 1; i <= totalPages; i++) {
+			doc.setPage(i)
+			doc.setFont('helvetica', 'normal')
+			doc.setFontSize(7.5)
+			doc.setTextColor(148, 163, 184)
+			doc.text(`Beils Belleza Honesta - Documento contable y de gestión interna`, marginX, pageHeight - 8)
+			doc.text(`Página ${i} de ${totalPages}`, pageWidth - marginX, pageHeight - 8, { align: 'right' })
+		}
+
+		const cleanTitle = periodTitle.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase()
+		doc.save(`ventas_${cleanTitle}_${mode}.pdf`)
+		displayToast?.('Documento PDF generado y descargado con éxito.', 'success')
 	} catch (err) {
-		console.error('Error generando el PDF de ventas:', err)
-		displayToast('No se pudo generar el PDF. Inténtalo de nuevo.', 'error')
+		console.error('Error generando PDF de ventas:', err)
+		displayToast?.('No se pudo generar el archivo PDF. Inténtalo de nuevo.', 'error')
 	} finally {
-		isGeneratingPdf.value = false
+		if (isGeneratingPdf) isGeneratingPdf.value = false
 	}
+}
+
+// Backward compatibility wrappers
+export function exportVentasCsv({
+	filteredSales,
+	displayToast,
+}: {
+	filteredSales: Sale[]
+	displayToast: (msg: string, type: 'success' | 'error') => void
+	[key: string]: unknown
+}) {
+	downloadSalesExportCsv({
+		sales: filteredSales,
+		mode: 'breakdown',
+		periodTitle: 'Historico',
+		displayToast,
+	})
+}
+
+export async function exportVentasPdf({
+	filteredSales,
+	isGeneratingPdf,
+	displayToast,
+}: {
+	filteredSales: Sale[]
+	isGeneratingPdf: Ref<boolean>
+	displayToast: (msg: string, type: 'success' | 'error') => void
+	[key: string]: unknown
+}) {
+	await downloadSalesExportPdf({
+		sales: filteredSales,
+		mode: 'breakdown',
+		periodTitle: 'Historico',
+		isGeneratingPdf,
+		displayToast,
+	})
 }

@@ -1,6 +1,11 @@
 ---
 name: platform_gemini
-description: Adaptador y directivas para Google Gemini en desarrollo de software, pruebas multimodales y QA visual. Activar para tareas con interfaces de usuario o análisis de capturas.
+description: "Trigger: gemini, google gemini, qa visual, multimodal testing. Adaptador y directivas para Google Gemini en desarrollo de software, pruebas multimodales y QA visual."
+version: 1.0.0
+license: MIT
+metadata:
+  author: RobertHernandezArenas
+  category: platform
 ---
 
 # 🧩 SKILL: Gemini Edition

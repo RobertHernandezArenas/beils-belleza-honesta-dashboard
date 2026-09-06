@@ -109,12 +109,12 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 
 <template>
 	<div class="bg-bg-app text-text-secondary min-h-screen w-full p-4 lg:p-8 lg:h-[calc(100dvh-73px)] lg:flex lg:flex-col lg:overflow-hidden">
-		<div class="mx-auto flex h-full w-full max-w-7xl flex-col lg:overflow-hidden">
+		<div class="mx-auto flex size-full max-w-7xl flex-col lg:overflow-hidden">
 			<!-- Header -->
 			<div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 				<div class="flex items-center gap-3">
-					<div class="bg-error/10 text-error flex h-12 w-12 items-center justify-center rounded-2xl">
-						<Landmark class="h-6 w-6" />
+					<div class="bg-error/10 text-error flex size-12 items-center justify-center rounded-2xl">
+						<Landmark class="size-6" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold tracking-tight">{{ $t('finances.debts.title') }}</h1>
@@ -124,7 +124,7 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 
 				<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
 					<div class="relative w-full sm:w-3/4 lg:w-64">
-						<Search class="text-text-muted absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+						<Search class="text-text-muted absolute top-1/2 left-3 size-5 -translate-y-1/2" />
 						<input
 							v-model="searchQuery"
 							type="text"
@@ -237,7 +237,7 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 										v-else
 										class="text-success tooltip flex justify-end pr-4"
 										:data-tip="$t('finances.debts.actions.fullyPaid')">
-										<CheckCircle2 class="h-6 w-6" />
+										<CheckCircle2 class="size-6" />
 									</div>
 								</td>
 							</tr>
@@ -250,8 +250,8 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 			<div
 				v-else
 				class="bg-bg-card border-border-default flex flex-col items-center justify-center rounded-3xl border border-dashed px-4 py-20 text-center">
-				<div class="bg-success/10 mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-					<CheckCircle2 class="text-success h-10 w-10" />
+				<div class="bg-success/10 mb-4 flex size-20 items-center justify-center rounded-full">
+					<CheckCircle2 class="text-success size-10" />
 				</div>
 				<h3 class="mb-1 text-xl font-bold">{{ $t('finances.debts.emptyState.title') }}</h3>
 				<p class="text-text-muted mb-6 max-w-sm text-sm">
@@ -278,7 +278,7 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 				<div v-if="selectedDebt" class="flex flex-col gap-5 p-6">
 					<div
 						class="bg-error/5 border-error/10 mb-2 flex flex-col items-center rounded-2xl border p-4 text-center">
-						<AlertCircle class="text-error mb-2 h-8 w-8 opacity-80" />
+						<AlertCircle class="text-error mb-2 size-8 opacity-80" />
 						<span class="text-text-muted mb-1 text-xs font-bold tracking-widest uppercase">
 							{{ $t('finances.debts.paymentModal.remainingAmount') }}
 						</span>

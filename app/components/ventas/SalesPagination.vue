@@ -21,32 +21,32 @@ const currentPage = defineModel<number>('currentPage', { required: true })
 		<div class="flex gap-1">
 			<button 
 				:disabled="currentPage === 1"
-				class="w-8 h-8 flex items-center justify-center rounded-lg bg-bg-muted/80 border border-border-default/50 text-text-muted hover:text-text-primary disabled:opacity-40 disabled:hover:text-text-muted disabled:cursor-not-allowed transition-all"
+				class="size-8 flex items-center justify-center rounded-lg bg-bg-muted/80 border border-border-default/50 text-text-muted hover:text-text-primary disabled:opacity-40 disabled:hover:text-text-muted disabled:cursor-not-allowed transition-all"
 				aria-label="Página anterior"
 				@click="currentPage > 1 && currentPage--"
 			>
-				<ChevronLeft class="w-4 h-4" />
+				<ChevronLeft class="size-4" />
 			</button>
 			
 			<template v-for="page in totalPages" :key="page">
 				<button 
 					v-if="page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)"
 					:class="currentPage === page ? 'bg-text-primary text-white border-transparent shadow-sm' : 'bg-transparent text-text-secondary border-transparent hover:bg-bg-muted'"
-					class="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all border"
+					class="size-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all border"
 					@click="currentPage = page"
 				>
 					{{ page }}
 				</button>
-				<span v-else-if="page === currentPage - 2 || page === currentPage + 2" class="w-8 h-8 flex items-center justify-center text-text-muted/65 text-xs select-none">...</span>
+				<span v-else-if="page === currentPage - 2 || page === currentPage + 2" class="size-8 flex items-center justify-center text-text-muted/65 text-xs select-none">...</span>
 			</template>
 
 			<button 
 				:disabled="currentPage === totalPages || totalPages === 0"
-				class="w-8 h-8 flex items-center justify-center rounded-lg bg-bg-muted/80 border border-border-default/50 text-text-muted hover:text-text-primary disabled:opacity-40 disabled:hover:text-text-muted disabled:cursor-not-allowed transition-all"
+				class="size-8 flex items-center justify-center rounded-lg bg-bg-muted/80 border border-border-default/50 text-text-muted hover:text-text-primary disabled:opacity-40 disabled:hover:text-text-muted disabled:cursor-not-allowed transition-all"
 				aria-label="Siguiente página"
 				@click="currentPage < totalPages && currentPage++"
 			>
-				<ChevronRight class="w-4 h-4" />
+				<ChevronRight class="size-4" />
 			</button>
 		</div>
 	</div>

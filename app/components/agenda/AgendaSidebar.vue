@@ -86,7 +86,7 @@ const monthName = computed(() => {
             <button 
                 class="flex w-full items-center justify-center gap-2 rounded-xl bg-text-primary text-bg-card h-12 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
                 @click="store.openBookingDrawer(null, selectedDate)">
-                <Plus class="h-4 w-4" />
+                <Plus class="size-4" />
                 <span class="text-xs font-bold uppercase tracking-widest">Nueva Cita</span>
             </button>
         </div>
@@ -97,10 +97,10 @@ const monthName = computed(() => {
                 <span class="text-xs font-bold uppercase tracking-wider text-text-primary">{{ monthName }}</span>
                 <div class="flex gap-1">
                     <button class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary" @click="prevMonth">
-                        <ChevronLeft class="h-4 w-4" />
+                        <ChevronLeft class="size-4" />
                     </button>
                     <button class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary" @click="nextMonth">
-                        <ChevronRight class="h-4 w-4" />
+                        <ChevronRight class="size-4" />
                     </button>
                 </div>
             </div>
@@ -117,7 +117,7 @@ const monthName = computed(() => {
                 <button
                     v-for="(day, idx) in calendarDays"
                     :key="idx"
-                    class="h-8 w-8 mx-auto flex items-center justify-center rounded-full text-xs transition-all relative group"
+                    class="size-8 mx-auto flex items-center justify-center rounded-full text-xs transition-all relative group"
                     :class="[
                         !day.isCurrentMonth ? 'text-text-muted/40' : 'text-text-primary hover:bg-bg-muted',
                         isSelected(day.date) && !isToday(day.date) ? 'bg-primary/10 text-primary font-bold' : '',
@@ -138,7 +138,7 @@ const monthName = computed(() => {
             <div>
                 <label class="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-2 block">Buscar</label>
                 <div class="relative">
-                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-muted" />
                     <input 
                         v-model="searchQuery" 
                         type="text" 
@@ -150,11 +150,11 @@ const monthName = computed(() => {
 
             <div>
                 <label class="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-2 flex items-center gap-2">
-                    <Users class="h-3 w-3" /> Filtro Rápido
+                    <Users class="size-3" /> Filtro Rápido
                 </label>
                 <!-- This is a placeholder for future staff filtering. The backend allows searching by staff name via the searchQuery anyway. -->
                 <div class="flex items-center gap-2 p-2 rounded-lg border border-border-subtle bg-bg-muted/30">
-                    <CircleDot class="h-3 w-3 text-primary" />
+                    <CircleDot class="size-3 text-primary" />
                     <span class="text-xs text-text-secondary">Todos los empleados</span>
                 </div>
             </div>

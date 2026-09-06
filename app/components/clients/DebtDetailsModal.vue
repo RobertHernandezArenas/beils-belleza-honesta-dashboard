@@ -211,8 +211,8 @@ defineExpose({ open, close })
       <!-- Header -->
       <div class="border-border-subtle bg-bg-card flex items-center justify-between border-b px-6 py-5">
         <div class="flex items-center gap-3">
-          <div class="bg-error/10 text-error flex h-10 w-10 items-center justify-center rounded-xl">
-            <Receipt class="h-5 w-5" />
+          <div class="bg-error/10 text-error flex size-10 items-center justify-center rounded-xl">
+            <Receipt class="size-5" />
           </div>
           <div>
             <h3 class="text-text-primary text-lg font-bold">Detalle de Deuda</h3>
@@ -222,7 +222,7 @@ defineExpose({ open, close })
           </div>
         </div>
         <button class="btn btn-circle btn-ghost btn-sm bg-bg-muted/50 hover:bg-bg-muted" @click.prevent="close">
-          <X class="text-text-primary h-4 w-4" />
+          <X class="text-text-primary size-4" />
         </button>
       </div>
 
@@ -269,10 +269,10 @@ defineExpose({ open, close })
 
                      <div class="flex gap-2 pt-2">
                         <button class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'cash' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = 'cash'">
-                          <Banknote class="w-4 h-4 mr-1" /> Efectivo
+                          <Banknote class="size-4 mr-1" /> Efectivo
                         </button>
                         <button class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'card' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = 'card'">
-                          <CreditCard class="w-4 h-4 mr-1" /> Tarjeta
+                          <CreditCard class="size-4 mr-1" /> Tarjeta
                         </button>
                      </div>
 
@@ -289,8 +289,8 @@ defineExpose({ open, close })
                   <div v-if="(debt.payments?.length ?? 0) > 0" class="space-y-2 max-h-40 overflow-y-auto pr-2 no-scrollbar">
                      <div v-for="pay in debt.payments" :key="pay.payment_id" class="bg-bg-card border-border-subtle rounded-xl border p-3 flex justify-between items-center hover:bg-bg-muted/30 transition-colors">
                         <div class="flex items-center gap-3">
-                           <div class="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
-                               <CheckCircle class="text-success w-4 h-4" />
+                           <div class="size-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                               <CheckCircle class="text-success size-4" />
                            </div>
                            <div class="flex flex-col">
                                <span class="text-text-primary text-xs font-bold uppercase">Pago Registrado</span>
@@ -300,7 +300,7 @@ defineExpose({ open, close })
                         <div class="flex flex-col items-end gap-1">
                            <div class="flex items-center gap-2">
                               <button class="btn btn-ghost btn-xs text-text-muted hover:text-primary p-1 h-auto min-h-0" :aria-label="locale === 'es' ? 'Imprimir Recibo' : 'Print Receipt'" title="Imprimir Recibo" @click="printReceipt(pay)">
-                                 <Printer class="w-3.5 h-3.5" />
+                                 <Printer class="size-3.5" />
                               </button>
                               <span class="text-success text-sm font-black tabular-nums">-{{ pay.amount.toFixed(2) }}€</span>
                            </div>
