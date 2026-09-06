@@ -38,18 +38,16 @@ export interface FiscalSummary {
 
 export function getQuarterDateBounds(quarter: number, year: number): { start: Date; end: Date } {
 	const normalizedQuarter = Math.max(1, Math.min(4, Math.floor(quarter)))
-	// Spanish autónomos fiscal quarters span from day 20 of the starting month to day 20 of the 3rd month:
-	// 1T: 20 Ene - 20 Abr
-	// 2T: 20 Abr - 20 Jul
-	// 3T: 20 Jul - 20 Oct
-	// 4T: 20 Oct - 20 Ene (year + 1)
+	// Trimestres a mes completo (calendario natural y contable para liquidación de IVA/IRPF):
+	// 1T: 1 Ene - 31 Mar
+	// 2T: 1 Abr - 30 Jun
+	// 3T: 1 Jul - 30 Sep
+	// 4T: 1 Oct - 31 Dic
 	const startMonth = (normalizedQuarter - 1) * 3
-	const endMonth = startMonth + 3
+	const endMonth = startMonth + 2
 
-	const start = new Date(year, startMonth, 20, 0, 0, 0, 0)
-	const endYear = endMonth >= 12 ? year + 1 : year
-	const normalizedEndMonth = endMonth % 12
-	const end = new Date(endYear, normalizedEndMonth, 20, 23, 59, 59, 999)
+	const start = new Date(year, startMonth, 1, 0, 0, 0, 0)
+	const end = new Date(year, endMonth + 1, 0, 23, 59, 59, 999)
 
 	return { start, end }
 }

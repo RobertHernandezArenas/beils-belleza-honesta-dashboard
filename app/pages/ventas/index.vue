@@ -164,10 +164,10 @@ const availableYears = computed(() => {
 							</option>
 						</select>
 						<InfoTooltip
-							title="Ciclo Trimestral Autónomos (Día 20 al 20)"
-							what="Alineado con el régimen de autónomos español: 1T (20 Ene - 20 Abr), 2T (20 Abr - 20 Jul), 3T (20 Jul - 20 Oct), 4T (20 Oct - 20 Ene)."
-							why="El día 20 es el límite legal fijado por la Agencia Tributaria (AEAT) para liquidar los modelos trimestrales (303 de IVA y 130 de IRPF). Este ciclo evita desfases de facturas con la gestoría."
-							how="Filtra ventas registradas entre las 00:00:00 del día 20 inicial y las 23:59:59 del día 20 del tercer mes."
+							title="Trimestres Contables (Mes Completo)"
+							what="Períodos de tres meses naturales completos: 1T (1 Ene - 31 Mar), 2T (1 Abr - 30 Jun), 3T (1 Jul - 30 Sep), 4T (1 Oct - 31 Dic)."
+							why="Agrupa todas las operaciones contables del trimestre natural completo para la liquidación de impuestos de autónomos (Modelos 303 de IVA y 130 de IRPF)."
+							how="Filtra ventas emitidas desde el día 1 a las 00:00:00 del primer mes hasta el último día a las 23:59:59 del tercer mes del trimestre."
 							position="bottom"
 							align="end"
 						/>
