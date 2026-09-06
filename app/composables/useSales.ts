@@ -241,10 +241,10 @@ export function useSales() {
 
 		if (summaryTimeframe.value === 'quarter') {
 			const quarterLabels: Record<number, string> = {
-				1: '20 Ene - 20 Abr',
-				2: '20 Abr - 20 Jul',
-				3: '20 Jul - 20 Oct',
-				4: `20 Oct ${selectedYear.value} - 20 Ene ${selectedYear.value + 1}`,
+				1: '1 Ene - 31 Mar',
+				2: '1 Abr - 30 Jun',
+				3: '1 Jul - 30 Sep',
+				4: '1 Oct - 31 Dic',
 			}
 			return `${selectedQuarter.value}T ${selectedYear.value} (${quarterLabels[selectedQuarter.value] || `Trimestre ${selectedQuarter.value}`})`
 		}

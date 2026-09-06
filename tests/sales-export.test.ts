@@ -11,40 +11,40 @@ import {
 } from '../app/utils/salesExportCalculations'
 
 describe('Sales Export & Quarterly Filters Logic', () => {
-	it('should calculate accurate date bounds for quarters Q1, Q2, Q3, Q4 (20-to-20 Spanish autónomos cycle)', () => {
+	it('should calculate accurate date bounds for quarters Q1, Q2, Q3, Q4 (full calendar months: Ene-Mar, Abr-Jun, Jul-Sep, Oct-Dic)', () => {
 		const year = 2026
 
-		// Q1: 20 Ene 2026 - 20 Abr 2026
+		// Q1: 1 Ene 2026 - 31 Mar 2026
 		const q1 = getQuarterDateBounds(1, year)
 		assert.equal(q1.start.getFullYear(), 2026)
 		assert.equal(q1.start.getMonth(), 0) // January (0-indexed)
-		assert.equal(q1.start.getDate(), 20)
+		assert.equal(q1.start.getDate(), 1)
 		assert.equal(q1.end.getFullYear(), 2026)
-		assert.equal(q1.end.getMonth(), 3) // April
-		assert.equal(q1.end.getDate(), 20)
+		assert.equal(q1.end.getMonth(), 2) // March
+		assert.equal(q1.end.getDate(), 31)
 
-		// Q2: 20 Abr 2026 - 20 Jul 2026
+		// Q2: 1 Abr 2026 - 30 Jun 2026
 		const q2 = getQuarterDateBounds(2, year)
 		assert.equal(q2.start.getMonth(), 3) // April
-		assert.equal(q2.start.getDate(), 20)
-		assert.equal(q2.end.getMonth(), 6) // July
-		assert.equal(q2.end.getDate(), 20)
+		assert.equal(q2.start.getDate(), 1)
+		assert.equal(q2.end.getMonth(), 5) // June
+		assert.equal(q2.end.getDate(), 30)
 
-		// Q3: 20 Jul 2026 - 20 Oct 2026
+		// Q3: 1 Jul 2026 - 30 Sep 2026
 		const q3 = getQuarterDateBounds(3, year)
 		assert.equal(q3.start.getMonth(), 6) // July
-		assert.equal(q3.start.getDate(), 20)
-		assert.equal(q3.end.getMonth(), 9) // October
-		assert.equal(q3.end.getDate(), 20)
+		assert.equal(q3.start.getDate(), 1)
+		assert.equal(q3.end.getMonth(), 8) // September
+		assert.equal(q3.end.getDate(), 30)
 
-		// Q4: 20 Oct 2026 - 20 Ene 2027 (Year roll)
+		// Q4: 1 Oct 2026 - 31 Dic 2026
 		const q4 = getQuarterDateBounds(4, year)
 		assert.equal(q4.start.getFullYear(), 2026)
 		assert.equal(q4.start.getMonth(), 9) // October
-		assert.equal(q4.start.getDate(), 20)
-		assert.equal(q4.end.getFullYear(), 2027)
-		assert.equal(q4.end.getMonth(), 0) // January next year
-		assert.equal(q4.end.getDate(), 20)
+		assert.equal(q4.start.getDate(), 1)
+		assert.equal(q4.end.getFullYear(), 2026)
+		assert.equal(q4.end.getMonth(), 11) // December
+		assert.equal(q4.end.getDate(), 31)
 	})
 
 	it('should calculate period bounds for all timeframe modes', () => {
@@ -54,9 +54,9 @@ describe('Sales Export & Quarterly Filters Logic', () => {
 
 		const boundsQuarter = getPeriodDateBounds('quarter', { quarter: 2, year: 2026 })
 		assert.equal(boundsQuarter.start?.getMonth(), 3)
-		assert.equal(boundsQuarter.start?.getDate(), 20)
-		assert.equal(boundsQuarter.end?.getMonth(), 6)
-		assert.equal(boundsQuarter.end?.getDate(), 20)
+		assert.equal(boundsQuarter.start?.getDate(), 1)
+		assert.equal(boundsQuarter.end?.getMonth(), 5)
+		assert.equal(boundsQuarter.end?.getDate(), 30)
 
 		const boundsAll = getPeriodDateBounds('all')
 		assert.equal(boundsAll.start, null)

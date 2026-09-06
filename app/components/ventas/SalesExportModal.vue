@@ -144,10 +144,10 @@ const computedPeriodTitle = computed(() => {
 	}
 	if (selectedTimeframe.value === 'quarter') {
 		const quarterLabels: Record<number, string> = {
-			1: '20 Ene - 20 Abr',
-			2: '20 Abr - 20 Jul',
-			3: '20 Jul - 20 Oct',
-			4: `20 Oct ${selectedYear.value} - 20 Ene ${selectedYear.value + 1}`,
+			1: '1 Ene - 31 Mar',
+			2: '1 Abr - 30 Jun',
+			3: '1 Jul - 30 Sep',
+			4: '1 Oct - 31 Dic',
 		}
 		return `${selectedQuarter.value}T ${selectedYear.value} (${quarterLabels[selectedQuarter.value] || `Trimestre ${selectedQuarter.value}`})`
 	}
@@ -302,12 +302,12 @@ const triggerExport = (format: 'csv' | 'pdf') => {
 						<div class="flex items-center justify-between">
 							<span class="text-xs font-bold text-[#922c88] uppercase tracking-wide flex items-center gap-1.5">
 								<Calendar class="size-3.5" />
-								<span>Declaración Trimestral de Autónomos (Día 20 al 20)</span>
+								<span>Trimestres Contables a Mes Completo</span>
 								<InfoTooltip
-									title="Ciclo Fiscal Trimestral (Día 20 al 20)"
-									what="Período contable que abarca desde las 00:00:00 del día 20 del mes inicial hasta las 23:59:59 del día 20 del tercer mes (ej. 1T: 20 Ene - 20 Abr)."
-									why="Coincide con los plazos oficiales de presentación y liquidación de impuestos de autónomos en España (Modelos 303 de IVA y 130 de IRPF ante la AEAT), cuya fecha límite legal es el día 20 de Abril, Julio, Octubre y Enero. Cerrar el trimestre el día 20 garantiza que todas las operaciones queden cuadradas para la gestoría sin desfases."
-									how="Filtra automáticamente todas las ventas emitidas dentro del rango del día 20 al 20 del trimestre seleccionado, calculando las bases imponibles e impuestos correspondientes."
+									title="Trimestres Contables y Fiscales (Mes Completo)"
+									what="Períodos de tres meses naturales completos: 1T (1 Ene - 31 Mar), 2T (1 Abr - 30 Jun), 3T (1 Jul - 30 Sep) y 4T (1 Oct - 31 Dic)."
+									why="Corresponde a la base contable oficial de facturación para la presentación de los modelos tributarios de autónomos (Modelo 303 de IVA y Modelo 130 de IRPF ante la Agencia Tributaria)."
+									how="Filtra automáticamente todas las operaciones emitidas desde el día 1 del primer mes hasta el último día del tercer mes del trimestre seleccionado."
 									position="bottom"
 									align="start"
 								/>
@@ -333,7 +333,7 @@ const triggerExport = (format: 'csv' | 'pdf') => {
 							>
 								<span class="text-sm font-black">{{ q }}T</span>
 								<span class="text-[10px] font-medium opacity-85">
-									{{ q === 1 ? '20 Ene - 20 Abr' : q === 2 ? '20 Abr - 20 Jul' : q === 3 ? '20 Jul - 20 Oct' : '20 Oct - 20 Ene' }}
+									{{ q === 1 ? '1 Ene - 31 Mar' : q === 2 ? '1 Abr - 30 Jun' : q === 3 ? '1 Jul - 30 Sep' : '1 Oct - 31 Dic' }}
 								</span>
 							</button>
 						</div>
