@@ -3,15 +3,18 @@ import type { Sale } from '~~/shared/types/domain'
 import {
 	buildSalesCsvContent,
 	calculateFiscalSummary,
+	calculatePeriodicSummaries,
 	formatDateEs,
 	formatNumberEs,
 	getTicketDisplayLabel,
 	type ExportDetailMode,
+	type ExportSummaryGrouping,
 } from './salesExportCalculations'
 
 export interface ExportSalesOptions {
 	sales: Sale[]
 	mode: ExportDetailMode
+	summaryGrouping?: ExportSummaryGrouping
 	periodTitle: string
 	isGeneratingPdf?: Ref<boolean>
 	displayToast?: (msg: string, type: 'success' | 'error') => void
@@ -31,6 +34,7 @@ function triggerDownload(blob: Blob, filename: string) {
 export function downloadSalesExportCsv({
 	sales,
 	mode,
+	summaryGrouping,
 	periodTitle,
 	displayToast,
 }: ExportSalesOptions): void {
@@ -40,10 +44,11 @@ export function downloadSalesExportCsv({
 	}
 
 	try {
-		const csvContent = buildSalesCsvContent({ sales, mode, periodTitle })
+		const csvContent = buildSalesCsvContent({ sales, mode, periodTitle, summaryGrouping })
 		const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
 		const cleanTitle = periodTitle.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase()
-		triggerDownload(blob, `ventas_${cleanTitle}_${mode}.csv`)
+		const groupingSuffix = summaryGrouping && summaryGrouping !== 'global' ? `_${summaryGrouping}` : ''
+		triggerDownload(blob, `ventas_${cleanTitle}_${mode}${groupingSuffix}.csv`)
 		displayToast?.('Archivo CSV descargado correctamente.', 'success')
 	} catch (err) {
 		console.error('Error generando CSV:', err)
@@ -54,6 +59,7 @@ export function downloadSalesExportCsv({
 export async function downloadSalesExportPdf({
 	sales,
 	mode,
+	summaryGrouping,
 	periodTitle,
 	isGeneratingPdf,
 	displayToast,
@@ -103,7 +109,13 @@ export async function downloadSalesExportPdf({
 			doc.setFont('helvetica', 'normal')
 			doc.setFontSize(8.5)
 			doc.setTextColor(71, 85, 105)
-			const modeLabel = mode === 'breakdown' ? 'Desglose detallado por ítem' : mode === 'individual' ? 'Listado de tickets individuales' : 'Sumatorio fiscal para autónomos'
+			const modeLabel = mode === 'breakdown'
+				? 'Desglose detallado por ítem'
+				: mode === 'individual'
+					? 'Listado de tickets individuales'
+					: summaryGrouping && summaryGrouping !== 'global'
+						? `Sumatorio periódico (${summaryGrouping === 'day' ? 'por día' : summaryGrouping === 'week' ? 'por semana' : summaryGrouping === 'month' ? 'por mes' : 'por año'})`
+						: 'Sumatorio fiscal para autónomos'
 			doc.text(`Periodo: ${periodTitle}   |   Modalidad: ${modeLabel}`, marginX, y)
 			y += 6
 
@@ -329,108 +341,257 @@ export async function downloadSalesExportPdf({
 		// MODE 3: SUMMARY (Solo sumatorio / Declaración de Autónomos)
 		// -------------------------------------------------------------
 		else if (mode === 'summary') {
-			// Tax breakdown table
-			ensureSpace(40)
-			doc.setFont('helvetica', 'bold')
-			doc.setFontSize(11)
-			doc.setTextColor(30, 41, 59)
-			doc.text('Desglose de Bases Imponibles y Cuotas de IVA', marginX, y)
-			y += 5
+			if (summaryGrouping && summaryGrouping !== 'global') {
+				const periodicRows = calculatePeriodicSummaries(sales, summaryGrouping)
+				const groupingTitle = summaryGrouping === 'day' ? 'Día' : summaryGrouping === 'week' ? 'Semana' : summaryGrouping === 'month' ? 'Mes' : 'Año'
 
-			const taxCols = [
-				{ label: 'Tipo Impositivo', width: 40 },
-				{ label: 'Base Imponible (EUR)', width: 45, align: 'right' as const },
-				{ label: 'Cuota IVA (EUR)', width: 50, align: 'right' as const },
-				{ label: 'Total Facturado (EUR)', width: 47, align: 'right' as const },
-			]
-
-			doc.setFillColor(241, 245, 249)
-			doc.rect(marginX, y, contentWidth, 6, 'F')
-			doc.setFontSize(7.5)
-			doc.setTextColor(51, 65, 85)
-
-			let cx = marginX
-			taxCols.forEach(col => {
-				if (col.align === 'right') {
-					doc.text(col.label, cx + col.width - 2, y + 4.2, { align: 'right' })
-				} else {
-					doc.text(col.label, cx + 2, y + 4.2)
-				}
-				cx += col.width
-			})
-			y += 6.5
-
-			for (const [rate, bucket] of Object.entries(summary.taxesByRate)) {
-				doc.setFont('helvetica', 'normal')
-				doc.setFontSize(8)
+				ensureSpace(35)
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(11)
 				doc.setTextColor(30, 41, 59)
+				doc.text(`Sumatorio Periódico Agrupado por ${groupingTitle}`, marginX, y)
+				y += 5
 
-				doc.text(`Régimen General (${rate}%)`, marginX + 2, y + 4)
-				doc.text(`${formatNumberEs(bucket.baseAmount)} EUR`, marginX + 85 - 2, y + 4, { align: 'right' })
-				doc.text(`${formatNumberEs(bucket.taxAmount)} EUR`, marginX + 135 - 2, y + 4, { align: 'right' })
-				doc.text(`${formatNumberEs(bucket.totalAmount)} EUR`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+				const periodicCols = [
+					{ label: 'Intervalo / Periodo', width: 44 },
+					{ label: 'Tickets', width: 18, align: 'center' as const },
+					{ label: 'Base Imponible (EUR)', width: 32, align: 'right' as const },
+					{ label: 'Cuota IVA 21%', width: 26, align: 'right' as const },
+					{ label: 'Cuota IVA 10%', width: 26, align: 'right' as const },
+					{ label: 'Total (EUR)', width: 36, align: 'right' as const },
+				]
 
-				y += 6
-				doc.setDrawColor(226, 232, 240)
-				doc.line(marginX, y, marginX + contentWidth, y)
-			}
+				const drawPeriodicHeader = () => {
+					doc.setFillColor(241, 245, 249)
+					doc.rect(marginX, y, contentWidth, 6, 'F')
+					doc.setFontSize(7.2)
+					doc.setTextColor(51, 65, 85)
 
-			// Total row for taxes
-			y += 1
-			doc.setFont('helvetica', 'bold')
-			doc.text('TOTALES FISCALES', marginX + 2, y + 4)
-			doc.text(`${formatNumberEs(summary.totalBaseAmount)} EUR`, marginX + 85 - 2, y + 4, { align: 'right' })
-			doc.text(`${formatNumberEs(summary.totalTaxAmount)} EUR`, marginX + 135 - 2, y + 4, { align: 'right' })
-			doc.text(`${formatNumberEs(summary.grandTotal)} EUR`, marginX + contentWidth - 2, y + 4, { align: 'right' })
-			y += 12
-
-			// Payment methods summary table
-			ensureSpace(45)
-			doc.setFont('helvetica', 'bold')
-			doc.setFontSize(11)
-			doc.setTextColor(30, 41, 59)
-			doc.text('Desglose de Facturación por Método de Cobro', marginX, y)
-			y += 5
-
-			const payCols = [
-				{ label: 'Método de Cobro', width: 60 },
-				{ label: 'Operaciones', width: 35, align: 'center' as const },
-				{ label: 'Importe Total (EUR)', width: 47, align: 'right' as const },
-				{ label: '% sobre Total', width: 40, align: 'right' as const },
-			]
-
-			doc.setFillColor(241, 245, 249)
-			doc.rect(marginX, y, contentWidth, 6, 'F')
-			doc.setFontSize(7.5)
-			doc.setTextColor(51, 65, 85)
-
-			let px = marginX
-			payCols.forEach(col => {
-				if (col.align === 'right') {
-					doc.text(col.label, px + col.width - 2, y + 4.2, { align: 'right' })
-				} else if (col.align === 'center') {
-					doc.text(col.label, px + col.width / 2, y + 4.2, { align: 'center' })
-				} else {
-					doc.text(col.label, px + 2, y + 4.2)
+					let hx = marginX
+					periodicCols.forEach(col => {
+						if (col.align === 'right') {
+							doc.text(col.label, hx + col.width - 2, y + 4.2, { align: 'right' })
+						} else if (col.align === 'center') {
+							doc.text(col.label, hx + col.width / 2, y + 4.2, { align: 'center' })
+						} else {
+							doc.text(col.label, hx + 2, y + 4.2)
+						}
+						hx += col.width
+					})
+					y += 6.5
 				}
-				px += col.width
-			})
-			y += 6.5
 
-			for (const [method, info] of Object.entries(summary.methodsSummary)) {
-				doc.setFont('helvetica', 'normal')
+				drawPeriodicHeader()
+
+				for (const row of periodicRows) {
+					ensureSpace(8, () => {
+						drawDocumentHeader()
+						drawPeriodicHeader()
+					})
+
+					doc.setFont('helvetica', 'normal')
+					doc.setFontSize(7.5)
+					doc.setTextColor(30, 41, 59)
+
+					let rx = marginX
+					// Interval label
+					doc.text(row.label, rx + 2, y + 4)
+					rx += periodicCols[0]!.width
+
+					// Tickets
+					doc.text(String(row.salesCount), rx + periodicCols[1]!.width / 2, y + 4, { align: 'center' })
+					rx += periodicCols[1]!.width
+
+					// Base
+					doc.text(formatNumberEs(row.baseAmount), rx + periodicCols[2]!.width - 2, y + 4, { align: 'right' })
+					rx += periodicCols[2]!.width
+
+					// IVA 21%
+					doc.text(formatNumberEs(row.tax21Amount), rx + periodicCols[3]!.width - 2, y + 4, { align: 'right' })
+					rx += periodicCols[3]!.width
+
+					// IVA 10%
+					doc.text(formatNumberEs(row.tax10Amount), rx + periodicCols[4]!.width - 2, y + 4, { align: 'right' })
+					rx += periodicCols[4]!.width
+
+					// Total
+					doc.setFont('helvetica', 'bold')
+					doc.text(formatNumberEs(row.grandTotal), rx + periodicCols[5]!.width - 2, y + 4, { align: 'right' })
+
+					y += 6
+					doc.setDrawColor(226, 232, 240)
+					doc.line(marginX, y, marginX + contentWidth, y)
+				}
+
+				// Totals row
+				ensureSpace(12, () => {
+					drawDocumentHeader()
+					drawPeriodicHeader()
+				})
+				y += 1
+				doc.setFont('helvetica', 'bold')
 				doc.setFontSize(8)
+				doc.setTextColor(15, 23, 42)
+				doc.text('TOTALES ACUMULADOS', marginX + 2, y + 4)
+				doc.text(String(summary.totalSalesCount), marginX + periodicCols[0]!.width + periodicCols[1]!.width / 2, y + 4, { align: 'center' })
+				doc.text(formatNumberEs(summary.totalBaseAmount), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width - 2, y + 4, { align: 'right' })
+				doc.text(formatNumberEs(summary.taxesByRate[21]?.taxAmount || 0), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width + periodicCols[3]!.width - 2, y + 4, { align: 'right' })
+				doc.text(formatNumberEs(summary.taxesByRate[10]?.taxAmount || 0), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width + periodicCols[3]!.width + periodicCols[4]!.width - 2, y + 4, { align: 'right' })
+				doc.text(formatNumberEs(summary.grandTotal), marginX + contentWidth - 2, y + 4, { align: 'right' })
+				y += 12
+
+				// Methods breakdown table
+				ensureSpace(45)
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(11)
 				doc.setTextColor(30, 41, 59)
+				doc.text('Desglose de Facturación por Método de Cobro', marginX, y)
+				y += 5
 
-				const pct = summary.grandTotal > 0 ? (info.total / summary.grandTotal) * 100 : 0
-				doc.text(method.toUpperCase(), marginX + 2, y + 4)
-				doc.text(String(info.count), marginX + 77.5, y + 4, { align: 'center' })
-				doc.text(`${formatNumberEs(info.total)} EUR`, marginX + 142 - 2, y + 4, { align: 'right' })
-				doc.text(`${pct.toFixed(1).replace('.', ',')} %`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+				const payCols = [
+					{ label: 'Método de Cobro', width: 60 },
+					{ label: 'Operaciones', width: 35, align: 'center' as const },
+					{ label: 'Importe Total (EUR)', width: 47, align: 'right' as const },
+					{ label: '% sobre Total', width: 40, align: 'right' as const },
+				]
 
-				y += 6
-				doc.setDrawColor(226, 232, 240)
-				doc.line(marginX, y, marginX + contentWidth, y)
+				doc.setFillColor(241, 245, 249)
+				doc.rect(marginX, y, contentWidth, 6, 'F')
+				doc.setFontSize(7.5)
+				doc.setTextColor(51, 65, 85)
+
+				let px = marginX
+				payCols.forEach(col => {
+					if (col.align === 'right') {
+						doc.text(col.label, px + col.width - 2, y + 4.2, { align: 'right' })
+					} else if (col.align === 'center') {
+						doc.text(col.label, px + col.width / 2, y + 4.2, { align: 'center' })
+					} else {
+						doc.text(col.label, px + 2, y + 4.2)
+					}
+					px += col.width
+				})
+				y += 6.5
+
+				for (const [method, info] of Object.entries(summary.methodsSummary)) {
+					doc.setFont('helvetica', 'normal')
+					doc.setFontSize(8)
+					doc.setTextColor(30, 41, 59)
+
+					const pct = summary.grandTotal > 0 ? (info.total / summary.grandTotal) * 100 : 0
+					doc.text(method.toUpperCase(), marginX + 2, y + 4)
+					doc.text(String(info.count), marginX + 77.5, y + 4, { align: 'center' })
+					doc.text(`${formatNumberEs(info.total)} EUR`, marginX + 142 - 2, y + 4, { align: 'right' })
+					doc.text(`${pct.toFixed(1).replace('.', ',')} %`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+
+					y += 6
+					doc.setDrawColor(226, 232, 240)
+					doc.line(marginX, y, marginX + contentWidth, y)
+				}
+			} else {
+				// Tax breakdown table
+				ensureSpace(40)
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(11)
+				doc.setTextColor(30, 41, 59)
+				doc.text('Desglose de Bases Imponibles y Cuotas de IVA', marginX, y)
+				y += 5
+
+				const taxCols = [
+					{ label: 'Tipo Impositivo', width: 40 },
+					{ label: 'Base Imponible (EUR)', width: 45, align: 'right' as const },
+					{ label: 'Cuota IVA (EUR)', width: 50, align: 'right' as const },
+					{ label: 'Total Facturado (EUR)', width: 47, align: 'right' as const },
+				]
+
+				doc.setFillColor(241, 245, 249)
+				doc.rect(marginX, y, contentWidth, 6, 'F')
+				doc.setFontSize(7.5)
+				doc.setTextColor(51, 65, 85)
+
+				let cx = marginX
+				taxCols.forEach(col => {
+					if (col.align === 'right') {
+						doc.text(col.label, cx + col.width - 2, y + 4.2, { align: 'right' })
+					} else {
+						doc.text(col.label, cx + 2, y + 4.2)
+					}
+					cx += col.width
+				})
+				y += 6.5
+
+				for (const [rate, bucket] of Object.entries(summary.taxesByRate)) {
+					doc.setFont('helvetica', 'normal')
+					doc.setFontSize(8)
+					doc.setTextColor(30, 41, 59)
+
+					doc.text(`Régimen General (${rate}%)`, marginX + 2, y + 4)
+					doc.text(`${formatNumberEs(bucket.baseAmount)} EUR`, marginX + 85 - 2, y + 4, { align: 'right' })
+					doc.text(`${formatNumberEs(bucket.taxAmount)} EUR`, marginX + 135 - 2, y + 4, { align: 'right' })
+					doc.text(`${formatNumberEs(bucket.totalAmount)} EUR`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+
+					y += 6
+					doc.setDrawColor(226, 232, 240)
+					doc.line(marginX, y, marginX + contentWidth, y)
+				}
+
+				// Total row for taxes
+				y += 1
+				doc.setFont('helvetica', 'bold')
+				doc.text('TOTALES FISCALES', marginX + 2, y + 4)
+				doc.text(`${formatNumberEs(summary.totalBaseAmount)} EUR`, marginX + 85 - 2, y + 4, { align: 'right' })
+				doc.text(`${formatNumberEs(summary.totalTaxAmount)} EUR`, marginX + 135 - 2, y + 4, { align: 'right' })
+				doc.text(`${formatNumberEs(summary.grandTotal)} EUR`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+				y += 12
+
+				// Payment methods summary table
+				ensureSpace(45)
+				doc.setFont('helvetica', 'bold')
+				doc.setFontSize(11)
+				doc.setTextColor(30, 41, 59)
+				doc.text('Desglose de Facturación por Método de Cobro', marginX, y)
+				y += 5
+
+				const payCols = [
+					{ label: 'Método de Cobro', width: 60 },
+					{ label: 'Operaciones', width: 35, align: 'center' as const },
+					{ label: 'Importe Total (EUR)', width: 47, align: 'right' as const },
+					{ label: '% sobre Total', width: 40, align: 'right' as const },
+				]
+
+				doc.setFillColor(241, 245, 249)
+				doc.rect(marginX, y, contentWidth, 6, 'F')
+				doc.setFontSize(7.5)
+				doc.setTextColor(51, 65, 85)
+
+				let px = marginX
+				payCols.forEach(col => {
+					if (col.align === 'right') {
+						doc.text(col.label, px + col.width - 2, y + 4.2, { align: 'right' })
+					} else if (col.align === 'center') {
+						doc.text(col.label, px + col.width / 2, y + 4.2, { align: 'center' })
+					} else {
+						doc.text(col.label, px + 2, y + 4.2)
+					}
+					px += col.width
+				})
+				y += 6.5
+
+				for (const [method, info] of Object.entries(summary.methodsSummary)) {
+					doc.setFont('helvetica', 'normal')
+					doc.setFontSize(8)
+					doc.setTextColor(30, 41, 59)
+
+					const pct = summary.grandTotal > 0 ? (info.total / summary.grandTotal) * 100 : 0
+					doc.text(method.toUpperCase(), marginX + 2, y + 4)
+					doc.text(String(info.count), marginX + 77.5, y + 4, { align: 'center' })
+					doc.text(`${formatNumberEs(info.total)} EUR`, marginX + 142 - 2, y + 4, { align: 'right' })
+					doc.text(`${pct.toFixed(1).replace('.', ',')} %`, marginX + contentWidth - 2, y + 4, { align: 'right' })
+
+					y += 6
+					doc.setDrawColor(226, 232, 240)
+					doc.line(marginX, y, marginX + contentWidth, y)
+				}
 			}
 		}
 
@@ -446,7 +607,8 @@ export async function downloadSalesExportPdf({
 		}
 
 		const cleanTitle = periodTitle.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase()
-		doc.save(`ventas_${cleanTitle}_${mode}.pdf`)
+		const groupingSuffix = summaryGrouping && summaryGrouping !== 'global' ? `_${summaryGrouping}` : ''
+		doc.save(`ventas_${cleanTitle}_${mode}${groupingSuffix}.pdf`)
 		displayToast?.('Documento PDF generado y descargado con éxito.', 'success')
 	} catch (err) {
 		console.error('Error generando PDF de ventas:', err)
