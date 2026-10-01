@@ -22,6 +22,9 @@ export default defineNuxtConfig({
 	experimental: {
 		payloadExtraction: true,
 	},
+	routeRules: {
+		'/overview': { ssr: false },
+	},
 	// NUXT Plugin to disable sourcemap
 	sourcemap: {
 		server: false,

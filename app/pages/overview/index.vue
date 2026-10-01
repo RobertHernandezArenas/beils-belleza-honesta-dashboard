@@ -2,7 +2,7 @@
 import type { IProduct } from '~~/shared/types/catalog'
 import type { Sale, Booking, ClientDTO, Debt } from '~~/shared/types/domain'
 import { useQuery } from '@tanstack/vue-query'
-import ClientChart from '~/components/ClientChart.client.vue'
+import { formatCurrency } from '~/utils/format'
 import { useChartTheme } from '~/composables/useChartTheme'
 import {
 	CircleDollarSign,
@@ -47,7 +47,7 @@ const { data: bookings, isPending: loadingBookings } = useQuery<Booking[]>({
 
 const { data: clients, isPending: loadingClients } = useQuery<ClientDTO[]>({
 	queryKey: ['clients-overview'],
-	queryFn: () => $fetch('/api/users?role=CLIENT'),
+	queryFn: () => $fetch('/api/users?roles=CLIENT'),
 })
 
 const { data: debts, isPending: loadingDebts } = useQuery<Debt[]>({
@@ -90,21 +90,28 @@ const dateOptions: Intl.DateTimeFormatOptions = {
 }
 const formattedDate = new Intl.DateTimeFormat('es-ES', dateOptions).format(today)
 
-const formatTime = (dateString: string) => {
-	return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(
-		new Date(dateString),
-	)
+const formatTime = (dateString: string | null | undefined) => {
+	if (!dateString) return ''
+	const date = new Date(dateString)
+	if (isNaN(date.getTime())) return ''
+	return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(date)
 }
 
-const timeAgo = (dateString: string) => {
-	const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' })
+const timeAgo = (dateString: string | null | undefined) => {
+	if (!dateString) return ''
 	const date = new Date(dateString)
-	const daysDifference = Math.round((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+	if (isNaN(date.getTime())) return ''
+	const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' })
+	const now = Date.now()
+	const daysDifference = Math.round((date.getTime() - now) / (1000 * 60 * 60 * 24))
+	if (isNaN(daysDifference)) return ''
 
 	if (daysDifference === 0) {
-		const hoursDifference = Math.round((date.getTime() - new Date().getTime()) / (1000 * 60 * 60))
+		const hoursDifference = Math.round((date.getTime() - now) / (1000 * 60 * 60))
+		if (isNaN(hoursDifference)) return ''
 		if (hoursDifference === 0) {
-			const minutesDifference = Math.round((date.getTime() - new Date().getTime()) / (1000 * 60))
+			const minutesDifference = Math.round((date.getTime() - now) / (1000 * 60))
+			if (isNaN(minutesDifference)) return ''
 			return rtf.format(minutesDifference, 'minute')
 		}
 		return rtf.format(hoursDifference, 'hour')
@@ -115,6 +122,7 @@ const timeAgo = (dateString: string) => {
 const isToday = (dateString: string | null | undefined) => {
 	if (!dateString) return false
 	const d = new Date(dateString)
+	if (isNaN(d.getTime())) return false
 	return (
 		d.getDate() === today.getDate() &&
 		d.getMonth() === today.getMonth() &&
@@ -125,6 +133,7 @@ const isToday = (dateString: string | null | undefined) => {
 const isThisMonth = (dateString: string | null | undefined) => {
 	if (!dateString) return false
 	const d = new Date(dateString)
+	if (isNaN(d.getTime())) return false
 	return (
 		d.getMonth() === today.getMonth() &&
 		d.getFullYear() === today.getFullYear()
@@ -196,8 +205,9 @@ const todayCabinHours = computed(() => {
 })
 
 const getBookingDateTime = (b: Booking): Date => {
-	const d = new Date(b.booking_date)
-	if (b.start_time && b.start_time.includes(':')) {
+	const d = new Date(b.booking_date || Date.now())
+	if (isNaN(d.getTime())) return new Date()
+	if (b.start_time && typeof b.start_time === 'string' && b.start_time.includes(':')) {
 		const [hours, minutes] = b.start_time.split(':').map(Number)
 		d.setHours(hours ?? 0, minutes ?? 0, 0, 0)
 	}
