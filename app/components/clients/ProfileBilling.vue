@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { ClientProfile } from '~~/shared/types/domain'
 import { Receipt, CheckCircle2, ShoppingBag, Wallet, History, AlertCircle, PieChart } from 'lucide-vue-next'
-import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
-import ClientChart from '~/components/ClientChart.client.vue'
 import InfoTooltip from '~/components/shared/InfoTooltip.vue'
 
 const props = defineProps({

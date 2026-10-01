@@ -8,7 +8,8 @@ export default defineEventHandler(async event => {
 		requireAdmin(event)
 
 		const query = getQuery(event)
-		const roles = query.roles ? (query.roles as string).split(',') : []
+		const rawRoles = (query.roles as string) || (query.role as string) || ''
+		const roles = rawRoles ? rawRoles.split(',').map(r => r.trim()).filter(Boolean) : []
 
 		const users = await prisma.user.findMany({
 			where: roles.length > 0 ? {

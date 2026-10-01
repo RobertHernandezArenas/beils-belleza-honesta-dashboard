@@ -28,6 +28,12 @@ definePageMeta({ layout: 'default' })
 const { locale, t } = useI18n()
 const route = useRoute()
 const clientId = route.params.id as string
+
+// Alias / typo resolution: redirect Kathryn McCrary typo 87f8a... to canonical 87f8b...
+if (clientId === '87f8a95a-1763-47e6-8acd-824bdae7b5ef') {
+  navigateTo('/clientes/87f8b95a-1763-47e6-8acd-824bdae7b5ef', { replace: true })
+}
+
 const queryClient = useQueryClient()
 const agendaStore = useAgendaStore()
 
@@ -65,9 +71,31 @@ const {
   isPending,
   error,
   isFetching,
-} = useQuery<ClientProfile, Error & { statusMessage?: string }>({
+} = useQuery<ClientProfile, FetchError & { statusCode?: number; status?: number; statusMessage?: string }>({
   queryKey: ['client', clientId],
   queryFn: () => $fetch(`/api/clients/${clientId}`),
+})
+
+const isNotFound = computed(() => {
+  const err = error.value as (FetchError & { statusCode?: number; status?: number }) | null
+  return err?.statusCode === 404 || err?.status === 404
+})
+
+const errorMessage = computed(() => {
+  if (!error.value) return ''
+  const err = error.value as (FetchError & { statusCode?: number; status?: number; statusMessage?: string }) | null
+  if (isNotFound.value) {
+    return locale.value === 'es'
+      ? 'El cliente solicitado no existe en la base de datos o el enlace es incorrecto.'
+      : 'The requested client does not exist or the link is incorrect.'
+  }
+  return (
+    err?.data?.statusMessage ||
+    err?.response?._data?.statusMessage ||
+    err?.statusMessage ||
+    err?.message ||
+    t('catalog.clients.profile.status.errorMsg')
+  )
 })
 
 useHead({
@@ -168,9 +196,11 @@ const handleNewBooking = () => {
         class="alert alert-error shadow-xl rounded-3xl p-12 flex flex-col items-center justify-center text-center"
       >
         <AlertCircle class="size-16 mb-2 text-white" />
-        <h2 class="text-2xl font-black text-white">{{ $t('catalog.clients.profile.status.error') }}</h2>
+        <h2 class="text-2xl font-black text-white">
+          {{ isNotFound ? (locale === 'es' ? 'Cliente no encontrado' : 'Client not found') : $t('catalog.clients.profile.status.error') }}
+        </h2>
         <p class="mt-1 text-sm font-semibold text-white/80 max-w-md">
-          {{ error?.statusMessage || $t('catalog.clients.profile.status.errorMsg') }}
+          {{ errorMessage }}
         </p>
         <NuxtLink to="/clientes" class="btn btn-outline btn-neutral btn-sm mt-6 rounded-xl font-bold">
           {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
@@ -243,7 +273,10 @@ const handleNewBooking = () => {
                 @open-purchase="purchaseDetailsModalRef?.open?.($event)"
                 @open-debt="debtDetailsModalRef?.open?.($event)"
               />
-              <ProfileAppointmentHistory :client="client" />
+              <ProfileAppointmentHistory 
+                :client="client" 
+                @open-purchase="purchaseDetailsModalRef?.open?.($event)" 
+              />
             </div>
 
             <ProfileHealthSection 

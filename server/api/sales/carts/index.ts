@@ -45,12 +45,38 @@ export default defineEventHandler(async event => {
 
 		// Wrap in transaction to ensure consistency
 		const cart = await prisma.$transaction(async tx => {
-			if (booking_id) {
+			let effectiveBookingId = booking_id || null
+
+			if (effectiveBookingId) {
 				await tx.booking.update({
-					where: { booking_id },
+					where: { booking_id: effectiveBookingId },
 					data: { status: 'COMPLETADA' },
 				})
+			} else if (user_id) {
+				// Auto-link: If no explicit booking_id was passed, check for an unlinked booking today for this client
+				const now = new Date()
+				const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0))
+				const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999))
+
+				const todayBooking = await tx.booking.findFirst({
+					where: {
+						client_id: user_id,
+						booking_date: { gte: startOfDay, lte: endOfDay },
+						status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
+						carts: { none: {} }
+					},
+					orderBy: { booking_date: 'desc' }
+				})
+
+				if (todayBooking) {
+					effectiveBookingId = todayBooking.booking_id
+					await tx.booking.update({
+						where: { booking_id: effectiveBookingId },
+						data: { status: 'COMPLETADA' }
+					})
+				}
 			}
+
 			// Calculate totals from items to prevent client tampering
 			let subtotal = 0
 			const discount = cartData.discount || 0
@@ -59,7 +85,7 @@ export default defineEventHandler(async event => {
 			const createdCart = await tx.cart.create({
 				data: {
 					user_id: user_id || null,
-					booking_id: booking_id || null,
+					booking_id: effectiveBookingId,
 					status: cartData.status || 'pending',
 					payment_method: cartData.payment_method || 'cash',
 					notes: cartData.notes,

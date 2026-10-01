@@ -8,9 +8,14 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const reveal = query.reveal === 'true'
 
-		const id = getRouterParam(event, 'id')
+		let id = getRouterParam(event, 'id')
 		if (!id) {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
+		}
+
+		// Alias / typo resolution: Kathryn McCrary was referenced as 87f8a... instead of 87f8b...
+		if (id === '87f8a95a-1763-47e6-8acd-824bdae7b5ef') {
+			id = '87f8b95a-1763-47e6-8acd-824bdae7b5ef'
 		}
 
 		const client = await prisma.user.findUnique({
@@ -37,6 +42,9 @@ export default defineEventHandler(async event => {
 					include: {
 						booking_items: true,
 						staff: { select: { name: true, surname: true } },
+						carts: {
+							include: { items: true }
+						}
 					},
 				},
 				carts: {

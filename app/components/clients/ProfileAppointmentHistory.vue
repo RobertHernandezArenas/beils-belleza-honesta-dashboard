@@ -7,6 +7,10 @@ const props = defineProps<{
 	client: ClientProfile
 }>()
 
+const emit = defineEmits<{
+	(e: 'open-purchase', cart: Sale): void
+}>()
+
 const selected = ref<Booking | null>(null)
 
 const bookings = computed<Booking[]>(() =>
@@ -15,9 +19,45 @@ const bookings = computed<Booking[]>(() =>
 	),
 )
 
-// Cart/ticket linked to a booking via cart.booking_id
-const ticketFor = (booking: Booking) =>
-	(props.client?.carts || []).find((c: Sale) => c.booking_id === booking?.booking_id) || null
+// Cart/ticket linked to a booking via relation, ID match, or date/items fallback
+const ticketFor = (booking: Booking): Sale | null => {
+	if (!booking) return null
+
+	// 1. Direct relation from booking.carts
+	if ((booking as any).carts && (booking as any).carts.length > 0) {
+		return (booking as any).carts[0] as Sale
+	}
+
+	// 2. Direct match in client.carts via booking_id
+	const byBookingId = (props.client?.carts || []).find((c: Sale) => c.booking_id === booking?.booking_id)
+	if (byBookingId) return byBookingId
+
+	// 3. Fallback heuristic for completed appointments: match by same day and items/single cart
+	const bStatus = (booking.status || '').toUpperCase()
+	if (['COMPLETADA', 'COMPLETED', 'ASISTIDA'].includes(bStatus) && booking.booking_date) {
+		const bDateStr = new Date(booking.booking_date).toISOString().split('T')[0]
+		const bItemNames = (booking.booking_items || []).map((it: { name: string }) => (it.name || '').toLowerCase().trim())
+
+		const sameDateCarts = (props.client?.carts || []).filter((c: Sale) => {
+			if (!c.created_at) return false
+			const cDateStr = new Date(c.created_at).toISOString().split('T')[0]
+			return cDateStr === bDateStr
+		})
+
+		if (sameDateCarts.length === 1) {
+			return sameDateCarts[0] || null
+		} else if (sameDateCarts.length > 1) {
+			const itemMatch = sameDateCarts.find((c: Sale) => {
+				const cItemNames = (c.items || []).map(i => (i.name || '').toLowerCase().trim())
+				return bItemNames.some(name => cItemNames.includes(name))
+			})
+			if (itemMatch) return itemMatch
+			return sameDateCarts[0] || null
+		}
+	}
+
+	return null
+}
 
 const selectedTicket = computed(() => (selected.value ? ticketFor(selected.value) : null))
 
@@ -175,6 +215,14 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 								<span class="text-text-muted text-[10px] font-black uppercase">{{ selectedTicket.payment_method || 'Pago' }}</span>
 								<span class="text-text-primary text-sm font-black tabular-nums">{{ fmtMoney(selectedTicket.total) }}</span>
 							</div>
+
+							<button
+								type="button"
+								class="btn btn-outline btn-neutral btn-xs mt-3 w-full rounded-xl font-bold flex items-center justify-center gap-1.5"
+								@click="emit('open-purchase', selectedTicket); close()">
+								<Receipt class="size-3.5" />
+								Ver Ticket Completo
+							</button>
 						</div>
 						<div v-else class="border-border-default text-text-muted rounded-2xl border border-dashed p-4 text-center text-xs font-semibold">
 							Esta cita no tiene un ticket asociado.

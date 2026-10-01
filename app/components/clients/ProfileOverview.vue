@@ -9,7 +9,6 @@ import {
 import { useI18n } from 'vue-i18n'
 import { useDataPrivacy } from '~/composables/useDataPrivacy'
 import EditableField from '~/components/shared/EditableField.vue'
-import ClientChart from '~/components/ClientChart.client.vue'
 import InfoTooltip from '~/components/shared/InfoTooltip.vue'
 
 const props = defineProps({
@@ -67,20 +66,55 @@ const nextBookingData = computed(() => {
 
 // Spending Chart Options for ECharts (theme-aware)
 const chart = useChartTheme()
-const chartOptions = computed(() => {
-	const ct = chart.value
-	let rawHistory = kpis.value.spendingHistory || []
-	
-	if (timeframe.value === '3M') {
-		rawHistory = rawHistory.slice(-3)
-	} else if (timeframe.value === '6M') {
-		rawHistory = rawHistory.slice(-6)
-	} else if (timeframe.value === '1Y') {
-		rawHistory = rawHistory.slice(-12)
+
+const continuousSpendingData = computed(() => {
+	const history = kpis.value.spendingHistory || []
+	const spendingMap = new Map<string, number>()
+	for (const h of history) {
+		if (h.period) {
+			spendingMap.set(h.period, Number(h.total) || 0)
+		}
 	}
 
-	const dates = rawHistory.map((h: { period: string; total: number }) => h.period)
-	const totals = rawHistory.map((h: { period: string; total: number }) => h.total)
+	const now = new Date()
+	const currentYear = now.getFullYear()
+	const currentMonth = now.getMonth() // 0-indexed
+
+	let monthCount = 6
+	if (timeframe.value === '3M') monthCount = 3
+	else if (timeframe.value === '6M') monthCount = 6
+	else if (timeframe.value === '1Y') monthCount = 12
+	else if (timeframe.value === 'ALL') {
+		const sortedPeriods = [...spendingMap.keys()].sort()
+		if (sortedPeriods.length > 0) {
+			const [firstYearStr, firstMonthStr] = sortedPeriods[0]!.split('-')
+			const firstYear = Number(firstYearStr)
+			const firstMonth = Number(firstMonthStr) - 1
+			const diffMonths = (currentYear - firstYear) * 12 + (currentMonth - firstMonth) + 1
+			monthCount = Math.max(6, diffMonths)
+		} else {
+			monthCount = 6
+		}
+	}
+
+	const dates: string[] = []
+	const totals: number[] = []
+
+	for (let i = monthCount - 1; i >= 0; i--) {
+		const d = new Date(currentYear, currentMonth - i, 1)
+		const year = d.getFullYear()
+		const month = String(d.getMonth() + 1).padStart(2, '0')
+		const key = `${year}-${month}`
+		dates.push(key)
+		totals.push(Number((spendingMap.get(key) || 0).toFixed(2)))
+	}
+
+	return { dates, totals }
+})
+
+const chartOptions = computed(() => {
+	const ct = chart.value
+	const { dates, totals } = continuousSpendingData.value
 
 	return {
 		grid: { top: 25, right: 15, bottom: 25, left: 45, containLabel: true },
@@ -96,7 +130,7 @@ const chartOptions = computed(() => {
 		},
 		xAxis: {
 			type: 'category',
-			data: dates.length ? dates : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+			data: dates,
 			axisLine: { lineStyle: { color: ct.axisLine } },
 			axisLabel: { color: ct.label, fontSize: 10, fontWeight: 'bold' }
 		},
@@ -108,7 +142,7 @@ const chartOptions = computed(() => {
 		},
 		series: [
 			{
-				data: totals.length ? totals : [0, 0, 0, 0, 0, 0],
+				data: totals,
 				type: 'line',
 				smooth: true,
 				symbolSize: 8,
