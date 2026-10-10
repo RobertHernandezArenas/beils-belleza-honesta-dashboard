@@ -6,11 +6,14 @@ import {
 	downloadSalesExportCsv,
 	downloadSalesExportPdf,
 } from '~/utils/exportHelpers'
-import {
-	getPeriodDateBounds,
-	type ExportDetailMode,
-	type ExportSummaryGrouping,
+import type {
+	ExportDetailMode,
+	ExportSummaryGrouping,
 } from '~/utils/salesExportCalculations'
+import {
+	filterSalesList,
+	getTicketDisplay,
+} from '~/utils/salesFilterCalculations'
 
 export interface SalesMonthGroup {
 	key: string
@@ -61,10 +64,6 @@ export function useSales() {
 		}, 4000)
 	}
 
-	const getTicketDisplay = (sale: Sale) => {
-		return sale.invoice_number ? sale.invoice_number : `BBH-${new Date(sale.created_at).getFullYear()}-${(sale.cart_id.split('-')[0] ?? '').substring(0, 4)}`
-	}
-
 	// Fetch sales
 	const { data: sales, isPending } = useQuery<Sale[]>({
 		queryKey: ['sales', 'completed'],
@@ -80,77 +79,18 @@ export function useSales() {
 
 	const filteredSales = computed(() => {
 		if (!sales.value) return []
-		let result = sales.value
-
-		// 1. Search Query (Client name or cart id)
-		if (searchQuery.value) {
-			const query = searchQuery.value.toLowerCase().trim()
-			result = result.filter((s: Sale) => {
-				const clientName = s.user ? `${s.user.name || ''} ${s.user.surname || ''}`.toLowerCase() : ''
-				return clientName.includes(query) || s.cart_id.toLowerCase().includes(query) || (s.invoice_number || '').toLowerCase().includes(query)
-			})
-		}
-
-		// 2. Date Filtering: Manual picker has precedence if populated; otherwise use summaryTimeframe
-		const hasManualSingle = filterDateMode.value === 'single' && Boolean(filterDateSingle.value)
-		const hasManualRange = filterDateMode.value === 'range' && Boolean(filterDateRange.value.start || filterDateRange.value.end)
-
-		if (hasManualSingle) {
-			result = result.filter((s: Sale) => {
-				const saleDate = new Date(s.created_at).toISOString().split('T')[0]
-				return saleDate === filterDateSingle.value
-			})
-		} else if (hasManualRange) {
-			const start = filterDateRange.value.start ? new Date(filterDateRange.value.start) : null
-			const end = filterDateRange.value.end ? new Date(filterDateRange.value.end) : null
-			if (end) end.setHours(23, 59, 59, 999)
-
-			result = result.filter((s: Sale) => {
-				const saleDate = new Date(s.created_at)
-				if (start && saleDate < start) return false
-				if (end && saleDate > end) return false
-				return true
-			})
-		} else if (summaryTimeframe.value !== 'all') {
-			// Apply timeframe filter (Día, Semana, Mes, Trimestre, Año)
-			const { start, end } = getPeriodDateBounds(summaryTimeframe.value, {
-				quarter: selectedQuarter.value,
-				year: selectedYear.value,
-			})
-
-			if (start && end) {
-				result = result.filter((s: Sale) => {
-					const saleDate = new Date(s.created_at)
-					return saleDate >= start && saleDate <= end
-				})
-			}
-		}
-
-		// 3. Payment Method Filter
-		if (filterPaymentMethod.value !== 'all') {
-			result = result.filter((s: Sale) => s.payment_method === filterPaymentMethod.value)
-		}
-
-		// 4. Sorting
-		result = [...result].sort((a: Sale, b: Sale) => {
-			const modifier = sortOrder.value === 'asc' ? 1 : -1
-			if (sortKey.value === 'date') {
-				return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * modifier
-			} else if (sortKey.value === 'total') {
-				return (a.total - b.total) * modifier
-			} else if (sortKey.value === 'payment_method') {
-				return (a.payment_method || '').localeCompare(b.payment_method || '') * modifier
-			} else if (sortKey.value === 'client') {
-				const nameA = a.user ? `${a.user.name || ''} ${a.user.surname || ''}`.toLowerCase() : 'zzzz'
-				const nameB = b.user ? `${b.user.name || ''} ${b.user.surname || ''}`.toLowerCase() : 'zzzz'
-				return nameA.localeCompare(nameB) * modifier
-			} else if (sortKey.value === 'id') {
-				return getTicketDisplay(a).localeCompare(getTicketDisplay(b)) * modifier
-			}
-			return 0
+		return filterSalesList(sales.value, {
+			searchQuery: searchQuery.value,
+			filterDateMode: filterDateMode.value,
+			filterDateSingle: filterDateSingle.value,
+			filterDateRange: filterDateRange.value,
+			filterPaymentMethod: filterPaymentMethod.value,
+			summaryTimeframe: summaryTimeframe.value,
+			selectedQuarter: selectedQuarter.value,
+			selectedYear: selectedYear.value,
+			sortKey: sortKey.value,
+			sortOrder: sortOrder.value,
 		})
-
-		return result
 	})
 
 	watch([

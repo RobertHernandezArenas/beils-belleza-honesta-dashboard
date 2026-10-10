@@ -144,7 +144,7 @@ const handleNewBooking = () => {
 
 <template>
   <div class="bg-bg-app min-h-screen w-full p-4 font-sans lg:p-8 2xl:p-12 transition-colors duration-500">
-    <div class="mx-auto max-w-350 2xl:max-w-[1600px] 3xl:max-w-[1800px] space-y-6">
+    <div class="mx-auto max-w-350 2xl:max-w-3xl 3xl:max-w-[1800px] space-y-6">
       
       <!-- Navigation Bar & Breadcrumbs -->
       <div class="flex items-center justify-between">
