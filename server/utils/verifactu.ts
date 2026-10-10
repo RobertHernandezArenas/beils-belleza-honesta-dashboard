@@ -20,7 +20,7 @@ export async function generateInvoiceNumber(
 	// Sequence key includes month and year to reset each month
 	const seqType = `invoice_${year}_${month}`
 
-	// UPSERT: create if not exists, otherwise increment last_value by 1
+	// UPSERT: create if not exists with 1, otherwise increment last_value by 1
 	const sequence = await prisma.sequence.upsert({
 		where: { type: seqType },
 		update: { last_value: { increment: 1 } },
@@ -28,7 +28,7 @@ export async function generateInvoiceNumber(
 			type: seqType,
 			prefix: PREFIX,
 			year: year,
-			last_value: 0,
+			last_value: 1,
 		},
 	})
 
@@ -45,7 +45,7 @@ export async function processVerifactuInvoice(invoiceData: IInvoice) {
 		where: { 
 			status: 'completed', 
 			hash: { not: null },
-			invoice_number: { startsWith: `${PREFIX}-${new Date().getFullYear()}` }
+			invoice_number: { startsWith: `${PREFIX}-` }
 		},
 		orderBy: { created_at: 'desc' },
 	})

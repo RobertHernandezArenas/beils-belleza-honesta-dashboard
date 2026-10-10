@@ -194,6 +194,9 @@ export default defineEventHandler(async event => {
 
 			if (body.created_at) {
 				updateData.created_at = new Date(body.created_at)
+			} else if (body.status === 'completed' && currentCart.status !== 'completed') {
+				// Sincronizar fecha de venta con momento de cobro/completado
+				updateData.created_at = new Date()
 			}
 
 			const cart = await tx.cart.update({
