@@ -27,6 +27,51 @@ export function getTicketDisplay(sale: Sale): string {
 }
 
 /**
+ * Natural chronological comparison for ticket identifiers (e.g. BBH-09-2026-0001, BBH-2026-0001)
+ * Compares by year, then month, then sequence number, falling back to numeric locale compare.
+ */
+export function compareTicketIds(idA: string, idB: string): number {
+	// Pattern 1: PREFIX-MM-YYYY-NUMBER (e.g. BBH-09-2026-0001)
+	const matchMonthlyA = idA.match(/^([A-Za-z]+)-(\d{2})-(\d{4})-(\d+)$/)
+	const matchMonthlyB = idB.match(/^([A-Za-z]+)-(\d{2})-(\d{4})-(\d+)$/)
+
+	if (matchMonthlyA && matchMonthlyB) {
+		const [, prefixA, monthA, yearA, seqA] = matchMonthlyA
+		const [, prefixB, monthB, yearB, seqB] = matchMonthlyB
+
+		if (prefixA !== prefixB) {
+			return prefixA!.localeCompare(prefixB!)
+		}
+		const diffYear = Number(yearA) - Number(yearB)
+		if (diffYear !== 0) return diffYear
+
+		const diffMonth = Number(monthA) - Number(monthB)
+		if (diffMonth !== 0) return diffMonth
+
+		return Number(seqA) - Number(seqB)
+	}
+
+	// Pattern 2: PREFIX-YYYY-NUMBER (e.g. BBH-2026-0001)
+	const matchYearlyA = idA.match(/^([A-Za-z]+)-(\d{4})-(\d+)$/)
+	const matchYearlyB = idB.match(/^([A-Za-z]+)-(\d{4})-(\d+)$/)
+
+	if (matchYearlyA && matchYearlyB) {
+		const [, prefixA, yearA, seqA] = matchYearlyA
+		const [, prefixB, yearB, seqB] = matchYearlyB
+
+		if (prefixA !== prefixB) {
+			return prefixA!.localeCompare(prefixB!)
+		}
+		const diffYear = Number(yearA) - Number(yearB)
+		if (diffYear !== 0) return diffYear
+
+		return Number(seqA) - Number(seqB)
+	}
+
+	return idA.localeCompare(idB, undefined, { numeric: true })
+}
+
+/**
  * Parses YYYY-MM-DD string into local start-of-day Date (00:00:00.000)
  */
 export function parseLocalDateStart(dateStr?: string | null): Date | null {
@@ -147,7 +192,7 @@ export function filterSalesList(sales: Sale[], options: FilterSalesOptions = {})
 				return nameA.localeCompare(nameB) * modifier
 			}
 			if (options.sortKey === 'id') {
-				return getTicketDisplay(a).localeCompare(getTicketDisplay(b)) * modifier
+				return compareTicketIds(getTicketDisplay(a), getTicketDisplay(b)) * modifier
 			}
 			return 0
 		})

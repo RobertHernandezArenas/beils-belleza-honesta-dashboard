@@ -5,6 +5,7 @@ import {
 	parseLocalDateStart,
 	parseLocalDateEnd,
 	getTicketDisplay,
+	compareTicketIds,
 	filterSalesList,
 } from '../app/utils/salesFilterCalculations'
 
@@ -203,5 +204,43 @@ describe('Sales Filters & Local Date Precision Logic', () => {
 		assert.equal(sortedClient[0]?.user?.name, 'Beatriz')
 		assert.equal(sortedClient[1]?.user?.name, 'Carlos')
 		assert.equal(sortedClient[2]?.user?.name, 'Elena')
+	})
+
+	it('should sort tickets chronologically by year, month, and sequence number', () => {
+		// Same month tickets: 0001 < 0002 < 0003
+		assert.ok(compareTicketIds('BBH-09-2026-0001', 'BBH-09-2026-0002') < 0)
+		assert.ok(compareTicketIds('BBH-09-2026-0002', 'BBH-09-2026-0001') > 0)
+		assert.equal(compareTicketIds('BBH-09-2026-0001', 'BBH-09-2026-0001'), 0)
+
+		// Cross-month tickets: August < September
+		assert.ok(compareTicketIds('BBH-08-2026-0022', 'BBH-09-2026-0001') < 0)
+		assert.ok(compareTicketIds('BBH-09-2026-0001', 'BBH-08-2026-0022') > 0)
+
+		// Cross-year tickets: December 2025 < January 2026
+		assert.ok(compareTicketIds('BBH-12-2025-0099', 'BBH-01-2026-0001') < 0)
+		assert.ok(compareTicketIds('BBH-01-2026-0001', 'BBH-12-2025-0099') > 0)
+
+		// Testing filterSalesList sorting with tickets
+		const ticketSales: Sale[] = [
+			{ ...mockSales[0]!, invoice_number: 'BBH-09-2026-0002', cart_id: 't2' },
+			{ ...mockSales[1]!, invoice_number: 'BBH-08-2026-0022', cart_id: 't1' },
+			{ ...mockSales[2]!, invoice_number: 'BBH-09-2026-0001', cart_id: 't3' },
+		]
+
+		const sortedAsc = filterSalesList(ticketSales, {
+			sortKey: 'id',
+			sortOrder: 'asc',
+		})
+		assert.equal(sortedAsc[0]?.invoice_number, 'BBH-08-2026-0022')
+		assert.equal(sortedAsc[1]?.invoice_number, 'BBH-09-2026-0001')
+		assert.equal(sortedAsc[2]?.invoice_number, 'BBH-09-2026-0002')
+
+		const sortedDesc = filterSalesList(ticketSales, {
+			sortKey: 'id',
+			sortOrder: 'desc',
+		})
+		assert.equal(sortedDesc[0]?.invoice_number, 'BBH-09-2026-0002')
+		assert.equal(sortedDesc[1]?.invoice_number, 'BBH-09-2026-0001')
+		assert.equal(sortedDesc[2]?.invoice_number, 'BBH-08-2026-0022')
 	})
 })
