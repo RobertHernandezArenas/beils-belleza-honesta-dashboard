@@ -10,11 +10,15 @@ export default defineEventHandler(async event => {
 
 		const query = getQuery(event)
 		const search = ((query.search as string) || '').trim()
+		const statusParam = ((query.status as string) || '').trim().toUpperCase()
 		const page = parseInt(query.page as string) || 1
 		const limit = parseInt(query.limit as string) || 10
 		const skip = (page - 1) * limit
 
 		const whereClause: Prisma.UserWhereInput = { role: 'CLIENT' }
+		if (statusParam === 'ON' || statusParam === 'OFF') {
+			whereClause.status = statusParam as 'ON' | 'OFF'
+		}
 		if (search) {
 			// Multi-term search: split the query into words and require EVERY word to
 			// match at least one field (AND across words, OR across fields). This lets

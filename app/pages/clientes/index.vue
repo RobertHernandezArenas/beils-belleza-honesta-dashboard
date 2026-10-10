@@ -30,6 +30,7 @@
 		q: '',
 		page: 1,
 		limit: 7,
+		status: 'ALL',
 	}))
 
 	// Immediate value drives the input + clear button; the debounced copy drives the API query.
@@ -37,6 +38,7 @@
 	const searchQuery = useDebouncedRef(directoryState.value.q, 500)
 	const page = ref(directoryState.value.page)
 	const limit = ref(directoryState.value.limit)
+	const statusFilter = ref<string>(directoryState.value.status || 'ALL')
 
 	// Debounce the typed value into the query
 	watch(searchInput, v => {
@@ -44,8 +46,8 @@
 	})
 
 	// Keep the persisted snapshot in sync with the live controls
-	watch([searchInput, page, limit], ([q, p, l]) => {
-		directoryState.value = { q: q as string, page: p as number, limit: l as number }
+	watch([searchInput, page, limit, statusFilter], ([q, p, l, s]) => {
+		directoryState.value = { q: q as string, page: p as number, limit: l as number, status: s as string }
 	})
 
 	const {
@@ -53,13 +55,14 @@
 		isPending,
 		error,
 	} = useQuery<{ data: ClientDTO[]; pagination?: { total?: number; totalPages?: number; page?: number } }>({
-		queryKey: ['clients-list', searchQuery, page, limit],
+		queryKey: ['clients-list', searchQuery, page, limit, statusFilter],
 		queryFn: () =>
 			$fetch('/api/clients', {
 				query: {
 					search: searchQuery.value,
 					page: page.value,
 					limit: limit.value,
+					status: statusFilter.value !== 'ALL' ? statusFilter.value : undefined,
 				},
 			}),
 	})
@@ -67,8 +70,8 @@
 	const clients = computed(() => clientsResponse.value?.data || [])
 	const pagination = computed(() => clientsResponse.value?.pagination || { total: 0, totalPages: 0 })
 
-	// Reset page when search changes
-	watch(searchQuery, () => {
+	// Reset page when search or status filter changes
+	watch([searchQuery, statusFilter], () => {
 		page.value = 1
 	})
 
@@ -146,14 +149,14 @@
 					<p class="text-text-muted text-sm font-medium">{{ t('catalog.clients.subtitle') }}</p>
 				</div>
 
-				<div class="flex w-full flex-col gap-4 sm:flex-row sm:items-center lg:w-auto">
-					<div class="relative w-full sm:w-3/4 lg:w-auto">
+				<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
+					<div class="relative w-full sm:w-64">
 						<Search class="text-text-muted absolute top-1/2 left-4 z-2 size-4 -translate-y-1/2" />
 						<input
 							v-model="searchInput"
 							type="search"
 							placeholder="Buscar nombre o correo..."
-							class="bg-bg-card text-text-primary border-border-default placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15 h-12 w-full rounded-full border pr-11 pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] outline-none transition-[border-color,box-shadow] sm:w-full lg:w-64" >
+							class="bg-bg-card text-text-primary border-border-default placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15 h-12 w-full rounded-full border pr-11 pl-11 shadow-[0_2px_10px_rgba(0,0,0,0.02)] outline-none transition-[border-color,box-shadow]" >
 						<button
 							v-if="searchInput"
 							type="button"
@@ -163,8 +166,20 @@
 							<X class="size-3.5" />
 						</button>
 					</div>
+					<div class="w-full sm:w-36">
+						<AppSelect
+							v-model="statusFilter"
+							aria-label="Filtrar por estado"
+							size="lg"
+							:options="[
+								{ value: 'ALL', label: 'Todos' },
+								{ value: 'ON', label: 'Activos' },
+								{ value: 'OFF', label: 'Inactivos' },
+							]"
+						/>
+					</div>
 					<button
-						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-1/4 lg:w-auto"
+						class="btn bg-text-primary text-bg-app hover:bg-text-secondary flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full border-transparent px-6 shadow-md transition-colors sm:w-auto"
 						@click="openCreateModal">
 						<Plus class="size-5" />
 						<span class="font-bold">{{ t('catalog.clients.newClient') }}</span>
