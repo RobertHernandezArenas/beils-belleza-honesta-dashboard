@@ -23,26 +23,47 @@ pids/
 *.seed
 *.pid.lock
 
-# Test coverage
+# Test coverage & test runners
 coverage/
 *.lcov
 .nyc_output/
 lib-cov/
+test-results/
+.vitest/
+playwright-report/
+blob-report/
 
 # Nuxt & Nitro build outputs
 .nuxt/
 .output/
+.nitro/
 dist/
 out/
+.vercel/
+.netlify/
+.turbo/
 
 # TypeScript cache
 *.tsbuildinfo
 
-# Environment variables
+# Environment variables & secrets
 .env
 .env.*
 !.env.example
 *.env.backup
+*.env.bak
+
+# Certificates & Private Keys (AEAT Veri*Factu, SSL, SSH)
+*.p12
+*.pfx
+*.pem
+*.cer
+*.crt
+*.key
+*.pub
+*.der
+certs/
+certificates/
 
 # Vite logs & caches
 .cache/
@@ -56,6 +77,23 @@ prisma/generated/
 prisma/prisma/generated/
 app/generated/prisma/
 generated/prisma/
+
+# Database dumps & local storage (preserves reference schema)
+*.dump
+*.sql.gz
+*.sql.tar
+*.bak
+*.backup
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+dumps/
+backups/
+*.sql
+!prisma/reference_schema.sql
+!prisma/*.sql
 
 # Uploaded multimedia (preserve directory structure via .gitkeep)
 public/multimedia/*
@@ -79,6 +117,8 @@ tmp-excalidraw-mcp/
 ehthumbs.db
 Thumbs.db
 [Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
 
 # Editor & IDE directories
 .idea/
@@ -88,6 +128,52 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 .vscode-test/
+*.code-workspace
+
+# Local agent & developer configurations (Claude, Cursor, Antigravity, Aider, Windsurf)
+.claude/settings.local.json
+.claude/worktrees/
+.claude/todos/
+.claude/sessions/
+.claude/history/
+.claude/cache/
+.claude/backups/
+CLAUDE.local.md
+*.local.json
+.cursor/
+.cursorrules.local
+.cursorindexing/
+.gemini/
+.system_generated/
+.agents/sessions/
+.agents/runs/
+.agents/cache/
+.agents/*.local.*
+.aider*
+.continue/
+.windsurf/
+.codeium/
+*.transcript.jsonl
+
+# Scratch & temporary workspace files
+tmp/
+temp/
+scratch/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+*.patch
+*.diff
+
+# Archives & compressed files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.tgz
 
 # Yarn v3 / miscellaneous
 .yarn/*
@@ -98,7 +184,6 @@ Thumbs.db
 !.yarn/versions
 .pnp.*
 .yarn-integrity
-*.tgz
 .eslintcache
 .stylelintcache
 .node_repl_history
