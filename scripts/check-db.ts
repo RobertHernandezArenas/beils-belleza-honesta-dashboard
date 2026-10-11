@@ -15,7 +15,7 @@ async function checkConnection() {
 	} catch (error: any) {
 		console.error('❌ Error de conexión:', error.message)
 		if (error.code === 'P2002') {
-			console.error('💡 Nota: Problema de restricción única.')
+			console.error('💡 Nota: Problema de restricción únicavvaaaaaa.')
 		} else if (error.code === 'P1001') {
 			console.error('💡 Nota: No se pudo conectar al servidor de base de datos. Verifica el HOST y PUERTO.')
 		} else if (error.code === 'P1003') {
