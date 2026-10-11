@@ -11,6 +11,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"typecheck": "nuxi typecheck",
+		"test": "tsx --test tests/*.test.ts",
 		"postinstall": "nuxt prepare",
 		"seed": "npx tsx --env-file=.env ./seeds/seed-db.ts",
 		"seed:admin": "npx tsx --env-file=.env ./seeds/admin-seed.ts",
