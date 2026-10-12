@@ -17,8 +17,8 @@ export async function generateInvoiceNumber(
 ): Promise<string> {
 	const now = new Date()
 	const month = (now.getMonth() + 1).toString().padStart(2, '0')
-	// Sequence key includes month and year to reset each month
-	const seqType = `invoice_${year}_${month}`
+	// Sequence key is annual so serial numbers continue consecutively across months
+	const seqType = `invoice_${year}`
 
 	// UPSERT: create if not exists with 1, otherwise increment last_value by 1
 	const sequence = await prisma.sequence.upsert({
