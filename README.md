@@ -103,6 +103,34 @@ pnpm seed:admin
 | `pnpm preview` | Previsualiza localmente el build de producción |
 | `pnpm prisma:generate` | Regenera el cliente tipado de Prisma |
 | `pnpm db:push` | Aplica cambios del `schema.prisma` directamente a la base de datos |
+| `pnpm tickets:verify` | Auditoría e inspección del estado de tickets, secuencias y puntos de control de agenda |
+| `pnpm tickets:sync-agenda` | Simulación (Dry-Run) de sincronización de citas huérfanas con ventas cobradas |
+| `pnpm tickets:sync-agenda:apply` | Aplica en vivo la sincronización de citas huérfanas vinculándolas y marcándolas como COMPLETADA |
+| `pnpm tickets:migrate` | Simulación (Dry-Run) de resecuenciación correlativa anual de tickets |
+| `pnpm tickets:migrate:apply` | Aplica en vivo la resecuenciación correlativa anual de tickets (`0001` a `0390`+) |
+
+---
+
+## 🧾 Migración de Tickets y Sincronización Fiscal (Veri*Factu)
+
+Para mantener la correlatividad fiscal anual (`0001` a `0390`+) y la sincronización estricta entre la Agenda y el TPV, el proyecto incluye herramientas dedicadas (ver guía completa en [ticket_migration_tutorial.md](ticket_migration_tutorial.md)):
+
+### Paso 2 del Procedimiento: Auditoría del Estado de la Base
+
+Antes y después de cualquier sincronización o migración en producción, inspeccione el estado actual de los comprobantes y secuencias:
+
+```bash
+pnpm run tickets:verify
+```
+
+Este comando audita y reporta:
+1. **Secuencias registradas en tabla `sequences`**: Comprueba el valor de `last_value` para la clave unificada `invoice_2026`.
+2. **Volumen y rangos por mes**: Verifica que los tickets mantengan continuidad estricta anual sin reseteos erróneos entre meses (ej. `[BBH-03-2026]`, `[BBH-07-2026]`, `[BBH-08-2026]`, `[BBH-09-2026]`, `[BBH-10-2026]`).
+3. **Puntos de control según agenda**: Revisa la correlación cronológica de tickets clave contra la hora real de la cita en cabina (desde el primer ticket emitido hasta el último actual).
+
+> 📖 **Guías y Procedimientos:**
+> - [Guía de Migración de Tickets y Sincronización de Agenda](docs/tutorial-migracion-tickets.md)
+> - [Guía de Subtotales Mensuales en Exportaciones (PDF/CSV)](docs/tutorial-subtotales-reporte-ventas.md)
 
 ---
 
