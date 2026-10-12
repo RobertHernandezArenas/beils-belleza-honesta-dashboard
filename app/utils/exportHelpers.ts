@@ -344,6 +344,11 @@ export async function downloadSalesExportPdf({
 			if (summaryGrouping && summaryGrouping !== 'global') {
 				const periodicRows = calculatePeriodicSummaries(sales, summaryGrouping)
 				const groupingTitle = summaryGrouping === 'day' ? 'Día' : summaryGrouping === 'week' ? 'Semana' : summaryGrouping === 'month' ? 'Mes' : 'Año'
+				const monthlySummaries = summaryGrouping === 'day' ? calculatePeriodicSummaries(sales, 'month') : []
+				const monthlyMap = new Map<string, PeriodicSummaryRow>()
+				for (const m of monthlySummaries) {
+					monthlyMap.set(m.key, m)
+				}
 
 				ensureSpace(35)
 				doc.setFont('helvetica', 'bold')
@@ -383,7 +388,8 @@ export async function downloadSalesExportPdf({
 
 				drawPeriodicHeader()
 
-				for (const row of periodicRows) {
+				for (let i = 0; i < periodicRows.length; i++) {
+					const row = periodicRows[i]!
 					ensureSpace(8, () => {
 						drawDocumentHeader()
 						drawPeriodicHeader()
@@ -421,6 +427,52 @@ export async function downloadSalesExportPdf({
 					y += 6
 					doc.setDrawColor(226, 232, 240)
 					doc.line(marginX, y, marginX + contentWidth, y)
+
+					if (summaryGrouping === 'day') {
+						const currentMonthKey = row.key.slice(0, 7)
+						const nextRow = periodicRows[i + 1]
+						const isLastDayOfMonth = !nextRow || nextRow.key.slice(0, 7) !== currentMonthKey
+						if (isLastDayOfMonth) {
+							const monthSummary = monthlyMap.get(currentMonthKey)
+							if (monthSummary) {
+								ensureSpace(9, () => {
+									drawDocumentHeader()
+									drawPeriodicHeader()
+								})
+
+								doc.setFillColor(243, 232, 255)
+								doc.rect(marginX, y, contentWidth, 6.2, 'F')
+
+								doc.setFont('helvetica', 'bold')
+								doc.setFontSize(7.5)
+								doc.setTextColor(109, 40, 117)
+
+								let sx = marginX
+								doc.text(`SUBTOTAL ${monthSummary.label.toUpperCase()}`, sx + 2, y + 4.2)
+								sx += periodicCols[0]!.width
+
+								doc.text(String(monthSummary.salesCount), sx + periodicCols[1]!.width / 2, y + 4.2, { align: 'center' })
+								sx += periodicCols[1]!.width
+
+								doc.text(formatNumberEs(monthSummary.baseAmount), sx + periodicCols[2]!.width - 2, y + 4.2, { align: 'right' })
+								sx += periodicCols[2]!.width
+
+								doc.text(formatNumberEs(monthSummary.tax21Amount), sx + periodicCols[3]!.width - 2, y + 4.2, { align: 'right' })
+								sx += periodicCols[3]!.width
+
+								doc.text(formatNumberEs(monthSummary.tax10Amount), sx + periodicCols[4]!.width - 2, y + 4.2, { align: 'right' })
+								sx += periodicCols[4]!.width
+
+								doc.text(formatNumberEs(monthSummary.grandTotal), sx + periodicCols[5]!.width - 2, y + 4.2, { align: 'right' })
+
+								y += 6.5
+								doc.setDrawColor(216, 180, 254)
+								doc.setLineWidth(0.3)
+								doc.line(marginX, y, marginX + contentWidth, y)
+								y += 1.5
+							}
+						}
+					}
 				}
 
 				// Totals row
@@ -439,6 +491,69 @@ export async function downloadSalesExportPdf({
 				doc.text(formatNumberEs(summary.taxesByRate[10]?.taxAmount || 0), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width + periodicCols[3]!.width + periodicCols[4]!.width - 2, y + 4, { align: 'right' })
 				doc.text(formatNumberEs(summary.grandTotal), marginX + contentWidth - 2, y + 4, { align: 'right' })
 				y += 12
+
+				if (summaryGrouping === 'day' && monthlySummaries.length > 1) {
+					ensureSpace(32 + monthlySummaries.length * 7, () => {
+						drawDocumentHeader()
+					})
+					doc.setFont('helvetica', 'bold')
+					doc.setFontSize(11)
+					doc.setTextColor(30, 41, 59)
+					doc.text('Resumen Consolidado por Meses', marginX, y)
+					y += 5
+
+					drawPeriodicHeader()
+
+					for (const mRow of monthlySummaries) {
+						ensureSpace(8, () => {
+							drawDocumentHeader()
+							drawPeriodicHeader()
+						})
+
+						doc.setFont('helvetica', 'normal')
+						doc.setFontSize(7.5)
+						doc.setTextColor(30, 41, 59)
+
+						let mx = marginX
+						doc.text(mRow.label, mx + 2, y + 4)
+						mx += periodicCols[0]!.width
+
+						doc.text(String(mRow.salesCount), mx + periodicCols[1]!.width / 2, y + 4, { align: 'center' })
+						mx += periodicCols[1]!.width
+
+						doc.text(formatNumberEs(mRow.baseAmount), mx + periodicCols[2]!.width - 2, y + 4, { align: 'right' })
+						mx += periodicCols[2]!.width
+
+						doc.text(formatNumberEs(mRow.tax21Amount), mx + periodicCols[3]!.width - 2, y + 4, { align: 'right' })
+						mx += periodicCols[3]!.width
+
+						doc.text(formatNumberEs(mRow.tax10Amount), mx + periodicCols[4]!.width - 2, y + 4, { align: 'right' })
+						mx += periodicCols[4]!.width
+
+						doc.setFont('helvetica', 'bold')
+						doc.text(formatNumberEs(mRow.grandTotal), mx + periodicCols[5]!.width - 2, y + 4, { align: 'right' })
+
+						y += 6
+						doc.setDrawColor(226, 232, 240)
+						doc.line(marginX, y, marginX + contentWidth, y)
+					}
+
+					ensureSpace(12, () => {
+						drawDocumentHeader()
+						drawPeriodicHeader()
+					})
+					y += 1
+					doc.setFont('helvetica', 'bold')
+					doc.setFontSize(8)
+					doc.setTextColor(15, 23, 42)
+					doc.text('TOTALES ACUMULADOS', marginX + 2, y + 4)
+					doc.text(String(summary.totalSalesCount), marginX + periodicCols[0]!.width + periodicCols[1]!.width / 2, y + 4, { align: 'center' })
+					doc.text(formatNumberEs(summary.totalBaseAmount), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width - 2, y + 4, { align: 'right' })
+					doc.text(formatNumberEs(summary.taxesByRate[21]?.taxAmount || 0), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width + periodicCols[3]!.width - 2, y + 4, { align: 'right' })
+					doc.text(formatNumberEs(summary.taxesByRate[10]?.taxAmount || 0), marginX + periodicCols[0]!.width + periodicCols[1]!.width + periodicCols[2]!.width + periodicCols[3]!.width + periodicCols[4]!.width - 2, y + 4, { align: 'right' })
+					doc.text(formatNumberEs(summary.grandTotal), marginX + contentWidth - 2, y + 4, { align: 'right' })
+					y += 12
+				}
 
 				// Methods breakdown table
 				ensureSpace(45)

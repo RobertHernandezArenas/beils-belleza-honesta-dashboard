@@ -459,6 +459,11 @@ export function buildSalesCsvContent({
 		if (summaryGrouping && summaryGrouping !== 'global') {
 			const periodicRows = calculatePeriodicSummaries(sales, summaryGrouping)
 			const groupingTitle = summaryGrouping === 'day' ? 'DÍA' : summaryGrouping === 'week' ? 'SEMANA' : summaryGrouping === 'month' ? 'MES' : 'AÑO'
+			const monthlySummaries = summaryGrouping === 'day' ? calculatePeriodicSummaries(sales, 'month') : []
+			const monthlyMap = new Map<string, PeriodicSummaryRow>()
+			for (const m of monthlySummaries) {
+				monthlyMap.set(m.key, m)
+			}
 
 			lines.push([`SUMATORIO PERIÓDICO AGRUPADO POR ${groupingTitle}`])
 			lines.push([])
@@ -475,7 +480,8 @@ export function buildSalesCsvContent({
 				'Otros (€)',
 			])
 
-			for (const row of periodicRows) {
+			for (let i = 0; i < periodicRows.length; i++) {
+				const row = periodicRows[i]!
 				const cash = row.methodsSummary['cash'] || 0
 				const card = row.methodsSummary['card'] || 0
 				let others = 0
@@ -497,6 +503,79 @@ export function buildSalesCsvContent({
 					formatNumberEs(card),
 					formatNumberEs(others),
 				])
+
+				if (summaryGrouping === 'day') {
+					const currentMonthKey = row.key.slice(0, 7)
+					const nextRow = periodicRows[i + 1]
+					const isLastDayOfMonth = !nextRow || nextRow.key.slice(0, 7) !== currentMonthKey
+					if (isLastDayOfMonth) {
+						const monthSummary = monthlyMap.get(currentMonthKey)
+						if (monthSummary) {
+							const mCash = monthSummary.methodsSummary['cash'] || 0
+							const mCard = monthSummary.methodsSummary['card'] || 0
+							let mOthers = 0
+							for (const [mKey, mVal] of Object.entries(monthSummary.methodsSummary)) {
+								if (mKey !== 'cash' && mKey !== 'card') {
+									mOthers += mVal
+								}
+							}
+
+							lines.push([
+								`SUBTOTAL ${monthSummary.label.toUpperCase()}`,
+								String(monthSummary.salesCount),
+								formatNumberEs(monthSummary.baseAmount),
+								formatNumberEs(monthSummary.tax21Amount),
+								formatNumberEs(monthSummary.tax10Amount),
+								formatNumberEs(monthSummary.totalTaxAmount),
+								formatNumberEs(monthSummary.grandTotal),
+								formatNumberEs(mCash),
+								formatNumberEs(mCard),
+								formatNumberEs(mOthers),
+							])
+						}
+					}
+				}
+			}
+
+			if (summaryGrouping === 'day' && monthlySummaries.length > 1) {
+				lines.push([])
+				lines.push(['RESUMEN CONSOLIDADO POR MESES'])
+				lines.push([
+					'Mes',
+					'Nº Tickets',
+					'Base Imponible (€)',
+					'IVA 21% (€)',
+					'IVA 10% (€)',
+					'Total IVA (€)',
+					'Total Facturado (€)',
+					'Efectivo (€)',
+					'Tarjeta (€)',
+					'Otros (€)',
+				])
+
+				for (const mRow of monthlySummaries) {
+					const cash = mRow.methodsSummary['cash'] || 0
+					const card = mRow.methodsSummary['card'] || 0
+					let others = 0
+					for (const [mKey, mVal] of Object.entries(mRow.methodsSummary)) {
+						if (mKey !== 'cash' && mKey !== 'card') {
+							others += mVal
+						}
+					}
+
+					lines.push([
+						mRow.label,
+						String(mRow.salesCount),
+						formatNumberEs(mRow.baseAmount),
+						formatNumberEs(mRow.tax21Amount),
+						formatNumberEs(mRow.tax10Amount),
+						formatNumberEs(mRow.totalTaxAmount),
+						formatNumberEs(mRow.grandTotal),
+						formatNumberEs(cash),
+						formatNumberEs(card),
+						formatNumberEs(others),
+					])
+				}
 			}
 
 			lines.push([])

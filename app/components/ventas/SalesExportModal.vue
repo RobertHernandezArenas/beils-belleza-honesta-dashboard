@@ -76,7 +76,7 @@ const availableSummaryGroupings = computed<Array<{ id: ExportSummaryGrouping; la
 		{
 			id: 'day',
 			label: 'Por Día',
-			tooltip: 'Desglose cronológico día por día con bases imponibles, IVA y total diario.',
+			tooltip: 'Desglose cronológico día por día con bases imponibles, IVA y subtotales por cada mes en períodos trimestrales o anuales.',
 		},
 		{
 			id: 'week',
@@ -119,7 +119,7 @@ watch(selectedTimeframe, () => {
 const currentGroupingDescription = computed(() => {
 	switch (selectedSummaryGrouping.value) {
 		case 'day':
-			return 'Generará una fila de sumatorio por cada día del período con sus bases imponibles, IVA y métodos de cobro.'
+			return 'Generará una fila de sumatorio por cada día del período con sus bases imponibles e IVA, incluyendo el subtotal mensual de cada mes en períodos trimestrales o anuales.'
 		case 'week':
 			return 'Generará una fila de sumatorio por cada semana contable con sus bases imponibles y totales semanales.'
 		case 'month':

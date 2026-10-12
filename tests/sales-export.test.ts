@@ -363,6 +363,10 @@ describe('Sales Export & Quarterly Filters Logic', () => {
 		assert.ok(csvDaily.includes('SUMATORIO PERIÓDICO AGRUPADO POR DÍA'))
 		assert.ok(csvDaily.includes('Intervalo / Periodo;Nº Tickets;Base Imponible (€);IVA 21% (€);IVA 10% (€);Total IVA (€);Total Facturado (€);Efectivo (€);Tarjeta (€);Otros (€)'))
 		assert.ok(csvDaily.includes('15/01/2026;2'))
+		assert.ok(csvDaily.includes('SUBTOTAL NOVIEMBRE 2025;1'))
+		assert.ok(csvDaily.includes('SUBTOTAL ENERO 2026;2'))
+		assert.ok(csvDaily.includes('SUBTOTAL FEBRERO 2026;1'))
+		assert.ok(csvDaily.includes('RESUMEN CONSOLIDADO POR MESES'))
 		assert.ok(csvDaily.includes('TOTALES ACUMULADOS DEL PERIODO'))
 		assert.ok(csvDaily.includes('285,00'))
 
@@ -377,6 +381,109 @@ describe('Sales Export & Quarterly Filters Logic', () => {
 		assert.ok(csvMonthly.includes('Enero 2026;2'))
 		assert.ok(csvMonthly.includes('Febrero 2026;1'))
 		assert.ok(csvMonthly.includes('Noviembre 2025;1'))
+	})
+
+	it('should accurately compute monthly subtotals in quarterly daily reports', () => {
+		const mockQuarterSales: Sale[] = [
+			// Julio (month 6): 2 tickets, total 150
+			{
+				cart_id: 'q-jul-1',
+				status: 'completed',
+				subtotal: 50,
+				discount: 0,
+				total: 50,
+				payment_method: 'card',
+				invoice_number: 'BBH-07-2026-0001',
+				created_at: '2026-07-05T10:00:00.000Z',
+				user: { name: 'Cliente', surname: 'Julio 1', email: 'j1@test.com' },
+				items: [{ item_type: 'service', item_id: 's1', name: 'Facial', quantity: 1, unit_price: 50, tax_rate: 21, subtotal: 50, total: 50 }],
+			},
+			{
+				cart_id: 'q-jul-2',
+				status: 'completed',
+				subtotal: 100,
+				discount: 0,
+				total: 100,
+				payment_method: 'cash',
+				invoice_number: 'BBH-07-2026-0002',
+				created_at: '2026-07-20T11:00:00.000Z',
+				user: { name: 'Cliente', surname: 'Julio 2', email: 'j2@test.com' },
+				items: [{ item_type: 'service', item_id: 's2', name: 'Masaje', quantity: 1, unit_price: 100, tax_rate: 21, subtotal: 100, total: 100 }],
+			},
+			// Agosto (month 7): 1 ticket, total 80
+			{
+				cart_id: 'q-ago-1',
+				status: 'completed',
+				subtotal: 80,
+				discount: 0,
+				total: 80,
+				payment_method: 'card',
+				invoice_number: 'BBH-08-2026-0003',
+				created_at: '2026-08-15T12:00:00.000Z',
+				user: { name: 'Cliente', surname: 'Agosto', email: 'a1@test.com' },
+				items: [{ item_type: 'service', item_id: 's3', name: 'Manicura', quantity: 1, unit_price: 80, tax_rate: 21, subtotal: 80, total: 80 }],
+			},
+			// Septiembre (month 8): 2 tickets, total 120
+			{
+				cart_id: 'q-sep-1',
+				status: 'completed',
+				subtotal: 70,
+				discount: 0,
+				total: 70,
+				payment_method: 'card',
+				invoice_number: 'BBH-09-2026-0004',
+				created_at: '2026-09-02T10:00:00.000Z',
+				user: { name: 'Cliente', surname: 'Septiembre 1', email: 's1@test.com' },
+				items: [{ item_type: 'service', item_id: 's4', name: 'Pedicura', quantity: 1, unit_price: 70, tax_rate: 21, subtotal: 70, total: 70 }],
+			},
+			{
+				cart_id: 'q-sep-2',
+				status: 'completed',
+				subtotal: 50,
+				discount: 0,
+				total: 50,
+				payment_method: 'bizum',
+				invoice_number: 'BBH-09-2026-0005',
+				created_at: '2026-09-28T16:00:00.000Z',
+				user: { name: 'Cliente', surname: 'Septiembre 2', email: 's2@test.com' },
+				items: [{ item_type: 'service', item_id: 's5', name: 'Depilación', quantity: 1, unit_price: 50, tax_rate: 21, subtotal: 50, total: 50 }],
+			},
+		]
+
+		const monthlySummaries = calculatePeriodicSummaries(mockQuarterSales, 'month')
+		assert.equal(monthlySummaries.length, 3)
+		assert.equal(monthlySummaries[0]?.label, 'Julio 2026')
+		assert.equal(monthlySummaries[0]?.grandTotal, 150)
+		assert.equal(monthlySummaries[0]?.salesCount, 2)
+
+		assert.equal(monthlySummaries[1]?.label, 'Agosto 2026')
+		assert.equal(monthlySummaries[1]?.grandTotal, 80)
+		assert.equal(monthlySummaries[1]?.salesCount, 1)
+
+		assert.equal(monthlySummaries[2]?.label, 'Septiembre 2026')
+		assert.equal(monthlySummaries[2]?.grandTotal, 120)
+		assert.equal(monthlySummaries[2]?.salesCount, 2)
+
+		const csvContent = buildSalesCsvContent({
+			sales: mockQuarterSales,
+			mode: 'summary',
+			summaryGrouping: 'day',
+			periodTitle: '3T 2026 (1 Jul - 30 Sep)',
+		})
+
+		// Inline monthly subtotals after each month's days
+		assert.ok(csvContent.includes('SUBTOTAL JULIO 2026;2;123,97;26,03;0,00;26,03;150,00'))
+		assert.ok(csvContent.includes('SUBTOTAL AGOSTO 2026;1;66,12;13,88;0,00;13,88;80,00'))
+		assert.ok(csvContent.includes('SUBTOTAL SEPTIEMBRE 2026;2;99,17;20,83;0,00;20,83;120,00'))
+
+		// Consolidated monthly section
+		assert.ok(csvContent.includes('RESUMEN CONSOLIDADO POR MESES'))
+		assert.ok(csvContent.includes('Julio 2026;2;123,97;26,03;0,00;26,03;150,00'))
+		assert.ok(csvContent.includes('Agosto 2026;1;66,12;13,88;0,00;13,88;80,00'))
+		assert.ok(csvContent.includes('Septiembre 2026;2;99,17;20,83;0,00;20,83;120,00'))
+
+		// Total acumulado
+		assert.ok(csvContent.includes('TOTAL FACTURADO (€);350,00'))
 	})
 })
 

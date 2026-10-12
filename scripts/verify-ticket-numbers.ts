@@ -24,7 +24,10 @@ async function main() {
 			qr_content: true,
 			user: { select: { name: true, surname: true } }
 		},
-		orderBy: { invoice_number: 'asc' }
+		orderBy: [
+			{ created_at: 'asc' },
+			{ cart_id: 'asc' }
+		]
 	})
 
 	console.log(`\n📦 Total de tickets con factura en la base: ${carts.length}`)
@@ -44,28 +47,26 @@ async function main() {
 	}
 
 	// 3. Revisar tickets específicos clave
-	const pilar = carts.find(c => c.invoice_number?.includes('0231') || (c.user?.name?.includes('Pilar') && c.user?.surname?.includes('Cancela')))
-	const carmen = carts.find(c => c.user?.name?.includes('Carmen') && c.user?.surname?.includes('Suarez') && c.invoice_number?.startsWith('BBH-08-'))
-	const kathryn = carts.find(c => c.invoice_number === 'BBH-09-2026-0359')
-	const pilarPardo = carts.find(c => c.invoice_number === 'BBH-09-2026-0360')
-	const anaH = carts.find(c => c.invoice_number === 'BBH-10-2026-0363')
-	const carmenOct = carts.find(c => c.invoice_number === 'BBH-10-2026-0364')
-	const octFirst = carts.find(c => c.invoice_number?.startsWith('BBH-10-2026-0361'))
+	const anaR = carts[0]
+	const julyWrongItem = carts.find(c => c.user?.name?.includes('Cliente No Registrado') && c.created_at.toISOString().startsWith('2026-07-01T11:07') && c.invoice_number?.includes('0177'))
+	const pilarCancela = carts.find(c => c.user?.name?.includes('Pilar') && c.user?.surname?.includes('Cancela'))
+	const carmenAug = carts.find(c => c.user?.name?.includes('Carmen') && c.user?.surname?.includes('Suarez') && c.created_at.toISOString().startsWith('2026-08-03'))
+	const saraAug = carts.find(c => c.user?.name?.includes('Sara') && c.created_at.toISOString().startsWith('2026-08-31'))
+	const kathryn = carts.find(c => c.user?.name?.includes('Kathryn') && c.created_at.toISOString().startsWith('2026-09-30'))
+	const pilarPardo = carts.find(c => c.user?.name?.includes('Pilar  Pardo') && c.created_at.toISOString().startsWith('2026-09-30'))
+	const octFirst = carts.find(c => c.created_at.toISOString().startsWith('2026-10-01'))
+	const lastTicket = carts[carts.length - 1]
 
 	console.log('\n🎯 Puntos de control (según fecha y hora de la agenda):')
-	if (pilar) console.log(`   - Pilar Cancela (Cierre Julio):          ${pilar.invoice_number} | Fecha: ${pilar.created_at.toISOString()}`)
-	if (carmen) console.log(`   - Carmen Suárez (Agosto):                ${carmen.invoice_number} | Fecha: ${carmen.created_at.toISOString()}`)
+	if (anaR) console.log(`   - Ana Rabuñal (Primer Ticket):           ${anaR.invoice_number} | Fecha: ${anaR.created_at.toISOString()}`)
+	if (julyWrongItem) console.log(`   - Ticket 01/Julio corregido:             ${julyWrongItem.invoice_number} | Fecha: ${julyWrongItem.created_at.toISOString()}`)
+	if (pilarCancela) console.log(`   - Pilar Cancela (Cierre Julio):          ${pilarCancela.invoice_number} | Fecha: ${pilarCancela.created_at.toISOString()}`)
+	if (carmenAug) console.log(`   - Carmen Suárez (Inicio Agosto):         ${carmenAug.invoice_number} | Fecha: ${carmenAug.created_at.toISOString()}`)
+	if (saraAug) console.log(`   - Sara Sara (Cierre Agosto):             ${saraAug.invoice_number} | Fecha: ${saraAug.created_at.toISOString()}`)
 	if (kathryn) console.log(`   - Kathryn McCrary (30/09 12:30):         ${kathryn.invoice_number} | Fecha: ${kathryn.created_at.toISOString()}`)
 	if (pilarPardo) console.log(`   - Pilar Pardo (30/09 19:05 Cierre Sep):  ${pilarPardo.invoice_number} | Fecha: ${pilarPardo.created_at.toISOString()}`)
 	if (octFirst) console.log(`   - Primer ticket de Octubre:              ${octFirst.invoice_number} | Fecha: ${octFirst.created_at.toISOString()}`)
-	if (anaH) console.log(`   - Ana Hernandez (01/10 19:14):           ${anaH.invoice_number} | Fecha: ${anaH.created_at.toISOString()}`)
-	if (carmenOct) console.log(`   - Carmen Suarez (02/10 12:31):           ${carmenOct.invoice_number} | Fecha: ${carmenOct.created_at.toISOString()}`)
-
-	// 4. Último ticket emitido
-	const lastTicket = carts[carts.length - 1]
-	if (lastTicket) {
-		console.log(`   - Último ticket global:                   ${lastTicket.invoice_number} (${lastTicket.user?.name} ${lastTicket.user?.surname})`)
-	}
+	if (lastTicket) console.log(`   - Último ticket global:                   ${lastTicket.invoice_number} (${lastTicket.user?.name} ${lastTicket.user?.surname})`)
 
 	console.log('\n✅ Verificación finalizada.')
 }
