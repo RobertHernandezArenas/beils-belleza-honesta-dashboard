@@ -22,9 +22,7 @@
 		"prisma:migrate": "npx prisma migrate dev --name init --schema prisma/schema.prisma",
 		"prisma:reset": "npx prisma migrate reset --schema prisma/schema.prisma",
 		"db:push": "npx prisma db push",
-		"db:fix": "npx tsx --env-file=.env ./scripts/fix-db-tables.ts",
-		"db:reset-empty": "npx tsx --env-file=.env ./seeds/empty-db.ts",
-		"plesk-install": "npx pnpm install"
+		"db:reset-empty": "npx tsx --env-file=.env ./seeds/empty-db.ts"
 	},
 	"dependencies": {
 		"@nuxt/fonts": "0.13.0",
