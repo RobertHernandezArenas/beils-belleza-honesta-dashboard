@@ -53,26 +53,29 @@ export default defineEventHandler(async event => {
 					data: { status: 'COMPLETADA' },
 				})
 			} else if (user_id) {
-				// Auto-link: If no explicit booking_id was passed, check for an unlinked booking today for this client
+				// Auto-link: If no explicit booking_id was passed, check for an unlinked booking around today for this client
 				const now = new Date()
-				const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0))
-				const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999))
+				const windowStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1, 0, 0, 0, 0))
+				const windowEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 23, 59, 59, 999))
 
-				const todayBooking = await tx.booking.findFirst({
+				const candidateBooking = await tx.booking.findFirst({
 					where: {
 						client_id: user_id,
-						booking_date: { gte: startOfDay, lte: endOfDay },
+						booking_date: { gte: windowStart, lte: windowEnd },
 						status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
-						carts: { none: {} }
+						carts: { none: { status: 'completed' } },
 					},
-					orderBy: { booking_date: 'desc' }
+					orderBy: [
+						{ booking_date: 'desc' },
+						{ start_time: 'desc' },
+					],
 				})
 
-				if (todayBooking) {
-					effectiveBookingId = todayBooking.booking_id
+				if (candidateBooking) {
+					effectiveBookingId = candidateBooking.booking_id
 					await tx.booking.update({
 						where: { booking_id: effectiveBookingId },
-						data: { status: 'COMPLETADA' }
+						data: { status: 'COMPLETADA' },
 					})
 				}
 			}

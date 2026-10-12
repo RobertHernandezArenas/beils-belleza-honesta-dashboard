@@ -16,6 +16,14 @@ export default defineEventHandler(async event => {
 				client: { select: { user_id: true, name: true, surname: true, email: true, phone: true, avatar: true } },
 				staff: { select: { name: true, surname: true } },
 				booking_items: true,
+				carts: {
+					select: {
+						cart_id: true,
+						status: true,
+						invoice_number: true,
+						total: true,
+					},
+				},
 			},
 		})
 
@@ -23,7 +31,11 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
 		}
 
-		return booking
+		const hasCompletedCart = booking.carts && booking.carts.some(c => c.status === 'completed' || !!c.invoice_number)
+		return {
+			...booking,
+			status: hasCompletedCart ? 'COMPLETADA' : booking.status,
+		}
 	}
 
 	if (method === 'PUT') {
@@ -73,7 +85,17 @@ export default defineEventHandler(async event => {
 
 			// Only check overlap if it's not being cancelled
 			const finalStatus = payload.status || current.status
-			if (!['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'].includes(finalStatus)) {
+			if (['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'].includes(finalStatus)) {
+				const hasCompletedCart = await prisma.cart.findFirst({
+					where: { booking_id: id, status: 'completed' },
+				})
+				if (hasCompletedCart) {
+					throw createError({
+						statusCode: 400,
+						statusMessage: 'No se puede cancelar ni marcar ausente una cita que ya tiene una venta o factura cobrada',
+					})
+				}
+			} else {
 				// Normalize staff_id for check
 				let checkStaffId = current.staff_id
 				if (payload.staff_id !== undefined) {
@@ -144,6 +166,15 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'DELETE') {
+		const hasCompletedCart = await prisma.cart.findFirst({
+			where: { booking_id: id, status: 'completed' },
+		})
+		if (hasCompletedCart) {
+			throw createError({
+				statusCode: 400,
+				statusMessage: 'No se puede eliminar una cita que ya tiene una factura o venta cobrada',
+			})
+		}
 		await prisma.booking.delete({ where: { booking_id: id } })
 		return { success: true }
 	}

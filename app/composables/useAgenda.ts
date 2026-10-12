@@ -1,11 +1,20 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/vue-query'
 import { storeToRefs } from 'pinia'
 import { useAgendaStore } from '~/stores/useAgendaStore'
+import { useSync } from '~/composables/useSync'
 import type { Booking, FetchError } from '~~/shared/types/domain'
 
 export function useAgenda() {
 	const queryClient = useQueryClient()
 	const store = useAgendaStore()
+	const { onSync } = useSync()
+
+	// Live-sync bookings when sales or bookings are updated in another tab or checkout
+	onSync(event => {
+		if (event.type === 'REFRESH_BOOKINGS' || event.type === 'REFRESH_SALES') {
+			queryClient.invalidateQueries({ queryKey: ['bookings'] })
+		}
+	})
 
 	// Extract state from store
 	const {

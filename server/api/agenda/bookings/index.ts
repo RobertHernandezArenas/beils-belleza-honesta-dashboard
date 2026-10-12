@@ -54,11 +54,25 @@ export default defineEventHandler(async event => {
 				client_id: true,
 				client: { select: { name: true, surname: true, phone: true, avatar: true } },
 				staff: { select: { name: true, surname: true } },
+				carts: {
+					select: {
+						cart_id: true,
+						status: true,
+						invoice_number: true,
+						total: true,
+					},
+				},
 			},
 			orderBy: [{ booking_date: 'asc' }, { start_time: 'asc' }],
 		})
 
-		return bookings
+		return bookings.map(b => {
+			const hasCompletedCart = b.carts && b.carts.some(c => c.status === 'completed' || !!c.invoice_number)
+			return {
+				...b,
+				status: hasCompletedCart ? 'COMPLETADA' : b.status,
+			}
+		})
 	}
 
 	if (method === 'POST') {

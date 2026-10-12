@@ -205,9 +205,12 @@ export function useTpv() {
 				})
 			}
 			
+			// Broadcast booking and sales refresh across tabs
+			emitSync({ type: 'REFRESH_BOOKINGS' })
 			// Real-time refresh of every sales/collection view (this tab + broadcast to others)
 			notifySalesChanged()
-			// ClientDTO-specific caches touched by a sale
+			// Invalidate agenda bookings and client caches
+			queryClient.invalidateQueries({ queryKey: ['bookings'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })

@@ -24,7 +24,9 @@
 		"db:reset-empty": "tsx --env-file=.env ./seeds/empty-db.ts",
 		"tickets:verify": "tsx --env-file=.env ./scripts/verify-ticket-numbers.ts",
 		"tickets:migrate": "tsx --env-file=.env ./scripts/migrate-ticket-numbers.ts",
-		"tickets:migrate:apply": "tsx --env-file=.env ./scripts/migrate-ticket-numbers.ts --apply"
+		"tickets:migrate:apply": "tsx --env-file=.env ./scripts/migrate-ticket-numbers.ts --apply",
+		"tickets:sync-agenda": "tsx --env-file=.env ./scripts/sync-bookings-sales.ts",
+		"tickets:sync-agenda:apply": "tsx --env-file=.env ./scripts/sync-bookings-sales.ts --apply"
 	},
 	"dependencies": {
 		"@nuxt/fonts": "0.13.0",

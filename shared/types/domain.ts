@@ -74,6 +74,12 @@ export interface Booking {
 	pack_item?: { name?: string } | null
 	client?: Partial<ClientDTO> | null
 	staff?: Partial<ClientDTO> | null
+	carts?: Array<{
+		cart_id: string
+		status: string
+		invoice_number?: string | null
+		total?: number
+	}>
 	created_at?: string
 	updated_at?: string
 }
