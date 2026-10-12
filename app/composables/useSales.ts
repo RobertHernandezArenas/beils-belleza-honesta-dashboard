@@ -39,7 +39,7 @@ export function useSales() {
 	const filterDateRange = ref({ start: '', end: '' })
 	const filterPaymentMethod = ref('all')
 
-	const summaryTimeframe = ref<SummaryTimeframe>('month')
+	const summaryTimeframe = ref<SummaryTimeframe>('all')
 	const selectedQuarter = ref<number>(Math.floor(new Date().getMonth() / 3) + 1)
 	const selectedYear = ref<number>(new Date().getFullYear())
 
