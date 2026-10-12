@@ -16,6 +16,7 @@
 		"seed": "tsx --env-file=.env ./seeds/seed-db.ts",
 		"seed:admin": "tsx --env-file=.env ./seeds/admin-seed.ts",
 		"db:check": "tsx --env-file=.env ./scripts/check-db.ts",
+		"db:fix": "tsx --env-file=.env ./scripts/fix-db-tables.ts",
 		"prisma:pull": "prisma db pull",
 		"prisma:generate": "prisma generate",
 		"prisma:migrate": "prisma migrate dev",
