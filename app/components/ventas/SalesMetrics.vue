@@ -75,7 +75,7 @@ defineProps<Props>()
 			<div class="flex justify-between items-start">
 				<div class="flex items-start gap-1">
 					<span class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
-						TICKETS<br>EMITIDOS
+						TICKETS<br>EMITIDOS {{ timeframeLabels[summaryTimeframe] }}
 					</span>
 					<InfoTooltip
 						title="Tickets Emitidos"
@@ -111,7 +111,7 @@ defineProps<Props>()
 			<div class="flex justify-between items-start">
 				<div class="flex items-start gap-1">
 					<span class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
-						PROM. POR<br>VENTA
+						PROM. POR<br>VENTA {{ timeframeLabels[summaryTimeframe] }}
 					</span>
 					<InfoTooltip
 						title="Promedio por Venta"
