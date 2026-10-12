@@ -30,6 +30,10 @@ export default defineEventHandler(async (event) => {
 			remaining_sessions: cp.remaining_sessions,
 			service_id: cp.package?.service_id || null,
 			expiry_date: cp.expiry_date,
+			status: cp.status,
+			custom_price: cp.custom_price,
+			price: cp.custom_price !== null && cp.custom_price !== undefined ? cp.custom_price : (cp.package?.price || 0),
+			package: cp.package,
 			items: (cp.items || []).map(it => ({
 				client_package_item_id: it.client_package_item_id,
 				package_item_id: it.package_item_id,

@@ -328,6 +328,7 @@ model ClientPackage {
   total_sessions     Int
   remaining_sessions Int
   expiry_date        DateTime?
+  custom_price       Float?
   status             String              @default("ACTIVE") @db.VarChar(20)
   created_at         DateTime            @default(now())
   updated_at         DateTime            @updatedAt

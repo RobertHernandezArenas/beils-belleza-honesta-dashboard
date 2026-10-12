@@ -1,16 +1,70 @@
 <script setup lang="ts">
 import type { ClientProfile, ClientPackage } from '~~/shared/types/domain'
-import { Package as PackageIcon, AlertCircle, Scissors, ShoppingBag, Plus } from 'lucide-vue-next'
+import {
+	Package as PackageIcon,
+	AlertCircle,
+	Scissors,
+	ShoppingBag,
+	Plus,
+	Calendar,
+	SlidersHorizontal,
+	Trash2,
+	AlertTriangle
+} from 'lucide-vue-next'
+import { useQueryClient, useMutation } from '@tanstack/vue-query'
 import AssignPackageModal from '~/components/packages/AssignPackageModal.vue'
+import EditClientPackageModal from '~/components/packages/EditClientPackageModal.vue'
 
 const props = defineProps({
 	client: { type: Object as PropType<ClientProfile>, required: true }
 })
 
+const queryClient = useQueryClient()
 const assignModalRef = ref<InstanceType<typeof AssignPackageModal> | null>(null)
+const editModalRef = ref<InstanceType<typeof EditClientPackageModal> | null>(null)
 
 const openAssignModal = () => {
 	assignModalRef.value?.openModal()
+}
+
+const openEditModal = (pkg: ClientPackage) => {
+	editModalRef.value?.openModal(pkg)
+}
+
+// Unassign State & Modal
+const isUnassignModalOpen = ref(false)
+const packageToUnassign = ref<{
+	id: string
+	name: string
+	remainingSessions: number
+} | null>(null)
+
+const promptUnassign = (pkg: { id: string; name: string; remainingSessions: number }) => {
+	packageToUnassign.value = pkg
+	isUnassignModalOpen.value = true
+}
+
+const closeUnassignModal = () => {
+	isUnassignModalOpen.value = false
+	packageToUnassign.value = null
+}
+
+const { mutate: unassignPackage, isPending: isUnassigning } = useMutation({
+	mutationFn: async () => {
+		if (!packageToUnassign.value) return
+		return await $fetch(`/api/clients/${props.client.user_id}/packages/${packageToUnassign.value.id}`, {
+			method: 'DELETE'
+		})
+	},
+	onSuccess: () => {
+		queryClient.invalidateQueries({ queryKey: ['client', props.client.user_id] })
+		queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
+		closeUnassignModal()
+	}
+})
+
+const executeUnassign = () => {
+	unassignPackage()
 }
 
 // Real active client packages from DB
@@ -19,6 +73,9 @@ const activePackages = computed(() => {
 	return (props.client.client_packages || []).map((cp: ClientPackage) => {
 		const completed = cp.total_sessions - cp.remaining_sessions
 		const expiryFormatted = cp.expiry_date ? new Date(cp.expiry_date).toISOString().split('T')[0] : 'Sin vencimiento'
+		const price = cp.custom_price !== null && cp.custom_price !== undefined ? cp.custom_price : (cp.package?.price ?? 0)
+		const isCustomPrice = cp.custom_price !== null && cp.custom_price !== undefined && cp.package?.price !== undefined && cp.custom_price !== cp.package.price
+
 		return {
 			id: cp.client_package_id,
 			name: cp.package?.name || 'Paquete / Bono',
@@ -28,8 +85,12 @@ const activePackages = computed(() => {
 			remainingSessions: cp.remaining_sessions,
 			status: cp.status,
 			expiryDate: expiryFormatted,
+			price,
+			isCustomPrice,
+			catalogPrice: cp.package?.price,
 			description: cp.package?.description,
-			items: cp.items || []
+			items: cp.items || [],
+			rawPackage: cp
 		}
 	})
 })
@@ -57,7 +118,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 								<AlertCircle class="size-4 text-text-muted/60 cursor-help" />
 							</div>
 						</h3>
-						<p class="text-text-muted text-xs font-semibold">Gestión y consumo de bonos/paquetes individuales y mixtos activos</p>
+						<p class="text-text-muted text-xs font-semibold">Gestión, consumo y personalización de bonos individuales y mixtos</p>
 					</div>
 				</div>
 
@@ -84,7 +145,7 @@ const getProgressPercentage = (completed: number, total: number) => {
 				>
 					<div class="space-y-3">
 						<div class="flex items-start justify-between gap-2">
-							<div class="flex items-center gap-2">
+							<div class="flex flex-wrap items-center gap-2">
 								<div class="tooltip tooltip-bottom z-50" :data-tip="pkg.type === 'INDIVIDUAL' ? 'Paquete dedicado a un único tipo de servicio.' : 'Paquete combinado que agrupa varios tratamientos y/o productos.'">
 									<span 
 										class="badge badge-sm font-black text-[9px] uppercase px-2.5 py-1 border-none cursor-help"
@@ -93,12 +154,22 @@ const getProgressPercentage = (completed: number, total: number) => {
 										{{ pkg.type === 'INDIVIDUAL' ? 'PAQUETE INDIVIDUAL' : 'PAQUETE MIXTO' }}
 									</span>
 								</div>
-								<span class="text-[10px] text-text-muted font-bold">Vence: {{ pkg.expiryDate }}</span>
+								<span class="text-[10px] text-text-muted font-bold flex items-center gap-1">
+									<Calendar class="size-3 text-text-muted/70" />
+									Vence: {{ pkg.expiryDate }}
+								</span>
 							</div>
 
-							<span class="badge badge-success badge-sm font-black text-[9px] uppercase">
-								{{ pkg.status }}
-							</span>
+							<div class="flex items-center gap-2">
+								<div class="tooltip tooltip-left z-50" :data-tip="pkg.isCustomPrice ? `Precio personalizado (Catálogo: ${pkg.catalogPrice} €)` : 'Precio del bono'">
+									<span class="badge badge-sm font-mono font-black text-[10px] px-2 py-0.5" :class="pkg.isCustomPrice ? 'badge-primary' : 'badge-ghost border-border-subtle'">
+										{{ pkg.price }} €
+									</span>
+								</div>
+								<span class="badge badge-success badge-sm font-black text-[9px] uppercase">
+									{{ pkg.status }}
+								</span>
+							</div>
 						</div>
 
 						<h4 class="text-text-primary text-base font-black leading-snug">{{ pkg.name }}</h4>
@@ -144,10 +215,32 @@ const getProgressPercentage = (completed: number, total: number) => {
 						</div>
 					</div>
 
-					<div class="pt-4 border-t border-border-subtle flex items-center justify-between">
+					<!-- FOOTER WITH ACTIONS -->
+					<div class="pt-4 border-t border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 						<span class="text-xs font-semibold text-text-muted">
 							Quedan <strong class="text-text-primary tabular-nums">{{ pkg.remainingSessions }} sesiones</strong> disponibles
 						</span>
+
+						<div class="flex items-center gap-2 self-end sm:self-auto">
+							<button
+								type="button"
+								class="btn btn-ghost btn-xs rounded-xl font-bold text-text-muted hover:text-primary flex items-center gap-1.5 border border-border-subtle hover:border-primary/40"
+								title="Personalizar precio, sesiones o caducidad"
+								@click="openEditModal(pkg.rawPackage)"
+							>
+								<SlidersHorizontal class="size-3.5" />
+								Personalizar
+							</button>
+							<button
+								type="button"
+								class="btn btn-ghost btn-xs rounded-xl font-bold text-error/80 hover:text-error hover:bg-error/10 flex items-center gap-1.5 border border-border-subtle hover:border-error/40"
+								title="Desasignar este bono del cliente"
+								@click="promptUnassign(pkg)"
+							>
+								<Trash2 class="size-3.5" />
+								Desasignar
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -172,5 +265,55 @@ const getProgressPercentage = (completed: number, total: number) => {
 			:client-id="props.client.user_id"
 			:client-name="props.client.name + ' ' + (props.client.surname || '')"
 		/>
+
+		<!-- Edit / Customize Package Modal -->
+		<EditClientPackageModal
+			ref="editModalRef"
+			:client-id="props.client.user_id"
+			:client-name="props.client.name + ' ' + (props.client.surname || '')"
+		/>
+
+		<!-- Unassign Confirmation Modal -->
+		<div v-if="isUnassignModalOpen && packageToUnassign" class="modal modal-open z-1000 backdrop-blur-sm bg-black/40">
+			<div class="modal-box max-w-md bg-bg-card border border-border-default rounded-3xl p-6 shadow-2xl space-y-4">
+				<div class="flex items-center gap-3">
+					<div class="size-10 rounded-2xl bg-error/15 text-error flex items-center justify-center font-black">
+						<AlertTriangle class="size-5" />
+					</div>
+					<div>
+						<h3 class="text-base font-black text-text-primary uppercase tracking-wide">
+							Desasignar Bono
+						</h3>
+						<p class="text-xs text-text-muted">
+							Confirmar desasignación del bono
+						</p>
+					</div>
+				</div>
+
+				<div class="p-3.5 rounded-2xl bg-error/5 border border-error/20 text-xs text-text-muted space-y-2">
+					<p>
+						¿Estás seguro de que deseas desasignar el bono <strong class="text-text-primary">{{ packageToUnassign.name }}</strong> de <strong class="text-text-primary">{{ client.name }} {{ client.surname || '' }}</strong>?
+					</p>
+					<p class="text-[11px] text-error font-semibold">
+						Esta acción eliminará el paquete del perfil del cliente junto con sus {{ packageToUnassign.remainingSessions }} sesiones pendientes.
+					</p>
+				</div>
+
+				<div class="flex items-center justify-end gap-3 pt-2">
+					<button type="button" class="btn btn-ghost rounded-xl text-xs uppercase font-bold" @click="closeUnassignModal">
+						Cancelar
+					</button>
+					<button
+						type="button"
+						class="btn btn-error text-white rounded-xl font-black uppercase text-xs shadow-md"
+						:disabled="isUnassigning"
+						@click="executeUnassign"
+					>
+						<span v-if="isUnassigning" class="loading loading-spinner" />
+						<span v-else>Sí, Desasignar Bono</span>
+					</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>

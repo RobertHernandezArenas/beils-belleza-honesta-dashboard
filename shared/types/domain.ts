@@ -176,6 +176,7 @@ export interface ClientPackage {
 	remaining_sessions: number
 	expiry_date?: string | null
 	status: string
+	custom_price?: number | null
 	package?: CatalogItem | null
 	items?: ClientPackageItem[]
 }

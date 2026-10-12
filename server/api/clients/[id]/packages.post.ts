@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 		}
 
 		const body = await readBody(event)
-		const { package_id, expiry_months } = body
+		const { package_id, expiry_months, expiry_date, custom_price, total_sessions } = body
 
 		if (!package_id) {
 			throw createError({ statusCode: 400, statusMessage: 'package_id is required' })
@@ -23,21 +23,40 @@ export default defineEventHandler(async (event) => {
 			throw createError({ statusCode: 404, statusMessage: 'Paquete de catálogo no encontrado' })
 		}
 
-		const expiryDate = new Date()
-		expiryDate.setMonth(expiryDate.getMonth() + (Number(expiry_months) || 6))
+		let finalExpiryDate: Date | null = null
+		if (expiry_date) {
+			finalExpiryDate = new Date(expiry_date)
+		} else if (expiry_months !== undefined && expiry_months !== null && Number(expiry_months) > 0) {
+			finalExpiryDate = new Date()
+			finalExpiryDate.setMonth(finalExpiryDate.getMonth() + Number(expiry_months))
+		} else if (expiry_months === 0 || expiry_months === null) {
+			finalExpiryDate = null
+		} else {
+			finalExpiryDate = new Date()
+			finalExpiryDate.setMonth(finalExpiryDate.getMonth() + 6)
+		}
 
-		const totalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items && catalogPkg.items.length > 0
+		const defaultTotalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items && catalogPkg.items.length > 0
 			? catalogPkg.items.filter(it => it.item_type === 'SERVICE').reduce((sum, it) => sum + (it.quantity || 0), 0)
 			: catalogPkg.total_sessions
+
+		const finalTotalSessions = (total_sessions !== undefined && total_sessions !== null && Number(total_sessions) >= 0)
+			? Number(total_sessions)
+			: defaultTotalServiceSessions
+
+		const parsedCustomPrice = (custom_price !== undefined && custom_price !== null && custom_price !== '')
+			? Number(custom_price)
+			: null
 
 		const clientPkg = await prisma.$transaction(async (tx) => {
 			const cp = await tx.clientPackage.create({
 				data: {
 					user_id: clientId,
 					package_id: catalogPkg.package_id,
-					total_sessions: totalServiceSessions,
-					remaining_sessions: totalServiceSessions,
-					expiry_date: expiryDate,
+					total_sessions: finalTotalSessions,
+					remaining_sessions: finalTotalSessions,
+					expiry_date: finalExpiryDate,
+					custom_price: parsedCustomPrice,
 					status: 'ACTIVE'
 				}
 			})
