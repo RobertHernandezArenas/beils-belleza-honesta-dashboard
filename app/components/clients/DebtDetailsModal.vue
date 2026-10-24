@@ -276,9 +276,11 @@ defineExpose({ open, close })
                         </button>
                      </div>
 
-                     <button :disabled="isProcessing || !isValidPayment" class="btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all border-0" @click="processPayment">
-                        <span v-if="isProcessing" class="loading loading-spinner loading-sm"/>
-                        Abonar {{ amountToPay ? amountToPay.toFixed(2) : '0.00' }}€
+                     <button :disabled="isProcessing || !isValidPayment" class="cta btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 border-0" @click="processPayment">
+                        <span class="cta-swap" :data-busy="isProcessing || undefined">
+                           <span :aria-hidden="isProcessing">Abonar {{ amountToPay ? amountToPay.toFixed(2) : '0.00' }}€</span>
+                           <span :aria-hidden="!isProcessing"><span class="loading loading-spinner loading-sm"/>Procesando...</span>
+                        </span>
                      </button>
                   </div>
                </div>

@@ -2,9 +2,9 @@
 import { ref, computed } from 'vue'
 import type { ClientProfile, Questionnaire, Consent, TreatmentZoneDTO, TreatmentType } from '~~/shared/types/domain'
 import {
-	Activity, Zap, ShieldCheck, AlertCircle, CheckCircle2, Plus, ChevronRight,
-	FileText, Sparkles, Trash2, Calendar, ShieldAlert, Ban, CheckSquare,
-	Printer, Lock, MessageCircle, Mail
+	Activity, Zap, ShieldCheck, AlertCircle, Plus,
+	FileText, Sparkles, Trash2, Calendar, ShieldAlert,
+	Printer, Lock
 } from 'lucide-vue-next'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import NewTreatmentZoneModal from './NewTreatmentZoneModal.vue'
@@ -20,11 +20,25 @@ const props = defineProps<{
 	client: ClientProfile
 }>()
 
-const emit = defineEmits(['add-consent', 'add-questionnaire'])
+defineEmits(['add-consent', 'add-questionnaire'])
 const queryClient = useQueryClient()
 
 // Active Treatment Tab: LASER_SHR | INDIBA
 const activeTreatment = ref<TreatmentType>('LASER_SHR')
+
+const treatmentOptions = [
+	{ id: 'LASER_SHR', label: 'Láser SHR', icon: ShieldCheck, iconClass: '' },
+	{ id: 'INDIBA', label: 'Indiba (448 kHz)', icon: Zap, iconClass: 'text-amber-500' },
+] as const
+
+// Segmented control: spring pill slides between treatments; the content it drives crossfades
+const treatmentSwitchRef = ref<HTMLElement | null>(null)
+const { pill: treatmentPill, pillStyle: treatmentPillStyle, setItemRef: setTreatmentRef } =
+	useSlidingPill(treatmentSwitchRef, activeTreatment)
+
+const selectTreatment = (id: TreatmentType) => {
+	if (id !== activeTreatment.value) crossfadePanel(() => (activeTreatment.value = id), 'health')
+}
 
 // Selected Zone for New Session
 const selectedZoneForSession = ref<TreatmentZoneDTO | null>(null)
@@ -168,10 +182,10 @@ const { mutate: deleteZone } = useMutation({
 </script>
 
 <template>
-	<div class="space-y-8 transition-all duration-300">
+	<div class="motion-stagger space-y-8">
 		
 		<!-- HEADER & SELECTOR DE TECNOLOGÍA -->
-		<div class="card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 lg:p-8 space-y-6">
+		<div class="focus-item card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 lg:p-8 space-y-6">
 			
 			<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border-subtle pb-6">
 				<div class="flex items-center gap-3.5">
@@ -195,40 +209,52 @@ const { mutate: deleteZone } = useMutation({
 					<!-- BOTÓN DE IMPRESIÓN COMPLETA -->
 					<button
 						type="button"
-						class="btn btn-outline btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-xs"
+						class="cta btn btn-outline btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-xs"
 						@click="openDossier()"
 					>
-						<Printer class="size-4 text-primary" />
+						<Printer class="cta-icon size-4 text-primary" />
 						Imprimir Expediente
 					</button>
 
 					<!-- TABS SWITCHER -->
-					<div class="join bg-bg-muted/40 p-1 rounded-2xl border border-border-subtle self-start lg:self-auto">
+					<div
+						ref="treatmentSwitchRef"
+						role="tablist"
+						aria-label="Tecnología de tratamiento"
+						data-vt-group="health"
+						data-vt-name="health-switch"
+						class="relative flex items-center gap-1 bg-bg-muted/40 p-1 rounded-2xl border border-border-subtle self-start lg:self-auto"
+					>
+						<span
+							v-if="treatmentPill"
+							aria-hidden="true"
+							class="motion-pill bg-primary pointer-events-none absolute top-1 bottom-1 left-0 rounded-xl shadow-sm"
+							:style="treatmentPillStyle"
+						/>
 						<button
+							v-for="opt in treatmentOptions"
+							:key="opt.id"
+							:ref="setTreatmentRef(opt.id)"
 							type="button"
-							class="join-item btn btn-sm rounded-xl font-black text-xs gap-2 transition-all"
-							:class="activeTreatment === 'LASER_SHR' ? 'btn-primary shadow-sm' : 'btn-ghost text-text-muted hover:text-text-primary'"
-							@click="activeTreatment = 'LASER_SHR'"
+							role="tab"
+							:aria-selected="activeTreatment === opt.id"
+							class="relative flex h-8 items-center gap-2 rounded-xl px-3 text-xs font-black transition-colors duration-200 ease-(--motion-ease-out)"
+							:class="activeTreatment === opt.id
+								? ['text-primary-content', !treatmentPill && 'bg-primary shadow-sm']
+								: 'text-text-muted hover:text-text-primary'"
+							@click="selectTreatment(opt.id)"
 						>
-							<ShieldCheck class="size-4" />
-							Láser SHR
-						</button>
-
-						<button
-							type="button"
-							class="join-item btn btn-sm rounded-xl font-black text-xs gap-2 transition-all"
-							:class="activeTreatment === 'INDIBA' ? 'btn-primary shadow-sm' : 'btn-ghost text-text-muted hover:text-text-primary'"
-							@click="activeTreatment = 'INDIBA'"
-						>
-							<Zap class="size-4 text-amber-500" />
-							Indiba (448 kHz)
+							<component :is="opt.icon" class="size-4" :class="opt.iconClass" />
+							{{ opt.label }}
 						</button>
 					</div>
 				</div>
 			</div>
 
 			<!-- BLOQUE 1: COMPLIANCE LEGAL & SEGURIDAD MÉDICA (3 COLUMNAS RESPONSIVE) -->
-			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+			<!-- Stable wrapper carries the crossfade name; the keyed grid remounts so its cards cascade in -->
+			<div data-vt-group="health" data-vt-name="health-compliance">
+			<div :key="activeTreatment" class="motion-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
 				
 				<!-- 1. Cuestionario de Salud / Anamnesis -->
 				<div class="p-5 bg-bg-muted/20 border border-border-subtle rounded-3xl space-y-4 flex flex-col justify-between">
@@ -285,7 +311,7 @@ const { mutate: deleteZone } = useMutation({
 
 					<button
 						type="button"
-						class="btn btn-outline btn-sm w-full rounded-xl font-bold uppercase tracking-wider text-xs"
+						class="cta btn btn-outline btn-sm w-full rounded-xl font-bold uppercase tracking-wider text-xs"
 						@click="handleOpenAnamnesis"
 					>
 						{{ currentQuestionnaire ? 'Revisar Cuestionario' : 'Rellenar Cuestionario' }}
@@ -342,7 +368,7 @@ const { mutate: deleteZone } = useMutation({
 					<div class="space-y-2">
 						<button
 							type="button"
-							class="btn btn-outline btn-sm w-full rounded-xl font-bold uppercase tracking-wider text-xs"
+							class="cta btn btn-outline btn-sm w-full rounded-xl font-bold uppercase tracking-wider text-xs"
 							@click="handleOpenConsent"
 						>
 							{{ currentConsent ? 'Ver / Gestionar Consentimiento' : 'Emitir para Firma' }}
@@ -360,7 +386,7 @@ const { mutate: deleteZone } = useMutation({
 				</div>
 
 				<!-- 3. Consentimiento de Protección de Datos (RGPD / LGPD) -->
-				<div class="p-5 bg-bg-muted/20 border border-border-subtle rounded-3xl space-y-4 flex flex-col justify-between">
+				<div class="p-5 bg-bg-muted/20 border border-border-subtle rounded-3xl space-y-4 flex flex-col justify-between md:col-span-2 xl:col-span-1">
 					<div class="space-y-3">
 						<div class="flex items-center justify-between">
 							<div class="flex items-center gap-2.5">
@@ -408,7 +434,7 @@ const { mutate: deleteZone } = useMutation({
 					<div class="space-y-2">
 						<button
 							type="button"
-							class="btn btn-outline btn-sm w-full rounded-xl font-bold uppercase tracking-wider text-xs"
+							class="cta btn btn-outline btn-sm w-full rounded-xl font-bold uppercase tracking-wider text-xs"
 							@click="isLgpdConsentModalOpen = true"
 						>
 							{{ lgpdConsent ? 'Ver / Gestionar RGPD' : 'Emitir Consentimiento RGPD' }}
@@ -426,10 +452,11 @@ const { mutate: deleteZone } = useMutation({
 				</div>
 
 			</div>
+			</div>
 
 			<!-- BLOQUE 2: ZONAS Y SEGUIMIENTO DE TRATAMIENTO -->
-			<div class="space-y-6 pt-4 border-t border-border-subtle">
-				
+			<div data-vt-group="health" data-vt-name="health-zones" class="space-y-6 pt-4 border-t border-border-subtle">
+
 				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 					<div>
 						<h4 class="text-lg font-black tracking-tight text-text-primary flex items-center gap-2">
@@ -443,10 +470,10 @@ const { mutate: deleteZone } = useMutation({
 
 					<button
 						type="button"
-						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 self-start sm:self-auto"
+						class="cta btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 self-start sm:self-auto"
 						@click="openNewZoneModal"
 					>
-						<Plus class="size-4" />
+						<Plus class="cta-icon cta-icon-plus size-4" />
 						Añadir Nueva Zona
 					</button>
 				</div>
@@ -462,16 +489,16 @@ const { mutate: deleteZone } = useMutation({
 					</p>
 					<button
 						type="button"
-						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider mt-2"
+						class="cta btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider mt-2"
 						@click="openNewZoneModal"
 					>
-						<Plus class="size-4 mr-1" />
+						<Plus class="cta-icon cta-icon-plus size-4 mr-1" />
 						Configurar Primera Zona
 					</button>
 				</div>
 
 				<!-- LISTADO DE ZONAS CON SUS TABLAS DE SESIONES (COMO EL PDF FÍSICO) -->
-				<div v-else class="space-y-8">
+				<div v-else class="motion-stagger space-y-8">
 					<div
 						v-for="(zone, zIdx) in activeZones"
 						:key="zone.zone_id"
@@ -513,10 +540,10 @@ const { mutate: deleteZone } = useMutation({
 							<div class="flex items-center gap-2 shrink-0">
 								<button
 									type="button"
-									class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-1.5"
+									class="cta btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-1.5"
 									@click="openNewSessionModal(zone)"
 								>
-									<Plus class="size-3.5" />
+									<Plus class="cta-icon cta-icon-plus size-3.5" />
 									Registrar Sesión
 								</button>
 								<button

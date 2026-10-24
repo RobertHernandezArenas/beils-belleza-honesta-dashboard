@@ -10,6 +10,8 @@ export const useAgendaStore = defineStore('agenda', () => {
     // Drawers & Modals
     const isBookingDrawerOpen = ref(false)
     const isBookingDetailsOpen = ref(false)
+    // Morph: the drawer grows out of the button that opened it (animated in BookingDrawer)
+    const bookingMorphSource = shallowRef<HTMLElement | null>(null)
     
     // Current payload
     const selectedBooking = ref<Booking | null>(null)
@@ -29,11 +31,12 @@ export const useAgendaStore = defineStore('agenda', () => {
         viewMode.value = mode
     }
 
-    function openBookingDrawer(booking: Booking | null = null, defaultDate: Date | null = null, defaultTime: string | null = null, defaultClientId: string | null = null) {
+    function openBookingDrawer(booking: Booking | null = null, defaultDate: Date | null = null, defaultTime: string | null = null, defaultClientId: string | null = null, source: HTMLElement | null = null) {
         selectedBooking.value = booking
         prefillDate.value = defaultDate
         prefillTime.value = defaultTime
         prefillClientId.value = defaultClientId
+        bookingMorphSource.value = source && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? source : null
         isBookingDrawerOpen.value = true
     }
 
@@ -68,6 +71,7 @@ export const useAgendaStore = defineStore('agenda', () => {
         searchQuery,
         isBookingDrawerOpen,
         isBookingDetailsOpen,
+        bookingMorphSource,
         selectedBooking,
         prefillDate,
         prefillTime,

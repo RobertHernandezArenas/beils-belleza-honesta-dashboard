@@ -102,17 +102,17 @@ const getProgressPercentage = (completed: number, total: number) => {
 </script>
 
 <template>
-	<div class="space-y-8 transition-all duration-300">
-		<div class="card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 lg:p-8 space-y-6">
+	<div class="motion-stagger space-y-6 sm:space-y-8">
+		<div class="card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 lg:p-8 space-y-6">
 			
 			<!-- HEADER -->
-			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-subtle pb-4">
+			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-border-subtle pb-4">
 				<div class="flex items-center gap-3">
-					<div class="p-3 bg-primary/15 text-primary rounded-2xl">
-						<PackageIcon class="size-6" />
+					<div class="p-2.5 sm:p-3 bg-primary/15 text-primary rounded-2xl shrink-0">
+						<PackageIcon class="size-5 sm:size-6" />
 					</div>
 					<div>
-						<h3 class="text-text-primary text-xl font-black tracking-tight flex items-center gap-2">
+						<h3 class="text-text-primary text-lg sm:text-xl font-black tracking-tight flex items-center gap-2">
 							Paquetes & Servicios Contratados
 							<div class="tooltip tooltip-right z-50" data-tip="Panel de seguimiento de sesiones consumidas y pendientes en bonos o packs contratados.">
 								<AlertCircle class="size-4 text-text-muted/60 cursor-help" />
@@ -122,26 +122,26 @@ const getProgressPercentage = (completed: number, total: number) => {
 					</div>
 				</div>
 
-				<div class="flex items-center gap-3">
-					<div class="badge badge-neutral font-black text-xs uppercase px-3 py-2">
+				<div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-auto">
+					<div class="badge badge-neutral font-black text-[11px] sm:text-xs uppercase px-2.5 sm:px-3 py-1.5 sm:py-2">
 						{{ activePackages.length }} Paquetes Activos
 					</div>
 					<button
 						type="button"
-						class="btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
+						class="cta btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
 						@click="openAssignModal">
-						<Plus class="size-4" />
+						<Plus class="cta-icon cta-icon-plus size-4" />
 						Asignar Bono
 					</button>
 				</div>
 			</div>
 
-			<!-- LIST OF PACKAGES -->
-			<div v-if="activePackages.length > 0" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+			<!-- LIST OF PACKAGES (Responsive: 1 col on mobile/tablet, 2 cols on desktop/lg) -->
+			<div v-if="activePackages.length > 0" class="motion-stagger grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
 				<div 
 					v-for="pkg in activePackages" 
 					:key="pkg.id"
-					class="bg-bg-muted/20 border border-border-subtle hover:border-primary/40 rounded-3xl p-6 space-y-5 transition-all shadow-xs flex flex-col justify-between"
+					class="bg-bg-muted/20 border border-border-subtle hover:border-primary/40 motion-card rounded-3xl p-5 sm:p-6 space-y-4 sm:space-y-5 shadow-xs flex flex-col justify-between"
 				>
 					<div class="space-y-3">
 						<div class="flex items-start justify-between gap-2">
@@ -224,16 +224,16 @@ const getProgressPercentage = (completed: number, total: number) => {
 						<div class="flex items-center gap-2 self-end sm:self-auto">
 							<button
 								type="button"
-								class="btn btn-ghost btn-xs rounded-xl font-bold text-text-muted hover:text-primary flex items-center gap-1.5 border border-border-subtle hover:border-primary/40"
+								class="cta btn btn-ghost btn-xs rounded-xl font-bold text-text-muted hover:text-primary flex items-center gap-1.5 border border-border-subtle hover:border-primary/40"
 								title="Personalizar precio, sesiones o caducidad"
 								@click="openEditModal(pkg.rawPackage)"
 							>
-								<SlidersHorizontal class="size-3.5" />
+								<SlidersHorizontal class="cta-icon size-3.5" />
 								Personalizar
 							</button>
 							<button
 								type="button"
-								class="btn btn-ghost btn-xs rounded-xl font-bold text-error/80 hover:text-error hover:bg-error/10 flex items-center gap-1.5 border border-border-subtle hover:border-error/40"
+								class="cta btn btn-ghost btn-xs rounded-xl font-bold text-error/80 hover:text-error hover:bg-error/10 flex items-center gap-1.5 border border-border-subtle hover:border-error/40"
 								title="Desasignar este bono del cliente"
 								@click="promptUnassign(pkg)"
 							>
@@ -250,9 +250,9 @@ const getProgressPercentage = (completed: number, total: number) => {
 				<p class="text-xs font-bold uppercase tracking-wider mb-3">El cliente no posee paquetes activos contratados</p>
 				<button
 					type="button"
-					class="btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
+					class="cta btn btn-primary btn-sm rounded-xl font-black uppercase text-xs shadow-sm flex items-center gap-1.5"
 					@click="openAssignModal">
-					<Plus class="size-4" />
+					<Plus class="cta-icon cta-icon-plus size-4" />
 					Asignar Primer Bono
 				</button>
 			</div>
@@ -305,12 +305,14 @@ const getProgressPercentage = (completed: number, total: number) => {
 					</button>
 					<button
 						type="button"
-						class="btn btn-error text-white rounded-xl font-black uppercase text-xs shadow-md"
+						class="cta btn btn-error text-white rounded-xl font-black uppercase text-xs shadow-md"
 						:disabled="isUnassigning"
 						@click="executeUnassign"
 					>
-						<span v-if="isUnassigning" class="loading loading-spinner" />
-						<span v-else>Sí, Desasignar Bono</span>
+						<span class="cta-swap" :data-busy="isUnassigning || undefined">
+							<span :aria-hidden="isUnassigning">Sí, Desasignar Bono</span>
+							<span :aria-hidden="!isUnassigning"><span class="loading loading-spinner loading-sm" />Desasignando...</span>
+						</span>
 					</button>
 				</div>
 			</div>

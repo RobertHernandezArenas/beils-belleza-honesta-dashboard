@@ -415,3 +415,355 @@ button:active:not(:disabled),
 	z-index: 9999 !important;
 }
 
+
+/* ============================================
+   MOTION SYSTEM (client profile)
+   Tokens + primitives: easing, spring, stagger,
+   crossfade, blur focus, magnification, view transitions.
+   ============================================ */
+:root {
+	/* Easing: leaves fast, brakes softly */
+	--motion-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--motion-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+	--motion-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+	/* Spring: perceptual duration 0.45s, bounce 0.25 (settles in ~550ms) */
+	--motion-ease-spring: linear(0, 0.044, 0.149, 0.283, 0.424, 0.558, 0.677, 0.776, 0.856, 0.917, 0.961, 0.992, 1.011, 1.022, 1.027, 1.028, 1.027, 1.023, 1.019, 1.015, 1.012, 1.008, 1.006, 1.004, 1);
+	--motion-duration-spring: 550ms;
+}
+
+/* Stagger: direct children cascade in, 45ms apart */
+@keyframes motion-rise {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.98);
+	}
+}
+
+.motion-stagger > * {
+	animation: motion-rise 320ms var(--motion-ease-out) backwards;
+	animation-delay: calc(var(--stagger-i, 0) * 45ms);
+}
+.motion-stagger > :nth-child(2) { --stagger-i: 1; }
+.motion-stagger > :nth-child(3) { --stagger-i: 2; }
+.motion-stagger > :nth-child(4) { --stagger-i: 3; }
+.motion-stagger > :nth-child(5) { --stagger-i: 4; }
+.motion-stagger > :nth-child(6) { --stagger-i: 5; }
+.motion-stagger > :nth-child(7) { --stagger-i: 6; }
+.motion-stagger > :nth-child(n + 8) { --stagger-i: 7; }
+
+/* Spring card: lifts with a small bounce under the pointer */
+.motion-card {
+	transition-property: transform, box-shadow, border-color, filter, opacity;
+	transition-duration: var(--motion-duration-spring), 250ms, 250ms, 250ms, 250ms;
+	transition-timing-function: var(--motion-ease-spring), var(--motion-ease-out), var(--motion-ease-out), var(--motion-ease-out), var(--motion-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.motion-card:hover {
+		transform: translateY(-3px);
+	}
+}
+
+/* Spring pop: modals and sheets land with a small bounce */
+@keyframes motion-pop {
+	from {
+		opacity: 0;
+		transform: translateY(8px) scale(0.96);
+	}
+}
+
+.motion-pop {
+	animation: motion-pop var(--motion-duration-spring) var(--motion-ease-spring) backwards;
+}
+
+/* Crossfade (skeleton -> content): old fades out while new fades in, stacked in one grid cell.
+   Opacity only: blurring a full page of content repaints every frame. */
+.crossfade-stack {
+	display: grid;
+}
+.crossfade-stack > * {
+	grid-area: 1 / 1;
+	min-width: 0;
+}
+
+.crossfade-enter-active {
+	transition: opacity 220ms var(--motion-ease-out);
+}
+.crossfade-leave-active {
+	transition: opacity 150ms var(--motion-ease-out);
+	pointer-events: none;
+}
+.crossfade-enter-from,
+.crossfade-leave-to {
+	opacity: 0;
+}
+
+/* Toast: enters from the bottom and leaves the same way */
+.toast-rise-enter-active,
+.toast-rise-leave-active {
+	transition-property: opacity, transform;
+	transition-duration: 250ms;
+	transition-timing-function: var(--motion-ease-out);
+}
+.toast-rise-enter-from,
+.toast-rise-leave-to {
+	opacity: 0;
+	transform: translateY(100%) scale(0.96);
+}
+
+/* Blur focus: while a field is being edited, everything else steps back */
+.focus-scope:has([data-editing]) .focus-item:not(:has([data-editing])) {
+	filter: blur(2px);
+	opacity: 0.55;
+}
+.focus-item {
+	transition-property: transform, box-shadow, border-color, filter, opacity;
+	transition-duration: var(--motion-duration-spring), 250ms, 250ms, 200ms, 200ms;
+	transition-timing-function: var(--motion-ease-spring), var(--motion-ease-out), var(--motion-ease-out), var(--motion-ease-out), var(--motion-ease-out);
+}
+
+/* Magnification: scale is written per frame by useMagnification; this smooths the steps */
+.magnify-item {
+	transition: transform 120ms var(--motion-ease-out);
+}
+
+/* View transitions: shared element (list -> profile) and tab crossfade */
+::view-transition-group(*) {
+	animation-duration: 380ms;
+	animation-timing-function: var(--motion-ease-in-out);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 220ms;
+	animation-timing-function: var(--motion-ease-out);
+}
+
+@keyframes motion-fade-out {
+	to { opacity: 0; }
+}
+@keyframes motion-panel-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+
+/* Panel crossfade (html.vt-panel, set by crossfadePanel in utils/motion): segmented controls
+   stay live so their spring pill is seen moving; only the content they drive crossfades. */
+html.vt-panel::view-transition-group(profile-tabs),
+html.vt-panel::view-transition-new(profile-tabs),
+html.vt-panel::view-transition-group(health-switch),
+html.vt-panel::view-transition-new(health-switch) {
+	animation: none;
+}
+html.vt-panel::view-transition-old(profile-tabs),
+html.vt-panel::view-transition-old(health-switch) {
+	display: none;
+}
+/* Health treatment blocks: old fades out; new fades in while its cards stagger in live */
+html.vt-panel::view-transition-group(health-compliance),
+html.vt-panel::view-transition-group(health-zones) {
+	animation-duration: 300ms;
+	animation-timing-function: var(--motion-ease-out);
+}
+html.vt-panel::view-transition-old(health-compliance),
+html.vt-panel::view-transition-old(health-zones) {
+	animation: motion-fade-out 160ms var(--motion-ease-out) both;
+}
+html.vt-panel::view-transition-new(health-compliance),
+html.vt-panel::view-transition-new(health-zones) {
+	animation: fade-in 200ms var(--motion-ease-out) both;
+}
+html.vt-panel::view-transition-group(profile-panel) {
+	animation-duration: 300ms;
+	animation-timing-function: var(--motion-ease-out);
+}
+html.vt-panel::view-transition-old(profile-panel) {
+	animation: motion-fade-out 160ms var(--motion-ease-out) both;
+}
+html.vt-panel::view-transition-new(profile-panel) {
+	animation: motion-panel-in 300ms var(--motion-ease-out) 40ms both;
+}
+
+/* Segmented-control pill (useSlidingPill): slides and stretches between options on a spring.
+   Animating width is deliberate: it is an absolute, childless element, so nothing else reflows,
+   and scaleX would distort its rounded corners. */
+.motion-pill {
+	transition-property: transform, width;
+	transition-duration: var(--motion-duration-spring);
+	transition-timing-function: var(--motion-ease-spring);
+}
+
+/* CTA: lifts on a spring, presses crisply, its icon reacts.
+   Replaces per-button `active:scale-*` (which stacked with the global button press). */
+.cta {
+	transition-property: transform, box-shadow, background-color, border-color, color;
+	transition-duration: var(--motion-duration-spring), 200ms, 150ms, 150ms, 150ms;
+	transition-timing-function: var(--motion-ease-spring), var(--motion-ease-out), ease, ease, ease;
+}
+.cta-icon {
+	transition: transform var(--motion-duration-spring) var(--motion-ease-spring);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.cta:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 22px -10px color-mix(in oklab, var(--color-text-primary, #000) 35%, transparent);
+	}
+	.cta:hover:not(:disabled) .cta-icon {
+		transform: scale(1.15);
+	}
+	.cta:hover:not(:disabled) .cta-icon-plus {
+		transform: rotate(90deg);
+	}
+}
+
+.cta:active:not(:disabled) {
+	transform: scale(0.97);
+	transition-duration: 100ms;
+	transition-timing-function: var(--motion-ease-out);
+}
+
+/* CTA label <-> busy state crossfade; the grid keeps the width of the wider state */
+.cta-swap {
+	display: inline-grid;
+}
+.cta-swap > * {
+	grid-area: 1 / 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	transition:
+		opacity 180ms var(--motion-ease-out),
+		transform 180ms var(--motion-ease-out);
+}
+.cta-swap > :last-child {
+	opacity: 0;
+	transform: translateY(6px);
+}
+.cta-swap[data-busy] > :first-child {
+	opacity: 0;
+	transform: translateY(-6px);
+}
+.cta-swap[data-busy] > :last-child {
+	opacity: 1;
+	transform: none;
+}
+
+/* Modals (DaisyUI): open on a spring from where the user clicked, close fast.
+   --motion-origin-x/y are set on pointerdown by plugins/motion-origin.client.ts */
+.modal .modal-box {
+	transition:
+		translate 200ms var(--motion-ease-out),
+		scale 200ms var(--motion-ease-out),
+		opacity 150ms var(--motion-ease-out),
+		box-shadow 200ms var(--motion-ease-out);
+}
+.modal:not(.modal-bottom, .modal-top, .modal-start, .modal-end) .modal-box {
+	translate: calc((var(--motion-origin-x, 50vw) - 50vw) * 0.3) calc((var(--motion-origin-y, 50vh) - 50vh) * 0.3 + 16px);
+	scale: 92%;
+}
+@media (width >= 640px) {
+	.sm\:modal-middle .modal-box {
+		translate: calc((var(--motion-origin-x, 50vw) - 50vw) * 0.3) calc((var(--motion-origin-y, 50vh) - 50vh) * 0.3 + 16px);
+		scale: 92%;
+	}
+}
+.modal:is(.modal-open, [open], :target) .modal-box {
+	translate: 0;
+	scale: 1;
+	transition:
+		translate var(--motion-duration-spring) var(--motion-ease-spring),
+		scale var(--motion-duration-spring) var(--motion-ease-spring),
+		opacity 200ms var(--motion-ease-out),
+		box-shadow 200ms var(--motion-ease-out);
+}
+
+/* Boxes inserted into an already-open modal (v-if + showModal, or mounted with modal-open) */
+@starting-style {
+	.modal:is(.modal-open, [open], :target) .modal-box {
+		opacity: 0;
+		translate: calc((var(--motion-origin-x, 50vw) - 50vw) * 0.3) calc((var(--motion-origin-y, 50vh) - 50vh) * 0.3 + 16px);
+		scale: 92%;
+	}
+	.modal-bottom:not(.sm\:modal-middle):is(.modal-open, [open], :target) .modal-box {
+		translate: 0 100%;
+		scale: 1;
+	}
+}
+@media (width < 640px) {
+	@starting-style {
+		.modal-bottom:is(.modal-open, [open], :target) .modal-box {
+			translate: 0 100%;
+			scale: 1;
+		}
+	}
+}
+
+/* Modal content cascades in: header -> body -> actions (GSAP-driven modals stagger their own fields) */
+.modal:is(.modal-open, [open], :target) .modal-box:not([data-motion]) > * {
+	animation: motion-rise 320ms var(--motion-ease-out) backwards;
+}
+.modal:is(.modal-open, [open], :target) .modal-box:not([data-motion]) > :nth-child(2) { animation-delay: 50ms; }
+.modal:is(.modal-open, [open], :target) .modal-box:not([data-motion]) > :nth-child(3) { animation-delay: 100ms; }
+.modal:is(.modal-open, [open], :target) .modal-box:not([data-motion]) > :nth-child(n + 4) { animation-delay: 150ms; }
+
+@media (prefers-reduced-motion: reduce) {
+	.motion-pill {
+		transition-duration: 0ms;
+	}
+	.cta:hover:not(:disabled),
+	.cta:hover:not(:disabled) .cta-icon,
+	.cta:hover:not(:disabled) .cta-icon-plus,
+	.cta:active:not(:disabled) {
+		transform: none;
+	}
+	.cta-swap > *,
+	.cta-swap[data-busy] > * {
+		transform: none;
+	}
+	.modal:not(.modal-bottom, .modal-top, .modal-start, .modal-end) .modal-box {
+		translate: 0;
+		scale: 1;
+	}
+	@media (width >= 640px) {
+		.sm\:modal-middle .modal-box {
+			translate: 0;
+			scale: 1;
+		}
+	}
+	.modal:is(.modal-open, [open], :target) .modal-box:not([data-motion]) > * {
+		animation-name: fade-in;
+		animation-duration: 200ms;
+		animation-delay: 0ms;
+	}
+	@starting-style {
+		.modal:is(.modal-open, [open], :target) .modal-box {
+			translate: 0;
+			scale: 1;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.motion-stagger > * {
+		animation-name: fade-in;
+		animation-duration: 200ms;
+		animation-delay: 0ms;
+	}
+	.motion-card:hover {
+		transform: none;
+	}
+	.motion-pop {
+		animation-name: fade-in;
+		animation-duration: 200ms;
+	}
+	.toast-rise-enter-from,
+	.toast-rise-leave-to {
+		transform: none;
+	}
+	.focus-scope:has([data-editing]) .focus-item:not(:has([data-editing])) {
+		filter: none;
+	}
+}

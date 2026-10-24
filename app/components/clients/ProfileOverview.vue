@@ -194,16 +194,16 @@ const pendingDebtTotal = computed(() => {
 					<p class="text-xs font-semibold opacity-90">Este cliente tiene un saldo pendiente de <strong>{{ formatCurrency(pendingDebtTotal) }}</strong>.</p>
 				</div>
 			</div>
-			<button class="btn btn-error btn-sm rounded-xl font-bold uppercase tracking-wider text-white shadow-sm" @click="$emit('open-debt', props.client.debts?.[0])">
+			<button class="cta btn btn-error btn-sm rounded-xl font-bold uppercase tracking-wider text-white shadow-sm" @click="$emit('open-debt', props.client.debts?.[0])">
 				Gestionar Pago
 			</button>
 		</div>
 
-		<!-- BENTO GRID SYSTEM (12 Columns Layout - Trend 2027) -->
-		<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-6 lg:gap-8">
+		<!-- BENTO GRID SYSTEM (Responsive 12 Columns Apple Layout) -->
+		<div class="motion-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8">
 			
 			<!-- BENTO CARD 1: Próxima Cita & Countdown (Span 4) -->
-			<div class="xl:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 flex flex-col justify-between hover:shadow-xl transition-all">
+			<div class="col-span-1 md:col-span-1 lg:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 flex flex-col justify-between motion-card focus-item hover:shadow-xl">
 				<div>
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
@@ -225,7 +225,7 @@ const pendingDebtTotal = computed(() => {
 
 					<div v-if="nextBookingData" class="space-y-3">
 						<div class="flex items-baseline justify-between">
-							<span class="text-2xl font-black text-text-primary tabular-nums">
+							<span class="text-xl sm:text-2xl font-black text-text-primary tabular-nums">
 								{{ formatDate(nextBookingData.booking_date) }}
 							</span>
 							<span class="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
@@ -254,15 +254,15 @@ const pendingDebtTotal = computed(() => {
 				</div>
 
 				<div class="pt-4 border-t border-border-subtle mt-4">
-					<button class="btn btn-neutral btn-sm w-full rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center justify-center gap-2" @click="$emit('open-booking')">
-						<Plus class="size-4" />
+					<button class="cta btn btn-neutral btn-sm w-full rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center justify-center gap-2" @click="$emit('open-booking', $event.currentTarget)">
+						<Plus class="cta-icon cta-icon-plus size-4" />
 						Agendar Nueva Cita
 					</button>
 				</div>
 			</div>
 
 			<!-- BENTO CARD 2: Gasto Total (LTV) & Ticket Medio (AOV) (Span 4) -->
-			<div class="xl:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 flex flex-col justify-between hover:shadow-xl transition-all">
+			<div class="col-span-1 md:col-span-1 lg:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 flex flex-col justify-between motion-card focus-item hover:shadow-xl">
 				<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 					<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
 						<TrendingUp class="size-4 text-primary" />
@@ -271,11 +271,11 @@ const pendingDebtTotal = computed(() => {
 					<span class="text-[10px] font-black text-text-muted uppercase">Beils CRM</span>
 				</div>
 
-				<div class="grid grid-cols-2 gap-4">
+				<div class="grid grid-cols-2 gap-3 sm:gap-4">
 					<!-- LTV -->
-					<div class="bg-bg-muted/40 border border-border-subtle rounded-2xl p-4 space-y-1">
+					<div class="bg-bg-muted/40 border border-border-subtle rounded-2xl p-3.5 sm:p-4 space-y-1">
 						<div class="flex items-center justify-between">
-							<span class="text-[10px] font-black uppercase text-text-muted tracking-wider">LTV (Gasto Total)</span>
+							<span class="text-[9px] sm:text-[10px] font-black uppercase text-text-muted tracking-wider">LTV (Total)</span>
 							<InfoTooltip
 								title="Lifetime Value (LTV)"
 								what="Valor histórico acumulado: masa total de ingresos generada por el cliente desde su primera visita."
@@ -285,16 +285,16 @@ const pendingDebtTotal = computed(() => {
 								align="start"
 							/>
 						</div>
-						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.ltv || 0) }}</p>
+						<p class="text-xl sm:text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.ltv || 0) }}</p>
 						<span class="text-[9px] font-bold text-success flex items-center gap-1">
 							<Sparkles class="size-3" /> Acumulado
 						</span>
 					</div>
 
 					<!-- AOV -->
-					<div class="bg-bg-muted/40 border border-border-subtle rounded-2xl p-4 space-y-1">
+					<div class="bg-bg-muted/40 border border-border-subtle rounded-2xl p-3.5 sm:p-4 space-y-1">
 						<div class="flex items-center justify-between">
-							<span class="text-[10px] font-black uppercase text-text-muted tracking-wider">AOV (Ticket Medio)</span>
+							<span class="text-[9px] sm:text-[10px] font-black uppercase text-text-muted tracking-wider">AOV (Medio)</span>
 							<InfoTooltip
 								title="Ticket Medio (AOV)"
 								what="Average Order Value: gasto promedio generado en cada transacción o visita de compra."
@@ -304,13 +304,13 @@ const pendingDebtTotal = computed(() => {
 								align="end"
 							/>
 						</div>
-						<p class="text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.aov || 0) }}</p>
-						<span class="text-[9px] font-bold text-text-muted">Por transacción</span>
+						<p class="text-xl sm:text-2xl font-black text-text-primary tabular-nums">{{ formatCurrency(kpis.aov || 0) }}</p>
+						<span class="text-[9px] font-bold text-text-muted">Por ticket</span>
 					</div>
 				</div>
 
 				<!-- Frecuencia -->
-				<div class="bg-bg-muted/20 border border-border-subtle rounded-2xl p-3.5 mt-4 flex items-center justify-between">
+				<div class="bg-bg-muted/20 border border-border-subtle rounded-2xl p-3 sm:p-3.5 mt-3 sm:mt-4 flex items-center justify-between">
 					<div class="flex items-center gap-2">
 						<CalendarClock class="size-4 text-primary" />
 						<span class="text-xs font-bold text-text-primary">Frecuencia de Citas</span>
@@ -327,8 +327,8 @@ const pendingDebtTotal = computed(() => {
 				</div>
 			</div>
 
-			<!-- BENTO CARD 3: Datos Personales e Información de Contacto (Span 4) -->
-			<div class="xl:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 flex flex-col justify-between hover:shadow-xl transition-all">
+			<!-- BENTO CARD 3: Datos Personales e Información de Contacto (Span 4 en Desktop, Span 2 en Tablet) -->
+			<div class="col-span-1 md:col-span-2 lg:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 flex flex-col justify-between motion-card focus-item hover:shadow-xl">
 				<div>
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
@@ -339,9 +339,9 @@ const pendingDebtTotal = computed(() => {
 					</div>
 
 					<div class="space-y-3 text-xs font-medium">
-						<div class="bg-bg-muted/30 border border-border-subtle rounded-2xl p-3.5 space-y-2">
+						<div class="bg-bg-muted/30 border border-border-subtle rounded-2xl p-3 sm:p-3.5 space-y-2">
 							<EditableField :model-value="client.address || ''" label="Dirección" :is-mutating="isUpdating" @save="emit('update', 'address', $event)" />
-							<div class="flex gap-1 items-center">
+							<div class="flex gap-1 items-center flex-wrap">
 								<EditableField :model-value="client.city || ''" label="Ciudad" :is-mutating="isUpdating" @save="emit('update', 'city', $event)" />
 								<span>,</span>
 								<EditableField :model-value="client.postal_code || ''" label="C.P." :is-mutating="isUpdating" @save="emit('update', 'postal_code', $event)" />
@@ -352,8 +352,8 @@ const pendingDebtTotal = computed(() => {
 						<div class="bg-bg-muted/30 border border-border-subtle rounded-2xl p-3 flex items-center justify-between">
 							<span class="text-text-muted text-[11px] font-bold">Documento:</span>
 							<div class="flex items-center gap-2">
-								<span class="font-mono font-bold text-text-primary">{{ revealedDocs[client.user_id] || '****' + (client.document_number?.slice(-4) || '3115') }}</span>
-								<button class="btn btn-ghost btn-xs btn-circle" aria-label="Toggle Document" @click="toggleDocumentVisibility(client.user_id, client.document_number || '')">
+								<span class="font-mono font-bold text-text-primary tabular-nums">{{ revealedDocs[client.user_id] || '****' + (client.document_number?.slice(-4) || '3115') }}</span>
+								<button class="btn btn-ghost btn-xs btn-circle active:scale-90" aria-label="Toggle Document" @click="toggleDocumentVisibility(client.user_id, client.document_number || '')">
 									<component :is="revealedDocs[client.user_id] ? EyeOff : Eye" class="size-3.5 text-text-muted" />
 								</button>
 							</div>
@@ -362,10 +362,10 @@ const pendingDebtTotal = computed(() => {
 				</div>
 			</div>
 
-			<!-- BENTO CARD 4: Gráfico Interactivo Evolución Gasto / Tiempo (Span 8) -->
-			<div class="xl:col-span-8 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 hover:shadow-xl transition-all flex flex-col justify-between">
+			<!-- BENTO CARD 4: Gráfico Interactivo Evolución Gasto / Tiempo (Span 8 en Desktop, Span 2 en Tablet) -->
+			<div class="col-span-1 md:col-span-2 lg:col-span-8 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 motion-card focus-item hover:shadow-xl flex flex-col justify-between">
 				<div>
-					<div class="flex items-center justify-between border-b border-border-subtle pb-3 mb-4">
+					<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-subtle pb-3 mb-4">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
 							<TrendingUp class="size-4 text-primary" />
 							Evolución de Gasto por Tiempo
@@ -380,11 +380,11 @@ const pendingDebtTotal = computed(() => {
 						</span>
 						
 						<!-- Timeframe Selector Button Group -->
-						<div class="join border border-border-subtle rounded-xl overflow-hidden bg-bg-muted/50">
+						<div class="join border border-border-subtle rounded-xl overflow-hidden bg-bg-muted/50 self-start sm:self-auto">
 							<button 
 								v-for="tf in (['3M', '6M', '1Y', 'ALL'] as const)" 
 								:key="tf"
-								class="join-item btn btn-xs font-black px-3 transition-colors"
+								class="join-item btn btn-xs font-black px-2.5 sm:px-3 transition-colors active:scale-95"
 								:class="timeframe === tf ? 'btn-neutral text-white shadow-xs' : 'btn-ghost text-text-muted hover:text-text-primary'"
 								@click="timeframe = tf"
 							>
@@ -393,14 +393,14 @@ const pendingDebtTotal = computed(() => {
 						</div>
 					</div>
 
-					<div class="h-64 w-full pt-2">
+					<div class="h-60 sm:h-64 lg:h-72 w-full pt-2">
 						<ClientChart :option="chartOptions" />
 					</div>
 				</div>
 			</div>
 
-			<!-- BENTO CARD 5: Servicios y Productos Favoritos (Span 4) -->
-			<div class="xl:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 flex flex-col justify-between hover:shadow-xl transition-all">
+			<!-- BENTO CARD 5: Servicios y Productos Favoritos (Span 4 en Desktop, Span 2 en Tablet) -->
+			<div class="col-span-1 md:col-span-2 lg:col-span-4 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 flex flex-col justify-between motion-card focus-item hover:shadow-xl">
 				<div class="space-y-4">
 					<div class="flex items-center justify-between border-b border-border-subtle pb-3">
 						<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
@@ -417,34 +417,37 @@ const pendingDebtTotal = computed(() => {
 						</span>
 					</div>
 
-					<!-- Top Servicios -->
-					<div class="space-y-2">
-						<span class="text-[10px] font-black text-primary uppercase tracking-wider">Top Servicios</span>
-						<div v-if="kpis.topServices?.length" class="space-y-1.5">
-							<div v-for="s in kpis.topServices" :key="s.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
-								<span class="font-bold text-text-primary truncate max-w-42.5">{{ s.name }}</span>
-								<span class="badge badge-sm font-black tabular-nums">{{ s.qty }}x ({{ formatCurrency(s.total || 0) }})</span>
+					<!-- Two-column grid on tablet, single column on mobile and desktop -->
+					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+						<!-- Top Servicios -->
+						<div class="space-y-2">
+							<span class="text-[10px] font-black text-primary uppercase tracking-wider">Top Servicios</span>
+							<div v-if="kpis.topServices?.length" class="space-y-1.5">
+								<div v-for="s in kpis.topServices" :key="s.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
+									<span class="font-bold text-text-primary truncate max-w-36 sm:max-w-44">{{ s.name }}</span>
+									<span class="badge badge-sm font-black tabular-nums">{{ s.qty }}x ({{ formatCurrency(s.total || 0) }})</span>
+								</div>
 							</div>
+							<p v-else class="text-xs text-text-muted italic opacity-60">Sin historial de servicios</p>
 						</div>
-						<p v-else class="text-xs text-text-muted italic opacity-60">Sin historial de servicios</p>
-					</div>
 
-					<!-- Top Productos -->
-					<div class="space-y-2 pt-2 border-t border-border-subtle">
-						<span class="text-[10px] font-black text-secondary uppercase tracking-wider">Top Productos</span>
-						<div v-if="kpis.topProducts?.length" class="space-y-1.5">
-							<div v-for="p in kpis.topProducts" :key="p.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
-								<span class="font-bold text-text-primary truncate max-w-42.5">{{ p.name }}</span>
-								<span class="badge badge-sm font-black tabular-nums">{{ p.qty }}x ({{ formatCurrency(p.total || 0) }})</span>
+						<!-- Top Productos -->
+						<div class="space-y-2 pt-2 sm:pt-0 lg:pt-2 border-t sm:border-t-0 lg:border-t border-border-subtle">
+							<span class="text-[10px] font-black text-secondary uppercase tracking-wider">Top Productos</span>
+							<div v-if="kpis.topProducts?.length" class="space-y-1.5">
+								<div v-for="p in kpis.topProducts" :key="p.name" class="flex items-center justify-between text-xs bg-bg-muted/30 p-2.5 rounded-xl border border-border-subtle">
+									<span class="font-bold text-text-primary truncate max-w-36 sm:max-w-44">{{ p.name }}</span>
+									<span class="badge badge-sm font-black tabular-nums">{{ p.qty }}x ({{ formatCurrency(p.total || 0) }})</span>
+								</div>
 							</div>
+							<p v-else class="text-xs text-text-muted italic opacity-60">Sin compras de productos</p>
 						</div>
-						<p v-else class="text-xs text-text-muted italic opacity-60">Sin compras de productos</p>
 					</div>
 				</div>
 			</div>
 
 			<!-- BENTO CARD 6: Anotaciones Comerciales & Ficha Técnica (Span 12) -->
-			<div class="xl:col-span-12 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 hover:shadow-xl transition-all space-y-4">
+			<div class="col-span-1 md:col-span-2 lg:col-span-12 bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 motion-card focus-item hover:shadow-xl space-y-4">
 				<div class="flex items-center justify-between border-b border-border-subtle pb-3">
 					<span class="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1.5">
 						<FileText class="size-4 text-primary" />
@@ -459,14 +462,16 @@ const pendingDebtTotal = computed(() => {
 				<textarea 
 					v-model="notesText" 
 					rows="3"
-					class="textarea border-border-default/80 bg-bg-muted/20 focus:border-primary/50 w-full rounded-2xl p-4 text-xs font-medium focus:outline-none transition-all shadow-inner" 
+					class="textarea border-border-default/80 bg-bg-muted/20 focus:border-primary/50 w-full rounded-2xl p-3.5 sm:p-4 text-xs font-medium focus:outline-none transition-all shadow-inner" 
 					placeholder="Escribe aquí notas sobre preferencias, alergias, o detalles importantes del cliente..."
 				/>
 
 				<div class="flex justify-end">
-					<button :disabled="isSavingNotes" class="btn btn-neutral btn-sm rounded-xl font-bold px-6 shadow-sm" @click="saveNotes">
-						<span v-if="isSavingNotes" class="loading loading-spinner loading-xs"/>
-						{{ isSavingNotes ? 'Guardando...' : 'Guardar Anotaciones' }}
+					<button :disabled="isSavingNotes" class="cta btn btn-neutral btn-sm rounded-xl font-bold px-6 shadow-sm" @click="saveNotes">
+						<span class="cta-swap" :data-busy="isSavingNotes || undefined">
+							<span :aria-hidden="isSavingNotes">Guardar Anotaciones</span>
+							<span :aria-hidden="!isSavingNotes"><span class="loading loading-spinner loading-xs"/>Guardando...</span>
+						</span>
 					</button>
 				</div>
 			</div>

@@ -73,13 +73,13 @@ const chartOptions = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-8 transition-all duration-300">
+  <div class="motion-stagger space-y-6 sm:space-y-8">
     
-    <!-- GRID DE METODOS DE PAGO & DEUDAS -->
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+    <!-- GRID DE METODOS DE PAGO & DEUDAS (Responsive: 1 col on mobile/tablet, 12 cols on desktop) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8">
       
-      <!-- DONUT CHART: Distribución por Método de Pago (Span 5) -->
-      <div class="xl:col-span-5 card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-6 hover:shadow-xl transition-all flex flex-col justify-between">
+      <!-- DONUT CHART: Distribución por Método de Pago (Span 5 on Desktop) -->
+      <div class="col-span-1 lg:col-span-5 card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 motion-card focus-item hover:shadow-xl flex flex-col justify-between">
         <div>
           <div class="border-b border-border-subtle pb-3 mb-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -97,16 +97,16 @@ const chartOptions = computed(() => {
             <span class="text-[10px] font-black text-text-muted uppercase">Distribución</span>
           </div>
 
-          <div class="h-64 w-full pt-2">
+          <div class="h-60 sm:h-64 w-full pt-2">
             <ClientChart :option="chartOptions" />
           </div>
         </div>
       </div>
 
-      <!-- DEUDAS PENDIENTES CARD (Span 7) -->
-      <div class="xl:col-span-7 card bg-bg-card border border-border-default/80 shadow-md rounded-3xl overflow-hidden hover:shadow-xl transition-all flex flex-col justify-between">
+      <!-- DEUDAS PENDIENTES CARD (Span 7 on Desktop) -->
+      <div class="col-span-1 lg:col-span-7 card bg-bg-card border border-border-default/80 shadow-md rounded-3xl overflow-hidden motion-card focus-item hover:shadow-xl flex flex-col justify-between">
         <!-- Card Header -->
-        <div class="border-b border-border-subtle bg-bg-muted/20 px-6 py-4 flex items-center justify-between">
+        <div class="border-b border-border-subtle bg-bg-muted/20 px-5 sm:px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="p-2 rounded-xl bg-error/15 text-error shadow-xs"><Wallet class="size-4" /></div>
             <h3 class="text-text-primary text-sm font-black tracking-tight flex items-center gap-1.5">
@@ -130,36 +130,36 @@ const chartOptions = computed(() => {
           <table v-if="(client.debts?.length ?? 0) > 0" class="table table-zebra w-full text-xs">
             <thead>
               <tr class="text-text-muted text-[10px] font-black uppercase tracking-widest border-b border-border-subtle bg-bg-muted/30">
-                <th class="px-6 py-3">{{ $t('catalog.clients.profile.billing.table.concept') }}</th>
-                <th class="px-4 py-3">{{ $t('catalog.clients.profile.billing.table.due') }}</th>
-                <th class="px-4 py-3 text-right">{{ $t('catalog.clients.profile.billing.table.pending') }}</th>
-                <th class="px-6 py-3 text-right">{{ $t('catalog.clients.profile.billing.table.actions') }}</th>
+                <th class="px-4 sm:px-6 py-3">{{ $t('catalog.clients.profile.billing.table.concept') }}</th>
+                <th class="px-3 sm:px-4 py-3">{{ $t('catalog.clients.profile.billing.table.due') }}</th>
+                <th class="px-3 sm:px-4 py-3 text-right">{{ $t('catalog.clients.profile.billing.table.pending') }}</th>
+                <th class="px-4 sm:px-6 py-3 text-right">{{ $t('catalog.clients.profile.billing.table.actions') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="debt in client.debts" :key="debt.debt_id" class="border-b border-border-subtle hover:bg-bg-muted/40 transition-colors cursor-pointer group" @click="emit('open-debt', debt)">
-                <td class="px-6 py-3">
-                  <div class="flex items-center gap-3">
-                    <div class="size-8 rounded-xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs">
+                <td class="px-4 sm:px-6 py-3">
+                  <div class="flex items-center gap-2.5 sm:gap-3">
+                    <div class="size-8 rounded-xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs shrink-0">
                       <Receipt class="size-4 text-text-primary opacity-80" />
                     </div>
-                    <div class="flex flex-col">
-                      <span class="text-text-primary text-xs font-bold">{{ debt.notes || (locale === 'es' ? 'Deuda por servicio/producto' : 'Debt for service/product') }}</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-text-primary text-xs font-bold truncate max-w-[130px] sm:max-w-xs">{{ debt.notes || (locale === 'es' ? 'Deuda por servicio/producto' : 'Debt for service/product') }}</span>
                       <span class="text-[9px] text-text-muted font-black uppercase tracking-tighter">{{ debt.cart?.items?.length || 0 }} {{ locale === 'es' ? 'ítems' : 'items' }}</span>
                     </div>
                   </div>
                 </td>
-                <td class="px-4 py-3">
+                <td class="px-3 sm:px-4 py-3 whitespace-nowrap">
                   <span class="text-text-primary text-xs font-semibold tabular-nums">{{ debt.due_date ? formatDate(debt.due_date) : (locale === 'es' ? 'Inmediato' : 'Immediate') }}</span>
                 </td>
-                <td class="px-4 py-3 text-right">
+                <td class="px-3 sm:px-4 py-3 text-right whitespace-nowrap">
                   <div class="flex flex-col items-end">
                     <span class="text-error text-sm font-black tabular-nums">{{ debt.remaining.toFixed(2) }}€</span>
                     <span v-if="debt.remaining < debt.amount" class="text-[9px] text-text-muted font-bold uppercase">{{ locale === 'es' ? 'de' : 'of' }} {{ debt.amount.toFixed(2) }}€</span>
                   </div>
                 </td>
-                <td class="px-6 py-3 text-right">
-                  <button class="btn btn-ghost btn-xs rounded-xl font-bold uppercase text-[9px] border border-border-subtle">
+                <td class="px-4 sm:px-6 py-3 text-right">
+                  <button class="btn btn-ghost btn-xs rounded-xl font-bold uppercase text-[9px] border border-border-subtle active:scale-95">
                     {{ $t('catalog.clients.profile.billing.manage') }}
                   </button>
                 </td>
@@ -181,12 +181,12 @@ const chartOptions = computed(() => {
     </div>
 
     <!-- HISTORIAL DE COMPRAS CARD -->
-    <div class="card bg-bg-card border border-border-default/80 shadow-md rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300">
+    <div class="card bg-bg-card border border-border-default/80 shadow-md rounded-3xl overflow-hidden motion-card focus-item hover:shadow-xl">
       <!-- Card Header -->
-      <div class="border-b border-border-subtle bg-bg-muted/20 px-8 py-5 flex items-center justify-between">
+      <div class="border-b border-border-subtle bg-bg-muted/20 px-5 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="p-2.5 rounded-2xl bg-primary/15 text-primary shadow-xs"><History class="size-5" /></div>
-          <h3 class="text-text-primary text-lg font-black tracking-tight flex items-center gap-1.5">
+          <div class="p-2 sm:p-2.5 rounded-2xl bg-primary/15 text-primary shadow-xs"><History class="size-4 sm:size-5" /></div>
+          <h3 class="text-text-primary text-base sm:text-lg font-black tracking-tight flex items-center gap-1.5">
             {{ $t('catalog.clients.profile.billing.history') }}
             <InfoTooltip
               title="Registro de Facturación del Cliente"
@@ -204,38 +204,38 @@ const chartOptions = computed(() => {
       </div>
 
       <div class="p-0 overflow-x-auto">
-        <table v-if="(client.carts?.length ?? 0) > 0" class="table table-zebra w-full">
+        <table v-if="(client.carts?.length ?? 0) > 0" class="table table-zebra w-full text-xs">
           <thead>
             <tr class="text-text-muted text-[10px] font-black uppercase tracking-widest border-b border-border-subtle bg-bg-muted/30">
-              <th class="px-8 py-4">{{ $t('catalog.clients.profile.billing.table.ticket') }}</th>
-              <th class="px-6 py-4 text-center">{{ $t('catalog.clients.profile.billing.table.status') }}</th>
-              <th class="px-6 py-4 text-center">{{ $t('catalog.clients.profile.billing.table.method') }}</th>
-              <th class="px-8 py-4 text-right">{{ $t('catalog.clients.profile.billing.table.total') }}</th>
+              <th class="px-4 sm:px-8 py-3.5">{{ $t('catalog.clients.profile.billing.table.ticket') }}</th>
+              <th class="px-3 sm:px-6 py-3.5 text-center">{{ $t('catalog.clients.profile.billing.table.status') }}</th>
+              <th class="px-3 sm:px-6 py-3.5 text-center">{{ $t('catalog.clients.profile.billing.table.method') }}</th>
+              <th class="px-4 sm:px-8 py-3.5 text-right">{{ $t('catalog.clients.profile.billing.table.total') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="cart in client.carts" :key="cart.cart_id" class="border-b border-border-subtle hover:bg-bg-muted/40 transition-colors cursor-pointer group" @click="emit('open-purchase', cart)">
-              <td class="px-8 py-4">
-                <div class="flex items-center gap-4">
-                  <div class="size-10 rounded-2xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs">
-                    <ShoppingBag class="size-5 text-text-primary opacity-80" />
+              <td class="px-4 sm:px-8 py-3 sm:py-4">
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <div class="size-9 sm:size-10 rounded-2xl bg-bg-muted flex items-center justify-center border border-border-subtle group-hover:border-primary/50 transition-colors shadow-xs shrink-0">
+                    <ShoppingBag class="size-4 sm:size-5 text-text-primary opacity-80" />
                   </div>
-                  <div class="flex flex-col">
-                    <span class="text-text-primary text-sm font-bold tabular-nums">{{ formatDate(cart.created_at) }}</span>
-                    <span class="text-[10px] text-text-muted font-black uppercase tracking-tighter">{{ cart.items?.length || 0 }} {{ locale === 'es' ? 'servicios/productos' : 'services/products' }}</span>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-text-primary text-xs sm:text-sm font-bold tabular-nums">{{ formatDate(cart.created_at) }}</span>
+                    <span class="text-[9px] sm:text-[10px] text-text-muted font-black uppercase tracking-tighter truncate max-w-[140px] sm:max-w-none">{{ cart.items?.length || 0 }} {{ locale === 'es' ? 'servicios/productos' : 'services/products' }}</span>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 text-center">
-                <span class="badge badge-sm font-black uppercase px-2.5 py-1 border-none" :class="cart.status === 'completed' ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'">
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-center whitespace-nowrap">
+                <span class="badge badge-xs sm:badge-sm font-black uppercase px-2 sm:px-2.5 py-0.5 sm:py-1 border-none" :class="cart.status === 'completed' ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'">
                   {{ (cart.status === 'completed' ? $t('catalog.clients.profile.appointments.status.completed') : (cart.status === 'pending' ? $t('catalog.clients.profile.appointments.status.pending') : cart.status)).toUpperCase() }}
                 </span>
               </td>
-              <td class="px-6 py-4 text-center">
-                <span class="badge badge-ghost badge-sm font-bold uppercase">{{ cart.payment_method || (locale === 'es' ? 'PENDIENTE' : 'PENDING') }}</span>
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-center whitespace-nowrap">
+                <span class="badge badge-ghost badge-xs sm:badge-sm font-bold uppercase">{{ cart.payment_method || (locale === 'es' ? 'PENDIENTE' : 'PENDING') }}</span>
               </td>
-              <td class="px-8 py-4 text-right">
-                <span class="text-text-primary text-base font-black tabular-nums">{{ cart.total.toFixed(2) }}€</span>
+              <td class="px-4 sm:px-8 py-3 sm:py-4 text-right whitespace-nowrap">
+                <span class="text-text-primary text-sm sm:text-base font-black tabular-nums">{{ cart.total.toFixed(2) }}€</span>
               </td>
             </tr>
           </tbody>
@@ -243,10 +243,10 @@ const chartOptions = computed(() => {
 
         <!-- EMPTY STATE COMPRAS -->
         <div v-else class="flex flex-col items-center justify-center py-16 text-center">
-          <div class="bg-primary/15 text-primary mb-4 flex size-16 items-center justify-center rounded-3xl shadow-inner">
-            <AlertCircle class="size-8" />
+          <div class="bg-primary/15 text-primary mb-4 flex size-14 sm:size-16 items-center justify-center rounded-3xl shadow-inner">
+            <AlertCircle class="size-7 sm:size-8" />
           </div>
-          <p class="text-text-primary text-lg font-black">{{ $t('catalog.clients.profile.billing.empty.noSales') }}</p>
+          <p class="text-text-primary text-base sm:text-lg font-black">{{ $t('catalog.clients.profile.billing.empty.noSales') }}</p>
           <p class="text-text-muted mt-1 text-xs font-medium uppercase tracking-widest">{{ $t('catalog.clients.profile.billing.empty.noSalesSub') }}</p>
         </div>
       </div>

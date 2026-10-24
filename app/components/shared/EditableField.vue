@@ -32,6 +32,10 @@
 			type: Function,
 			default: undefined,
 		},
+		inline: {
+			type: Boolean,
+			default: false,
+		},
 	})
 
 	const emit = defineEmits(['update:modelValue', 'save'])
@@ -154,11 +158,13 @@
 <template>
 	<div
 		class="group relative flex min-h-6 w-full flex-col"
-		:class="{ 'pointer-events-none opacity-50': isMutating }">
+		:class="{ 'pointer-events-none opacity-50': isMutating }"
+		:data-editing="isEditing || undefined">
 		<!-- Text Display State -->
 		<div
 			ref="textContainerRef"
-			class="hover:bg-bg-muted/50 -m-1 flex w-fit cursor-pointer items-center gap-2 rounded-lg p-1 transition-colors"
+			class="hover:bg-bg-muted/50 -m-1 flex w-fit cursor-pointer items-center rounded-lg p-1 transition-colors"
+			:class="inline ? 'gap-1' : 'gap-2'"
 			@click="startEdit">
 			<span class="block truncate">
 				<slot name="display" :value="displayValue">
@@ -166,8 +172,9 @@
 				</slot>
 			</span>
 			<div
-				class="bg-primary/10 text-primary shrink-0 rounded-md p-1 opacity-0 transition-opacity group-hover:opacity-100">
-				<Edit2 class="size-4" />
+				class="bg-primary/10 text-primary shrink-0 rounded-md p-1 transition-all duration-150"
+				:class="inline ? 'hidden group-hover:flex' : 'opacity-0 group-hover:opacity-100'">
+				<Edit2 class="size-3.5 sm:size-4" />
 			</div>
 		</div>
 

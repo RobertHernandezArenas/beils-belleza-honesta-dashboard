@@ -21,6 +21,7 @@ export default defineNuxtConfig({
 	// ==========================================
 	experimental: {
 		payloadExtraction: true,
+		viewTransition: true,
 	},
 	routeRules: {
 		'/overview': { ssr: false },
@@ -32,6 +33,8 @@ export default defineNuxtConfig({
 	},
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
+		// Opt-in per page via definePageMeta({ viewTransition: true })
+		viewTransition: false,
 		layoutTransition: { name: 'layout', mode: 'out-in' },
 		head: {
 			htmlAttrs: { 'data-theme': 'light' },

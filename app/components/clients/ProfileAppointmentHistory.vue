@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClientProfile, Booking, Sale } from '~~/shared/types/domain'
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, shallowRef, computed, onMounted, onBeforeUnmount } from 'vue'
 import { CalendarClock, Clock, User2, Receipt, X, ChevronRight, Scissors } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -78,8 +78,22 @@ const statusStyle = (status: string) => {
 const serviceNames = (b: Booking) =>
 	(b.booking_items || []).map((it: { name: string }) => it.name).join(' · ') || b.item_type || 'Servicio'
 
-const open = (b: Booking) => (selected.value = b)
+// Morph: the clicked row grows into the detail card and shrinks back on close
+const morphSource = shallowRef<HTMLElement | null>(null)
+const open = (b: Booking, e: MouseEvent) => {
+	morphSource.value = prefersReducedMotion() ? null : (e.currentTarget as HTMLElement)
+	selected.value = b
+}
 const close = () => (selected.value = null)
+
+const onDetailEnter = (el: Element) => {
+	const card = el.firstElementChild as HTMLElement | null
+	if (card && morphSource.value?.isConnected) morphIn(card, morphSource.value)
+}
+const onDetailLeave = (el: Element) => {
+	const card = el.firstElementChild as HTMLElement | null
+	if (card && morphSource.value?.isConnected) morphOut(card, morphSource.value)
+}
 const onKey = (e: KeyboardEvent) => {
 	if (e.key === 'Escape') close()
 }
@@ -88,7 +102,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 </script>
 
 <template>
-	<section class="bg-bg-card border-border-default/80 rounded-3xl border p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+	<section class="focus-item bg-bg-card border-border-default/80 rounded-3xl border p-4 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
 		<div class="mb-5 flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<div class="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-xl">
@@ -111,7 +125,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 		</div>
 
 		<!-- Timeline -->
-		<ol v-else class="custom-scrollbar relative max-h-105 overflow-y-auto pl-4">
+		<ol v-else class="motion-stagger custom-scrollbar relative max-h-105 overflow-y-auto pl-4">
 			<li
 				v-for="b in bookings"
 				:key="b.booking_id"
@@ -121,7 +135,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 				<button
 					type="button"
 					class="group hover:bg-bg-muted/50 border-border-default/70 flex w-full items-start justify-between gap-3 rounded-2xl border p-3 text-left transition-colors"
-					@click="open(b)">
+					@click="open(b, $event)">
 					<div class="min-w-0 flex-1">
 						<div class="mb-1 flex flex-wrap items-center gap-2">
 							<span class="text-text-primary text-xs font-black tabular-nums">{{ fmtDate(b.booking_date) }}</span>
@@ -147,16 +161,19 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 
 		<!-- Detail modal -->
 		<Teleport to="body">
+			<!-- Overlay timing matches morphIn/morphOut (400ms / 300ms, drawer curve) -->
 			<Transition
-				enter-active-class="transition-opacity duration-200"
+				enter-active-class="transition-opacity duration-400 ease-(--motion-ease-drawer)"
 				enter-from-class="opacity-0"
-				leave-active-class="transition-opacity duration-150"
-				leave-to-class="opacity-0">
+				leave-active-class="transition-opacity duration-300 ease-(--motion-ease-drawer)"
+				leave-to-class="opacity-0"
+				@enter="onDetailEnter"
+				@leave="onDetailLeave">
 				<div
 					v-if="selected"
 					class="fixed inset-0 z-1000 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center"
 					@click.self="close">
-					<div class="bg-bg-card border-border-default max-h-[88vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border p-6 shadow-2xl sm:rounded-3xl">
+					<div :class="{ 'motion-pop': !morphSource }" class="bg-bg-card border-border-default max-h-[88vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border p-6 shadow-2xl sm:rounded-3xl">
 						<!-- header -->
 						<div class="mb-4 flex items-start justify-between">
 							<div>
@@ -218,9 +235,9 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 
 							<button
 								type="button"
-								class="btn btn-outline btn-neutral btn-xs mt-3 w-full rounded-xl font-bold flex items-center justify-center gap-1.5"
+								class="cta btn btn-outline btn-neutral btn-xs mt-3 w-full rounded-xl font-bold flex items-center justify-center gap-1.5"
 								@click="emit('open-purchase', selectedTicket); close()">
-								<Receipt class="size-3.5" />
+								<Receipt class="cta-icon size-3.5" />
 								Ver Ticket Completo
 							</button>
 						</div>

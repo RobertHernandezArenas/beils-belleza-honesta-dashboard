@@ -13,6 +13,7 @@ import {
   Package
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import type { Component } from 'vue'
 
 import ProfileHeader from '~/components/clients/ProfileHeader.vue'
 import ProfileOverview from '~/components/clients/ProfileOverview.vue'
@@ -24,7 +25,8 @@ import ProfilePackagesSection from '~/components/clients/ProfilePackagesSection.
 
 import { useAgendaStore } from '~/stores/useAgendaStore'
 
-definePageMeta({ layout: 'default' })
+// View Transitions carry the avatar + name over from the client list (shared element)
+definePageMeta({ layout: 'default', viewTransition: true, pageTransition: false })
 const { locale, t } = useI18n()
 const route = useRoute()
 const clientId = route.params.id as string
@@ -38,7 +40,25 @@ const queryClient = useQueryClient()
 const agendaStore = useAgendaStore()
 
 // Navigation Tabs State
-const activeTab = ref<'OVERVIEW' | 'HEALTH' | 'BILLING' | 'PACKAGES'>('OVERVIEW')
+type ProfileTab = 'OVERVIEW' | 'HEALTH' | 'BILLING' | 'PACKAGES'
+const activeTab = ref<ProfileTab>('OVERVIEW')
+
+const tabs: { id: ProfileTab; label: string; icon: Component }[] = [
+  { id: 'OVERVIEW', label: 'Visión General & Bento', icon: LayoutGrid },
+  { id: 'HEALTH', label: 'Salud Estética (Indiba & Láser)', icon: Activity },
+  { id: 'BILLING', label: 'Ventas & Métodos de Pago', icon: Receipt },
+  { id: 'PACKAGES', label: 'Paquetes & Servicios', icon: Package },
+]
+
+// Spring pill that slides under the active tab
+const tabListRef = ref<HTMLElement | null>(null)
+const { pill, pillStyle, setItemRef: setTabRef } = useSlidingPill(tabListRef, activeTab)
+useMagnification(tabListRef, '.magnify-item')
+
+// Crossfade between tabs (utils/motion): a snapshot of the old panel fades into the new one
+const selectTab = (id: ProfileTab) => {
+  if (id !== activeTab.value) crossfadePanel(() => (activeTab.value = id), 'profile')
+}
 
 // Toast State
 const toastMessage = ref('')
@@ -137,78 +157,82 @@ const handleFieldUpdate = (field: string, value: unknown) => {
   updateClient({ [field]: value })
 }
 
-const handleNewBooking = () => {
-  agendaStore.openBookingDrawer(null, new Date(), null, clientId)
+// When a visible button triggered it, the drawer morphs out of that button
+const handleNewBooking = (source?: HTMLElement | null) => {
+  agendaStore.openBookingDrawer(null, new Date(), null, clientId, source ?? null)
 }
 </script>
 
 <template>
-  <div class="bg-bg-app min-h-screen w-full p-4 font-sans lg:p-8 2xl:p-12 transition-colors duration-500">
-    <div class="mx-auto max-w-350 2xl:max-w-3xl 3xl:max-w-[1800px] space-y-6">
+  <div class="focus-scope bg-bg-app min-h-screen w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 2xl:px-10 2xl:py-10 font-sans transition-colors duration-500">
+    <div class="mx-auto w-full max-w-7xl 2xl:max-w-[1560px] 3xl:max-w-[1760px] space-y-5 sm:space-y-6">
       
       <!-- Navigation Bar & Breadcrumbs -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <NuxtLink
             to="/clientes"
-            class="btn btn-circle btn-ghost bg-bg-card border border-border-default hover:bg-bg-muted shadow-xs transition-all hover:scale-105"
+            class="btn btn-circle btn-ghost btn-sm sm:btn-md bg-bg-card border border-border-default hover:bg-bg-muted shadow-xs transition-transform active:scale-95 shrink-0"
             aria-label="Volver"
           >
-            <ArrowLeft class="text-text-primary size-5" />
+            <ArrowLeft class="text-text-primary size-4 sm:size-5" />
           </NuxtLink>
 
-          <!-- Breadcrumbs -->
-          <div class="breadcrumbs text-sm">
-            <ul>
+          <!-- Breadcrumbs with safe truncation -->
+          <div class="breadcrumbs text-xs sm:text-sm min-w-0">
+            <ul class="flex items-center">
               <li>
-                <NuxtLink to="/clientes" class="text-text-muted font-semibold hover:text-primary">
+                <NuxtLink to="/clientes" class="text-text-muted font-semibold hover:text-primary transition-colors">
                   {{ $t('nav.clients') || 'Clientes' }}
                 </NuxtLink>
               </li>
-              <li>
-                <span class="font-black text-text-primary flex items-center gap-1">
-                  <UserCheck class="size-4 text-primary" />
-                  {{ client ? `${client.name} ${client.surname}` : $t('catalog.clients.profile.title') }}
+              <li class="min-w-0">
+                <span class="font-black text-text-primary flex items-center gap-1.5 truncate max-w-[180px] sm:max-w-xs md:max-w-md">
+                  <UserCheck class="size-3.5 sm:size-4 text-primary shrink-0" />
+                  <span class="truncate">{{ client ? `${client.name?.trim()} ${client.surname?.trim() || ''}` : $t('catalog.clients.profile.title') }}</span>
                 </span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div v-if="isFetching && !isPending" class="badge badge-neutral badge-sm gap-1 animate-pulse font-bold">
+        <div v-if="isFetching && !isPending" class="badge badge-neutral badge-xs sm:badge-sm gap-1 animate-pulse font-bold shrink-0">
           {{ locale === 'es' ? 'Sincronizando...' : 'Syncing...' }}
         </div>
       </div>
 
+      <div class="crossfade-stack">
+      <Transition name="crossfade">
       <!-- Loading State -->
-      <div v-if="isPending" class="space-y-6">
-        <div class="skeleton h-64 w-full rounded-3xl"/>
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div class="skeleton h-96 rounded-3xl"/>
-          <div class="skeleton h-96 rounded-3xl"/>
-          <div class="skeleton h-96 rounded-3xl"/>
+      <div v-if="isPending" key="loading" class="space-y-6">
+        <div class="skeleton h-56 sm:h-64 w-full rounded-3xl"/>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div class="skeleton h-80 sm:h-96 rounded-3xl"/>
+          <div class="skeleton h-80 sm:h-96 rounded-3xl"/>
+          <div class="skeleton h-80 sm:h-96 rounded-3xl md:col-span-2 lg:col-span-1"/>
         </div>
       </div>
 
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="alert alert-error shadow-xl rounded-3xl p-12 flex flex-col items-center justify-center text-center"
+        key="error"
+        class="alert alert-error shadow-xl rounded-3xl p-8 sm:p-12 flex flex-col items-center justify-center text-center"
       >
-        <AlertCircle class="size-16 mb-2 text-white" />
-        <h2 class="text-2xl font-black text-white">
+        <AlertCircle class="size-12 sm:size-16 mb-2 text-white" />
+        <h2 class="text-xl sm:text-2xl font-black text-white">
           {{ isNotFound ? (locale === 'es' ? 'Cliente no encontrado' : 'Client not found') : $t('catalog.clients.profile.status.error') }}
         </h2>
-        <p class="mt-1 text-sm font-semibold text-white/80 max-w-md">
+        <p class="mt-1 text-xs sm:text-sm font-semibold text-white/80 max-w-md">
           {{ errorMessage }}
         </p>
-        <NuxtLink to="/clientes" class="btn btn-outline btn-neutral btn-sm mt-6 rounded-xl font-bold">
+        <NuxtLink to="/clientes" class="btn btn-outline btn-neutral btn-sm mt-6 rounded-xl font-bold active:scale-95">
           {{ locale === 'es' ? 'Volver al Listado' : 'Back to List' }}
         </NuxtLink>
       </div>
 
       <!-- Main Profile Content -->
-      <div v-else-if="client" class="space-y-8 animate-in fade-in duration-500">
+      <div v-else-if="client" key="content" class="motion-stagger space-y-6 sm:space-y-8">
         
         <!-- 1. Full Width Profile Header -->
         <ProfileHeader 
@@ -222,48 +246,42 @@ const handleNewBooking = () => {
           @toast="addToast"
         />
 
-        <!-- 2. Awwwards 2027 Navigation Bar Tabs -->
-        <div class="flex items-center justify-center sm:justify-start gap-2 bg-bg-card p-1.5 border border-border-default/80 rounded-2xl shadow-xs overflow-x-auto">
-          <button
-            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
-            :class="activeTab === 'OVERVIEW' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
-            @click="activeTab = 'OVERVIEW'"
+        <!-- 2. Apple Segmented Control / Fluid Responsive Tabs -->
+        <div class="focus-item relative w-full" data-vt-group="profile" data-vt-name="profile-tabs">
+          <div
+            ref="tabListRef"
+            class="relative flex items-center gap-1.5 sm:gap-2 bg-bg-card/95 backdrop-blur-xl p-1.5 border border-border-default/80 rounded-2xl shadow-xs overflow-x-auto scrollbar-none snap-x touch-pan-x"
+            role="tablist"
+            aria-label="Pestañas de perfil de cliente"
           >
-            <LayoutGrid class="size-4" />
-            Visión General & Bento
-          </button>
-
-          <button
-            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
-            :class="activeTab === 'HEALTH' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
-            @click="activeTab = 'HEALTH'"
-          >
-            <Activity class="size-4" />
-            Salud Estética (Indiba & Láser)
-          </button>
-
-          <button
-            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
-            :class="activeTab === 'BILLING' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
-            @click="activeTab = 'BILLING'"
-          >
-            <Receipt class="size-4" />
-            Ventas & Métodos de Pago
-          </button>
-
-          <button
-            class="px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2"
-            :class="activeTab === 'PACKAGES' ? 'bg-text-primary text-bg-card shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/50'"
-            @click="activeTab = 'PACKAGES'"
-          >
-            <Package class="size-4" />
-            Paquetes & Servicios
-          </button>
+            <!-- Active pill: slides between tabs on a spring -->
+            <span
+              v-if="pill"
+              aria-hidden="true"
+              class="motion-pill bg-text-primary pointer-events-none absolute top-1.5 bottom-1.5 left-0 rounded-xl shadow-xs"
+              :style="pillStyle"
+            />
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              :ref="setTabRef(tab.id)"
+              type="button"
+              role="tab"
+              :aria-selected="activeTab === tab.id"
+              class="relative shrink-0 whitespace-nowrap px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors duration-200 flex items-center gap-2"
+              :class="activeTab === tab.id
+                ? ['text-bg-card', !pill && 'bg-text-primary shadow-xs']
+                : 'text-text-muted hover:text-text-primary hover:bg-bg-muted/60'"
+              @click="selectTab(tab.id)"
+            >
+              <component :is="tab.icon" class="magnify-item size-3.5 sm:size-4 shrink-0" />
+              <span>{{ tab.label }}</span>
+            </button>
+          </div>
         </div>
 
-        <!-- 3. Dynamic Tab Content -->
-        <div class="pb-16">
-          <Transition name="fade" mode="out-in">
+        <!-- 3. Dynamic Tab Content (crossfaded by selectTab via View Transitions) -->
+        <div class="pb-16" data-vt-group="profile" data-vt-name="profile-panel">
             <div v-if="activeTab === 'OVERVIEW'" key="overview" class="space-y-6">
               <ProfileOverview
                 :client="client"
@@ -297,9 +315,10 @@ const handleNewBooking = () => {
               v-else-if="activeTab === 'PACKAGES'"
               :client="client"
             />
-          </Transition>
         </div>
 
+      </div>
+      </Transition>
       </div>
 
       <!-- Modals -->
@@ -311,28 +330,21 @@ const handleNewBooking = () => {
       <LazySharedPurchaseDetailsModal ref="purchaseDetailsModalRef" />
       
       <!-- Toast Notification Container -->
-      <div v-if="showToast" class="toast toast-end toast-bottom z-50">
-        <div 
-          class="alert shadow-xl font-bold flex items-center gap-2"
-          :class="toastType === 'success' ? 'alert-success text-white' : 'alert-error text-white'"
-        >
-          <component :is="toastType === 'success' ? CheckCircle2 : AlertCircle" class="size-5 shrink-0" />
-          <span>{{ toastMessage }}</span>
+      <Transition name="toast-rise">
+        <div v-if="showToast" class="toast toast-end toast-bottom z-50">
+          <div
+            class="alert shadow-xl font-bold flex items-center gap-2"
+            :class="toastType === 'success' ? 'alert-success text-white' : 'alert-error text-white'"
+          >
+            <component :is="toastType === 'success' ? CheckCircle2 : AlertCircle" class="size-5 shrink-0" />
+            <span>{{ toastMessage }}</span>
+          </div>
         </div>
-      </div>
+      </Transition>
 
     </div>
   </div>
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>

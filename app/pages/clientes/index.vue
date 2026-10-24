@@ -18,7 +18,8 @@
 	import UserDeleteModal from '~/components/users/UserDeleteModal.vue'
 	import { useDataPrivacy } from '~/composables/useDataPrivacy'
 
-	definePageMeta({ layout: 'default' })
+	// Shared element (avatar + name) travels to the profile page via View Transitions
+	definePageMeta({ layout: 'default', viewTransition: true, pageTransition: false })
 	useHead({ title: 'Clientes | CRM' })
 
 	const queryClient = useQueryClient()
@@ -129,6 +130,10 @@
 
 	// Manejo de errores de avatar
 	const avatarErrors = reactive(new Set<string>())
+	// Warm the profile cache on hover so the shared avatar/name land on real content
+	const prefetchClient = (id: string) =>
+		queryClient.prefetchQuery({ queryKey: ['client', id], queryFn: () => $fetch(`/api/clients/${id}`), staleTime: 30_000 })
+
 	const handleAvatarError = (id: string) => {
 		avatarErrors.add(id)
 	}
@@ -237,12 +242,14 @@
 								v-for="client in clients"
 								:key="client.user_id"
 								class="premium-lift group cursor-pointer transition-all duration-300 hover:bg-bg-card/60"
+								@pointerenter="prefetchClient(client.user_id)"
 								@click="navigateTo(`/clientes/${client.user_id}`)">
 								<!-- Columna Cliente -->
 								<td class="px-6 py-4">
 									<div class="flex items-center gap-3">
 										<div
-											class="from-primary/20 to-primary/5 text-primary border-text-secondary flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105">
+											class="from-primary/20 to-primary/5 text-primary border-text-secondary flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-linear-to-br shadow-xs transition-transform group-hover:scale-105"
+											:style="{ viewTransitionName: `client-avatar-${client.user_id}` }">
 											<img
 												v-if="client.avatar && !avatarErrors.has(client.user_id)"
 												:src="client.avatar"
@@ -254,7 +261,8 @@
 										</div>
 										<div class="flex min-w-0 flex-col">
 											<span
-												class="text-text-primary group-hover:text-primary truncate text-sm font-bold transition-colors">
+												class="text-text-primary group-hover:text-primary w-fit max-w-full truncate text-sm font-bold transition-colors"
+												:style="{ viewTransitionName: `client-name-${client.user_id}` }">
 												{{ client.name }} {{ client.surname }}
 											</span>
 											<p

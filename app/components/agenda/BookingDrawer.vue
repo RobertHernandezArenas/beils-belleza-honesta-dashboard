@@ -19,7 +19,7 @@ const statusOptions = [
 ]
 
 const store = useAgendaStore()
-const { isBookingDrawerOpen, selectedBooking } = storeToRefs(store)
+const { isBookingDrawerOpen, bookingMorphSource, selectedBooking } = storeToRefs(store)
 
 const emit = defineEmits(['refresh', 'toast', 'delete'])
 
@@ -66,15 +66,37 @@ const closeDropdowns = () => {
     clientSelectorRef.value?.closeDropdown()
     itemSelectorRef.value?.closeDropdown()
 }
+
+// Morph: the panel grows out of the trigger button (utils/motion). The overlay
+// uses the same duration and curve (see template), so both land on the same frame.
+const onMorphEnter = (el: Element, done: () => void) => {
+    const source = bookingMorphSource.value
+    if (!source?.isConnected) return done()
+    morphIn(el as HTMLElement, source).then(done, done)
+}
+
+const onMorphLeave = (el: Element, done: () => void) => {
+    const source = bookingMorphSource.value
+    const finish = () => {
+        bookingMorphSource.value = null
+        done()
+    }
+    if (!source?.isConnected) return finish()
+    morphOut(el as HTMLElement, source).then(finish)
+}
+
+const morphTransition = computed(() =>
+    bookingMorphSource.value ? { css: false, onEnter: onMorphEnter, onLeave: onMorphLeave } : {},
+)
 </script>
 
 <template>
     <!-- Overlay -->
     <Transition
-        enter-active-class="transition-opacity ease-linear duration-300"
+        enter-active-class="transition-opacity ease-(--motion-ease-drawer) duration-400"
         enter-from-class="opacity-0"
         enter-to-class="opacity-100"
-        leave-active-class="transition-opacity ease-linear duration-300"
+        leave-active-class="transition-opacity ease-(--motion-ease-drawer) duration-300"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
         <div v-if="isBookingDrawerOpen" class="fixed inset-0 z-100 bg-text-secondary/20 backdrop-blur-sm" @click="store.closeBookingDrawer()"/>
@@ -82,10 +104,11 @@ const closeDropdowns = () => {
 
     <!-- Drawer -->
     <Transition
-        enter-active-class="transform transition ease-out duration-300"
+        v-bind="morphTransition"
+        enter-active-class="transform transition ease-(--motion-ease-drawer) duration-400"
         enter-from-class="translate-x-full"
         enter-to-class="translate-x-0"
-        leave-active-class="transform transition ease-in duration-300"
+        leave-active-class="transform transition ease-(--motion-ease-drawer) duration-300"
         leave-from-class="translate-x-0"
         leave-to-class="translate-x-full">
         <div v-if="isBookingDrawerOpen" class="fixed inset-y-0 right-0 z-110 w-full max-w-md bg-bg-app shadow-2xl flex flex-col border-l border-border-subtle" @click="closeDropdowns">
