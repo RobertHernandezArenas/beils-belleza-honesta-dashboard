@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 	eslint: {
 		checker: false,
 	},
-	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt', '@nuxt/image'],
+	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt'],
 	nitro: {
 		alias: {
 			'@vue/devtools-api': 'vue-devtools-stub',
@@ -22,6 +22,9 @@ export default defineNuxtConfig({
 	experimental: {
 		payloadExtraction: true,
 		viewTransition: true,
+		// Type $fetch from the generated route set (Nuxt 5 default). The legacy InternalApi
+		// typing overflows TypeScript's stack depth on templated URLs (TS2321) in Nuxt 4.6.
+		routeTypedFetch: true,
 	},
 	routeRules: {
 		'/overview': { ssr: false },
@@ -91,7 +94,6 @@ export default defineNuxtConfig({
 		],
 		optimizeDeps: {
 			include: [
-				'aos',
 				'gsap',
 				'lucide-vue-next',
 				'@tanstack/vue-query',

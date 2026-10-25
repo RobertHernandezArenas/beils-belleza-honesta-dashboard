@@ -91,7 +91,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 		} catch (err) {
 			const e = err as FetchError
 			const errorMessage = e.response?._data?.statusMessage || e.message || t('auth.login.error')
-			throw new Error(errorMessage)
+			throw new Error(errorMessage, { cause: err })
 		}
 	}
 

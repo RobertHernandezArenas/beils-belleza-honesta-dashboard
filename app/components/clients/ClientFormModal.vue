@@ -26,10 +26,6 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 		{ value: 'female', label: t('catalog.clients.form.female') },
 		{ value: 'other', label: t('catalog.clients.form.other') },
 	])
-	const clientStatusOptions = [
-		{ value: 'ON', label: 'Activo' },
-		{ value: 'OFF', label: 'Inactivo' },
-	]
 	const queryClient = useQueryClient()
 	const { animateOpen, animateClose } = useModalAnimation()
 
@@ -255,7 +251,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 					data.avatar = uploadRes.url
 				} catch (err) {
 					console.error('Error uploading avatar:', err)
-					throw new Error('Error al subir la imagen')
+					throw new Error('Error al subir la imagen', { cause: err })
 				}
 			}
 
@@ -523,17 +519,6 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 								@input="clearError('email')" >
 						</div>
 
-						<div v-if="false" class="form-control">
-							<label class="label">
-								<span class="label-text text-text-secondary text-[10px] font-black tracking-widest uppercase">
-									{{ t('catalog.clients.form.status') }}
-								</span>
-							</label>
-							<AppSelect
-								v-model="form.status"
-								:aria-label="t('catalog.clients.form.status')"
-								:options="clientStatusOptions" />
-						</div>
 					</div>
 				</div>
 

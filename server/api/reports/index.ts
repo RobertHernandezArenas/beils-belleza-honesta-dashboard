@@ -34,9 +34,9 @@ export default defineEventHandler(async (event) => {
 
 	const now = new Date()
 	let startDate: Date | null = null
-	let prevStartDate: Date | null = null
-	let prevEndDate: Date | null = null
-	let granularity: 'day' | 'month' = 'day'
+	let prevStartDate: Date | null
+	let prevEndDate: Date | null
+	let granularity: 'day' | 'month'
 
 	switch (range) {
 		case '7d': {
