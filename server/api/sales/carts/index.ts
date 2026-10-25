@@ -1,10 +1,10 @@
-import type { IncomingLineItem } from '~~/shared/types/line-item'
 import type { Prisma } from '@prisma/client'
 import {
 	generateInvoiceNumber,
 	processVerifactuInvoice,
 } from '../../../utils/verifactu'
 import type { IInvoice } from '~~/shared/types/invoice'
+import { parseSaleLines, priceSaleLines, loadSaleCatalog, validateDiscount, saleSubtotal } from '../../../utils/sale-pricing'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -31,11 +31,15 @@ export default defineEventHandler(async event => {
 
 	if (method === 'POST') {
 		const body = await readBody(event)
-		const { user_id, items, booking_id, ...cartData } = body
+		const { user_id, items: rawItems, booking_id, ...cartData } = body
+
+		// Prices and tax come from the catalog, never from the request (client prices are ignored)
+		const saleLines = parseSaleLines(rawItems)
+		const items = priceSaleLines(saleLines, await loadSaleCatalog(prisma, saleLines))
+		const validatedDiscount = validateDiscount(cartData.discount, saleSubtotal(items))
 
 		// Selling a bono/package assigns it to a person, so a registered client is required.
-		const hasPackageSale = Array.isArray(items) &&
-			items.some((it: IncomingLineItem) => (it.item_type || '').toLowerCase() === 'package_sale')
+		const hasPackageSale = items.some(it => it.item_type === 'package_sale')
 		if (hasPackageSale && !user_id) {
 			throw createError({
 				statusCode: 400,
@@ -82,7 +86,7 @@ export default defineEventHandler(async event => {
 
 			// Calculate totals from items to prevent client tampering
 			let subtotal = 0
-			const discount = cartData.discount || 0
+			const discount = validatedDiscount
 			let total = 0
 
 			const createdCart = await tx.cart.create({
@@ -96,7 +100,7 @@ export default defineEventHandler(async event => {
 					discount: discount,
 					total: 0, 
 					items: {
-						create: items.map((item: IncomingLineItem) => {
+						create: items.map(item => {
 							const itemSubtotal = item.quantity * item.unit_price;
 							const itemTotal = itemSubtotal;
 

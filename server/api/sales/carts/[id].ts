@@ -5,6 +5,7 @@ import {
 	processVerifactuInvoice,
 } from '../../../utils/verifactu'
 import type { IInvoice } from '~~/shared/types/invoice'
+import { parseSaleLines, priceSaleLines, loadSaleCatalog, validateDiscount, saleSubtotal } from '../../../utils/sale-pricing'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -49,13 +50,24 @@ export default defineEventHandler(async event => {
       console.warn(`Modifying a cart that was already submitted to AEAT (ID: ${id}). Consistency check required.`)
     }
 
+		// Edited lines are re-priced from the catalog and the discount is bounded, before anything changes
+		let pricedItems: ReturnType<typeof priceSaleLines> | null = null
+		if (body.items !== undefined) {
+			const lines = parseSaleLines(body.items)
+			pricedItems = priceSaleLines(lines, await loadSaleCatalog(prisma, lines))
+		}
+		const validatedDiscount = validateDiscount(
+			body.discount !== undefined ? body.discount : currentCart.discount,
+			pricedItems ? saleSubtotal(pricedItems) : currentCart.subtotal,
+		)
+
 		const updatedCart = await prisma.$transaction(async tx => {
 			let subtotal = currentCart.subtotal
 			let total = currentCart.total
-			const discount = body.discount !== undefined ? body.discount : currentCart.discount
+			const discount = validatedDiscount
 
 			// 1. Handle items update if provided
-			if (body.items && Array.isArray(body.items)) {
+			if (pricedItems) {
 				// Clear old items
 				await tx.cartItem.deleteMany({ where: { cart_id: id } })
 
@@ -63,7 +75,7 @@ export default defineEventHandler(async event => {
 				subtotal = 0
 				total = 0
 
-				const newItems = body.items.map((item: IncomingLineItem) => {
+				const newItems = pricedItems.map(item => {
 					const itemSubtotal = Number((item.quantity * item.unit_price).toFixed(2))
 					const itemTotal = itemSubtotal // For simplicity, mirroring POST logic: total = subtotal
 
@@ -83,7 +95,7 @@ export default defineEventHandler(async event => {
 				})
 
 				await tx.cartItem.createMany({
-					data: newItems.map((item: IncomingLineItem) => ({ ...item, cart_id: id })),
+					data: newItems.map(item => ({ ...item, cart_id: id })),
 				})
 
 				// Provision a ClientPackage for each NEWLY added bono/paquete line
@@ -100,7 +112,7 @@ export default defineEventHandler(async event => {
 					return m
 				}
 				const prevPkg = countPkg(currentCart.items)
-				const nextPkg = countPkg(body.items)
+				const nextPkg = countPkg(pricedItems)
 				if (provisionUserId) {
 					for (const [pkgId, nextCount] of nextPkg) {
 						const toCreate = nextCount - (prevPkg.get(pkgId) || 0)
