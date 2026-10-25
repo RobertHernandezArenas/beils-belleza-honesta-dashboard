@@ -10,21 +10,23 @@
 | Severidad | Pendientes | Corregidos |
 |---|---|---|
 | Crítica | **0** | 5 (ventas sin auth + C1, C2, C3, C4) |
-| Alta | **7** | 4 (consumo de bonos, A5, J1, J4) |
-| Media | **13** | 1 (L2 enumeración en login) |
+| Alta | **2** (F1, F2) + A5 parcial | 9 (consumo de bonos, A5, J1, J4, U1, L1, V1, V2, rate limit tras proxy) |
+| Media | **9** | 5 (L2, H1 parcial, V3 parcial, F5 parcial, U3) |
 | Baja | **6** | 4 (A7, J5, L3 en usuarios/clientas, `refresh_token` en respuestas de usuarios) |
 
+> **Actualización 25/10/2026 — Fase 2 completada salvo U2 y dependencias** (ver §6). Suite: 145/145.
+>
 > **Actualización 25/10/2026 — Fase 1 completada.** Las críticas están cerradas. Cada corrección tiene tests (suite: 101/101) y está verificada con peticiones reales contra el servidor (ver §2).
 
 **Situación original en una frase:** la API exigía estar logueado, pero **casi nunca verificaba el rol**. Además, los clientes pueden iniciar sesión con una contraseña por defecto que se comparte entre todos. Combinados, cualquiera que conozca el email de una clienta puede convertirse en administrador y leer todo, incluidos los datos de salud.
 
-**Prioridades actuales (Fase 2):**
+**Prioridades actuales:**
 
-1. Corregir la subida de archivos (path traversal y extensión arbitraria) → **U1**
-2. Limitar los intentos de login a 3, con bloqueo → **L1** (pedido explícito)
-3. Validación estricta del input en el resto de endpoints → **V1, V2**
-4. Arreglar el rate limit detrás del nginx de Plesk (hoy trata a todos los usuarios como una sola IP)
-5. Rotar `JWT_SECRET` a 32 caracteres o más en todos los entornos (en local mide 20; en producción la app ahora no arranca si es más corto)
+1. **Configuración de producción** (sin esto, parte de lo corregido no aplica): `JWT_SECRET` de 32 caracteres o más, `TRUSTED_PROXY_HOPS=1` en Plesk, y `npm run db:fix` en el servidor.
+2. Actualizar dependencias con vulnerabilidades (nuxt, jspdf, mariadb, zod, vue, soap) → **Dep1**
+3. Consentimientos y fotos fuera de `public/` → **U2**
+4. Inmutabilidad de facturas y envío real a la AEAT → **F1, F2** (Fase 3)
+5. Activar la CSP en modo estricto tras revisar la consola del navegador (`CSP_ENFORCE=true`)
 
 ---
 
@@ -41,6 +43,12 @@
 | ✅ 6 | **C3** — Login de clientas con `beils12345` | Solo ADMIN/STAFF pueden iniciar sesión (`server/utils/login-policy.ts`); las clientas nuevas reciben una contraseña aleatoria inutilizable; respuestas idénticas y bcrypt siempre (L2); sin fuga de errores internos en el login. | 5 tests; en vivo, una clienta real con `beils12345` recibe 401, igual que un email inexistente · `3ea301f` |
 | ✅ 7 | **A5, A7** — Tokens CLIENT con acceso a toda la API; rutas públicas por prefijo | El middleware rechaza CLIENT y roles desconocidos en todo `/api`; las rutas públicas son una lista exacta (`server/utils/api-access.ts`). | 9/9 en vivo · `9442e4e` |
 | ✅ 8 | **C4** — Datos de salud abiertos | Consentimientos, cuestionarios y revocaciones solo para ADMIN (regla central en el middleware); los consentimientos firmados son inmutables (409); los listados no incluyen la firma. | 10 tests; en vivo, STAFF recibe 403 y un consentimiento firmado real devuelve 409 · `7a172cd` |
+| ✅ 10 | **U1** — Subida de archivos: path traversal y extensiones arbitrarias | Lista blanca de destinos, tipo real por *magic bytes* (SVG y HTML rechazados), extensión fija según el tipo, imágenes re-codificadas a WebP sin EXIF/GPS, PDF solo en documentos (`server/utils/upload-policy.ts`). | 8 tests; 5/5 ataques rechazados en vivo; GPS eliminado · `c494d69` |
+| ✅ 11 | **L1** — Sin límite de intentos de login | Bloqueo al 3er fallo (15 min, se duplica en cada fallo posterior, tope 24 h); 423 incluso con la contraseña correcta; contador atómico; desbloqueo manual en Usuarios. Columnas `failed_login_count` y `locked_until` (vía `db:fix`). | 5 tests; 13/13 de punta a punta con un usuario temporal · `17d3366` |
+| ✅ 12 | **Rate limit tras el proxy** — Todos los usuarios compartían un solo contador (la IP del nginx) | IP real según `TRUSTED_PROXY_HOPS` (solo se confía en las entradas que agrega el propio proxy, así que no se puede falsificar); 5 logins/min por IP; 300 peticiones/min generales; `Retry-After`; el límite corre antes de auth; limpieza de memoria. | 8 tests; en vivo, el 6º login recibe 429 y un X-Forwarded-For falso no lo saltea · `6f7fb24` |
+| ✅ 13 | **V1/V3** — *Mass assignment* en productos, servicios y deudas | Schemas zod (`server/utils/catalog-validation.ts`): sin ids ni timestamps; importes y stock finitos y ≥ 0; SKU vacío → null (antes chocaba por unique); el IVA ya no se pierde al crear un servicio; el importe de la deuda se toma del ticket; ajustar o borrar deudas solo ADMIN. | 12 tests; 13/13 en vivo · `95a1dda` |
+| ✅ 14 | **V2** — El precio de la venta lo decidía el navegador | Precio e IVA desde el catálogo en el servidor (`server/utils/sale-pricing.ts`); cantidad entera de 1 a 999; descuento entre 0 y el subtotal. Aplica a ventas nuevas y a tickets editados. | 7 tests; en vivo, una venta enviada a 0,01 € se cobró a 99 € (precio real) · `4612fd8` |
+| ✅ 15 | **H1** — Sin cabeceras de seguridad | nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy y HSTS; CSP en modo Report-Only (`CSP_ENFORCE=true` para activarla). | 4 tests; cabeceras verificadas en vivo · `eb0de02` |
 | ✅ 9 | **J4** — Contraseña guardada en `localStorage` | "Recordarme" solo guarda el email; al cargar se borra la contraseña guardada por versiones anteriores. | Compila sin errores · `d9f9dbb` |
 
 > El descuento automático del TPV (cuando no se elige un bono) usa **solo bonos propios, activos y vigentes**. Un bono compartido solo se consume si se elige explícitamente.
@@ -81,17 +89,17 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 - Evidencia: no hay control de rol en el catálogo, servicios, paquetes, agenda (que expone teléfonos y emails), ventas, deudas, reportes, bonos del cliente ni subida de archivos. **45 de 57 archivos de la API** aceptan un token CLIENT.
 - Solución: rechazar `CLIENT` en el middleware para todo `/api/*` (salvo `/api/auth/me`) y crear `requireRole(event, ['ADMIN','STAFF'])`. Hoy STAFF no tiene un guard propio, así que en la práctica todo el personal debe ser ADMIN.
 
-**V1 — El body se guarda tal cual en la base de datos (*mass assignment*)**
+**✅ RESUELTO en productos, servicios y deudas (`95a1dda`) — V1 — El body se guarda tal cual en la base de datos (*mass assignment*).** Pendiente: `agenda/bookings/[id].ts` (`...payload`).
 - Evidencia: `catalog/products/index.ts:43-45` y `catalog/products/[id].ts:26-29` usan `data: body`, igual que `services/[id].ts:26-29`. `agenda/bookings/[id].ts:49,137` usa `{ ...body }` y `sales/debts/index.ts:33-36` usa `{ ...body }`.
 - Impacto: se puede escribir cualquier columna (precios, stock, IDs, la clienta de una cita, el `user_id` de una deuda).
 - Solución: un schema zod `.strict()` por endpoint, construyendo `data` solo con los campos validados.
 
-**V2 — El precio, la cantidad y el descuento de una venta los decide el navegador**
+**✅ RESUELTO (`4612fd8`) — V2 — El precio, la cantidad y el descuento de una venta los decide el navegador.** Pendiente de decisión de negocio: ¿los descuentos altos deben requerir ADMIN?
 - Evidencia: `sales/carts/index.ts:85` (`cartData.discount`) y `:100` (`item.quantity * item.unit_price`). El comentario dice "prevent client tampering", pero el precio sale del cliente. Lo mismo ocurre en `sales/carts/[id].ts:55,67`.
 - Impacto: ventas con precio, cantidad o descuento negativos o arbitrarios, que además se convierten en facturas.
 - Solución: tomar `unit_price` y `tax_rate` del catálogo en el servidor, exigir `quantity` entera ≥ 1 y `0 ≤ discount ≤ subtotal`, y que los descuentos altos solo los pueda aplicar un ADMIN.
 
-**L1 — No hay límite de intentos de login** (pedido: **máximo 3**)
+**✅ RESUELTO (`17d3366`) — L1 — No hay límite de intentos de login** (pedido: **máximo 3**). Nota: el 423 revela que la cuenta existe y es de personal, solo después de 3 intentos (es el comportamiento estándar).
 - Evidencia: `server/middleware/rate-limit.ts` aplica un límite global de 100 peticiones por minuto **por IP**, compartido con toda la API. Eso permite unos 144.000 intentos por día por IP. Además el contador vive en memoria (se pierde al reiniciar) y el `Map` nunca se limpia. `login.post.ts` no tiene contador propio, y `User` no tiene campos de bloqueo.
 - Diseño propuesto:
   1. Columnas en `User`: `failed_login_count INT DEFAULT 0`, `locked_until DATETIME NULL`.
@@ -112,7 +120,7 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 - Impacto: en los equipos compartidos del salón, la contraseña queda legible por cualquier persona, extensión del navegador o ataque XSS.
 - Solución: eliminarlo. Recordar solo el email o dejar el recordatorio al gestor de contraseñas del navegador.
 
-**U1 — La subida de archivos permite path traversal y extensiones arbitrarias**
+**✅ RESUELTO (`c494d69`) — U1 — La subida de archivos permite path traversal y extensiones arbitrarias**
 - Evidencia: `server/api/upload.post.ts:36-37` toma `type` y `category` sin sanear. En `:53` se usan en `join(..., 'public','uploads', category, type, ...)`. `:41-43` confía en el MIME que declara el navegador y `:56` conserva la extensión del atacante.
 - Impacto: cualquier cuenta logueada escribe archivos `.html`, `.svg` o `.js` fuera de la carpeta prevista. Eso habilita XSS almacenado, que además puede robar el token (ver J3).
 - Solución: lista blanca para `category` y `type`; detectar el tipo real por *magic bytes*; aceptar solo jpg, png, webp y pdf; re-codificar las imágenes con sharp; guardar fuera de `public/` y servir los archivos por un endpoint autenticado.
@@ -132,17 +140,17 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 | ID | Hallazgo | Evidencia | Solución |
 |---|---|---|---|
 | A6 | IDOR al editar los ítems de un bono | `clients/[id]/packages/[packageId].put.ts:60-66` actualiza un ítem por ID sin verificar que pertenezca al bono | `updateMany({ where: { client_package_item_id, client_package_id } })` + valores ≥ 0 |
-| V3 | Números y fechas sin validar | `packages/index.post.ts:22` (precio negativo o NaN), `clients/[id]/packages.post.ts:28,47`, `sales/debts/[id].ts:30-36` (`remaining` arbitrario) | zod `number().finite().nonnegative()`, `coerce.date()`, enums |
+| V3 | Números y fechas sin validar (**resuelto en productos, servicios y deudas**; pendiente en paquetes y bonos de clienta) | `packages/index.post.ts:22` (precio negativo o NaN), `clients/[id]/packages.post.ts:28,47`, `sales/debts/[id].ts:30-36` (`remaining` arbitrario) | zod `number().finite().nonnegative()`, `coerce.date()`, enums |
 | ✅ L2 | ~~Enumeración de usuarios~~ **Resuelto en `3ea301f`** | `login.post.ts:31-44`: un email inexistente da 401 inmediato, una cuenta inactiva da 403 **antes** de comprobar la contraseña, y hay `console.log('User not found')` | Comparar siempre con bcrypt (usando un hash ficticio), verificar el estado después de la contraseña y devolver un único 401 genérico |
 | J2 | Los tokens no se pueden revocar | `jwt.ts:12` 24h; el middleware confía en el rol del token sin consultar la base de datos; el logout solo borra la cookie en el cliente | Token de acceso de 15 min + refresh rotativo, o `token_version` comprobado en el middleware |
 | J3 | Cookie de sesión creada por JavaScript (no `httpOnly`) | `app/stores/auth.ts:7-12`; `login.post.ts` devuelve el token en el body | `setCookie` en el servidor con `httpOnly`, `secure` y `sameSite: 'strict'` |
 | U2 | Consentimientos y fotos servidos sin autenticación | Los archivos están en `public/uploads/` y `/uploads/*` no pasa por el middleware | Almacenamiento privado y descarga autenticada |
 | D1 | Errores internos devueltos al navegador | `login.post.ts:73-76` (`data: error`) y `statusMessage: error.message` en muchos handlers | Mensajes genéricos + log en el servidor + hook de errores de Nitro |
 | D2 | Escritura de depuración con datos personales en una ruta local | `agenda/bookings/index.ts:182-192` escribe en `C:/Users/VENOM/.gemini/...` el body y el stack | Eliminar |
-| H1 | Sin cabeceras de seguridad | No hay CSP, HSTS, `X-Frame-Options` ni `nosniff` (`nuxt.config.ts`) | `routeRules` con cabeceras, o el módulo `nuxt-security` |
+| ✅ H1 | ~~Sin cabeceras de seguridad~~ **Resuelto en `eb0de02`; la CSP está en modo Report-Only** | No hay CSP, HSTS, `X-Frame-Options` ni `nosniff` (`nuxt.config.ts`) | `routeRules` con cabeceras, o el módulo `nuxt-security` |
 | S1 | Credenciales por defecto en las semillas | `seeds/admin-seed.ts` y `seed-db.ts` usan `password123`; los usuarios `123456`; las clientas `beils12345` | Contraseñas desde variables de entorno o aleatorias, con cambio obligatorio |
 | F3/F4 | Encadenado de hashes con condición de carrera y numeración con huecos | `verifactu.ts:44-53` (`findFirst` fuera de transacción, ordenado por un campo editable); `previous_hash` nunca se guarda | Bloquear la secuencia (`FOR UPDATE`) y asignar número, hash y `previous_hash` en la misma transacción; enviar a la AEAT después del commit |
-| F5 | Pagos de deuda con condición de carrera; deudas editables por cualquiera | `debts/[id]/pay.post.ts:27-46` (lee y después escribe un valor absoluto); `sales/debts/[id].ts` sin control de rol | Actualización condicionada + `requireAdmin` |
+| F5 | Pagos de deuda con condición de carrera; ~~deudas editables por cualquiera~~ (**editar y borrar ya es solo ADMIN, `95a1dda`**) | `debts/[id]/pay.post.ts:27-46` (lee y después escribe un valor absoluto); `sales/debts/[id].ts` sin control de rol | Actualización condicionada + `requireAdmin` |
 | N1 | **Venta "cubierta por bono" sin bono real** | `sales/carts/index.ts`: si una línea marcada `[SESIÓN BONO]` no encuentra un bono propio usable, la venta sigue igual | Rechazar con 409 o cobrar el precio de catálogo (decisión de negocio pendiente) |
 
 ### 3.4 Bajas
@@ -152,7 +160,7 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 - ✅ **L3** (parcial: usuarios y clientas usan costo 12; falta la política de contraseñas en otros flujos) — bcrypt con costo 10, y el servidor no aplica ninguna política de contraseñas. Subir a 12 y exigir longitud mínima.
 - ✅ **J5** (`3b21335`) — El algoritmo JWT no está fijado. Usar `algorithms: ['HS256']` + `issuer`/`audience`.
 - **X1** — La cookie usa `sameSite: 'lax'` y no se comprueba el `Origin` en las mutaciones.
-- **U3** — El tamaño del archivo se valida después de cargarlo entero en memoria.
+- **U3** — El tamaño del archivo se valida después de cargarlo entero en memoria (sigue igual; mitigación: `client_max_body_size 6m` en el nginx de Plesk).
 - **D3** — Hay un ID de clienta real hardcodeado como alias en `clients/[id].get.ts:17` y en la página.
 - **H2** — DevTools activadas y un host de ngrok permitido. Nunca exponer el servidor de desarrollo.
 - **F6** — Los importes de dinero son `Float`. Pasar a `Decimal(10,2)`.
@@ -193,7 +201,8 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 | Fase | Contenido | Esfuerzo |
 |---|---|---|
 | ✅ **1 — Completada (25/10/2026)** | C1, C2, C3, C4, J1, J4, A5 (+ A7, J5, L2 de paso) · commits `3b21335`…`d9f9dbb` | Hecho |
-| **2 — Siguiente** | L1 (3 intentos + bloqueo), L2, U1, U2, V1, V2, H1, actualización de dependencias | 3–4 días |
+| ✅ **2 — Completada (25/10/2026)** salvo U2 y dependencias | U1, L1, V1, V2, H1 (CSP Report-Only), rate limit tras el proxy · `c494d69`…`eb0de02` | Hecho |
+| **2b — Pendiente de tu OK** | U2 (mover subidas fuera de `public/` y migrar los archivos del servidor) y actualización de dependencias (requiere reinstalar y probar en el navegador) | 1–2 días |
 | **3 — Fiscal** | F1–F5, N1, Decimal para dinero | 3–5 días |
 | **4 — Madurez** | J2, J3, registro de auditoría, RGPD (exportar y anonimizar), migración base, backups | continuo |
 
@@ -208,11 +217,11 @@ Cada corrección debería empezar con un test que reproduzca la brecha (rojo), i
 
 | Método + ruta | Auth | Validación | Notas |
 |---|---|---|---|
-| POST /api/auth/login | P | Y | Sin bloqueo (L1) · ✅ solo staff, sin enumeración |
+| POST /api/auth/login | P | Y | ✅ Bloqueo tras 3 fallos + 5/min por IP · ✅ solo staff, sin enumeración |
 | GET /api/auth/me | A | – | El único que vuelve a verificar el estado en la base de datos |
 | GET/POST /api/agenda/bookings | A | Parcial | Expone teléfonos; log de depuración (D2) |
 | GET/PUT/DELETE /api/agenda/bookings/:id | A | N | `...payload` (V1) |
-| /api/catalog/products(/:id) | A | N | `data: body` (V1) |
+| /api/catalog/products(/:id) | A | ✅ Y | ✅ Sin mass assignment |
 | GET/POST /api/clients | R | Parcial/Y | `limit` sin tope; contraseña `beils12345` (C3) |
 | GET/PUT/DELETE /api/clients/:id | R | –/Y/– | DELETE borra facturas (F1) |
 | GET /api/clients/:id/packages | A | – | ✅ Propios + compartidos; excluye vencidos |
@@ -225,12 +234,12 @@ Cada corrección debería empezar con un test que reproduzca la brecha (rojo), i
 | POST /api/debts/:id/pay | R | Y | Condición de carrera (F5) |
 | /api/packages(/:id) | A | N | Precio negativo o NaN (V3) |
 | GET /api/reports | A | Parcial | Ingresos y emails de clientas; consulta pesada |
-| ✅ /api/sales/carts(/:id) | A (antes **P**) | N | Precios del cliente (V2); facturas editables (F1); ✅ consumo de bonos atómico |
-| /api/sales/debts(/:id) | A | N | `...body` (V1); saldo arbitrario |
-| /api/services(/:id) | A | Y/N | PUT con `data: body` |
+| ✅ /api/sales/carts(/:id) | A (antes **P**) | ✅ Y | ✅ Precios del catálogo; ✅ consumo de bonos atómico; facturas editables (F1) |
+| /api/sales/debts(/:id) | A / ✅ R (PUT, DELETE) | ✅ Y | ✅ Importe tomado del ticket |
+| /api/services(/:id) | A | ✅ Y | ✅ IVA conservado al crear |
 | ✅ POST /api/treatments/sessions | R | Y | ✅ Bono validado (dueña o beneficiaria) + descuento atómico |
 | /api/treatments/zones, sessions/:id | R | Parcial/Y | Sin auditoría |
-| POST /api/upload | A | Parcial | **Path traversal (U1)** |
+| POST /api/upload | A | ✅ Y | ✅ Lista blanca + magic bytes + re-codificación |
 | GET /api/users | R | Parcial | DNI enmascarado |
 | POST /api/users | ✅ R | ✅ Y | ✅ Contraseña obligatoria |
 | PUT /api/users/:id | ✅ R | ✅ Y (estricto) | ✅ Sin mass assignment |
