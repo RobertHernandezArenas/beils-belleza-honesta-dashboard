@@ -3,12 +3,13 @@ import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
 import { requireAdmin } from '../../../utils/auth'
 import { generateInvoiceNumber, processVerifactuInvoice } from '../../../utils/verifactu'
+import { computeDebtPayment, commitDebtPayment, asDebtTx } from '../../../utils/debt-payment'
 import type { IInvoice } from '~~/shared/types/invoice'
 
 const paymentSchema = z.object({
-	amount: z.number().positive('El importe debe ser mayor a 0'),
-	payment_method: z.string().default('transfer'),
-	notes: z.string().optional(),
+	amount: z.number().finite().positive('El importe debe ser mayor a 0'),
+	payment_method: z.string().trim().min(1).max(30).default('transfer'),
+	notes: z.string().max(2000).optional(),
 })
 
 export default defineEventHandler(async event => {
@@ -31,20 +32,15 @@ export default defineEventHandler(async event => {
 				throw createError({ statusCode: 400, statusMessage: 'Esta deuda ya está completamente pagada' })
 			}
 
-			// Don't overpay
-			const paymentAmount = Math.min(amount, debt.remaining)
-			let newRemaining = Number((debt.remaining - paymentAmount).toFixed(2))
-			if (newRemaining < 0.01) newRemaining = 0
-			
-			const newStatus = newRemaining <= 0 ? 'paid' : 'partial'
-
-			const updatedDebt = await tx.debt.update({
-				where: { debt_id: debtId },
-				data: {
-					remaining: newRemaining,
-					status: newStatus,
-				},
+			// Don't overpay; the update only applies if no other payment changed the balance meanwhile
+			const { paymentAmount, newRemaining, newStatus } = computeDebtPayment(debt.remaining, amount)
+			await commitDebtPayment(asDebtTx(tx), {
+				debtId,
+				expected: { remaining: debt.remaining, status: debt.status },
+				newRemaining,
+				newStatus,
 			})
+			const updatedDebt = { ...debt, remaining: newRemaining, status: newStatus }
 
 			const payment = await tx.debtPayment.create({
 				data: {
