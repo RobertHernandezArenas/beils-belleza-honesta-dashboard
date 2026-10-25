@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
+import { toPublicUser } from '../../utils/public-user'
 import { requireAdmin } from '../../utils/auth'
 import { parseUserUpdate, assertKeepsAnAdmin } from '../../utils/user-admin'
 import { shouldRevokeSessions } from '../../utils/session-policy'
@@ -36,8 +37,7 @@ export default defineEventHandler(async event => {
 
 		if (revoke) invalidateSessionUser(id)
 
-		const { password: _, refresh_token: __, token_version: ___, ...userData } = updatedUser
-		return userData
+		return toPublicUser(updatedUser)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error

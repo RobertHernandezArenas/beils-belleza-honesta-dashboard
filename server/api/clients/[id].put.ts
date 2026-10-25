@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
+import { toPublicUser } from '../../utils/public-user'
 import { z } from 'zod'
 import { requireAdmin } from '../../utils/auth'
 
@@ -59,8 +60,7 @@ export default defineEventHandler(async event => {
 			data: updateData,
 		})
 
-		const { password, ...userWithoutPassword } = user
-		return userWithoutPassword
+		return toPublicUser(user)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

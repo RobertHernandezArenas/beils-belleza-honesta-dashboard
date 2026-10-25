@@ -1,4 +1,5 @@
 import { prisma } from '../../utils/prisma'
+import { toPublicUser } from '../../utils/public-user'
 import { requireAdmin } from '../../utils/auth'
 import { maskDocument } from '../../utils/privacy'
 
@@ -240,8 +241,8 @@ export default defineEventHandler(async event => {
 			nextBooking
 		}
 
-		// Remove password from response and mask document number if not revealed
-		const { password, package_shares, ...rest } = client
+		// Strip internal auth fields and mask document number if not revealed
+		const { package_shares, ...rest } = toPublicUser(client)
 		return {
 			...rest,
 			shared_packages: package_shares.map(share => {

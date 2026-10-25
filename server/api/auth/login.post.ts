@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '../../utils/prisma'
+import { toPublicUser } from '../../utils/public-user'
 import { signToken } from '../../utils/jwt'
 import { loginOutcome, unusablePasswordSeed, STAFF_ROLES } from '../../utils/login-policy'
 import { isLocked, lockDurationMinutes, lockedMessage } from '../../utils/login-lockout'
@@ -80,10 +81,8 @@ export default defineEventHandler(async event => {
 		setCookie(event, SESSION_COOKIE, token, sessionCookieOptions())
 
 		// Retornar datos (sin password ni refresh token)
-		const { password: _, refresh_token: __, failed_login_count: ___, locked_until: ____, token_version: _____, ...userData } = user!
-
 		return {
-			user: userData,
+			user: toPublicUser(user!),
 		}
 	} catch (rawError) {
 		const error = toApiError(rawError)

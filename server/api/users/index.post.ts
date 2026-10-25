@@ -1,4 +1,5 @@
 import { prisma } from '../../utils/prisma'
+import { toPublicUser } from '../../utils/public-user'
 import { requireAdmin } from '../../utils/auth'
 import { parseUserCreate } from '../../utils/user-admin'
 import bcrypt from 'bcryptjs'
@@ -28,8 +29,7 @@ export default defineEventHandler(async event => {
 			},
 		})
 
-		const { password: _, refresh_token: __, ...userData } = newUser
-		return userData
+		return toPublicUser(newUser)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error
