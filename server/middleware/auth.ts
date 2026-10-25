@@ -1,10 +1,8 @@
 import { verifyToken } from '../utils/jwt'
+import { isPublicApiRoute, canRoleUseApi } from '../utils/api-access'
 
 // Protected routes prefix
 const PROTECTED_PREFIX = '/api/'
-// Routes that don't need authentication even if inside the protected prefix
-// Sales/carts must stay protected: they expose client PII, issue fiscal invoices and consume bonos.
-const PUBLIC_ROUTES = ['/api/auth/login', '/api/hello', '/api/test_db']
 
 export default defineEventHandler(event => {
 	const path = event.path || ''
@@ -14,8 +12,9 @@ export default defineEventHandler(event => {
 		return // Not an API route, allow
 	}
 
-	const isPublic = PUBLIC_ROUTES.some(r => path.startsWith(r))
-	if (isPublic) {
+	// Exact-match allow-list (see utils/api-access). Sales/carts stay protected:
+	// they expose client PII, issue fiscal invoices and consume bonos.
+	if (isPublicApiRoute(path)) {
 		return // Public API route, allow
 	}
 
@@ -39,18 +38,22 @@ export default defineEventHandler(event => {
 		})
 	}
 
-	try {
-		const decoded = verifyToken(token)
-		if (!decoded) {
-			throw new Error('Invalid token structure')
-		}
-
-		// Attach user info to the event context so subsequent API handlers can use it
-		event.context.user = decoded
-	} catch {
+	const decoded = verifyToken(token)
+	if (!decoded) {
 		throw createError({
 			statusCode: 401,
 			statusMessage: 'Unauthorized: Session expired or invalid token',
 		})
 	}
+
+	// Staff-only API: reject client (or unknown) roles everywhere, before any handler runs
+	if (!canRoleUseApi(decoded.role)) {
+		throw createError({
+			statusCode: 403,
+			statusMessage: 'Acceso restringido al personal del centro',
+		})
+	}
+
+	// Attach user info to the event context so subsequent API handlers can use it
+	event.context.user = decoded
 })
