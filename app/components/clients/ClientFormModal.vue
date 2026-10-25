@@ -267,10 +267,11 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				body: data,
 			})
 		},
-		onSuccess: () => {
+		onSuccess: saved => {
 			queryClient.invalidateQueries({ queryKey: ['clients-list'] })
 			queryClient.invalidateQueries({ queryKey: ['clients-tpv'] })
-			emit('success')
+			// The saved client lets callers act on it (e.g. preselect a just-created client)
+			emit('success', saved)
 			localVisible.value = false
 		},
 		onError: (err: FetchError) => {

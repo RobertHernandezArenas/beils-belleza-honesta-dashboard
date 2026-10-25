@@ -7,43 +7,29 @@ export default defineEventHandler(async (event) => {
 			throw createError({ statusCode: 400, statusMessage: 'Client ID required' })
 		}
 
+		// Usable bonos for this client: their own plus the ones shared with them (same rules as consumption)
 		const clientPackages = await prisma.clientPackage.findMany({
 			where: {
-				user_id: clientId,
 				status: 'ACTIVE',
-				remaining_sessions: { gt: 0 }
+				remaining_sessions: { gt: 0 },
+				AND: [
+					{ OR: [{ user_id: clientId }, { shares: { some: { user_id: clientId } } }] },
+					{ OR: [{ expiry_date: null }, { expiry_date: { gt: new Date() } }] },
+				],
 			},
 			include: {
 				package: true,
-				items: true
+				items: true,
+				user: { select: { user_id: true, name: true, surname: true } },
+				shares: { include: { user: { select: { user_id: true, name: true, surname: true } } } },
 			},
 			orderBy: { created_at: 'desc' }
 		})
 
-		return (clientPackages || []).map(cp => ({
-			client_package_id: cp.client_package_id,
-			package_id: cp.package_id,
-			name: cp.package?.name || 'Paquete / Bono',
-			description: cp.package?.description || '',
-			type: cp.package?.type || 'INDIVIDUAL',
-			total_sessions: cp.total_sessions,
-			remaining_sessions: cp.remaining_sessions,
-			service_id: cp.package?.service_id || null,
-			expiry_date: cp.expiry_date,
-			status: cp.status,
-			custom_price: cp.custom_price,
-			price: cp.custom_price !== null && cp.custom_price !== undefined ? cp.custom_price : (cp.package?.price || 0),
-			package: cp.package,
-			items: (cp.items || []).map(it => ({
-				client_package_item_id: it.client_package_item_id,
-				package_item_id: it.package_item_id,
-				name: it.name,
-				item_type: it.item_type,
-				quantity_total: it.quantity_total,
-				quantity_remaining: it.quantity_remaining,
-				duration: it.duration
-			}))
-		}))
+		// Own bonos first: auto-preselection in the UI must never pick someone else's bono
+		return clientPackages
+			.map(cp => toClientPackageView(cp, clientId))
+			.sort((a, b) => Number(a.is_shared) - Number(b.is_shared))
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		console.error('Error fetching client packages:', error)

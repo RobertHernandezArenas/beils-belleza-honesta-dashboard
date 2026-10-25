@@ -38,6 +38,7 @@ model User {
   questionnaires  Questionnaire[]
   revokes         Revoke[]
   client_packages           ClientPackage[]
+  package_shares            ClientPackageShare[]
   treatment_zones           TreatmentZone[]
   client_treatment_sessions TreatmentSession[] @relation("ClientTreatmentSessions")
   staff_treatment_sessions  TreatmentSession[] @relation("StaffTreatmentSessions")
@@ -336,10 +337,26 @@ model ClientPackage {
   package            Package             @relation(fields: [package_id], references: [package_id], onDelete: Cascade)
   items              ClientPackageItem[]
   treatment_sessions TreatmentSession[]
+  shares             ClientPackageShare[]
 
   @@index([user_id])
   @@index([package_id])
   @@map("client_packages")
+}
+
+// A bono shared with another registered client, who consumes from the same balance.
+// Revoking deletes the row; consumed sessions keep their own client_id/client_package_id history.
+model ClientPackageShare {
+  share_id          String        @id @default(uuid()) @db.Char(100)
+  client_package_id String        @db.Char(100)
+  user_id           String        @db.Char(100)
+  created_at        DateTime      @default(now())
+  client_package    ClientPackage @relation(fields: [client_package_id], references: [client_package_id], onDelete: Cascade)
+  user              User          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@unique([client_package_id, user_id])
+  @@index([user_id])
+  @@map("client_package_shares")
 }
 
 model ClientPackageItem {

@@ -70,7 +70,9 @@ const packageOptions = computed(() => [
 	{ value: '', label: '-- Sin vincular a bono --' },
 	...availablePackages.value.map(pkg => ({
 		value: pkg.client_package_id,
-		label: `${pkg.package?.name || 'Bono'} (${pkg.remaining_sessions} restantes de ${pkg.total_sessions})`
+		label: `${pkg.package?.name || 'Bono'} (${pkg.remaining_sessions} restantes de ${pkg.total_sessions})${
+			pkg.owner ? ` · compartido por ${pkg.owner.name} ${pkg.owner.surname || ''}`.trimEnd() : ''
+		}`
 	}))
 ])
 
@@ -115,7 +117,8 @@ watch(
 			form.use_custom_parameters = false
 			form.skin_reaction = 'Eritema leve normal'
 			form.observations = ''
-			form.client_package_id = availablePackages.value[0]?.client_package_id || ''
+			// Preselect only the client's own bono: spending a shared one must be an explicit choice
+			form.client_package_id = availablePackages.value.find(p => !p.owner)?.client_package_id || ''
 			form.decrement_package = !!form.client_package_id
 			error.value = ''
 			nextTick(() => {

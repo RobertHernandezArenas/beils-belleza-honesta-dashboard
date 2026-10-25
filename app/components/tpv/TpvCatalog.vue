@@ -155,6 +155,9 @@ import type { ClientDTO, CatalogItem } from '~~/shared/types/domain'
 						class="flex items-center justify-between gap-2 rounded-xl border border-border-subtle bg-bg-card p-2.5 shadow-xs">
 						<div class="min-w-0">
 							<p class="truncate text-xs font-bold text-text-primary">{{ pkg.name }}</p>
+							<p v-if="pkg.owner" class="truncate text-[9px] font-black uppercase tracking-wider text-primary">
+								Compartido por {{ pkg.owner.name }} {{ pkg.owner.surname || '' }}
+							</p>
 							<span class="text-[9px] font-bold text-text-muted">
 								Quedan <strong class="tabular-nums text-text-primary">{{ pkg.remaining_sessions }}</strong> de {{ pkg.total_sessions }}
 							</span>

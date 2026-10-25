@@ -55,9 +55,27 @@ export default defineEventHandler(async event => {
 				client_packages: {
 					include: {
 						package: true,
-						items: true
+						items: true,
+						shares: {
+							orderBy: { created_at: 'asc' },
+							include: { user: { select: { user_id: true, name: true, surname: true, avatar: true } } }
+						}
 					},
 					orderBy: { created_at: 'desc' }
+				},
+				// Bonos other clients shared with this one (consumed from the owner's balance)
+				package_shares: {
+					where: { client_package: { status: 'ACTIVE' } },
+					orderBy: { created_at: 'desc' },
+					include: {
+						client_package: {
+							include: {
+								package: true,
+								items: true,
+								user: { select: { user_id: true, name: true, surname: true, avatar: true } }
+							}
+						}
+					}
 				},
 				debts: {
 					where: { status: { in: ['pending', 'partial'] } },
@@ -223,9 +241,13 @@ export default defineEventHandler(async event => {
 		}
 
 		// Remove password from response and mask document number if not revealed
-		const { password, ...rest } = client
+		const { password, package_shares, ...rest } = client
 		return {
 			...rest,
+			shared_packages: package_shares.map(share => {
+				const { user: owner, ...pkg } = share.client_package
+				return { ...pkg, owner }
+			}),
 			kpis,
 			document_number: reveal ? client.document_number : maskDocument(client.document_number),
 		}

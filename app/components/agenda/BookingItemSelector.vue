@@ -185,6 +185,9 @@ defineExpose({
                                         {{ pkg.type === 'MIXTO' ? 'MIXTO' : 'INDIVIDUAL' }}
                                     </span>
                                 </div>
+                                <p v-if="pkg.owner" class="text-[9px] font-black uppercase tracking-wider text-primary">
+                                    Compartido por {{ pkg.owner.name }} {{ pkg.owner.surname || '' }}
+                                </p>
                                 <span v-if="pkg.type !== 'MIXTO'" class="text-[9px] font-bold text-text-muted">
                                     Quedan <strong class="text-text-primary font-black tabular-nums">{{ getEffectiveRemainingForPackage(pkg) }}</strong> de {{ pkg.total_sessions }} sesiones
                                 </span>

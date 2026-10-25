@@ -9,19 +9,36 @@ import {
 	Calendar,
 	SlidersHorizontal,
 	Trash2,
-	AlertTriangle
+	AlertTriangle,
+	Share2,
+	Users
 } from 'lucide-vue-next'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
 import AssignPackageModal from '~/components/packages/AssignPackageModal.vue'
 import EditClientPackageModal from '~/components/packages/EditClientPackageModal.vue'
+import SharePackageModal from '~/components/packages/SharePackageModal.vue'
 
 const props = defineProps({
 	client: { type: Object as PropType<ClientProfile>, required: true }
 })
 
+defineEmits<{ (e: 'toast', message: string, type: 'success' | 'error'): void }>()
+
 const queryClient = useQueryClient()
 const assignModalRef = ref<InstanceType<typeof AssignPackageModal> | null>(null)
 const editModalRef = ref<InstanceType<typeof EditClientPackageModal> | null>(null)
+const shareModalRef = ref<InstanceType<typeof SharePackageModal> | null>(null)
+
+const openShareModal = (pkg: ClientPackage) => {
+	shareModalRef.value?.openModal(pkg)
+}
+
+const personName = (p?: { name: string; surname?: string | null } | null) => (p ? `${p.name} ${p.surname || ''}`.trim() : '')
+const personInitials = (p?: { name: string; surname?: string | null } | null) =>
+	p ? `${p.name?.charAt(0) || ''}${p.surname?.charAt(0) || ''}` : ''
+
+// Bonos other clients shared with this one: usable here, managed only by their owner
+const sharedWithMe = computed(() => props.client.shared_packages ?? [])
 
 const openAssignModal = () => {
 	assignModalRef.value?.openModal()
@@ -90,6 +107,7 @@ const activePackages = computed(() => {
 			catalogPrice: cp.package?.price,
 			description: cp.package?.description,
 			items: cp.items || [],
+			sharedWith: (cp.shares || []).map(s => s.user).filter(Boolean),
 			rawPackage: cp
 		}
 	})
@@ -215,6 +233,25 @@ const getProgressPercentage = (completed: number, total: number) => {
 						</div>
 					</div>
 
+					<!-- SHARED WITH (same balance) -->
+					<div v-if="pkg.sharedWith.length" class="flex items-center gap-2.5 pt-1">
+						<Users class="size-3.5 text-text-muted shrink-0" />
+						<div class="flex -space-x-2">
+							<span
+								v-for="person in pkg.sharedWith.slice(0, 4)"
+								:key="person!.user_id"
+								class="size-6 rounded-full ring-2 ring-bg-card bg-primary/15 text-primary text-[9px] font-black flex items-center justify-center overflow-hidden"
+								:title="personName(person)"
+							>
+								<img v-if="person!.avatar" :src="person!.avatar" alt="" class="size-full object-cover" >
+								<template v-else>{{ personInitials(person) }}</template>
+							</span>
+						</div>
+						<span class="truncate text-[11px] font-semibold text-text-muted">
+							Compartido con {{ pkg.sharedWith.map(personName).join(', ') }}
+						</span>
+					</div>
+
 					<!-- FOOTER WITH ACTIONS -->
 					<div class="pt-4 border-t border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 						<span class="text-xs font-semibold text-text-muted">
@@ -222,6 +259,15 @@ const getProgressPercentage = (completed: number, total: number) => {
 						</span>
 
 						<div class="flex items-center gap-2 self-end sm:self-auto">
+							<button
+								type="button"
+								class="cta btn btn-ghost btn-xs rounded-xl font-bold text-text-muted hover:text-primary flex items-center gap-1.5 border border-border-subtle hover:border-primary/40"
+								title="Compartir este bono con otras personas (consumen de las mismas sesiones)"
+								@click="openShareModal(pkg.rawPackage)"
+							>
+								<Share2 class="cta-icon size-3.5" />
+								Compartir
+							</button>
 							<button
 								type="button"
 								class="cta btn btn-ghost btn-xs rounded-xl font-bold text-text-muted hover:text-primary flex items-center gap-1.5 border border-border-subtle hover:border-primary/40"
@@ -258,6 +304,58 @@ const getProgressPercentage = (completed: number, total: number) => {
 			</div>
 
 		</div>
+
+		<!-- BONOS SHARED WITH THIS CLIENT (read-only: only the owner manages them) -->
+		<div v-if="sharedWithMe.length" class="card bg-bg-card border border-border-default/80 shadow-md rounded-3xl p-5 sm:p-6 lg:p-8 space-y-5">
+			<div class="flex items-center gap-3">
+				<div class="p-2.5 bg-primary/10 text-primary rounded-2xl shrink-0">
+					<Share2 class="size-5" />
+				</div>
+				<div>
+					<h3 class="text-text-primary text-lg font-black tracking-tight">Bonos Compartidos con {{ client.name }}</h3>
+					<p class="text-text-muted text-xs font-semibold">Consume de las sesiones de otra persona · solo la dueña puede gestionarlos</p>
+				</div>
+			</div>
+
+			<div class="motion-stagger grid grid-cols-1 lg:grid-cols-2 gap-4">
+				<div
+					v-for="cp in sharedWithMe"
+					:key="cp.client_package_id"
+					class="motion-card rounded-3xl border border-dashed border-primary/30 bg-primary/5 p-5 space-y-3"
+				>
+					<div class="flex items-center justify-between gap-2">
+						<span class="badge badge-sm border-none bg-primary/15 text-primary font-black text-[9px] uppercase">
+							Compartido por {{ personName(cp.owner) }}
+						</span>
+						<NuxtLink
+							v-if="cp.owner"
+							:to="`/clientes/${cp.owner.user_id}`"
+							class="text-[11px] font-bold text-text-muted hover:text-primary transition-colors"
+						>
+							Ver ficha
+						</NuxtLink>
+					</div>
+					<h4 class="text-text-primary text-base font-black leading-snug">{{ cp.package?.name || 'Bono' }}</h4>
+					<div class="flex items-center justify-between text-xs font-semibold text-text-muted">
+						<span>
+							Quedan <strong class="text-text-primary tabular-nums">{{ cp.remaining_sessions }}</strong> de {{ cp.total_sessions }} sesiones en común
+						</span>
+						<span v-if="cp.expiry_date" class="flex items-center gap-1">
+							<Calendar class="size-3" />
+							{{ new Date(cp.expiry_date).toISOString().split('T')[0] }}
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Share Package Modal -->
+		<SharePackageModal
+			ref="shareModalRef"
+			:client-id="props.client.user_id"
+			:client-name="props.client.name + ' ' + (props.client.surname || '')"
+			@toast="(message, type) => $emit('toast', message, type)"
+		/>
 
 		<!-- Assign Package Modal -->
 		<AssignPackageModal

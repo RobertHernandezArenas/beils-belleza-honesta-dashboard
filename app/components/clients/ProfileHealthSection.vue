@@ -660,7 +660,7 @@ const { mutate: deleteZone } = useMutation({
 			v-model="isNewSessionModalOpen"
 			:client-id="client.user_id"
 			:zone="selectedZoneForSession"
-			:client-packages="client.client_packages"
+			:client-packages="[...(client.client_packages || []), ...(client.shared_packages || [])]"
 		/>
 
 		<!-- Cuestionario Láser SHR Innova Pro -->

@@ -311,9 +311,10 @@ const handleNewBooking = (source?: HTMLElement | null) => {
               @open-purchase="purchaseDetailsModalRef?.open?.($event)" 
             />
 
-            <ProfilePackagesSection 
+            <ProfilePackagesSection
               v-else-if="activeTab === 'PACKAGES'"
               :client="client"
+              @toast="addToast"
             />
         </div>
 

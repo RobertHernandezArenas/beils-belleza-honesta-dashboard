@@ -79,6 +79,27 @@ async function checkAndFix() {
             console.log('✅ Table client_package_items already exists.');
         }
 
+        // Check client_package_shares table (bonos shared with other clients)
+        if (!tableList.includes('client_package_shares')) {
+            console.log('Table client_package_shares is missing. Creating...');
+            await conn.query(`
+                CREATE TABLE client_package_shares (
+                    share_id CHAR(100) NOT NULL,
+                    client_package_id CHAR(100) NOT NULL,
+                    user_id CHAR(100) NOT NULL,
+                    created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                    PRIMARY KEY (share_id),
+                    UNIQUE INDEX client_package_shares_client_package_id_user_id_key (client_package_id, user_id),
+                    INDEX client_package_shares_user_id_idx (user_id),
+                    CONSTRAINT client_package_shares_client_package_id_fkey FOREIGN KEY (client_package_id) REFERENCES client_packages (client_package_id) ON DELETE CASCADE ON UPDATE CASCADE,
+                    CONSTRAINT client_package_shares_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+                ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            `);
+            console.log('✅ Table client_package_shares created successfully.');
+        } else {
+            console.log('✅ Table client_package_shares already exists.');
+        }
+
     } catch (err) {
         console.error('❌ Error:', err);
     } finally {

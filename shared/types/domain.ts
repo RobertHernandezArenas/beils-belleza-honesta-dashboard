@@ -166,6 +166,24 @@ export interface CatalogItem {
 	quantity_remaining?: number
 	duration?: number
 	items?: CatalogItem[]
+	// Client bonos: set when the bono belongs to someone else and was shared with this client
+	is_shared?: boolean
+	owner?: PersonRef | null
+}
+
+// Minimal person reference used for bono owners/beneficiaries
+export interface PersonRef {
+	user_id: string
+	name: string
+	surname?: string | null
+	avatar?: string | null
+}
+
+// A beneficiary a bono was shared with (consumes from the owner's balance)
+export interface ClientPackageShare {
+	share_id?: string
+	user_id: string
+	user?: PersonRef | null
 }
 
 export interface ClientPackage {
@@ -179,6 +197,10 @@ export interface ClientPackage {
 	custom_price?: number | null
 	package?: CatalogItem | null
 	items?: ClientPackageItem[]
+	// Own bonos: who they are shared with
+	shares?: ClientPackageShare[]
+	// Bonos shared with this client: who owns them
+	owner?: PersonRef | null
 }
 
 export interface DebtPayment {
@@ -245,6 +267,8 @@ export interface ClientProfile extends ClientDTO {
 	consents?: Consent[]
 	revokes?: Revoke[]
 	client_packages?: ClientPackage[]
+	// Bonos other clients shared with this one
+	shared_packages?: ClientPackage[]
 	bookings?: Booking[]
 	client_bookings?: Booking[]
 	kpis?: {

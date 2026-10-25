@@ -126,46 +126,40 @@ export default defineEventHandler(async event => {
 				if (isPackageItem) {
 					const qtyToDeduct = Math.max(1, Number(item.quantity) || 1)
 
-					// 1. Try to find and update ClientPackageItem directly
+					// Every path goes through consumeClientPackage*/: owner-or-beneficiary, active,
+					// not expired, enough balance, atomic decrement. A 4xx here rolls back the sale.
+					const consumption = asConsumptionTx(tx)
+					const consumeOpts = { consumerId: user_id, qty: qtyToDeduct }
+
+					// 1. Explicit ClientPackageItem (one service inside a bono)
 					const clientPkgItem = await tx.clientPackageItem.findUnique({
 						where: { client_package_item_id: item.item_id }
 					}).catch(() => null)
 
 					if (clientPkgItem) {
-						await tx.clientPackageItem.update({
-							where: { client_package_item_id: clientPkgItem.client_package_item_id },
-							data: {
-								quantity_remaining: { decrement: Math.min(clientPkgItem.quantity_remaining, qtyToDeduct) }
-							}
-						})
-
-						await tx.clientPackage.update({
-							where: { client_package_id: clientPkgItem.client_package_id },
-							data: {
-								remaining_sessions: { decrement: Math.min(clientPkgItem.quantity_remaining, qtyToDeduct) }
-							}
-						})
+						await consumeClientPackageItem(consumption, { clientPackageItemId: clientPkgItem.client_package_item_id, ...consumeOpts })
 					} else {
-						// 2. Try to find and update ClientPackage directly
+						// 2. Explicit ClientPackage (whole bono)
 						const clientPkg = await tx.clientPackage.findUnique({
 							where: { client_package_id: item.item_id }
 						}).catch(() => null)
 
 						if (clientPkg) {
-							await tx.clientPackage.update({
-								where: { client_package_id: clientPkg.client_package_id },
-								data: {
-									remaining_sessions: { decrement: Math.min(clientPkg.remaining_sessions, qtyToDeduct) }
-								}
-							})
+							await consumeClientPackage(consumption, { clientPackageId: clientPkg.client_package_id, ...consumeOpts })
 						} else if (user_id) {
-							// 3. Fallback: Search matching active ClientPackageItem or ClientPackage by user_id
+							// 3. Fallback: auto-match one of the client's OWN usable bonos (never a shared one:
+							// spending someone else's bono must be an explicit choice).
 							const cleanName = item.name ? item.name.replace(/\[.*?\]\s*/g, '').trim() : ''
-							
+							const usableOwnPackage = {
+								user_id,
+								status: 'ACTIVE',
+								OR: [{ expiry_date: null }, { expiry_date: { gt: new Date() } }],
+							}
+
 							const matchingSubItem = await tx.clientPackageItem.findFirst({
 								where: {
-									client_package: { user_id },
-									quantity_remaining: { gt: 0 },
+									client_package: usableOwnPackage,
+									quantity_remaining: { gte: qtyToDeduct },
 									OR: [
 										{ package_item_id: item.item_id },
 										{ name: { contains: cleanName } }
@@ -174,38 +168,23 @@ export default defineEventHandler(async event => {
 							})
 
 							if (matchingSubItem) {
-								await tx.clientPackageItem.update({
-									where: { client_package_item_id: matchingSubItem.client_package_item_id },
-									data: {
-										quantity_remaining: { decrement: Math.min(matchingSubItem.quantity_remaining, qtyToDeduct) }
-									}
-								})
-
-								await tx.clientPackage.update({
-									where: { client_package_id: matchingSubItem.client_package_id },
-									data: {
-										remaining_sessions: { decrement: Math.min(matchingSubItem.quantity_remaining, qtyToDeduct) }
-									}
-								})
+								await consumeClientPackageItem(consumption, { clientPackageItemId: matchingSubItem.client_package_item_id, ...consumeOpts })
 							} else {
 								const matchingPkg = await tx.clientPackage.findFirst({
 									where: {
-										user_id,
-										remaining_sessions: { gt: 0 },
-										OR: [
-											{ package_id: item.item_id },
-											{ package: { name: { contains: cleanName } } }
-										]
+										...usableOwnPackage,
+										remaining_sessions: { gte: qtyToDeduct },
+										AND: [{
+											OR: [
+												{ package_id: item.item_id },
+												{ package: { name: { contains: cleanName } } }
+											]
+										}]
 									}
 								})
 
 								if (matchingPkg) {
-									await tx.clientPackage.update({
-										where: { client_package_id: matchingPkg.client_package_id },
-										data: {
-											remaining_sessions: { decrement: Math.min(matchingPkg.remaining_sessions, qtyToDeduct) }
-										}
-									})
+									await consumeClientPackage(consumption, { clientPackageId: matchingPkg.client_package_id, ...consumeOpts })
 								}
 							}
 						}

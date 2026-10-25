@@ -49,18 +49,16 @@ export default defineEventHandler(async event => {
 
 		// 3. Create session in a transaction (with optional package decrement)
 		const result = await prisma.$transaction(async tx => {
-			if (validated.client_package_id && validated.decrement_package) {
-				const clientPkg = await tx.clientPackage.findUnique({
-					where: { client_package_id: validated.client_package_id }
-				})
-
-				if (clientPkg && clientPkg.remaining_sessions > 0) {
-					await tx.clientPackage.update({
-						where: { client_package_id: validated.client_package_id },
-						data: {
-							remaining_sessions: { decrement: 1 }
-						}
+			// The linked bono must be the client's own or shared with them, even when not decrementing
+			if (validated.client_package_id) {
+				const consumption = asConsumptionTx(tx)
+				if (validated.decrement_package) {
+					await consumeClientPackage(consumption, {
+						clientPackageId: validated.client_package_id,
+						consumerId: validated.client_id,
 					})
+				} else {
+					await assertPackageAccess(tx, validated.client_package_id, validated.client_id)
 				}
 			}
 
