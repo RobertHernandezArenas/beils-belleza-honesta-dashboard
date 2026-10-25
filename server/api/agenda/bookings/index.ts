@@ -177,22 +177,6 @@ export default defineEventHandler(async event => {
 		} catch (rawError) {
 			const error = toApiError(rawError)
 			console.error('[BOOKING_CREATE_ERROR]', error)
-			
-			// Temporary debug logging to a file since I cannot see the terminal
-			try {
-				const fs = await import('fs/promises')
-				const path = 'C:/Users/VENOM/.gemini/antigravity/brain/0b975e6a-6ea8-4c06-bbfb-de290b70def2/scratch/api_error.log'
-				await fs.writeFile(path, JSON.stringify({
-					timestamp: new Date().toISOString(),
-					error: error.message,
-					stack: error.stack,
-					body: body,
-					prismaCode: error.code,
-					prismaMeta: error.meta
-				}, null, 2))
-			} catch (e) {
-				console.error('Failed to write debug log', e)
-			}
 
 			// Ensure we return a statusMessage that can be read by the frontend
 			const finalMessage = error.data?.statusMessage || error.statusMessage || error.message || 'Error interno del servidor al crear la cita'
