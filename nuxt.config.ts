@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 	eslint: {
 		checker: false,
 	},
-	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxtjs/google-fonts', '@pinia/nuxt'],
+	modules: ['@nuxt/eslint', '@nuxt/fonts','@pinia/nuxt'],
 	nitro: {
 		alias: {
 			'@vue/devtools-api': 'vue-devtools-stub',
@@ -64,14 +64,15 @@ export default defineNuxtConfig({
 
 	},
 
-	googleFonts: {
-		families: {
-			// Gogo Admin Template primary typeface
-			Mulish: [300, 400, 500, 600, 700, 800],
-			Roboto: [300, 400, 500, 700],
-			'Roboto Condensed': [300, 400, 700],
+	// Self-hosted at build time: visitors never contact Google (GDPR)
+	fonts: {
+		defaults: {
+			subsets: ['latin', 'latin-ext'],
 		},
-		display: 'swap',
+		families: [
+			// Gogo Admin Template primary typeface
+			{ name: 'Mulish', provider: 'google', weights: [300, 400, 500, 600, 700, 800] },
+		],
 	},
 
 	build: {
@@ -89,7 +90,6 @@ export default defineNuxtConfig({
 			},
 		},
 		plugins: [
-			// @ts-expect-error Type mismatch with Nuxt's Vite interface
 			tailwindcss(),
 		],
 		optimizeDeps: {

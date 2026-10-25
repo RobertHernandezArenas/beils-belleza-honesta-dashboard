@@ -10,8 +10,9 @@ const CSP_DIRECTIVES = [
 	"default-src 'self'",
 	// Nuxt injects inline payload/hydration scripts and components use inline styles
 	"script-src 'self' 'unsafe-inline'",
-	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-	"font-src 'self' data: https://fonts.gstatic.com",
+	"style-src 'self' 'unsafe-inline'",
+	// Fonts are self-hosted by @nuxt/fonts under /_fonts
+	"font-src 'self' data:",
 	// Avatars (ui-avatars), country flags (flagcdn), uploaded images, cropper blobs
 	"img-src 'self' data: blob: https://ui-avatars.com https://flagcdn.com",
 	"connect-src 'self'",
