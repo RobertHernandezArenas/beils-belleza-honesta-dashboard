@@ -15,6 +15,8 @@ const DESTINATIONS: Record<string, readonly string[]> = {
 	documentos: ['autorizaciones'],
 }
 
+export const isAllowedDestination = (category: string, type: string) => !!DESTINATIONS[category]?.includes(type)
+
 const startsWith = (buf: Buffer, signature: number[], offset = 0) =>
 	buf.length >= offset + signature.length && signature.every((b, i) => buf[offset + i] === b)
 
@@ -36,7 +38,7 @@ export function resolveUploadTarget(
 ) {
 	const category = fields.category || 'imagenes'
 	const type = fields.type || 'clientes'
-	if (!DESTINATIONS[category]?.includes(type)) {
+	if (!isAllowedDestination(category, type)) {
 		throw badRequest('Destino de subida no permitido')
 	}
 
@@ -48,7 +50,8 @@ export function resolveUploadTarget(
 	const dir = resolve(join(root, ...segments))
 	if (!dir.startsWith(root + sep)) throw badRequest('Destino de subida no permitido')
 
-	return { dir, urlPath: `/uploads/${segments.join('/')}` }
+	// Served by the authenticated files endpoint (see upload-storage), never from public/
+	return { dir, urlPath: `/api/files/${segments.join('/')}` }
 }
 
 export function assertKindAllowed(kind: FileKind | null, category: string | undefined): asserts kind is FileKind {

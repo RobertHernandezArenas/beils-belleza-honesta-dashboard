@@ -42,7 +42,7 @@ describe('resolveUploadTarget (allow-listed destinations only)', () => {
 
 	it('defaults to the avatar destination like before', () => {
 		const target = resolveUploadTarget(root, {})
-		assert.equal(target.urlPath, '/uploads/imagenes/clientes')
+		assert.equal(target.urlPath, '/api/files/imagenes/clientes')
 	})
 
 	it('rejects path traversal and unknown destinations', () => {
@@ -55,7 +55,7 @@ describe('resolveUploadTarget (allow-listed destinations only)', () => {
 		const target = resolveUploadTarget(root, { category: 'imagenes', type: 'clientes', subdirectory: '../../ana-ruiz' })
 		assert.ok(target.dir.startsWith(resolve(root)))
 		assert.ok(!target.urlPath.includes('..'))
-		assert.equal(target.urlPath, '/uploads/imagenes/clientes/______ana-ruiz')
+		assert.equal(target.urlPath, '/api/files/imagenes/clientes/______ana-ruiz')
 	})
 })
 

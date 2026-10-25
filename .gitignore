@@ -187,3 +187,6 @@ scratch/
 .eslintcache
 .stylelintcache
 .node_repl_history
+
+# Private uploads (client photos, signed authorizations): never committed
+storage/uploads/

@@ -4,9 +4,9 @@ import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import sharp from 'sharp'
 import { detectFileKind, resolveUploadTarget, assertKindAllowed } from '../utils/upload-policy'
+import { uploadsRoot } from '../utils/upload-storage'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const UPLOADS_ROOT = join(process.cwd(), 'public', 'uploads')
 
 export default defineEventHandler(async event => {
 	try {
@@ -40,7 +40,8 @@ export default defineEventHandler(async event => {
 		const category = field('category')
 
 		// Destination is allow-listed (no client-controlled paths); type comes from the bytes
-		const target = resolveUploadTarget(UPLOADS_ROOT, { category, type: field('type'), subdirectory: field('subdirectory') })
+		// Private storage outside public/: files are served only to staff by /api/files
+		const target = resolveUploadTarget(uploadsRoot(), { category, type: field('type'), subdirectory: field('subdirectory') })
 		const kind = detectFileKind(file.data)
 		assertKindAllowed(kind, category)
 
