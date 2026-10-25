@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
+import { assertConsentMutable } from '../../../utils/consent-policy'
 
 const consentUpdateSchema = z.object({
 	document_url: z.string().url('La URL del documento debe ser válida').optional(),
@@ -15,6 +16,10 @@ export default defineEventHandler(async event => {
 		if (!id) {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 		}
+
+		const existing = await prisma.consent.findUnique({ where: { consent_id: id }, select: { status: true } })
+		if (!existing) throw createError({ statusCode: 404, statusMessage: 'Consentimiento no encontrado' })
+		assertConsentMutable(existing.status)
 
 		const body = await readBody(event)
 		const parsedData = consentUpdateSchema.parse(body)

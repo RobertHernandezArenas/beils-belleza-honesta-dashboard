@@ -18,3 +18,13 @@ export function isPublicApiRoute(path: string) {
 export function canRoleUseApi(role: string | undefined) {
 	return !!role && (STAFF_ROLES as readonly string[]).includes(role)
 }
+
+/** Special-category health data (GDPR art. 9): questionnaires, signed consents, revocations.
+ *  Enforced centrally so a new handler under these paths can't forget the check. */
+const ADMIN_ONLY_PATHS = ['/api/clients/consents', '/api/clients/questionnaires', '/api/clients/revokes']
+
+export function canRoleAccessPath(role: string | undefined, path: string) {
+	const normalized = normalizePath(path)
+	const adminOnly = ADMIN_ONLY_PATHS.some(base => normalized === base || normalized.startsWith(`${base}/`))
+	return !adminOnly || role === 'ADMIN'
+}

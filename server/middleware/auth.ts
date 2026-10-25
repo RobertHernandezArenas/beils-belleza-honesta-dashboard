@@ -1,5 +1,5 @@
 import { verifyToken } from '../utils/jwt'
-import { isPublicApiRoute, canRoleUseApi } from '../utils/api-access'
+import { isPublicApiRoute, canRoleUseApi, canRoleAccessPath } from '../utils/api-access'
 
 // Protected routes prefix
 const PROTECTED_PREFIX = '/api/'
@@ -51,6 +51,14 @@ export default defineEventHandler(event => {
 		throw createError({
 			statusCode: 403,
 			statusMessage: 'Acceso restringido al personal del centro',
+		})
+	}
+
+	// Health records (questionnaires, consents, revocations) are admin-only
+	if (!canRoleAccessPath(decoded.role, path)) {
+		throw createError({
+			statusCode: 403,
+			statusMessage: 'Acceso restringido: datos de salud solo para administradores',
 		})
 	}
 

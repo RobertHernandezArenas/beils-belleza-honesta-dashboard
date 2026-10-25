@@ -14,6 +14,8 @@ export default defineEventHandler(async event => {
 		const consents = await prisma.consent.findMany({
 			where: whereClause,
 			orderBy: { created_at: 'desc' },
+			// Handwritten signatures are only loaded from the client profile, never in bulk lists
+			omit: { signature_data: true },
 			include: {
 				user: {
 					select: { user_id: true, name: true, surname: true, email: true },
