@@ -1,17 +1,19 @@
 import * as soap from 'soap'
 import * as https from 'https'
 import * as fs from 'node:fs'
+import { isAeatConfigured, type AeatSubmissionResult } from './aeat-status'
 
 /**
  * Submits an invoice XML payload to the AEAT via SOAP with mTLS authentication.
  */
-export const submitToAeat = async (xmlPayload: string): Promise<boolean> => {
+export const submitToAeat = async (xmlPayload: string): Promise<AeatSubmissionResult> => {
 	const config = useRuntimeConfig()
-	
-	// In development/test we might want to skip real submission if not configured
-	if (!config.aeatP12CertPath || !config.aeatP12Password) {
-		console.warn('AEAT Certificate not configured. Skipping real submission.')
-		return true // Mock successful submission
+
+	// Without a certificate nothing is sent: report it as such, never as a successful submission
+	if (!isAeatConfigured(config)) {
+		const log = process.env.NODE_ENV === 'production' ? console.error : console.warn
+		log('[VERIFACTU] AEAT certificate not configured: invoice NOT submitted (status not_configured).')
+		return 'not_configured'
 	}
 
 	try {
@@ -33,7 +35,8 @@ export const submitToAeat = async (xmlPayload: string): Promise<boolean> => {
 			xmlData: xmlPayload 
 		})
 
-		return result && (result.EstadoEnvio === 'Correcto' || result.EstadoEnvio === 'AceptadoConErrores')
+		const accepted = result && (result.EstadoEnvio === 'Correcto' || result.EstadoEnvio === 'AceptadoConErrores')
+		return accepted ? 'submitted' : 'rejected'
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		console.error('Error in AEAT SOAP communication:', error)

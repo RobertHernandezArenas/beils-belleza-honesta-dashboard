@@ -1,6 +1,7 @@
 import { prisma } from './prisma'
 import { generateInvoiceHash, generateQrUrl } from './invoiceGenerators'
 import { submitToAeat } from './aeatSoapClient'
+import { toAeatStatus } from './aeat-status'
 import type { IInvoice } from '~~/shared/types/invoice'
 
 // ------------------------------------------------------------------
@@ -70,12 +71,12 @@ export async function processVerifactuInvoice(invoiceData: IInvoice) {
 		</SuministroLRFacturasEmitidas>
 	`.trim()
 
-	const isSubmitted = await submitToAeat(xmlPayload)
+	const submission = await submitToAeat(xmlPayload)
 
 	return {
 		hash,
 		qrUrl,
-		aeatStatus: isSubmitted ? 'submitted' : 'error'
+		aeatStatus: toAeatStatus(submission)
 	}
 }
 
