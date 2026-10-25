@@ -22,9 +22,9 @@
 
 **Prioridades actuales:**
 
-1. **Configuración de producción** (sin esto, parte de lo corregido no aplica): `JWT_SECRET` de 32 caracteres o más, `TRUSTED_PROXY_HOPS=1` en Plesk, y `npm run db:fix` en el servidor.
-2. Actualizar dependencias con vulnerabilidades (nuxt, jspdf, mariadb, zod, vue, soap) → **Dep1**
-3. Consentimientos y fotos fuera de `public/` → **U2**
+1. **Configuración de producción** (sin esto, parte de lo corregido no aplica): **Node 22.22.3 o más, 24.15 o más, o 26** en Plesk (Nuxt 4.6 no arranca con Node 20), `JWT_SECRET` de 32 caracteres o más, `TRUSTED_PROXY_HOPS=1`, y `npm run db:fix` en el servidor.
+2. Consentimientos y fotos fuera de `public/` → **U2**
+3. Quitar `@nuxtjs/google-fonts` (envía la IP de cada visitante a Google; `@nuxt/fonts` ya sirve las fuentes desde el propio servidor). Requiere confirmar visualmente la tipografía.
 4. Inmutabilidad de facturas y envío real a la AEAT → **F1, F2** (Fase 3)
 5. Activar la CSP en modo estricto tras revisar la consola del navegador (`CSP_ENFORCE=true`)
 
@@ -170,7 +170,18 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 
 ## 4. Dependencias
 
-`pnpm audit --prod` reporta **275 avisos** (8 críticos, 109 altos). Los relevantes:
+> **✅ Actualizado (`3d7e420`, 25/10/2026).** `pnpm audit --prod` pasó de **275 avisos (8 críticos, 109 altos)** a **6 (0 críticos, 1 alto)**. Se migró a Node v26.12.1 (Node 20 está sin soporte desde abril de 2026, y Nuxt 4.6 exige 22 o más).
+>
+> - **Actualizados**, dentro de cada versión mayor: nuxt 4.6.2, vue 3.5.44, zod 4.6.7, jspdf 4.2.1, Prisma 7.10.1 (CLI, cliente y adaptador alineados), vue-i18n 11.4.16, mariadb 3.5.4, soap 1.14.0, echarts 6.1, vue-echarts 8.3.2, gsap 3.15, sharp 0.35.5 y herramientas de desarrollo.
+> - **Dependencias transitivas vulnerables** (tar, minimatch, rollup, h3, picomatch, lodash, defu, vite, @xmldom/xmldom, brace-expansion, fast-uri, postcss, nanoid, browserslist, source-map-js, dompurify): forzadas a su versión parcheada con `pnpm.overrides`.
+> - **Eliminadas por no usarse:** `qrcode.vue`, `aos` (y `@types/aos`, junto con su plugin, que dejaba un `ResizeObserver` sobre todo el `<body>`), `dexie` (junto con el composable muerto `useOfflineSync`) y el módulo `@nuxt/image`.
+> - **Pendiente:**
+>   - `node-forge` (alto): no tiene versión parcheada; entra por las herramientas de desarrollo de Nuxt.
+>   - Las actualizaciones de **versión mayor** (Pinia 4, vue-router 5, TypeScript 7, Vite 8, @vueuse 15, lucide 1.0), que conviene hacer de a una.
+>   - Los dos módulos de fuentes, que se solapan.
+>   - 18 errores de lint que ya existían (`any` y variables sin usar).
+
+Estado original (`pnpm audit --prod`: **275 avisos**, 8 críticos y 109 altos). Los relevantes:
 
 | Paquete | Riesgo | Acción |
 |---|---|---|
@@ -202,7 +213,8 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 |---|---|---|
 | ✅ **1 — Completada (25/10/2026)** | C1, C2, C3, C4, J1, J4, A5 (+ A7, J5, L2 de paso) · commits `3b21335`…`d9f9dbb` | Hecho |
 | ✅ **2 — Completada (25/10/2026)** salvo U2 y dependencias | U1, L1, V1, V2, H1 (CSP Report-Only), rate limit tras el proxy · `c494d69`…`eb0de02` | Hecho |
-| **2b — Pendiente de tu OK** | U2 (mover subidas fuera de `public/` y migrar los archivos del servidor) y actualización de dependencias (requiere reinstalar y probar en el navegador) | 1–2 días |
+| ✅ **2b — Dependencias (25/10/2026)** | Migración a Node 26, actualizaciones dentro de cada mayor, overrides y limpieza de dependencias sin uso · `3d7e420` | Hecho |
+| **2c — Pendiente** | U2 (mover subidas fuera de `public/` y migrar los archivos del servidor) | 1 día |
 | **3 — Fiscal** | F1–F5, N1, Decimal para dinero | 3–5 días |
 | **4 — Madurez** | J2, J3, registro de auditoría, RGPD (exportar y anonimizar), migración base, backups | continuo |
 
