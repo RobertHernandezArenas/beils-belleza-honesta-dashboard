@@ -1,8 +1,12 @@
 import { defineEventHandler, readMultipartFormData, createError } from 'h3'
 import { writeFile, mkdir } from 'node:fs/promises'
-import { join, extname } from 'node:path'
+import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import sharp from 'sharp'
+import { detectFileKind, resolveUploadTarget, assertKindAllowed } from '../utils/upload-policy'
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const UPLOADS_ROOT = join(process.cwd(), 'public', 'uploads')
 
 export default defineEventHandler(async event => {
 	try {
@@ -15,7 +19,6 @@ export default defineEventHandler(async event => {
 		}
 
 		// Security: Check overall payload size (Risk 1.4 & 6.1)
-		const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 		const totalSize = formData.reduce((acc, item) => acc + (item.data?.length || 0), 0)
 		if (totalSize > MAX_FILE_SIZE) {
 			throw createError({
@@ -33,55 +36,36 @@ export default defineEventHandler(async event => {
 			})
 		}
 
-		const type = formData.find(item => item.name === 'type')?.data.toString() || 'clientes'
-		const category = formData.find(item => item.name === 'category')?.data.toString() || 'imagenes'
-		const subdirectory = formData.find(item => item.name === 'subdirectory')?.data.toString() || ''
+		const field = (name: string) => formData.find(item => item.name === name)?.data.toString()
+		const category = field('category')
 
-		// Validate type (images and PDFs allowed for authorizations/consents)
-		const contentType = file.type || ''
-		const isImage = contentType.startsWith('image/')
-		const isPdf = contentType === 'application/pdf' || (file.filename && file.filename.toLowerCase().endsWith('.pdf'))
-		if (!isImage && !isPdf) {
-			throw createError({
-				statusCode: 400,
-				statusMessage: 'El archivo debe ser una imagen (JPG, PNG, WebP) o un documento PDF',
-			})
+		// Destination is allow-listed (no client-controlled paths); type comes from the bytes
+		const target = resolveUploadTarget(UPLOADS_ROOT, { category, type: field('type'), subdirectory: field('subdirectory') })
+		const kind = detectFileKind(file.data)
+		assertKindAllowed(kind, category)
+
+		await mkdir(target.dir, { recursive: true })
+		const baseFilename = randomUUID()
+
+		if (kind === 'pdf') {
+			const filename = `${baseFilename}.pdf`
+			await writeFile(join(target.dir, filename), file.data)
+			return { url: `${target.urlPath}/${filename}`, filename, size: file.data.length }
 		}
 
-		// Determine target directory and sanitize subdirectory
-		const safeSubdirectory = subdirectory.replace(/[^a-zA-Z0-9-_]/g, '_')
-		const uploadDir = join(process.cwd(), 'public', 'uploads', category, type, safeSubdirectory)
-		await mkdir(uploadDir, { recursive: true })
-
-		const fileExtension = extname(file.filename || '.jpg')
-		const baseFilename = `${randomUUID()}`
-		const filename = `${baseFilename}${fileExtension}`
-		
-		if (category === 'imagenes' && contentType.startsWith('image/')) {
-			// Optimize image with Sharp if it's an image
-			const optimizedFilename = `${baseFilename}.webp`
-			const optimizedPath = join(uploadDir, optimizedFilename)
-			
+		// Images are always re-encoded: drops any embedded payload and EXIF metadata (e.g. GPS)
+		const filename = `${baseFilename}.webp`
+		try {
 			await sharp(file.data)
+				.rotate() // apply EXIF orientation before metadata is stripped
 				.resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
 				.webp({ quality: 80 })
-				.toFile(optimizedPath)
-
-			return {
-				url: `/uploads/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${optimizedFilename}`,
-				filename: optimizedFilename,
-				size: file.data.length,
-			}
-		} else {
-			// Just save the file
-			const filePath = join(uploadDir, filename)
-			await writeFile(filePath, file.data)
-			return {
-				url: `/uploads/${category}/${type}/${safeSubdirectory ? safeSubdirectory + '/' : ''}${filename}`,
-				filename,
-				size: file.data.length,
-			}
+				.toFile(join(target.dir, filename))
+		} catch {
+			throw createError({ statusCode: 400, statusMessage: 'La imagen está dañada o no es válida' })
 		}
+
+		return { url: `${target.urlPath}/${filename}`, filename, size: file.data.length }
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		console.error('Error uploading file:', error)
