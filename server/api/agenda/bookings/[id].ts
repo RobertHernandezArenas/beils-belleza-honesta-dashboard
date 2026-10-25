@@ -1,4 +1,4 @@
-import type { IncomingLineItem } from '~~/shared/types/line-item'
+import { parseBookingUpdate } from '../../../utils/booking-validation'
 
 
 export default defineEventHandler(async event => {
@@ -39,52 +39,44 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'PUT') {
-		const body = await readBody(event)
-		// Dynamic request bag: fields are added/removed at runtime (delete of
-		// booking_id/items/staff_id, .status.toUpperCase()) before the object is
-		// spread into prisma.booking.update. A strict Prisma input type can't model
-		// the transient `items` property carried through the spread, so `any` here
-		// is deliberate and scoped to this handler.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const payload: any = { ...body }
-
-		delete payload.booking_id
-		delete payload.created_at
-		delete payload.updated_at
-
-		if (payload.status) payload.status = payload.status.toUpperCase()
+		// Allow-listed, validated fields only (client, professional, status, date, time, duration, notes, items)
+		const input = parseBookingUpdate(await readBody(event))
 
 		try {
 			// --- VALIDATION: OVERLAP CHECK ---
 			const current = await prisma.booking.findUnique({ where: { booking_id: id } })
 			if (!current) throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
 
-			const finalDateRaw = payload.booking_date ? new Date(payload.booking_date) : current.booking_date
-			if (finalDateRaw.toString() === 'Invalid Date') {
-				throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
+			if (input.client_id && input.client_id !== current.client_id) {
+				const client = await prisma.user.findFirst({ where: { user_id: input.client_id, role: 'CLIENT' }, select: { user_id: true } })
+				if (!client) throw createError({ statusCode: 400, statusMessage: 'El cliente indicado no existe' })
 			}
+			if (input.staff_id) {
+				const staff = await prisma.user.findFirst({ where: { user_id: input.staff_id, role: { in: ['ADMIN', 'STAFF'] } }, select: { user_id: true } })
+				if (!staff) throw createError({ statusCode: 400, statusMessage: 'El profesional indicado no existe' })
+			}
+
+			const finalDateRaw = input.booking_date ? new Date(input.booking_date) : current.booking_date
 			const finalDate = new Date(Date.UTC(finalDateRaw.getUTCFullYear(), finalDateRaw.getUTCMonth(), finalDateRaw.getUTCDate(), 0, 0, 0, 0))
-			const finalStart = payload.start_time || current.start_time
-			
+			const finalStart = input.start_time || current.start_time
+
 			// If items are provided, recalculate duration
-			if (payload.items && Array.isArray(payload.items)) {
-				payload.duration = payload.items.reduce((acc: number, item: IncomingLineItem) => acc + (Number(item.duration) || 0), 0)
-			}
-			
-			const finalDuration = payload.duration !== undefined ? Number(payload.duration) : current.duration
-			
+			const duration = input.items ? input.items.reduce((acc, item) => acc + item.duration, 0) : input.duration
+			const finalDuration = duration ?? current.duration
+
 			// Calculate final end_time
 			let finalEnd = current.end_time
-			if (payload.start_time !== undefined || payload.duration !== undefined || payload.items !== undefined) {
-				const [h, m] = finalStart.split(':').map(Number)
+			let endTime: string | undefined
+			if (input.start_time !== undefined || duration !== undefined) {
+				const [h = 0, m = 0] = finalStart.split(':').map(Number)
 				const dObj = new Date()
 				dObj.setHours(h, m + finalDuration, 0)
 				finalEnd = `${String(dObj.getHours()).padStart(2, '0')}:${String(dObj.getMinutes()).padStart(2, '0')}`
-				payload.end_time = finalEnd
+				endTime = finalEnd
 			}
 
 			// Only check overlap if it's not being cancelled
-			const finalStatus = payload.status || current.status
+			const finalStatus = input.status || current.status
 			if (['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'].includes(finalStatus)) {
 				const hasCompletedCart = await prisma.cart.findFirst({
 					where: { booking_id: id, status: 'completed' },
@@ -96,11 +88,8 @@ export default defineEventHandler(async event => {
 					})
 				}
 			} else {
-				// Normalize staff_id for check
-				let checkStaffId = current.staff_id
-				if (payload.staff_id !== undefined) {
-					checkStaffId = (payload.staff_id === '' || payload.staff_id === null) ? null : payload.staff_id
-				}
+				// staff_id: undefined = unchanged, null = unassigned
+				const checkStaffId = input.staff_id !== undefined ? input.staff_id : current.staff_id
 
 				if (checkStaffId) {
 					const overlapping = await prisma.booking.findFirst({
@@ -124,26 +113,24 @@ export default defineEventHandler(async event => {
 			}
 			// --- END VALIDATION ---
 
-			const items = payload.items
-			delete payload.items
-
-			// Normalize staff_id for update
-			const staffIdValue = payload.staff_id && payload.staff_id !== '' ? payload.staff_id : (payload.staff_id === '' ? null : undefined)
-			delete payload.staff_id
-
 			const updatedBooking = await prisma.booking.update({
 				where: { booking_id: id },
 				data: {
-					...payload,
-					booking_date: payload.booking_date ? new Date(payload.booking_date) : undefined,
-					staff_id: staffIdValue,
-					booking_items: items ? {
+					client_id: input.client_id,
+					staff_id: input.staff_id,
+					status: input.status,
+					booking_date: input.booking_date ? new Date(input.booking_date) : undefined,
+					start_time: input.start_time,
+					duration,
+					end_time: endTime,
+					notes: input.notes,
+					booking_items: input.items ? {
 						deleteMany: {},
-						create: items.map((item: IncomingLineItem) => ({
+						create: input.items.map(item => ({
 							item_type: item.item_type,
 							item_id: item.item_id,
 							name: item.name,
-							duration: Number(item.duration) || 0,
+							duration: item.duration,
 						}))
 					} : undefined
 				},
