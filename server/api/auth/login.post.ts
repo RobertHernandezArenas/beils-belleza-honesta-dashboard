@@ -2,11 +2,15 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '../../utils/prisma'
 import { signToken } from '../../utils/jwt'
+import { loginOutcome, unusablePasswordSeed } from '../../utils/login-policy'
 
 const loginSchema = z.object({
-	email: z.string().email(),
-	password: z.string().min(1),
+	email: z.string().email().max(50),
+	password: z.string().min(1).max(128),
 })
+
+// Compared against when the email doesn't exist, so response time doesn't reveal valid emails
+const DUMMY_HASH = bcrypt.hashSync(unusablePasswordSeed(), 12)
 
 export default defineEventHandler(async event => {
 	try {
@@ -28,36 +32,18 @@ export default defineEventHandler(async event => {
 			where: { email },
 		})
 
-		if (!user) {
-			console.log('[LOGIN] User not found')
-			throw createError({
-				statusCode: 401,
-				statusMessage: 'Correo o contraseña incorrectos',
-			})
-		}
-
-		if (user.status !== 'ON') {
-			throw createError({
-				statusCode: 403,
-				statusMessage: 'Cuenta inactiva. Contacta con el administrador.',
-			})
-		}
-
-		// Verificar contraseña
-		const isValid = await bcrypt.compare(password, user.password)
-
-		if (!isValid) {
-			throw createError({
-				statusCode: 401,
-				statusMessage: 'Correo o contraseña incorrectos',
-			})
+		// Always run bcrypt, then decide: unknown email, wrong password and client accounts look identical
+		const passwordValid = await bcrypt.compare(password, user?.password ?? DUMMY_HASH)
+		const outcome = loginOutcome({ user, passwordValid })
+		if (!outcome.ok) {
+			throw createError({ statusCode: outcome.statusCode, statusMessage: outcome.message })
 		}
 
 		// Generar Token
-		const token = signToken({ userId: user.user_id, email: user.email, role: user.role })
+		const token = signToken({ userId: user!.user_id, email: user!.email, role: user!.role })
 
-		// Retornar datos (sin password original)
-		const { password: _, ...userData } = user
+		// Retornar datos (sin password ni refresh token)
+		const { password: _, refresh_token: __, ...userData } = user!
 
 		return {
 			user: userData,
@@ -65,15 +51,15 @@ export default defineEventHandler(async event => {
 		}
 	} catch (rawError) {
 		const error = toApiError(rawError)
-		
+
 		// If it's already a Nuxt error, rethrow it
 		if (error.statusCode) throw error
 
-		// Otherwise, throw a generic 500 with the error message for debugging
+		// Log details server-side only; never send internal errors to the browser
+		console.error('[LOGIN] Unexpected error:', error)
 		throw createError({
 			statusCode: 500,
-			statusMessage: `Internal Server Error: ${error.message || 'Unknown error'}`,
-			data: error
+			statusMessage: 'Error interno al iniciar sesión',
 		})
 	}
 })

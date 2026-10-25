@@ -2,6 +2,7 @@ import { prisma } from '../../utils/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { requireAdmin } from '../../utils/auth'
+import { unusablePasswordSeed } from '../../utils/login-policy'
 
 const clientSchema = z.object({
 	email: z.string().email('Email inválido').optional().or(z.literal('')),
@@ -44,10 +45,9 @@ export default defineEventHandler(async event => {
 			})
 		}
 
-		// Set a default secure password since it's an internal CRM creation
-		// In a real flow, you might send an email for them to set it up
-		const salt = await bcrypt.genSalt(10)
-		const hashedPassword = await bcrypt.hash('beils12345', salt)
+		// Clients are CRM records, not accounts: store a random, never-disclosed password hash
+		// (login also rejects the CLIENT role). Never use a shared default password here.
+		const hashedPassword = await bcrypt.hash(unusablePasswordSeed(), 12)
 
 		const email = parsedData.email || `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
 
