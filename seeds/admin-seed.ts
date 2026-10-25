@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { prisma } from '../server/utils/prisma'
 import bcrypt from 'bcryptjs'
+import { resolveSeedPassword } from './seed-safety'
 
 async function seedAdmin() {
 	try {
@@ -17,8 +18,10 @@ async function seedAdmin() {
 		}
 
 		console.log('🚀 Creating Admin user...')
-		const defaultPassword = 'password123'
-		const hashedPassword = await bcrypt.hash(defaultPassword, 10)
+		// From SEED_ADMIN_PASSWORD or random (printed once); never a shared default
+		const { password: adminPassword, generated } = resolveSeedPassword(process.env)
+		const hashedPassword = await bcrypt.hash(adminPassword, 12)
+		if (generated) console.log(`🔑 Contraseña generada para ${adminEmail}: ${adminPassword} (guárdala ahora; no se vuelve a mostrar)`)
 
 		await prisma.user.create({
 			data: {
@@ -44,7 +47,7 @@ async function seedAdmin() {
 
 		console.log('✅ Admin user created successfully!')
 		console.log('📧 Email: ' + adminEmail)
-		console.log('🔑 Password: ' + defaultPassword)
+		if (!generated) console.log('🔑 Password: la definida en SEED_ADMIN_PASSWORD')
 	} catch (error: any) {
 		console.error('❌ Error seeding Admin:', error.stack || error.message || error)
 	} finally {

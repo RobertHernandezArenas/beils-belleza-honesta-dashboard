@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
 import { maskDocument } from '../../utils/privacy'
+import { parsePagination } from '../../utils/pagination'
 
 export default defineEventHandler(async event => {
 	try {
@@ -11,9 +12,8 @@ export default defineEventHandler(async event => {
 		const query = getQuery(event)
 		const search = ((query.search as string) || '').trim()
 		const statusParam = ((query.status as string) || '').trim().toUpperCase()
-		const page = parseInt(query.page as string) || 1
-		const limit = parseInt(query.limit as string) || 10
-		const skip = (page - 1) * limit
+		// Bounded: the TPV/autocomplete ask for up to 1000, nothing needs more
+		const { page, limit, skip } = parsePagination(query)
 
 		const whereClause: Prisma.UserWhereInput = { role: 'CLIENT' }
 		if (statusParam === 'ON' || statusParam === 'OFF') {

@@ -4,6 +4,8 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { mkdir } from 'fs/promises'
 import { join } from 'path'
+import { assertDestructiveAllowed, resolveSeedPassword } from './seed-safety'
+import { randomBytes } from 'node:crypto'
 
 // --- Extended Data Lists ---
 const namesMale = [
@@ -70,6 +72,7 @@ function getRandomNumber(min: number, max: number): string {
 }
 
 async function seedDB() {
+	assertDestructiveAllowed(process.env, 'seed')
 	try {
 		console.log('🧹 Cleaning up existing data...')
 		const tables = [
@@ -111,8 +114,12 @@ async function seedDB() {
 		}
 
 		console.log('👤 Seeding Users...')
-		const defaultPassword = 'password123'
-		const hashedPassword = await bcrypt.hash(defaultPassword, 10)
+		// Staff/admin password from SEED_ADMIN_PASSWORD or random (printed once); never a shared default
+		const { password: seedPassword, generated } = resolveSeedPassword(process.env)
+		const hashedPassword = await bcrypt.hash(seedPassword, 12)
+		// Seeded clients can't log in (login is staff-only); give them an unusable password
+		const clientPasswordHash = await bcrypt.hash(randomBytes(32).toString('base64url'), 12)
+		if (generated) console.log(`🔑 Contraseña generada para admin y staff: ${seedPassword} (guárdala ahora; no se vuelve a mostrar)`)
 
 		const usersData = []
 		
@@ -168,7 +175,7 @@ async function seedDB() {
 			const surname = getRandomItem(surnames)
 			usersData.push(UserSchema.parse({
 				email: `cliente${i}@example.com`,
-				password: hashedPassword,
+				password: clientPasswordHash,
 				name,
 				surname,
 				phone: `+34${getRandomNumber(600000000, 699999999)}`,

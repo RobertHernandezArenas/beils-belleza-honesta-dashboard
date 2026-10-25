@@ -1,8 +1,10 @@
 import 'dotenv/config'
 import { prisma } from '../server/utils/prisma'
 import { execSync } from 'child_process'
+import { assertDestructiveAllowed } from './seed-safety'
 
 async function resetDB() {
+  assertDestructiveAllowed(process.env, 'db:reset-empty')
   try {
     console.log('🔄 Sincronizando esquema con la base de datos (prisma db push)...')
     // Esto asegura que todas las tablas existan según schema.prisma sin crear migraciones de historia
