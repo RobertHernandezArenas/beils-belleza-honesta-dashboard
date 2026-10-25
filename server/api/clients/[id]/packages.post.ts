@@ -1,4 +1,5 @@
 import { prisma } from '../../../utils/prisma'
+import { parsePackageAssignment, resolveExpiryDate } from '../../../utils/package-validation'
 
 export default defineEventHandler(async (event) => {
 	try {
@@ -7,11 +8,12 @@ export default defineEventHandler(async (event) => {
 			throw createError({ statusCode: 400, statusMessage: 'Client ID required' })
 		}
 
-		const body = await readBody(event)
-		const { package_id, expiry_months, expiry_date, custom_price, total_sessions } = body
+		const input = parsePackageAssignment(await readBody(event))
+		const { package_id, total_sessions } = input
 
-		if (!package_id) {
-			throw createError({ statusCode: 400, statusMessage: 'package_id is required' })
+		const client = await prisma.user.findFirst({ where: { user_id: clientId, role: 'CLIENT' }, select: { user_id: true } })
+		if (!client) {
+			throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado' })
 		}
 
 		const catalogPkg = await prisma.package.findUnique({
@@ -23,30 +25,14 @@ export default defineEventHandler(async (event) => {
 			throw createError({ statusCode: 404, statusMessage: 'Paquete de catálogo no encontrado' })
 		}
 
-		let finalExpiryDate: Date | null = null
-		if (expiry_date) {
-			finalExpiryDate = new Date(expiry_date)
-		} else if (expiry_months !== undefined && expiry_months !== null && Number(expiry_months) > 0) {
-			finalExpiryDate = new Date()
-			finalExpiryDate.setMonth(finalExpiryDate.getMonth() + Number(expiry_months))
-		} else if (expiry_months === 0 || expiry_months === null) {
-			finalExpiryDate = null
-		} else {
-			finalExpiryDate = new Date()
-			finalExpiryDate.setMonth(finalExpiryDate.getMonth() + 6)
-		}
+		const finalExpiryDate = resolveExpiryDate(input)
 
 		const defaultTotalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items && catalogPkg.items.length > 0
 			? catalogPkg.items.filter(it => it.item_type === 'SERVICE').reduce((sum, it) => sum + (it.quantity || 0), 0)
 			: catalogPkg.total_sessions
 
-		const finalTotalSessions = (total_sessions !== undefined && total_sessions !== null && Number(total_sessions) >= 0)
-			? Number(total_sessions)
-			: defaultTotalServiceSessions
-
-		const parsedCustomPrice = (custom_price !== undefined && custom_price !== null && custom_price !== '')
-			? Number(custom_price)
-			: null
+		const finalTotalSessions = total_sessions ?? defaultTotalServiceSessions
+		const parsedCustomPrice = input.custom_price ?? null
 
 		const clientPkg = await prisma.$transaction(async (tx) => {
 			const cp = await tx.clientPackage.create({
@@ -85,9 +71,10 @@ export default defineEventHandler(async (event) => {
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error
+		console.error('Error assigning client package:', error)
 		throw createError({
 			statusCode: 500,
-			statusMessage: error.message || 'Error al asignar paquete al cliente'
+			statusMessage: 'Error al asignar paquete al cliente'
 		})
 	}
 })

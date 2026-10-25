@@ -1,5 +1,5 @@
-import type { IncomingLineItem } from '~~/shared/types/line-item'
 import { prisma } from '../../utils/prisma'
+import { parseCatalogPackage, catalogPackageSessions } from '../../utils/package-validation'
 
 export default defineEventHandler(async (event) => {
 	const method = event.node.req.method
@@ -19,15 +19,12 @@ export default defineEventHandler(async (event) => {
 	}
 
 	if (method === 'PUT') {
-		const body = await readBody(event)
-		const { name, description, type, price, total_sessions, service_id, items } = body
-
-		const calculatedSessions = type === 'MIXTO' && Array.isArray(items)
-			? items.filter((it: IncomingLineItem) => (it.item_type || 'SERVICE') === 'SERVICE').reduce((sum: number, it: IncomingLineItem) => sum + Number(it.quantity || 0), 0)
-			: Number(total_sessions || 1)
+		const input = parseCatalogPackage(await readBody(event))
+		const { name, description, type, price, service_id, items } = input
+		const calculatedSessions = catalogPackageSessions(input)
 
 		const updated = await prisma.$transaction(async (tx) => {
-			if (items && Array.isArray(items)) {
+			if (items) {
 				await tx.packageItem.deleteMany({
 					where: { package_id: id }
 				})
@@ -38,19 +35,11 @@ export default defineEventHandler(async (event) => {
 				data: {
 					name,
 					description,
-					type: type || 'INDIVIDUAL',
-					price: Number(price),
+					type,
+					price,
 					total_sessions: calculatedSessions,
-					service_id: service_id || null,
-					items: items && Array.isArray(items) ? {
-						create: items.map((it: IncomingLineItem) => ({
-							item_type: it.item_type || 'SERVICE',
-							item_id: it.item_id,
-							name: it.name,
-							quantity: Number(it.quantity || 1),
-							duration: Number(it.duration || 30)
-						}))
-					} : undefined
+					service_id,
+					items: items ? { create: items } : undefined
 				},
 				include: { items: true }
 			})

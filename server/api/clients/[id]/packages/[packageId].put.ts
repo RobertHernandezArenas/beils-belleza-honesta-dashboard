@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../../utils/prisma'
+import { parseClientPackageUpdate } from '../../../../utils/package-validation'
 
 export default defineEventHandler(async (event) => {
 	try {
@@ -10,8 +11,7 @@ export default defineEventHandler(async (event) => {
 			throw createError({ statusCode: 400, statusMessage: 'Client ID and Package ID required' })
 		}
 
-		const body = await readBody(event)
-		const { total_sessions, remaining_sessions, expiry_date, custom_price, status, items } = body
+		const { total_sessions, remaining_sessions, expiry_date, custom_price, status, items } = parseClientPackageUpdate(await readBody(event))
 
 		const existing = await prisma.clientPackage.findFirst({
 			where: {
@@ -27,25 +27,19 @@ export default defineEventHandler(async (event) => {
 
 		const updateData: Prisma.ClientPackageUpdateInput = {}
 
-		if (total_sessions !== undefined && total_sessions !== null) {
-			updateData.total_sessions = Math.max(0, Number(total_sessions))
+		if (total_sessions != null) updateData.total_sessions = total_sessions
+		if (remaining_sessions != null) updateData.remaining_sessions = remaining_sessions
+
+		// The balance can't exceed the total, also when only one of them changes
+		const nextTotal = total_sessions ?? existing.total_sessions
+		const nextRemaining = remaining_sessions ?? existing.remaining_sessions
+		if (nextRemaining > nextTotal) {
+			throw createError({ statusCode: 400, statusMessage: 'Las sesiones restantes no pueden superar el total' })
 		}
 
-		if (remaining_sessions !== undefined && remaining_sessions !== null) {
-			updateData.remaining_sessions = Math.max(0, Number(remaining_sessions))
-		}
-
-		if (custom_price !== undefined) {
-			updateData.custom_price = (custom_price !== null && custom_price !== '') ? Number(custom_price) : null
-		}
-
-		if (expiry_date !== undefined) {
-			updateData.expiry_date = expiry_date ? new Date(expiry_date) : null
-		}
-
-		if (status !== undefined) {
-			updateData.status = String(status).toUpperCase()
-		}
+		if (custom_price !== undefined) updateData.custom_price = custom_price
+		if (expiry_date !== undefined) updateData.expiry_date = expiry_date ? new Date(expiry_date) : null
+		if (status !== undefined) updateData.status = status
 
 		const updated = await prisma.$transaction(async (tx) => {
 			if (Object.keys(updateData).length > 0) {
@@ -55,17 +49,17 @@ export default defineEventHandler(async (event) => {
 				})
 			}
 
-			if (Array.isArray(items)) {
-				for (const it of items) {
-					if (it.client_package_item_id) {
-						await tx.clientPackageItem.update({
-							where: { client_package_item_id: it.client_package_item_id },
-							data: {
-								...(it.quantity_total !== undefined ? { quantity_total: Number(it.quantity_total) } : {}),
-								...(it.quantity_remaining !== undefined ? { quantity_remaining: Number(it.quantity_remaining) } : {})
-							}
-						})
+			for (const it of items ?? []) {
+				// Scoped to this bono: an item id from another client's bono updates nothing (IDOR)
+				const { count } = await tx.clientPackageItem.updateMany({
+					where: { client_package_item_id: it.client_package_item_id, client_package_id: packageId },
+					data: {
+						...(it.quantity_total !== undefined ? { quantity_total: it.quantity_total } : {}),
+						...(it.quantity_remaining !== undefined ? { quantity_remaining: it.quantity_remaining } : {})
 					}
+				})
+				if (count === 0) {
+					throw createError({ statusCode: 400, statusMessage: 'El servicio indicado no pertenece a este bono' })
 				}
 			}
 
@@ -82,7 +76,7 @@ export default defineEventHandler(async (event) => {
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,
-			statusMessage: error.message || 'Error al actualizar el bono'
+			statusMessage: 'Error al actualizar el bono'
 		})
 	}
 })
