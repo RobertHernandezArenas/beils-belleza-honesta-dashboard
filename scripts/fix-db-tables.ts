@@ -89,6 +89,16 @@ async function checkAndFix() {
             console.log('✅ Login lockout columns already exist.');
         }
 
+        // Check users.token_version (bumped to revoke all sessions of a user)
+        const tokenVersionCol = await conn.query("SHOW COLUMNS FROM users LIKE 'token_version'");
+        if (tokenVersionCol.length === 0) {
+            console.log('Column users.token_version is missing. Adding...');
+            await conn.query('ALTER TABLE users ADD COLUMN token_version INT NOT NULL DEFAULT 0');
+            console.log('✅ Column users.token_version added successfully.');
+        } else {
+            console.log('✅ Column users.token_version already exists.');
+        }
+
         // Check client_package_shares table (bonos shared with other clients)
         if (!tableList.includes('client_package_shares')) {
             console.log('Table client_package_shares is missing. Creating...');

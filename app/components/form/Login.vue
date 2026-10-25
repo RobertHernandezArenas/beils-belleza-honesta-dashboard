@@ -87,7 +87,8 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				method: 'POST',
 				body: credentials,
 			})
-			return data as { user: ClientDTO; token: string }
+			// The session token arrives as an httpOnly cookie, never in the body
+			return data as { user: ClientDTO }
 		} catch (err) {
 			const e = err as FetchError
 			const errorMessage = e.response?._data?.statusMessage || e.message || t('auth.login.error')
@@ -104,7 +105,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 			} else {
 				localStorage.removeItem('beils_remember_email')
 			}
-			authStore.setAuth(data.user, data.token)
+			authStore.setAuth(data.user)
 			router.push('/overview') // Redirigir al dashboard
 		},
 	})

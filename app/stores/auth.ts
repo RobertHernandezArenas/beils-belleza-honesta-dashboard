@@ -1,43 +1,32 @@
 import { defineStore } from 'pinia'
-import { useCookie } from '#imports'
 import type { ClientDTO } from '~~/shared/types/domain'
 
+/**
+ * The session token lives in an httpOnly cookie set by the server, so it's never readable
+ * here (nor by any injected script). The session is whatever /api/auth/me says it is.
+ */
 export const useAuthStore = defineStore('auth', () => {
 	const user = ref<ClientDTO | null>(null)
-	const token = useCookie('auth_token', {
-		maxAge: 60 * 60 * 24, // 1 day
-		path: '/',
-		sameSite: 'lax',
-		secure: process.env.NODE_ENV === 'production',
-	})
+	// Forwards the incoming request's cookies during SSR; a plain $fetch in the browser
+	const requestFetch = useRequestFetch()
 
-	const isAuthenticated = computed(() => !!token.value && !!user.value)
+	const isAuthenticated = computed(() => !!user.value)
 
-	function setAuth(userData: ClientDTO, tokenData: string) {
+	function setAuth(userData: ClientDTO) {
 		user.value = userData
-		token.value = tokenData
 	}
 
 	function clearAuth() {
 		user.value = null
-		token.value = null
 	}
 
 	async function fetchUser() {
-		if (!token.value) return false
-
 		try {
-			const data = await $fetch<{ user: ClientDTO }>('/api/auth/me', {
-				headers: {
-					Authorization: `Bearer ${token.value}`,
-				},
-			})
-
-			if (!data || !data.user) {
+			const data = await requestFetch<{ user: ClientDTO }>('/api/auth/me')
+			if (!data?.user) {
 				clearAuth()
 				return false
 			}
-
 			user.value = data.user
 			return true
 		} catch {
@@ -46,12 +35,21 @@ export const useAuthStore = defineStore('auth', () => {
 		}
 	}
 
+	/** Server-side logout: the httpOnly cookie can only be cleared by the server */
+	async function logout() {
+		try {
+			await $fetch('/api/auth/logout', { method: 'POST' })
+		} finally {
+			clearAuth()
+		}
+	}
+
 	return {
 		user,
-		token,
 		isAuthenticated,
 		setAuth,
 		clearAuth,
 		fetchUser,
+		logout,
 	}
 })

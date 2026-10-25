@@ -9,6 +9,8 @@ export interface JwtPayload {
 	userId: string
 	email: string
 	role: string
+	/** token version: must match users.token_version (missing on tokens issued before versioning) */
+	tv?: number
 }
 
 export const signToken = (payload: object, expiresIn: string | number = '24h') => {

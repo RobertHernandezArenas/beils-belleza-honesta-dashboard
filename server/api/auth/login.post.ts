@@ -4,6 +4,7 @@ import { prisma } from '../../utils/prisma'
 import { signToken } from '../../utils/jwt'
 import { loginOutcome, unusablePasswordSeed, STAFF_ROLES } from '../../utils/login-policy'
 import { isLocked, lockDurationMinutes, lockedMessage } from '../../utils/login-lockout'
+import { SESSION_COOKIE, sessionCookieOptions } from '../../utils/session-policy'
 
 const loginSchema = z.object({
 	email: z.string().email().max(50),
@@ -73,14 +74,16 @@ export default defineEventHandler(async event => {
 		}
 
 		// Generar Token
-		const token = signToken({ userId: user!.user_id, email: user!.email, role: user!.role })
+		const token = signToken({ userId: user!.user_id, email: user!.email, role: user!.role, tv: user!.token_version })
+
+		// httpOnly cookie set by the server: JavaScript (and any XSS) can't read the token
+		setCookie(event, SESSION_COOKIE, token, sessionCookieOptions())
 
 		// Retornar datos (sin password ni refresh token)
-		const { password: _, refresh_token: __, failed_login_count: ___, locked_until: ____, ...userData } = user!
+		const { password: _, refresh_token: __, failed_login_count: ___, locked_until: ____, token_version: _____, ...userData } = user!
 
 		return {
 			user: userData,
-			token,
 		}
 	} catch (rawError) {
 		const error = toApiError(rawError)

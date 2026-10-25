@@ -180,8 +180,8 @@
 	const authStore = useAuthStore()
 	const router = useRouter()
 
-	const handleLogout = () => {
-		authStore.clearAuth()
+	const handleLogout = async () => {
+		await authStore.logout()
 		router.push('/')
 	}
 

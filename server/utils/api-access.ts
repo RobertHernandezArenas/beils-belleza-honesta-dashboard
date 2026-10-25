@@ -2,7 +2,7 @@ import { STAFF_ROLES } from './login-policy'
 
 /** API routes reachable without a session. Exact paths only: a prefix match would make
  *  any future route starting with the same text public by accident. */
-const PUBLIC_API_ROUTES = new Set(['/api/auth/login'])
+const PUBLIC_API_ROUTES = new Set(['/api/auth/login', '/api/auth/logout'])
 
 const normalizePath = (path: string) => {
 	const withoutQuery = path.split('?')[0] || ''

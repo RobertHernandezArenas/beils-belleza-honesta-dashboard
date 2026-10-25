@@ -1,10 +1,12 @@
 import { verifyToken } from '../utils/jwt'
 import { isPublicApiRoute, canRoleUseApi, canRoleAccessPath } from '../utils/api-access'
+import { checkSession, SESSION_COOKIE } from '../utils/session-policy'
+import { loadSessionUser } from '../utils/session-store'
 
 // Protected routes prefix
 const PROTECTED_PREFIX = '/api/'
 
-export default defineEventHandler(event => {
+export default defineEventHandler(async event => {
 	const path = event.path || ''
 
 	// Check if the route is an API route and not in the public list
@@ -28,7 +30,7 @@ export default defineEventHandler(event => {
 
 	// If no header token, try extracting from the cookie
 	if (!token) {
-		token = getCookie(event, 'auth_token') || ''
+		token = getCookie(event, SESSION_COOKIE) || ''
 	}
 
 	if (!token) {
@@ -45,6 +47,17 @@ export default defineEventHandler(event => {
 			statusMessage: 'Unauthorized: Session expired or invalid token',
 		})
 	}
+
+	// Revocation: the token version must match the user's, and the user must still be active staff.
+	// The role used from here on is the current one in the DB, not the one frozen in the token.
+	const session = checkSession(decoded, await loadSessionUser(decoded.userId))
+	if (!session.ok) {
+		throw createError({
+			statusCode: 401,
+			statusMessage: 'Unauthorized: Session expired or revoked',
+		})
+	}
+	decoded.role = session.role
 
 	// Staff-only API: reject client (or unknown) roles everywhere, before any handler runs
 	if (!canRoleUseApi(decoded.role)) {

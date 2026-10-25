@@ -30,6 +30,7 @@ model User {
   refresh_token   String?         @db.Text
   failed_login_count        Int                  @default(0)
   locked_until              DateTime?
+  token_version             Int                  @default(0)
   created_at      DateTime        @default(now())
   updated_at      DateTime        @updatedAt
   client_bookings Booking[]       @relation("ClientBookings")
