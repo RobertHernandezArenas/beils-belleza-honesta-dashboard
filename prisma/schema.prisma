@@ -28,6 +28,8 @@ model User {
   document_number String          @db.VarChar(20)
   annotations     String?         @db.Text
   refresh_token   String?         @db.Text
+  failed_login_count        Int                  @default(0)
+  locked_until              DateTime?
   created_at      DateTime        @default(now())
   updated_at      DateTime        @updatedAt
   client_bookings Booking[]       @relation("ClientBookings")

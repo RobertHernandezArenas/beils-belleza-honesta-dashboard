@@ -2,7 +2,8 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '../../utils/prisma'
 import { signToken } from '../../utils/jwt'
-import { loginOutcome, unusablePasswordSeed } from '../../utils/login-policy'
+import { loginOutcome, unusablePasswordSeed, STAFF_ROLES } from '../../utils/login-policy'
+import { isLocked, lockDurationMinutes, lockedMessage } from '../../utils/login-lockout'
 
 const loginSchema = z.object({
 	email: z.string().email().max(50),
@@ -32,18 +33,50 @@ export default defineEventHandler(async event => {
 			where: { email },
 		})
 
+		const isStaffAccount = !!user && (STAFF_ROLES as readonly string[]).includes(user.role)
+
+		// Locked accounts are refused before the password is even checked (the right one too)
+		if (isStaffAccount && isLocked(user!.locked_until)) {
+			throw createError({ statusCode: 423, statusMessage: lockedMessage(user!.locked_until!) })
+		}
+
 		// Always run bcrypt, then decide: unknown email, wrong password and client accounts look identical
 		const passwordValid = await bcrypt.compare(password, user?.password ?? DUMMY_HASH)
+
+		// Count failures atomically on staff accounts; the 3rd one locks the account
+		if (isStaffAccount && !passwordValid) {
+			const { failed_login_count } = await prisma.user.update({
+				where: { user_id: user!.user_id },
+				data: { failed_login_count: { increment: 1 } },
+				select: { failed_login_count: true },
+			})
+			const lockMinutes = lockDurationMinutes(failed_login_count)
+			if (lockMinutes > 0) {
+				const lockedUntil = new Date(Date.now() + lockMinutes * 60_000)
+				await prisma.user.update({ where: { user_id: user!.user_id }, data: { locked_until: lockedUntil } })
+				console.warn(`[LOGIN] Account locked for ${lockMinutes} min after ${failed_login_count} failed attempts: ${user!.user_id}`)
+				throw createError({ statusCode: 423, statusMessage: lockedMessage(lockedUntil) })
+			}
+		}
+
 		const outcome = loginOutcome({ user, passwordValid })
 		if (!outcome.ok) {
 			throw createError({ statusCode: outcome.statusCode, statusMessage: outcome.message })
+		}
+
+		// Successful login clears any failed-attempt history
+		if (user!.failed_login_count > 0 || user!.locked_until) {
+			await prisma.user.update({
+				where: { user_id: user!.user_id },
+				data: { failed_login_count: 0, locked_until: null },
+			})
 		}
 
 		// Generar Token
 		const token = signToken({ userId: user!.user_id, email: user!.email, role: user!.role })
 
 		// Retornar datos (sin password ni refresh token)
-		const { password: _, refresh_token: __, ...userData } = user!
+		const { password: _, refresh_token: __, failed_login_count: ___, locked_until: ____, ...userData } = user!
 
 		return {
 			user: userData,

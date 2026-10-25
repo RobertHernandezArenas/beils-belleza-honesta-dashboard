@@ -22,7 +22,8 @@
 				:items-per-page="itemsPerPage"
 				@edit="userForm?.showModal?.($event)"
 				@delete="openDeleteModal"
-				@toggle-status="toggleUserStatus" />
+				@toggle-status="toggleUserStatus"
+				@unlock="unlockUser" />
 		</div>
 
 		<!-- Modales -->
@@ -212,6 +213,18 @@
 		const newStatus = user.status === 'ON' ? 'OFF' : 'ON'
 		updateStatus({ id: user.user_id, status: newStatus })
 	}
+
+	// Clears a lockout after 3 failed logins
+	const { mutate: unlockUser } = useMutation({
+		mutationFn: (user: ClientDTO) => $fetch(`/api/users/${user.user_id}/unlock`, { method: 'POST' }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['users'] })
+			handleToast({ message: 'Acceso desbloqueado', type: 'success' })
+		},
+		onError: (error: FetchError) => {
+			handleToast({ message: error.data?.statusMessage || 'Error al desbloquear el acceso', type: 'error' })
+		},
+	})
 </script>
 
 <style scoped>

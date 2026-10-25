@@ -84,9 +84,25 @@
 									"/>
 								{{ $t('users.constants.status.' + user.status) }}
 							</div>
+							<div
+								v-if="isLocked(user)"
+								class="badge badge-sm mt-1.5 gap-1 rounded-full border-none bg-error/10 text-[10px] font-bold uppercase text-error">
+								<Lock class="size-3" />
+								Bloqueado
+							</div>
 						</td>
 						<td class="px-6 py-4 text-right">
 							<div class="flex items-center justify-end gap-2">
+								<!-- Desbloquear (tras 3 intentos fallidos de login) -->
+								<div v-if="isLocked(user)" class="tooltip tooltip-left" data-tip="Desbloquear acceso">
+									<button
+										class="btn btn-circle btn-sm btn-ghost hover:bg-error/10"
+										aria-label="Desbloquear acceso"
+										@click.stop="$emit('unlock', user)">
+										<LockOpen class="size-4 text-error" />
+									</button>
+								</div>
+
 								<!-- Toggle Activar/Desactivar -->
 								<div
 									class="tooltip tooltip-left"
@@ -169,7 +185,7 @@
 
 <script setup lang="ts">
 import type { ClientDTO } from '~~/shared/types/domain'
-	import { ShieldCheck, User, Contact, ToggleLeft, ToggleRight, Pencil, Trash2, Users } from 'lucide-vue-next'
+	import { ShieldCheck, User, Contact, ToggleLeft, ToggleRight, Pencil, Trash2, Users, Lock, LockOpen } from 'lucide-vue-next'
 
 	defineProps<{
 		users: ClientDTO[]
@@ -179,5 +195,8 @@ import type { ClientDTO } from '~~/shared/types/domain'
 		currentPage: number
 	}>()
 
-	defineEmits(['edit', 'delete', 'toggle-status', 'update:currentPage'])
+	defineEmits(['edit', 'delete', 'toggle-status', 'unlock', 'update:currentPage'])
+
+	// Locked after 3 failed logins (see server/utils/login-lockout)
+	const isLocked = (user: ClientDTO) => !!user.locked_until && new Date(user.locked_until) > new Date()
 </script>

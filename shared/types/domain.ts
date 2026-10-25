@@ -19,6 +19,8 @@ export interface ClientDTO {
 	date_of_birth?: string
 	role: string
 	status: string
+	// Set while the account is locked after repeated failed logins
+	locked_until?: string | null
 	avatar?: string
 	document_type?: string
 	document_number?: string

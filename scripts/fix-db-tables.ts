@@ -79,6 +79,16 @@ async function checkAndFix() {
             console.log('✅ Table client_package_items already exists.');
         }
 
+        // Check users login lockout columns (3 failed attempts -> temporary lock)
+        const lockoutCols = await conn.query("SHOW COLUMNS FROM users LIKE 'failed_login_count'");
+        if (lockoutCols.length === 0) {
+            console.log('Login lockout columns are missing. Adding...');
+            await conn.query('ALTER TABLE users ADD COLUMN failed_login_count INT NOT NULL DEFAULT 0, ADD COLUMN locked_until DATETIME(3) NULL');
+            console.log('✅ Columns users.failed_login_count / users.locked_until added successfully.');
+        } else {
+            console.log('✅ Login lockout columns already exist.');
+        }
+
         // Check client_package_shares table (bonos shared with other clients)
         if (!tableList.includes('client_package_shares')) {
             console.log('Table client_package_shares is missing. Creating...');

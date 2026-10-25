@@ -26,6 +26,7 @@ export default defineEventHandler(async event => {
 				document_type: true,
 				document_number: true,
 				avatar: true,
+				locked_until: true,
 			},
 		})
 		// Mask documents and return
