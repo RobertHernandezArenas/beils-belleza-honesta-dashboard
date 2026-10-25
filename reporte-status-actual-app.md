@@ -131,7 +131,7 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 - Impacto: cualquier cuenta logueada escribe archivos `.html`, `.svg` o `.js` fuera de la carpeta prevista. Eso habilita XSS almacenado, que además puede robar el token (ver J3).
 - Solución: lista blanca para `category` y `type`; detectar el tipo real por *magic bytes*; aceptar solo jpg, png, webp y pdf; re-codificar las imágenes con sharp; guardar fuera de `public/` y servir los archivos por un endpoint autenticado.
 
-**F1 — Las facturas emitidas se pueden editar, antedatar y borrar**
+**⚠️ RIESGO ACEPTADO (decisión del responsable, 25/10/2026) — F1 — Las facturas emitidas se pueden editar, antedatar y borrar.** Se decidió mantener los tickets facturados editables. Esto no cumple la inmutabilidad que exige Verifactu. Si pasa a ser obligatorio para el negocio, la alternativa es bloquear la edición y agregar facturas rectificativas (R1/R5).
 - Evidencia: `sales/carts/[id].ts:47-50` solo registra un log si la factura ya fue enviada (`submitted`). `:58-60` reescribe las líneas, `:186` acepta cualquier estado, `:195-196` permite cambiar `created_at` y `:233-236` borra sin restricción. `clients/[id].delete.ts:25` borra las facturas de la clienta.
 - Impacto: incumple la inmutabilidad exigida por Verifactu (RD 1007/2023): la numeración queda con huecos y los importes dejan de coincidir con el hash.
 - Solución: con `invoice_number` asignado, rechazar PUT, DELETE y cambios de fecha; corregir con facturas rectificativas (R1–R5); al borrar una clienta, **anonimizarla** en lugar de eliminar su historial fiscal.
