@@ -1,15 +1,5 @@
+import { parseServiceCreate } from '../../utils/catalog-validation'
 import type { Prisma } from '@prisma/client'
-
-import { z } from 'zod'
-
-const serviceSchema = z.object({
-	name: z.string().min(2, 'El nombre es obligatorio'),
-	description: z.string().optional(),
-	code: z.string().optional(),
-	price: z.number().min(0, 'El precio no puede ser negativo'),
-	duration: z.number().int().positive('La duración debe ser un número positivo'),
-	status: z.enum(['activo', 'inactivo']).default('activo'),
-})
 
 async function generateNextServiceCode(): Promise<string> {
 	const services = await prisma.service.findMany({
@@ -76,10 +66,10 @@ export default defineEventHandler(async event => {
 
 	if (method === 'POST') {
 		try {
-			const body = await readBody(event)
-			const parsedData = serviceSchema.parse(body)
+			// Shared schema (also validates tax_rate, which used to be dropped on create)
+			const parsedData = parseServiceCreate(await readBody(event))
 
-			if (!parsedData.code || parsedData.code.trim() === '') {
+			if (!parsedData.code) {
 				parsedData.code = await generateNextServiceCode()
 			}
 
@@ -89,11 +79,10 @@ export default defineEventHandler(async event => {
 
 			return service
 		} catch (rawError) {
-			const error = toApiError(rawError)
-			if (error instanceof z.ZodError) {
-				throw createError({ statusCode: 400, statusMessage: error.message })
+			if ((rawError as { code?: string }).code === 'P2002') {
+				throw createError({ statusCode: 409, statusMessage: 'Ya existe un servicio con ese código' })
 			}
-			throw error
+			throw rawError
 		}
 	}
 })

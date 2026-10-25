@@ -1,3 +1,5 @@
+import { parseDebtUpdate } from '../../../utils/catalog-validation'
+import { requireAdmin } from '../../../utils/auth'
 import type { Prisma } from '@prisma/client'
 
 
@@ -23,12 +25,20 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'PUT') {
-		const body = await readBody(event)
+		// Adjusting a debt by hand (e.g. writing it off) is an admin decision; payments go through /pay
+		requireAdmin(event)
+		const body = parseDebtUpdate(await readBody(event))
+
+		const current = await prisma.debt.findUnique({ where: { debt_id: id }, select: { amount: true } })
+		if (!current) throw createError({ statusCode: 404, statusMessage: 'Deuda no encontrada' })
 
 		const payload: Prisma.DebtUncheckedUpdateInput = { status: body.status, notes: body.notes }
 
 		if (body.remaining !== undefined) {
-			payload.remaining = Number(Number(body.remaining).toFixed(2))
+			if (body.remaining > current.amount) {
+				throw createError({ statusCode: 400, statusMessage: 'El saldo pendiente no puede superar el importe de la deuda' })
+			}
+			payload.remaining = Number(body.remaining.toFixed(2))
 			if (Number(payload.remaining.toFixed(2)) <= 0) {
 				payload.remaining = 0
 				payload.status = 'paid'
@@ -51,6 +61,7 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'DELETE') {
+		requireAdmin(event)
 		await prisma.debt.delete({ where: { debt_id: id } })
 		return { success: true }
 	}

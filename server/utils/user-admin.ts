@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import { z } from 'zod'
+import { parseOrBadRequest } from './validation'
 
 /**
  * Staff/user administration rules. Schemas are strict allow-lists (no mass assignment of
@@ -64,17 +65,6 @@ const updateSchema = z
 
 /** Masked values (e.g. "****678Z") come back from list endpoints and must not overwrite the real one. */
 const isMaskedDocument = (value: unknown) => typeof value === 'string' && value.includes('*')
-
-function parseOrBadRequest<T extends z.ZodTypeAny>(schema: T, body: unknown): z.infer<T> {
-	const result = schema.safeParse(body ?? {})
-	if (!result.success) {
-		const issue = result.error.issues[0]
-		const message =
-			issue?.code === 'unrecognized_keys' ? `Campo no permitido: ${issue.keys.join(', ')}` : issue?.message || 'Datos inválidos'
-		throw createError({ statusCode: 400, statusMessage: message })
-	}
-	return result.data
-}
 
 export type UserCreateInput = z.infer<typeof createSchema>
 

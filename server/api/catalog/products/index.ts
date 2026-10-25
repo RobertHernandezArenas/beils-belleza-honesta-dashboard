@@ -1,3 +1,4 @@
+import { parseProductCreate } from '../../../utils/catalog-validation'
 import type { Prisma } from '@prisma/client'
 
 
@@ -39,11 +40,15 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'POST') {
-		const body = await readBody(event)
-		const product = await prisma.product.create({
-			data: body,
-		})
-
-		return product
+		// Allow-listed, validated fields only (no mass assignment of ids or timestamps)
+		const data = parseProductCreate(await readBody(event))
+		try {
+			return await prisma.product.create({ data })
+		} catch (rawError) {
+			if ((rawError as { code?: string }).code === 'P2002') {
+				throw createError({ statusCode: 409, statusMessage: 'Ya existe un producto con ese SKU o código de barras' })
+			}
+			throw rawError
+		}
 	}
 })

@@ -1,3 +1,4 @@
+import { parseDebtCreate, resolveDebtAmount } from '../../../utils/catalog-validation'
 import type { Prisma } from '@prisma/client'
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -28,13 +29,24 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'POST') {
-		const body = await readBody(event)
+		const input = parseDebtCreate(await readBody(event))
+
+		// A debt for a ticket is worth what the ticket says, and only for that ticket's client
+		const cart = input.cart_id
+			? await prisma.cart.findUnique({ where: { cart_id: input.cart_id }, select: { user_id: true, total: true } })
+			: null
+		if (input.cart_id && !cart) throw createError({ statusCode: 404, statusMessage: 'Ticket no encontrado' })
+		const amount = resolveDebtAmount({ userId: input.user_id, requestedAmount: input.amount, cart })
 
 		const debt = await prisma.debt.create({
 			data: {
-				...body,
-				remaining: body.amount,
-				due_date: body.due_date ? new Date(body.due_date) : null,
+				user_id: input.user_id,
+				cart_id: input.cart_id ?? null,
+				amount,
+				remaining: amount,
+				status: 'pending',
+				notes: input.notes ?? null,
+				due_date: input.due_date ? new Date(input.due_date) : null,
 			},
 			include: { user: { select: { name: true, surname: true } } },
 		})

@@ -1,3 +1,4 @@
+import { parseServiceUpdate } from '../../utils/catalog-validation'
 
 
 export default defineEventHandler(async event => {
@@ -21,14 +22,15 @@ export default defineEventHandler(async event => {
 	}
 
 	if (method === 'PUT') {
-		const body = await readBody(event)
-
-		const updatedService = await prisma.service.update({
-			where: { service_id: id },
-			data: body,
-		})
-
-		return updatedService
+		const data = parseServiceUpdate(await readBody(event))
+		try {
+			return await prisma.service.update({ where: { service_id: id }, data })
+		} catch (rawError) {
+			const code = (rawError as { code?: string }).code
+			if (code === 'P2002') throw createError({ statusCode: 409, statusMessage: 'Ya existe un servicio con ese código' })
+			if (code === 'P2025') throw createError({ statusCode: 404, statusMessage: 'Service not found' })
+			throw rawError
+		}
 	}
 
 	if (method === 'DELETE') {
