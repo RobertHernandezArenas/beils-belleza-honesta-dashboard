@@ -22,7 +22,13 @@
 
 **Prioridades actuales:**
 
-1. **Configuración de producción** (sin esto, parte de lo corregido no aplica): **Node 22.22.3 o más, 24.15 o más, o 26** en Plesk (Nuxt 4.6 no arranca con Node 20), `JWT_SECRET` de 32 caracteres o más, `TRUSTED_PROXY_HOPS=1`, y `npm run db:fix` en el servidor.
+1. **Configuración de producción** (sin esto, parte de lo corregido no aplica):
+   - **Node 22.22.3 o más, 24.15 o más, o 26** en Plesk (Nuxt 4.6 no arranca con Node 20).
+   - `JWT_SECRET` de 32 caracteres o más.
+   - `TRUSTED_PROXY_HOPS=1`.
+   - `UPLOADS_DIR` apuntando a una carpeta **persistente**, que no se borre al desplegar.
+   - `npm run db:fix` (columnas de bloqueo de login, `token_version` y tabla de bonos compartidos).
+   - `npm run uploads:migrate` (simulación) y, si está todo bien, `npm run uploads:migrate:apply`: saca de `public/` las fotos y las autorizaciones firmadas.
 2. Consentimientos y fotos fuera de `public/` → **U2**
 3. Quitar `@nuxtjs/google-fonts` (envía la IP de cada visitante a Google; `@nuxt/fonts` ya sirve las fuentes desde el propio servidor). Requiere confirmar visualmente la tipografía.
 4. Inmutabilidad de facturas y envío real a la AEAT → **F1, F2** (Fase 3)
@@ -130,7 +136,9 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 - Impacto: incumple la inmutabilidad exigida por Verifactu (RD 1007/2023): la numeración queda con huecos y los importes dejan de coincidir con el hash.
 - Solución: con `invoice_number` asignado, rechazar PUT, DELETE y cambios de fecha; corregir con facturas rectificativas (R1–R5); al borrar una clienta, **anonimizarla** en lugar de eliminar su historial fiscal.
 
-**F2 — El envío a la AEAT se marca como "enviado" aunque no se envía nada**
+**✅ RESUELTO (`d93818c`) — F2 — El envío a la AEAT se marca como "enviado" aunque no se envía nada.** Ahora el estado es `not_configured` si no hay certificado.
+- **Pendiente (datos):** las facturas emitidas **antes** de este cambio quedaron marcadas como `submitted` sin haberse enviado. Hay que corregirlas a `not_configured` (o reenviarlas cuando haya certificado).
+- **Pendiente (Fase 3):** el XML enviado es un esqueleto que solo contiene la huella; falta construir el registro RegistroAlta completo de Verifactu.
 - Evidencia: `server/utils/aeatSoapClient.ts:12-15` devuelve `true` ("mock") si no hay certificado configurado. El `.env` local no tiene `AEAT_P12_CERT_PATH`, y el XML solo contiene `<Huella>`.
 - Impacto: todas las facturas figuran como `submitted` sin haber llegado a Hacienda.
 - Solución: estado `not_configured` o `pending_submission`, fallar cerrado en producción, generar un XML RegistroAlta completo y una cola de reintentos.
@@ -139,18 +147,18 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 
 | ID | Hallazgo | Evidencia | Solución |
 |---|---|---|---|
-| A6 | IDOR al editar los ítems de un bono | `clients/[id]/packages/[packageId].put.ts:60-66` actualiza un ítem por ID sin verificar que pertenezca al bono | `updateMany({ where: { client_package_item_id, client_package_id } })` + valores ≥ 0 |
-| V3 | Números y fechas sin validar (**resuelto en productos, servicios y deudas**; pendiente en paquetes y bonos de clienta) | `packages/index.post.ts:22` (precio negativo o NaN), `clients/[id]/packages.post.ts:28,47`, `sales/debts/[id].ts:30-36` (`remaining` arbitrario) | zod `number().finite().nonnegative()`, `coerce.date()`, enums |
+| ✅ A6 | ~~IDOR al editar los ítems de un bono~~ **Resuelto en `f64ee89`** | `clients/[id]/packages/[packageId].put.ts:60-66` actualiza un ítem por ID sin verificar que pertenezca al bono | `updateMany({ where: { client_package_item_id, client_package_id } })` + valores ≥ 0 |
+| ✅ V3 | ~~Números y fechas sin validar~~ **Resuelto: productos, servicios y deudas (`95a1dda`); paquetes y bonos de clienta (`f64ee89`)** | `packages/index.post.ts:22` (precio negativo o NaN), `clients/[id]/packages.post.ts:28,47`, `sales/debts/[id].ts:30-36` (`remaining` arbitrario) | zod `number().finite().nonnegative()`, `coerce.date()`, enums |
 | ✅ L2 | ~~Enumeración de usuarios~~ **Resuelto en `3ea301f`** | `login.post.ts:31-44`: un email inexistente da 401 inmediato, una cuenta inactiva da 403 **antes** de comprobar la contraseña, y hay `console.log('User not found')` | Comparar siempre con bcrypt (usando un hash ficticio), verificar el estado después de la contraseña y devolver un único 401 genérico |
-| J2 | Los tokens no se pueden revocar | `jwt.ts:12` 24h; el middleware confía en el rol del token sin consultar la base de datos; el logout solo borra la cookie en el cliente | Token de acceso de 15 min + refresh rotativo, o `token_version` comprobado en el middleware |
-| J3 | Cookie de sesión creada por JavaScript (no `httpOnly`) | `app/stores/auth.ts:7-12`; `login.post.ts` devuelve el token en el body | `setCookie` en el servidor con `httpOnly`, `secure` y `sameSite: 'strict'` |
-| U2 | Consentimientos y fotos servidos sin autenticación | Los archivos están en `public/uploads/` y `/uploads/*` no pasa por el middleware | Almacenamiento privado y descarga autenticada |
-| D1 | Errores internos devueltos al navegador | `login.post.ts:73-76` (`data: error`) y `statusMessage: error.message` en muchos handlers | Mensajes genéricos + log en el servidor + hook de errores de Nitro |
-| D2 | Escritura de depuración con datos personales en una ruta local | `agenda/bookings/index.ts:182-192` escribe en `C:/Users/VENOM/.gemini/...` el body y el stack | Eliminar |
+| ✅ J2 | ~~Los tokens no se pueden revocar~~ **Resuelto en `9c4cf47`: `token_version` (caché de 30 s); cambiar rol, estado o contraseña revoca las sesiones** | `jwt.ts:12` 24h; el middleware confía en el rol del token sin consultar la base de datos; el logout solo borra la cookie en el cliente | Token de acceso de 15 min + refresh rotativo, o `token_version` comprobado en el middleware |
+| ✅ J3 | ~~Cookie de sesión creada por JavaScript~~ **Resuelto en `9c4cf47`: cookie `httpOnly; SameSite=Strict` creada por el servidor y logout en el servidor** | `app/stores/auth.ts:7-12`; `login.post.ts` devuelve el token en el body | `setCookie` en el servidor con `httpOnly`, `secure` y `sameSite: 'strict'` |
+| ✅ U2 | ~~Consentimientos y fotos servidos sin autenticación~~ **Resuelto en `8306c88`: almacenamiento privado + `/api/files` solo para personal + script de migración** | Los archivos están en `public/uploads/` y `/uploads/*` no pasa por el middleware | Almacenamiento privado y descarga autenticada |
+| ✅ D1 | ~~Errores internos devueltos al navegador~~ **Resuelto en `6729428`: hook de errores de Nitro (5xx genéricos, detalle solo en el log)** | `login.post.ts:73-76` (`data: error`) y `statusMessage: error.message` en muchos handlers | Mensajes genéricos + log en el servidor + hook de errores de Nitro |
+| ✅ D2 | ~~Escritura de depuración con datos personales~~ **Resuelto en `e0d222c`** | `agenda/bookings/index.ts:182-192` escribe en `C:/Users/VENOM/.gemini/...` el body y el stack | Eliminar |
 | ✅ H1 | ~~Sin cabeceras de seguridad~~ **Resuelto en `eb0de02`; la CSP está en modo Report-Only** | No hay CSP, HSTS, `X-Frame-Options` ni `nosniff` (`nuxt.config.ts`) | `routeRules` con cabeceras, o el módulo `nuxt-security` |
-| S1 | Credenciales por defecto en las semillas | `seeds/admin-seed.ts` y `seed-db.ts` usan `password123`; los usuarios `123456`; las clientas `beils12345` | Contraseñas desde variables de entorno o aleatorias, con cambio obligatorio |
+| ✅ S1 | ~~Credenciales por defecto en las semillas~~ **Resuelto en `aa9bd7b`: `SEED_ADMIN_PASSWORD` o contraseña aleatoria** | `seeds/admin-seed.ts` y `seed-db.ts` usan `password123`; los usuarios `123456`; las clientas `beils12345` | Contraseñas desde variables de entorno o aleatorias, con cambio obligatorio |
 | F3/F4 | Encadenado de hashes con condición de carrera y numeración con huecos | `verifactu.ts:44-53` (`findFirst` fuera de transacción, ordenado por un campo editable); `previous_hash` nunca se guarda | Bloquear la secuencia (`FOR UPDATE`) y asignar número, hash y `previous_hash` en la misma transacción; enviar a la AEAT después del commit |
-| F5 | Pagos de deuda con condición de carrera; ~~deudas editables por cualquiera~~ (**editar y borrar ya es solo ADMIN, `95a1dda`**) | `debts/[id]/pay.post.ts:27-46` (lee y después escribe un valor absoluto); `sales/debts/[id].ts` sin control de rol | Actualización condicionada + `requireAdmin` |
+| ✅ F5 | ~~Pagos de deuda con condición de carrera~~ **Resuelto en `98c0c86` (actualización condicionada, 409 si cambió el saldo)**; editar y borrar es solo ADMIN (`95a1dda`) | `debts/[id]/pay.post.ts:27-46` (lee y después escribe un valor absoluto); `sales/debts/[id].ts` sin control de rol | Actualización condicionada + `requireAdmin` |
 | N1 | **Venta "cubierta por bono" sin bono real** | `sales/carts/index.ts`: si una línea marcada `[SESIÓN BONO]` no encuentra un bono propio usable, la venta sigue igual | Rechazar con 409 o cobrar el precio de catálogo (decisión de negocio pendiente) |
 
 ### 3.4 Bajas
@@ -162,6 +170,8 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 - **X1** — La cookie usa `sameSite: 'lax'` y no se comprueba el `Origin` en las mutaciones.
 - **U3** — El tamaño del archivo se valida después de cargarlo entero en memoria (sigue igual; mitigación: `client_max_body_size 6m` en el nginx de Plesk).
 - **D3** — Hay un ID de clienta real hardcodeado como alias en `clients/[id].get.ts:17` y en la página.
+- ✅ **Campos internos en respuestas** (`bc42bdd`/`27249da`): `toPublicUser` quita `password`, `refresh_token`, `token_version`, `failed_login_count` y `locked_until` en todos los endpoints de usuarios y clientas.
+- ✅ **Booking PUT con `...payload`** (V1 en agenda, `11e3053`): solo campos permitidos y validados.
 - **H2** — DevTools activadas y un host de ngrok permitido. Nunca exponer el servidor de desarrollo.
 - **F6** — Los importes de dinero son `Float`. Pasar a `Decimal(10,2)`.
 - El perfil de la clienta devuelve la columna `refresh_token` (hoy sin uso). Excluirla con `select`.
@@ -200,8 +210,8 @@ Estado original (`pnpm audit --prod`: **275 avisos**, 8 críticos y 109 altos). 
 1. **Migraciones:** `client_packages` y otras tablas no están en `prisma/migrations`; se crearon con `db push` y se reparan con `db:fix`. Conviene generar una migración base (`prisma migrate diff`) para que `migrate deploy` reproduzca la base completa.
 2. **Tests que no prueban el código real:** `tests/client-packages.test.ts` define sus propios helpers dentro del test en vez de importarlos. Los tests nuevos importan los módulos reales; ese patrón debería extenderse.
 3. **Auditoría y RGPD:** no existe un registro de accesos ni de cambios sobre datos de salud y facturas, y los borrados son físicos. Faltan la exportación de datos de la clienta (derecho de acceso) y la anonimización que conserva las facturas.
-4. **Scripts destructivos sin protección:** `db:reset-empty` y `db:push` no verifican `NODE_ENV`. No hay copias de seguridad automatizadas en el repo.
-5. **Reportes y listados sin límites:** `reports/index.ts` carga todas las ventas dos veces, y `clients/index.get.ts` acepta un `limit` sin tope.
+4. **Scripts destructivos:** ✅ `db:reset-empty` y `seed` se niegan a correr en producción o contra una base remota (`aa9bd7b`). Sigue pendiente `db:push` (es un comando de Prisma, sin envoltorio) y no hay copias de seguridad automatizadas en el repo. **Además, `npm run seed` ya estaba roto antes de estos cambios** (error de sintaxis en `seeds/seed-db.ts` cerca de la línea 455).
+5. **Reportes y listados sin límites:** ✅ `clients/index.get.ts` acota el `limit` a 1000 (`aa9bd7b`). Pendiente: `reports/index.ts` carga todas las ventas dos veces.
 6. **Datos fiscales ficticios:** NIF `00000000T` por defecto y `CIF: B12345678` escrito en los tickets impresos.
 7. **Desglose de consumo de bonos:** quedó fuera del alcance de "compartir". Requiere registrar cada consumo (tabla `client_package_usage`), lo que también serviría como auditoría.
 
@@ -214,9 +224,9 @@ Estado original (`pnpm audit --prod`: **275 avisos**, 8 críticos y 109 altos). 
 | ✅ **1 — Completada (25/10/2026)** | C1, C2, C3, C4, J1, J4, A5 (+ A7, J5, L2 de paso) · commits `3b21335`…`d9f9dbb` | Hecho |
 | ✅ **2 — Completada (25/10/2026)** salvo U2 y dependencias | U1, L1, V1, V2, H1 (CSP Report-Only), rate limit tras el proxy · `c494d69`…`eb0de02` | Hecho |
 | ✅ **2b — Dependencias (25/10/2026)** | Migración a Node 26, actualizaciones dentro de cada mayor, overrides y limpieza de dependencias sin uso · `3d7e420` | Hecho |
-| **2c — Pendiente** | U2 (mover subidas fuera de `public/` y migrar los archivos del servidor) | 1 día |
+| ✅ **2c — Completada (25/10/2026)** | D1, D2, A6, V1 (agenda), V3, F2, F5, O3, O4, S1, U2, J2, J3 y campos internos en respuestas · `e0d222c`…`bc42bdd` | Hecho |
 | **3 — Fiscal** | F1–F5, N1, Decimal para dinero | 3–5 días |
-| **4 — Madurez** | J2, J3, registro de auditoría, RGPD (exportar y anonimizar), migración base, backups | continuo |
+| **4 — Madurez** | Registro de auditoría, RGPD (exportar y anonimizar), migración base, backups, permisos ADMIN/STAFF por recurso | continuo |
 
 Cada corrección debería empezar con un test que reproduzca la brecha (rojo), igual que en la corrección de bonos de esta sesión.
 
