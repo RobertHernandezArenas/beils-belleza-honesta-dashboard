@@ -42,14 +42,13 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 	})
 
 	onMounted(() => {
+		// "Remember me" only remembers the email. Passwords are never stored by the app (the
+		// browser's password manager handles that); purge any password saved by older versions.
+		localStorage.removeItem('beils_remember_password')
 		const savedEmail = localStorage.getItem('beils_remember_email')
-		const savedPassword = localStorage.getItem('beils_remember_password')
 		if (savedEmail) {
 			form.email = savedEmail
 			form.rememberMe = true
-			if (savedPassword) {
-				form.password = atob(savedPassword)
-			}
 		}
 
 		// GSAP entrance animation timeline
@@ -102,10 +101,8 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 		onSuccess: data => {
 			if (form.rememberMe) {
 				localStorage.setItem('beils_remember_email', form.email)
-				localStorage.setItem('beils_remember_password', btoa(form.password))
 			} else {
 				localStorage.removeItem('beils_remember_email')
-				localStorage.removeItem('beils_remember_password')
 			}
 			authStore.setAuth(data.user, data.token)
 			router.push('/overview') // Redirigir al dashboard
