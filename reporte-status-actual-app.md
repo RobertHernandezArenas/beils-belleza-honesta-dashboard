@@ -30,7 +30,7 @@
    - `npm run db:fix` (columnas de bloqueo de login, `token_version` y tabla de bonos compartidos).
    - `npm run uploads:migrate` (simulación) y, si está todo bien, `npm run uploads:migrate:apply`: saca de `public/` las fotos y las autorizaciones firmadas.
 2. Consentimientos y fotos fuera de `public/` → **U2**
-3. Quitar `@nuxtjs/google-fonts` (envía la IP de cada visitante a Google; `@nuxt/fonts` ya sirve las fuentes desde el propio servidor). Requiere confirmar visualmente la tipografía.
+3. ✅ ~~Quitar `@nuxtjs/google-fonts`~~ **Resuelto en `eb85240`:** Mulish se descarga al compilar y se sirve desde `/_fonts`. El navegador ya no contacta con Google, y la CSP dejó de permitir sus dominios. Falta confirmar visualmente la tipografía.
 4. Inmutabilidad de facturas y envío real a la AEAT → **F1, F2** (Fase 3)
 5. Activar la CSP en modo estricto tras revisar la consola del navegador (`CSP_ENFORCE=true`)
 
@@ -188,7 +188,7 @@ Formato: **evidencia** (archivo:línea) → **impacto** → **solución**.
 > - **Pendiente:**
 >   - `node-forge` (alto): no tiene versión parcheada; entra por las herramientas de desarrollo de Nuxt.
 >   - Las actualizaciones de **versión mayor** (Pinia 4, vue-router 5, TypeScript 7, Vite 8, @vueuse 15, lucide 1.0), que conviene hacer de a una.
->   - Los dos módulos de fuentes, que se solapan.
+>   - ✅ ~~Los dos módulos de fuentes, que se solapan~~ **Resuelto en `eb85240`**.
 >   - 18 errores de lint que ya existían (`any` y variables sin usar).
 
 Estado original (`pnpm audit --prod`: **275 avisos**, 8 críticos y 109 altos). Los relevantes:
