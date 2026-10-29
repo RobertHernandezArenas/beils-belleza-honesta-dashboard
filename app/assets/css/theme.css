@@ -145,9 +145,9 @@
    --------------------------------------------------------------------------- */
 @theme {
 	--font-sans:
-		'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Roboto', 'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
 		'Segoe UI Symbol', 'Noto Color Emoji';
-	--font-condensed: 'Mulish', 'Roboto Condensed', ui-sans-serif, system-ui;
+	--font-condensed: 'Roboto Condensed', 'Roboto', 'Mulish', ui-sans-serif, system-ui;
 
 	--color-bg-app: var(--bg-app);
 	--color-bg-card: var(--bg-card);

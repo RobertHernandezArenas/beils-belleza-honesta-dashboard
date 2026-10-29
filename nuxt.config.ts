@@ -70,7 +70,8 @@ export default defineNuxtConfig({
 			subsets: ['latin', 'latin-ext'],
 		},
 		families: [
-			// Gogo Admin Template primary typeface
+			// Primary typeface: Roboto
+			{ name: 'Roboto', provider: 'google', weights: [300, 400, 500, 700, 900] },
 			{ name: 'Mulish', provider: 'google', weights: [300, 400, 500, 600, 700, 800] },
 		],
 	},

@@ -161,7 +161,7 @@ Este hito representa la maduración definitiva de la plataforma en términos de 
 - **Almacenamiento Privado & Servido Autenticado (`8306c88` - U2):** Retirada de archivos de `public/uploads/` hacia un directorio privado persistente, servidos únicamente a través de `/api/files/*` con autenticación de personal.
 - **Cookies HttpOnly & Revocación de Sesión (`9c4cf47` - J2/J3):** Emisión de cookies `httpOnly; SameSite=Strict` y mecanismo de invalidación instantánea mediante `token_version`.
 - **Anonimización de Respuestas de Usuario (`27249da`, `bc42bdd`):** Función `toPublicUser` que elimina `password`, `refresh_token`, `token_version`, `failed_login_count` y `locked_until` de todas las salidas de la API.
-- **Privacidad en Tipografías Web (`eb85240`, `14629a0`):** Sustitución del módulo de Google Fonts por `@nuxt/fonts`, descargando y auto-alojando localmente la tipografía *Mulish* bajo `/_fonts` y eliminando los dominios de Google de la Content Security Policy.
+- **Privacidad en Tipografías Web (`eb85240`, `14629a0`):** Definición de la tipografía **Roboto** como fuente principal del dashboard (con *Mulish* como respaldo), servidas mediante `@nuxt/fonts` bajo `/_fonts` con descarga local en compilación y sin conexiones externas a Google, cumpliendo el RGPD y la Content Security Policy.
 
 #### 4. Nuevas Funcionalidades de Negocio
 - **Módulo de Ficha Clínica & Parámetros Técnicos (`a4b2777`):** Registro técnico de sesiones de Láser SHR (fototipo, fluencia, frecuencia, disparos) e Indiba Deep Beauty (modo capacitivo/resistivo, 448 kHz, potencia, tiempo).

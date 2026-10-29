@@ -181,7 +181,7 @@ El sistema ha superado un proceso exhaustivo de auditoría y *security hardening
 | **Almacenamiento de Multimedia Privado** | Subidas reubicadas fuera de `public/uploads/` hacia un directorio privado. Servicio autenticado a través de `/api/files/*` exclusivo para personal autorizado. |
 | **Sanitización de Archivos** | Inspección de firmas binarias (*magic bytes*) descartando scripts maliciosos (SVG, HTML). Conversión forzosa de imágenes a WebP mediante Sharp con eliminación de metadatos EXIF y GPS. |
 | **Protección contra Fuga de Datos (PII)** | Erradicación total de logs en rutas de desarrollo. Ofuscación de errores 5xx en respuestas de la API mediante hook centralizado en Nitro. |
-| **Privacidad RGPD en Tipografías** | Retirada completa de módulos de Google Fonts. Fuentes *Mulish* auto-alojadas y servidas localmente desde `/_fonts` para evitar compartir IPs con terceros. |
+| **Tipografía Principal & RGPD** | Tipografía **Roboto** definida como fuente principal del dashboard (con *Mulish* como respaldo), auto-alojadas localmente mediante `@nuxt/fonts` bajo `/_fonts` con descarga en tiempo de compilación para garantizar el cumplimiento del RGPD (cero telemetría hacia servidores externos). |
 | **Cabeceras HTTP de Seguridad** | Inyección de `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` y `Content-Security-Policy` (CSP). |
 
 ---
