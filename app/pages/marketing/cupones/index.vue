@@ -24,14 +24,16 @@ import type { FetchError } from '~~/shared/types/domain'
 
 	const { data: coupons, isPending } = useQuery<ICoupon[]>({
 		queryKey: ['coupons', queryParams],
-		queryFn: () => $fetch('/api/marketing/coupons', { query: queryParams.value }),
+		queryFn: () => $fetch<ICoupon[]>('/api/marketing/coupons', { query: queryParams.value }),
 	})
 
 	const { mutate: deleteCoupon } = useMutation({
-		mutationFn: (id: string) => $fetch(`/api/marketing/coupons/${id}`, { method: 'DELETE' }),
-		onSuccess: () => {
+		mutationFn: (id: string) => $fetch<{ deactivated: boolean }>(`/api/marketing/coupons/${id}`, { method: 'DELETE' }),
+		onSuccess: result => {
 			queryClient.invalidateQueries({ queryKey: ['coupons'] })
-			displayToast('Cupón eliminado exitosamente', 'success')
+			queryClient.invalidateQueries({ queryKey: ['coupons-tpv'] })
+			// A coupon already used in sales is kept (deactivated) so those sales still reference it
+			displayToast(result.deactivated ? 'El cupón ya tiene usos: se ha desactivado' : 'Cupón eliminado exitosamente', 'success')
 		},
 		onError: (error: FetchError) => {
 			displayToast(error.data?.statusMessage || 'Error al eliminar el cupón', 'error')

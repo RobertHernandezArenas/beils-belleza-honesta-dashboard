@@ -156,6 +156,15 @@ model Cart {
   aeat_status    String     @default("pending_submission") @db.VarChar(50)
   hash           String?    @db.VarChar(100)
   previous_hash  String?    @db.VarChar(100)
+  // Discount snapshot (frozen at sale time). `discount` above stays the TOTAL discount.
+  coupon_id              String? @db.Char(100)
+  coupon_code            String? @db.VarChar(50)
+  coupon_discount_type   String? @db.VarChar(20)
+  coupon_discount_value  Float?
+  coupon_discount_amount Float?
+  manual_discount_type   String? @db.VarChar(20)
+  manual_discount_value  Float?
+  manual_discount_amount Float?
   created_at     DateTime   @default(now())
   updated_at     DateTime   @updatedAt
   items          CartItem[]
@@ -167,7 +176,26 @@ model Cart {
   @@index([booking_id])
   @@index([status])
   @@index([created_at])
+  @@index([coupon_id])
   @@map("carts")
+}
+
+model Coupon {
+  coupon_id      String    @id @default(uuid()) @db.Char(100)
+  code           String    @unique @db.VarChar(50)
+  description    String?   @db.Text
+  discount_type  String    @db.VarChar(50)
+  discount_value Float
+  min_purchase   Float?
+  max_uses       Int?
+  current_uses   Int       @default(0)
+  valid_from     DateTime?
+  valid_until    DateTime?
+  status         String    @default("activo") @db.VarChar(20)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  @@map("coupons")
 }
 
 model CartItem {

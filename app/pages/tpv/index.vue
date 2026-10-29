@@ -15,6 +15,10 @@ import type { CatalogItem } from '~~/shared/types/domain'
 		cartItems,
 		selectedClient,
 		discountAmount,
+		manualDiscountType,
+		couponCode,
+		appliedCoupon,
+		validCoupons,
 		paymentMethod,
 		toastMessage,
 		toastType,
@@ -25,7 +29,10 @@ import type { CatalogItem } from '~~/shared/types/domain'
 		clientPackages,
 		cartSubtotal,
 		cartTotal,
+		cartPricing,
 		isCheckingOut,
+		applyCoupon,
+		removeCoupon,
 
 		addToCart,
 		consumeClientPackage,
@@ -110,6 +117,8 @@ import type { CatalogItem } from '~~/shared/types/domain'
 			<TpvCart
 				v-model:client-search="clientSearch"
 				v-model:discount-amount="discountAmount"
+				v-model:manual-discount-type="manualDiscountType"
+				v-model:coupon-code="couponCode"
 				v-model:payment-method="paymentMethod"
 
 				:cart-items="cartItems"
@@ -117,6 +126,9 @@ import type { CatalogItem } from '~~/shared/types/domain'
 				:filtered-clients="filteredClients"
 				:cart-subtotal="cartSubtotal"
 				:cart-total="cartTotal"
+				:cart-pricing="cartPricing"
+				:valid-coupons="validCoupons"
+				:applied-coupon="appliedCoupon"
 				:is-checking-out="isCheckingOut"
 				:avatar-error="avatarError"
 				:format-currency="formatCurrency"
@@ -127,6 +139,8 @@ import type { CatalogItem } from '~~/shared/types/domain'
 				@decrease-item-qty="decreaseItemQty"
 				@increase-item-qty="increaseItemQty"
 				@checkout="handleCheckout"
+				@apply-coupon="applyCoupon"
+				@remove-coupon="removeCoupon"
 				@avatar-error="handleAvatarError"
 			/>
 		</div>

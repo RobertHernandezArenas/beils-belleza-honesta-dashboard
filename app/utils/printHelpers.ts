@@ -1,4 +1,5 @@
 import type { Sale, SaleItem } from '~~/shared/types/domain'
+import { describeSaleDiscounts, prorateDiscountByTaxRate } from '~~/shared/utils/discounts'
 
 export const printReceipt = (cart: Sale) => {
   if (!cart) return
@@ -15,6 +16,19 @@ export const printReceipt = (cart: Sale) => {
   const paymentMethodLabel = cart.payment_method === 'cash' ? 'Efectivo' : 
                              cart.payment_method === 'card' ? 'Tarjeta' : 
                              cart.payment_method === 'mixed' ? 'Mixto' : 'Tarjeta/Transferencia';
+
+  // Coupon / manual discount lines (old carts: a single "Descuento" line)
+  const discountLines = describeSaleDiscounts(cart)
+  const discountRowsHtml = discountLines.length > 0 ? `
+          <tr>
+            <td>Subtotal:</td>
+            <td style="text-align:right;">${cart.subtotal.toFixed(2)}€</td>
+          </tr>
+          ${discountLines.map(line => `
+          <tr>
+            <td>${line.label}</td>
+            <td style="text-align:right;">-${line.amount.toFixed(2)}€</td>
+          </tr>`).join('')}` : ''
 
   const html = `
     <html>
@@ -56,6 +70,7 @@ export const printReceipt = (cart: Sale) => {
 
         <div class="divider"></div>
         <table>
+          ${discountRowsHtml}
           <tr class="bold" style="font-size: 14px;">
             <td>TOTAL PAGADO:</td>
             <td style="text-align:right;">${cart.total.toFixed(2)}€</td>
@@ -111,21 +126,10 @@ export const printInvoice = (cart: Sale) => {
   
   const dateStr = new Date(cart.created_at).toLocaleString()
   
-  // Calculate Base Imponible by Tax Rate
-  const taxes: Record<number, { base: number, quota: number }> = {}
-  let totalBase = 0
-
-  cart.items?.forEach((item: SaleItem) => {
-    const rate = item.tax_rate || 0
-    if (!taxes[rate]) taxes[rate] = { base: 0, quota: 0 }
-    
-    const baseObj = item.total / (1 + (rate / 100))
-    const quotaObj = item.total - baseObj
-    
-    taxes[rate].base += baseObj
-    taxes[rate].quota += quotaObj
-    totalBase += baseObj
-  })
+  // Base Imponible by Tax Rate, after spreading the cart discount across the rates (prices include VAT)
+  const taxes = prorateDiscountByTaxRate(cart.items || [], cart.discount || 0)
+  const totalBase = taxes.reduce((acc, row) => acc + row.base, 0)
+  const discountLines = describeSaleDiscounts(cart)
 
   // Format Items
   const itemsHtml = cart.items?.map((item: SaleItem) => {
@@ -145,16 +149,19 @@ export const printInvoice = (cart: Sale) => {
   `
   }).join('') || `<tr><td colspan="5">Factura sin detalles</td></tr>`
 
-  const taxRowsHtml = Object.keys(taxes).map(rate => {
-    const val = taxes[Number(rate)]
-    if (!val) return ''
-    return `
+  const taxRowsHtml = taxes.map(row => `
       <tr style="font-size: 12px; color: #555;">
-        <td style="padding: 4px 0;">IVA al ${rate}% sobre ${val.base.toFixed(2)}€:</td>
-        <td style="text-align:right;">${val.quota.toFixed(2)}€</td>
+        <td style="padding: 4px 0;">IVA al ${row.rate}% sobre ${row.base.toFixed(2)}€:</td>
+        <td style="text-align:right;">${row.vat.toFixed(2)}€</td>
       </tr>
-    `
-  }).join('')
+    `).join('')
+
+  const discountRowsHtml = discountLines.length > 0 ? `
+            <tr>
+              <td>Subtotal (IVA incl.):</td>
+              <td style="text-align:right;">${cart.subtotal.toFixed(2)}€</td>
+            </tr>
+            ${discountLines.map(line => `<tr><td style="color: red;">${line.label}:</td><td style="text-align:right; color:red;">-${line.amount.toFixed(2)}€</td></tr>`).join('')}` : ''
 
   const paymentMethodLabel = cart.payment_method === 'cash' ? 'Efectivo' : 
                              cart.payment_method === 'card' ? 'Tarjeta' : 
@@ -233,12 +240,12 @@ export const printInvoice = (cart: Sale) => {
 
         <div class="totals">
           <table class="totals-table">
+            ${discountRowsHtml}
             <tr>
               <td>Base Imponible Acumul.:</td>
               <td style="text-align:right;">${totalBase.toFixed(2)}€</td>
             </tr>
             ${taxRowsHtml}
-            ${cart.discount > 0 ? `<tr><td style="color: red;">Descuento aplicado:</td><td style="text-align:right; color:red;">-${cart.discount.toFixed(2)}€</td></tr>` : ''}
             <tr class="grand-total">
               <td>TOTAL FACTURA:</td>
               <td style="text-align:right;">${cart.total.toFixed(2)}€</td>

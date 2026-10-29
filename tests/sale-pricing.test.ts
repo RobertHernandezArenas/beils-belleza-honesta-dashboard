@@ -1,6 +1,13 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { parseSaleLines, priceSaleLines, validateDiscount, type SaleCatalog } from '../server/utils/sale-pricing'
+import {
+	parseSaleLines,
+	priceSaleLines,
+	validateDiscount,
+	parseSaleDiscountRequest,
+	priceSaleDiscounts,
+	type SaleCatalog,
+} from '../server/utils/sale-pricing'
 
 const statusOf = (fn: () => unknown) => {
 	try {
@@ -80,5 +87,49 @@ describe('validateDiscount', () => {
 		assert.equal(statusOf(() => validateDiscount(-5, 100)), 400)
 		assert.equal(statusOf(() => validateDiscount('10', 100)), 400)
 		assert.equal(statusOf(() => validateDiscount(150, 100)), 400)
+	})
+})
+
+describe('parseSaleDiscountRequest', () => {
+	it('reads a coupon code and a typed manual discount', () => {
+		assert.deepEqual(parseSaleDiscountRequest({ coupon_code: ' verano10 ', manual_discount_type: 'percentage', manual_discount_value: 10 }), {
+			couponCode: 'VERANO10',
+			manual: { type: 'percentage', value: 10 },
+		})
+	})
+
+	it('keeps accepting the legacy fixed `discount` field', () => {
+		assert.deepEqual(parseSaleDiscountRequest({ discount: 5 }), { couponCode: null, manual: { type: 'fixed', value: 5 } })
+	})
+
+	it('reports an absent manual discount as undefined and a zero one as null', () => {
+		assert.deepEqual(parseSaleDiscountRequest({}), { couponCode: null, manual: undefined })
+		assert.deepEqual(parseSaleDiscountRequest({ coupon_code: '', manual_discount_type: 'fixed', manual_discount_value: 0 }), {
+			couponCode: null,
+			manual: null,
+		})
+	})
+
+	it('rejects invalid manual discounts', () => {
+		assert.equal(statusOf(() => parseSaleDiscountRequest({ manual_discount_type: 'percentage', manual_discount_value: 101 })), 400)
+		assert.equal(statusOf(() => parseSaleDiscountRequest({ manual_discount_type: 'fixed', manual_discount_value: -1 })), 400)
+		assert.equal(statusOf(() => parseSaleDiscountRequest({ manual_discount_type: 'bogus', manual_discount_value: 1 })), 400)
+		assert.equal(statusOf(() => parseSaleDiscountRequest({ discount: '10' })), 400)
+	})
+})
+
+describe('priceSaleDiscounts', () => {
+	it('stacks the coupon and the manual discount', () => {
+		const pricing = priceSaleDiscounts(100, { type: 'percentage', value: 10 }, { type: 'fixed', value: 5 })
+		assert.deepEqual([pricing.couponAmount, pricing.manualAmount, pricing.totalDiscount, pricing.total], [10, 5, 15, 85])
+	})
+
+	it('rejects a fixed manual discount larger than what the coupon leaves', () => {
+		assert.equal(statusOf(() => priceSaleDiscounts(100, { type: 'fixed', value: 30 }, { type: 'fixed', value: 80 })), 400)
+		assert.equal(priceSaleDiscounts(100, { type: 'fixed', value: 30 }, { type: 'fixed', value: 70 }).total, 0)
+	})
+
+	it('caps a locked coupon at the subtotal instead of failing (edited carts)', () => {
+		assert.equal(priceSaleDiscounts(20, { type: 'fixed', value: 25 }, null).total, 0)
 	})
 })

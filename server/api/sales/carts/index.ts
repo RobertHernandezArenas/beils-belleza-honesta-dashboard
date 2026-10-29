@@ -4,7 +4,15 @@ import {
 	processVerifactuInvoice,
 } from '../../../utils/verifactu'
 import type { IInvoice } from '~~/shared/types/invoice'
-import { parseSaleLines, priceSaleLines, loadSaleCatalog, validateDiscount, saleSubtotal } from '../../../utils/sale-pricing'
+import {
+	parseSaleLines,
+	priceSaleLines,
+	loadSaleCatalog,
+	saleSubtotal,
+	parseSaleDiscountRequest,
+	priceSaleDiscounts,
+} from '../../../utils/sale-pricing'
+import { redeemCouponForSale, asCouponTx } from '../../../utils/coupons'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -36,7 +44,9 @@ export default defineEventHandler(async event => {
 		// Prices and tax come from the catalog, never from the request (client prices are ignored)
 		const saleLines = parseSaleLines(rawItems)
 		const items = priceSaleLines(saleLines, await loadSaleCatalog(prisma, saleLines))
-		const validatedDiscount = validateDiscount(cartData.discount, saleSubtotal(items))
+		const subtotal = saleSubtotal(items)
+		// Only the coupon code and the manual rule are read; every amount is recomputed here
+		const discountRequest = parseSaleDiscountRequest(cartData)
 
 		// Selling a bono/package assigns it to a person, so a registered client is required.
 		const hasPackageSale = items.some(it => it.item_type === 'package_sale')
@@ -84,10 +94,13 @@ export default defineEventHandler(async event => {
 				}
 			}
 
-			// Calculate totals from items to prevent client tampering
-			let subtotal = 0
-			const discount = validatedDiscount
-			let total = 0
+			// The coupon use is counted here (debt sales too): if the sale fails, it is rolled back.
+			// Totals come from the catalog-priced items, never from the request.
+			const coupon = discountRequest.couponCode
+				? await redeemCouponForSale(asCouponTx(tx), { code: discountRequest.couponCode, subtotal, now: new Date() })
+				: null
+			const manual = discountRequest.manual ?? null
+			const pricing = priceSaleDiscounts(subtotal, coupon?.rule ?? null, manual)
 
 			const createdCart = await tx.cart.create({
 				data: {
@@ -96,16 +109,21 @@ export default defineEventHandler(async event => {
 					status: cartData.status || 'pending',
 					payment_method: cartData.payment_method || 'cash',
 					notes: cartData.notes,
-					subtotal: 0,  
-					discount: discount,
-					total: 0, 
+					subtotal: pricing.subtotal,
+					discount: pricing.totalDiscount,
+					total: pricing.total,
+					coupon_id: coupon?.coupon_id ?? null,
+					coupon_code: coupon?.code ?? null,
+					coupon_discount_type: coupon?.rule.type ?? null,
+					coupon_discount_value: coupon?.rule.value ?? null,
+					coupon_discount_amount: coupon ? pricing.couponAmount : null,
+					manual_discount_type: manual?.type ?? null,
+					manual_discount_value: manual?.value ?? null,
+					manual_discount_amount: manual ? pricing.manualAmount : null,
 					items: {
 						create: items.map(item => {
 							const itemSubtotal = item.quantity * item.unit_price;
 							const itemTotal = itemSubtotal;
-
-							subtotal = Number((subtotal + itemSubtotal).toFixed(2));
-							total = Number((total + itemTotal).toFixed(2));
 
 							return {
 								item_type: item.item_type,
@@ -245,20 +263,7 @@ export default defineEventHandler(async event => {
 				}
 			}
 
-			total = Number((total - discount).toFixed(2))
-			if (total < 0) total = 0
-
-			// Update cart with valid totals
-			const updatedCart = await tx.cart.update({
-				where: { cart_id: createdCart.cart_id },
-				data: { 
-					subtotal, 
-					discount,
-					total, 
-				}
-			})
-
-			return updatedCart;
+			return createdCart;
 		})
 
 		// Perform VeriFactu submission OUTSIDE the transaction (Risk 3.2 mitigate)

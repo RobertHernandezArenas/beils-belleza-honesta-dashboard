@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { IncomingLineItem } from '~~/shared/types/line-item'
 import type { ClientDTO } from '~~/shared/types/domain'
+import type { ICoupon } from '~~/shared/types/marketing'
+import type { DiscountKind, SaleDiscountBreakdown } from '~~/shared/utils/discounts'
 	import {
 		User as UserIcon,
 		Trash2,
@@ -8,6 +10,7 @@ import type { ClientDTO } from '~~/shared/types/domain'
 		Banknote,
 		Wallet,
 		Tag,
+		Ticket,
 		ChevronRight,
 		ShoppingBag,
 		Smartphone,
@@ -21,21 +24,33 @@ import type { ClientDTO } from '~~/shared/types/domain'
 		filteredClients: ClientDTO[]
 		cartSubtotal: number
 		cartTotal: number
+		cartPricing: SaleDiscountBreakdown
+		validCoupons: ICoupon[] | undefined
+		appliedCoupon: ICoupon | null
 		isCheckingOut: boolean
 		avatarError: boolean
 		formatCurrency: (val: number) => string
 	}
 
-	defineProps<Props>()
+	const props = defineProps<Props>()
 
 	const emit = defineEmits<{
 		(e: 'select-client', client: ClientDTO): void
 		(e: 'remove-item' | 'decrease-item-qty' | 'increase-item-qty', index: number): void
-		(e: 'remove-client' | 'checkout' | 'avatar-error'): void
+		(e: 'remove-client' | 'checkout' | 'avatar-error' | 'apply-coupon' | 'remove-coupon'): void
 	}>()
 
 	const clientSearch = defineModel<string>('clientSearch', { required: true })
 	const discountAmount = defineModel<number>('discountAmount', { required: true })
+	const manualDiscountType = defineModel<DiscountKind>('manualDiscountType', { required: true })
+	const couponCode = defineModel<string>('couponCode', { required: true })
+
+	const couponLabel = computed(() => {
+		const coupon = props.appliedCoupon
+		if (!coupon) return ''
+		const value = coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : props.formatCurrency(coupon.discount_value)
+		return `${coupon.code} (−${value})`
+	})
 	const paymentMethod = defineModel<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('paymentMethod', { required: true })
 </script>
 
@@ -191,19 +206,85 @@ import type { ClientDTO } from '~~/shared/types/domain'
 					<span class="tabular-nums font-bold text-text-primary">{{ formatCurrency(cartSubtotal) }}</span>
 				</div>
 
+				<!-- Coupon: pick from the valid ones or type a code -->
+				<div class="text-error flex items-center justify-between gap-2 text-xs font-semibold uppercase">
+					<span class="flex items-center gap-1">
+						<Ticket class="size-3" />
+						<span>Cupón</span>
+					</span>
+					<div v-if="appliedCoupon" class="flex items-center gap-2">
+						<span class="bg-error/10 flex items-center gap-1 rounded-lg px-2 py-1 font-black tracking-wider">
+							{{ couponLabel }}
+							<button
+								type="button"
+								aria-label="Quitar cupón"
+								class="hover:text-text-primary"
+								@click="emit('remove-coupon')">
+								<X class="size-3" />
+							</button>
+						</span>
+						<span class="font-black tabular-nums">-{{ formatCurrency(cartPricing.couponAmount) }}</span>
+					</div>
+					<form v-else class="join" @submit.prevent="emit('apply-coupon')">
+						<input
+							v-model="couponCode"
+							type="text"
+							list="tpv-valid-coupons"
+							placeholder="Código"
+							aria-label="Código de cupón"
+							class="input input-xs join-item bg-error/10 text-error h-7 w-28 rounded-l-lg border-none font-black tracking-wider uppercase placeholder:normal-case placeholder:text-error/50 focus:ring-0 focus:outline-none" >
+						<button
+							type="submit"
+							:disabled="!couponCode.trim()"
+							class="btn btn-xs join-item bg-error/15 text-error hover:bg-error/25 h-7 rounded-r-lg border-none font-black">
+							Aplicar
+						</button>
+						<datalist id="tpv-valid-coupons">
+							<option v-for="coupon in validCoupons || []" :key="coupon.coupon_id" :value="coupon.code">
+								{{ coupon.description || coupon.code }}
+							</option>
+						</datalist>
+					</form>
+				</div>
+
+				<!-- Manual discount, in € or % (applied after the coupon) -->
 				<div class="text-error flex items-center justify-between text-xs font-semibold uppercase">
 					<span class="flex items-center gap-1">
 						<Tag class="size-3" />
 						<span>Descuento</span>
+						<span v-if="manualDiscountType === 'percentage' && cartPricing.manualAmount > 0" class="tabular-nums normal-case">
+							(-{{ formatCurrency(cartPricing.manualAmount) }})
+						</span>
 					</span>
-					<div class="relative w-28">
-						<span class="absolute top-1/2 left-2 -translate-y-1/2 text-xs font-extrabold">-</span>
-						<input
-							v-model="discountAmount"
-							type="number"
-							min="0"
-							:max="cartSubtotal"
-							class="input input-xs bg-error/10 text-error h-7 w-full rounded-lg border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" >
+					<div class="flex items-center gap-1.5">
+						<div class="join" role="group" aria-label="Tipo de descuento">
+							<button
+								type="button"
+								class="btn btn-xs join-item h-7 border-none font-black"
+								:class="manualDiscountType === 'fixed' ? 'bg-error text-white' : 'bg-error/10 text-error'"
+								:aria-pressed="manualDiscountType === 'fixed'"
+								@click="manualDiscountType = 'fixed'">
+								€
+							</button>
+							<button
+								type="button"
+								class="btn btn-xs join-item h-7 border-none font-black"
+								:class="manualDiscountType === 'percentage' ? 'bg-error text-white' : 'bg-error/10 text-error'"
+								:aria-pressed="manualDiscountType === 'percentage'"
+								@click="manualDiscountType = 'percentage'">
+								%
+							</button>
+						</div>
+						<div class="relative w-24">
+							<span class="absolute top-1/2 left-2 -translate-y-1/2 text-xs font-extrabold">-</span>
+							<input
+								v-model="discountAmount"
+								type="number"
+								min="0"
+								:max="manualDiscountType === 'percentage' ? 100 : cartSubtotal - cartPricing.couponAmount"
+								aria-label="Descuento manual"
+								class="input input-xs bg-error/10 text-error h-7 w-full rounded-lg border-none pr-2 text-right font-black tabular-nums focus:ring-0 focus:outline-none" >
+						</div>
 					</div>
 				</div>
 

@@ -117,6 +117,15 @@ export interface Sale {
 	subtotal: number
 	discount: number
 	total: number
+	// Discount snapshot (null on carts created before coupons existed)
+	coupon_id?: string | null
+	coupon_code?: string | null
+	coupon_discount_type?: string | null
+	coupon_discount_value?: number | null
+	coupon_discount_amount?: number | null
+	manual_discount_type?: string | null
+	manual_discount_value?: number | null
+	manual_discount_amount?: number | null
 	payment_method?: string | null
 	notes?: string | null
 	invoice_number?: string | null

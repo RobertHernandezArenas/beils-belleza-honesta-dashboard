@@ -172,6 +172,7 @@
 		Scissors,
 		Store,
 		Landmark,
+		TicketPercent,
 	} from 'lucide-vue-next'
 
 	const { t, locale } = useI18n()
@@ -300,6 +301,7 @@
 				{ to: '/ventas', label: 'catalog.menu.sales', icon: ShoppingBag },
 				{ to: '/catalogo/productos', label: 'catalog.menu.products', icon: Package },
 				{ to: '/servicios', label: 'catalog.menu.services', icon: Scissors },
+				{ to: '/marketing/cupones', label: 'catalog.menu.coupons', icon: TicketPercent },
 			]
 		},
 		{

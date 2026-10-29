@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { Booking, ClientDTO, Sale, CatalogItem } from '~~/shared/types/domain'
 import type { IncomingLineItem } from '~~/shared/types/line-item'
+import type { ICoupon } from '~~/shared/types/marketing'
+import { computeSaleDiscounts, normalizeDiscountKind, type DiscountKind } from '~~/shared/utils/discounts'
 
 export function useTpv() {
 	const queryClient = useQueryClient()
@@ -17,7 +19,11 @@ export function useTpv() {
 	// Cart State
 	const cartItems = ref<IncomingLineItem[]>([])
 	const selectedClient = ref<Partial<ClientDTO> | null>(null)
+	// Manual discount value; its unit (€ or %) is manualDiscountType
 	const discountAmount = ref<number>(0)
+	const manualDiscountType = ref<DiscountKind>('fixed')
+	const couponCode = ref('')
+	const appliedCoupon = ref<ICoupon | null>(null)
 	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('card')
 
 	// Toast State
@@ -68,6 +74,12 @@ export function useTpv() {
 			return await $fetch<CatalogItem[]>(`/api/clients/${id}/packages`)
 		},
 		enabled: computed(() => !!selectedClient.value?.user_id),
+	})
+
+	// Coupons usable right now (the server re-validates on checkout)
+	const { data: validCoupons } = useQuery<ICoupon[]>({
+		queryKey: ['coupons-tpv'],
+		queryFn: () => $fetch<ICoupon[]>('/api/marketing/coupons', { query: { active: '1' } }),
 	})
 
 	const processedBookingId = ref<string | null>(null)
@@ -175,7 +187,16 @@ export function useTpv() {
 
 	// Process Checkout Mutation
 	const { mutate: processSale, isPending: isCheckingOut } = useMutation({
-		mutationFn: async (payload: { user_id?: string; status: string; payment_method: string; discount: number; items: IncomingLineItem[]; booking_id?: string }) => {
+		mutationFn: async (payload: {
+			user_id?: string
+			status: string
+			payment_method: string
+			coupon_code?: string
+			manual_discount_type: DiscountKind
+			manual_discount_value: number
+			items: IncomingLineItem[]
+			booking_id?: string
+		}) => {
 			const res = await $fetch<Sale>('/api/sales/carts', {
 				method: 'POST',
 				body: payload,
@@ -215,6 +236,8 @@ export function useTpv() {
 			queryClient.invalidateQueries({ queryKey: ['clients-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['client-packages-agenda'] })
 			queryClient.invalidateQueries({ queryKey: ['client-packages-tpv'] })
+			queryClient.invalidateQueries({ queryKey: ['coupons-tpv'] })
+			queryClient.invalidateQueries({ queryKey: ['coupons'] })
 			clearCart()
 		},
 		onError: (error: { data?: { statusMessage?: string } }) => {
@@ -361,6 +384,9 @@ export function useTpv() {
 		cartItems.value = []
 		selectedClient.value = null
 		discountAmount.value = 0
+		manualDiscountType.value = 'fixed'
+		couponCode.value = ''
+		appliedCoupon.value = null
 		paymentMethod.value = 'card'
 		processedBookingId.value = null
 	}
@@ -377,10 +403,40 @@ export function useTpv() {
 		}, 0)
 	})
 
-	const cartTotal = computed(() => {
-		const total = cartSubtotal.value - discountAmount.value
-		return total > 0 ? total : 0
-	})
+	const couponRule = (coupon: ICoupon | null) => {
+		const type = normalizeDiscountKind(coupon?.discount_type)
+		return coupon && type ? { type, value: coupon.discount_value } : null
+	}
+
+	// Coupon on the subtotal first, then the manual discount on the remainder (same math as the server)
+	const cartPricing = computed(() =>
+		computeSaleDiscounts(cartSubtotal.value, {
+			coupon: couponRule(appliedCoupon.value),
+			manual: { type: manualDiscountType.value, value: Number(discountAmount.value) || 0 },
+		}),
+	)
+
+	const cartTotal = computed(() => cartPricing.value.total)
+
+	const applyCoupon = () => {
+		const code = couponCode.value.trim().toUpperCase()
+		if (!code) return
+		const coupon = (validCoupons.value || []).find(c => c.code.toUpperCase() === code)
+		if (!coupon) {
+			displayToast('Cupón no válido o no disponible', 'error')
+			return
+		}
+		if (coupon.min_purchase && cartSubtotal.value < coupon.min_purchase) {
+			displayToast(`Este cupón requiere una compra mínima de ${formatCurrency(coupon.min_purchase)}`, 'error')
+			return
+		}
+		appliedCoupon.value = coupon
+		couponCode.value = ''
+	}
+
+	const removeCoupon = () => {
+		appliedCoupon.value = null
+	}
 
 	// Perform Checkout
 	const handleCheckout = () => {
@@ -402,7 +458,9 @@ export function useTpv() {
 			user_id: selectedClient.value?.user_id,
 			status: paymentMethod.value === 'debt' ? 'pending' : 'completed',
 			payment_method: paymentMethod.value,
-			discount: discountAmount.value,
+			coupon_code: appliedCoupon.value?.code,
+			manual_discount_type: manualDiscountType.value,
+			manual_discount_value: Number(discountAmount.value) || 0,
 			items: cartItems.value,
 			booking_id: processedBookingId.value || undefined,
 		})
@@ -426,6 +484,10 @@ export function useTpv() {
 		cartItems,
 		selectedClient,
 		discountAmount,
+		manualDiscountType,
+		couponCode,
+		appliedCoupon,
+		validCoupons,
 		paymentMethod,
 		toastMessage,
 		toastType,
@@ -436,7 +498,10 @@ export function useTpv() {
 		clientPackages,
 		cartSubtotal,
 		cartTotal,
+		cartPricing,
 		isCheckingOut,
+		applyCoupon,
+		removeCoupon,
 		addToCart,
 		consumeClientPackage,
 		removeFromCart,

@@ -1,6 +1,7 @@
 import { createError } from 'h3'
 import { z } from 'zod'
 import { parseOrBadRequest } from './validation'
+import { computeSaleDiscounts, type DiscountRule } from '../../shared/utils/discounts'
 
 /**
  * Server-side sale pricing: the browser says WHAT is sold and HOW MANY; the price and tax
@@ -76,6 +77,51 @@ export function validateDiscount(discount: unknown, subtotal: number) {
 
 export const saleSubtotal = (lines: { unit_price: number; quantity: number }[]) =>
 	round2(lines.reduce((acc, l) => acc + l.unit_price * l.quantity, 0))
+
+const discountRequest = z.object({
+	coupon_code: z.string().trim().max(50).nullish(),
+	manual_discount_type: z.enum(['fixed', 'percentage'], { message: 'Tipo de descuento no válido' }).nullish(),
+	manual_discount_value: z.number({ message: 'Descuento no válido' }).finite().min(0, 'Descuento no válido').nullish(),
+})
+
+/**
+ * Reads what discount the sale asks for. Only the coupon CODE and the manual rule are taken:
+ * amounts are always recomputed. `manual` is undefined when the request doesn't mention it
+ * (an edit keeps the stored one) and null when it explicitly clears it.
+ * The legacy `discount` number is still accepted as a fixed manual discount.
+ */
+export function parseSaleDiscountRequest(body: Record<string, unknown>): {
+	couponCode: string | null
+	manual: DiscountRule | null | undefined
+} {
+	const parsed = parseOrBadRequest(discountRequest, {
+		coupon_code: body.coupon_code,
+		manual_discount_type: body.manual_discount_type,
+		manual_discount_value: body.manual_discount_value,
+	})
+	const couponCode = parsed.coupon_code ? parsed.coupon_code.toUpperCase() : null
+
+	let manual: DiscountRule | null | undefined
+	if (parsed.manual_discount_type) {
+		const value = parsed.manual_discount_value ?? 0
+		if (parsed.manual_discount_type === 'percentage' && value > 100) {
+			throw createError({ statusCode: 400, statusMessage: 'El descuento no puede superar el 100%' })
+		}
+		manual = value > 0 ? { type: parsed.manual_discount_type, value } : null
+	} else if (body.discount !== undefined && body.discount !== null) {
+		const value = validateDiscount(body.discount, Number.POSITIVE_INFINITY)
+		manual = value > 0 ? { type: 'fixed', value } : null
+	}
+	return { couponCode, manual }
+}
+
+/** Coupon first, then the manual discount on the remainder. A fixed manual discount larger than
+ *  that remainder is rejected; a (locked) coupon larger than the subtotal is just capped. */
+export function priceSaleDiscounts(subtotal: number, coupon: DiscountRule | null, manual: DiscountRule | null) {
+	const pricing = computeSaleDiscounts(subtotal, { coupon, manual })
+	if (manual?.type === 'fixed') validateDiscount(manual.value, round2(pricing.subtotal - pricing.couponAmount))
+	return pricing
+}
 
 interface CatalogDb {
 	product: { findMany(args: unknown): Promise<{ product_id: string; price: number; tax_rate: number }[]> }

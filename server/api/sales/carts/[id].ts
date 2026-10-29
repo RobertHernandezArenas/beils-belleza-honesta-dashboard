@@ -5,7 +5,15 @@ import {
 	processVerifactuInvoice,
 } from '../../../utils/verifactu'
 import type { IInvoice } from '~~/shared/types/invoice'
-import { parseSaleLines, priceSaleLines, loadSaleCatalog, validateDiscount, saleSubtotal } from '../../../utils/sale-pricing'
+import {
+	parseSaleLines,
+	priceSaleLines,
+	loadSaleCatalog,
+	saleSubtotal,
+	parseSaleDiscountRequest,
+	priceSaleDiscounts,
+} from '../../../utils/sale-pricing'
+import { couponRuleOf, manualRuleOf } from '../../../../shared/utils/discounts'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -56,31 +64,41 @@ export default defineEventHandler(async event => {
 			const lines = parseSaleLines(body.items)
 			pricedItems = priceSaleLines(lines, await loadSaleCatalog(prisma, lines))
 		}
-		const validatedDiscount = validateDiscount(
-			body.discount !== undefined ? body.discount : currentCart.discount,
-			pricedItems ? saleSubtotal(pricedItems) : currentCart.subtotal,
-		)
+		// The coupon is locked after the sale: its stored rule is re-applied to the new subtotal
+		// (the live coupon is never read or re-counted). The manual rule can be changed.
+		const discountRequest = parseSaleDiscountRequest(body)
+		const couponRule = couponRuleOf(currentCart)
+		const manualRule = discountRequest.manual !== undefined ? discountRequest.manual : manualRuleOf(currentCart)
+		const repriced = !!pricedItems || discountRequest.manual !== undefined
+		const pricing = repriced
+			? priceSaleDiscounts(pricedItems ? saleSubtotal(pricedItems) : currentCart.subtotal, couponRule, manualRule)
+			: null
 
 		const updatedCart = await prisma.$transaction(async tx => {
 			let subtotal = currentCart.subtotal
 			let total = currentCart.total
-			const discount = validatedDiscount
+			let discountData: Prisma.CartUncheckedUpdateInput = {}
+			if (pricing) {
+				subtotal = pricing.subtotal
+				total = pricing.total
+				discountData = {
+					discount: pricing.totalDiscount,
+					coupon_discount_amount: couponRule ? pricing.couponAmount : null,
+					manual_discount_type: manualRule?.type ?? null,
+					manual_discount_value: manualRule?.value ?? null,
+					manual_discount_amount: manualRule ? pricing.manualAmount : null,
+				}
+			}
 
 			// 1. Handle items update if provided
 			if (pricedItems) {
 				// Clear old items
 				await tx.cartItem.deleteMany({ where: { cart_id: id } })
 
-				// Create new items and recalculate
-				subtotal = 0
-				total = 0
-
+				// Create new items (cart totals come from `pricing` above)
 				const newItems = pricedItems.map(item => {
 					const itemSubtotal = Number((item.quantity * item.unit_price).toFixed(2))
 					const itemTotal = itemSubtotal // For simplicity, mirroring POST logic: total = subtotal
-
-					subtotal = Number((subtotal + itemSubtotal).toFixed(2))
-					total = Number((total + itemTotal).toFixed(2))
 
 					return {
 						item_type: item.item_type,
@@ -154,13 +172,6 @@ export default defineEventHandler(async event => {
 						}
 					}
 				}
-
-				total = Number((total - discount).toFixed(2))
-				if (total < 0) total = 0
-			} else if (body.discount !== undefined) {
-				// Recalculate total if only discount changed
-				total = Number((currentCart.subtotal - discount).toFixed(2))
-				if (total < 0) total = 0
 			}
 
 			// 2. Handle VeriFactu context if completing
@@ -199,8 +210,8 @@ export default defineEventHandler(async event => {
 				payment_method: body.payment_method,
 				notes: body.notes,
 				subtotal,
-				discount,
 				total,
+				...discountData,
 				...verifactuData,
 			}
 
@@ -218,7 +229,7 @@ export default defineEventHandler(async event => {
 			})
 
 			// 4. Update associated debts if total changed
-			if (cart.debts.length > 0 && (body.items || body.discount !== undefined)) {
+			if (cart.debts.length > 0 && repriced) {
 				for (const debt of cart.debts) {
 					// This logic assumes 1 Cart : 1 Debt relationship commonly used in POS
 					// If it was partial, we keep the paid amount and recalculate remaining

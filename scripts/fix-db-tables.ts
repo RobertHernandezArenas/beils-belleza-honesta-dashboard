@@ -120,6 +120,64 @@ async function checkAndFix() {
             console.log('✅ Table client_package_shares already exists.');
         }
 
+        // Check coupons table (same shape as the legacy reference schema)
+        if (!tableList.includes('coupons')) {
+            console.log('Table coupons is missing. Creating...');
+            await conn.query(`
+                CREATE TABLE coupons (
+                    coupon_id CHAR(100) NOT NULL,
+                    code VARCHAR(50) NOT NULL,
+                    description TEXT NULL,
+                    discount_type VARCHAR(50) NOT NULL,
+                    discount_value DOUBLE NOT NULL,
+                    min_purchase DOUBLE NULL,
+                    max_uses INT NULL,
+                    current_uses INT NOT NULL DEFAULT 0,
+                    valid_from DATETIME(3) NULL,
+                    valid_until DATETIME(3) NULL,
+                    status VARCHAR(20) NOT NULL DEFAULT 'activo',
+                    created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                    updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+                    PRIMARY KEY (coupon_id),
+                    UNIQUE INDEX coupons_code_key (code)
+                ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            `);
+            console.log('✅ Table coupons created successfully.');
+        } else {
+            console.log('✅ Table coupons already exists.');
+        }
+
+        // Check carts discount snapshot columns (coupon + manual discount frozen at sale time)
+        const cartSnapshotColumns: [string, string][] = [
+            ['coupon_id', 'CHAR(100) NULL'],
+            ['coupon_code', 'VARCHAR(50) NULL'],
+            ['coupon_discount_type', 'VARCHAR(20) NULL'],
+            ['coupon_discount_value', 'DOUBLE NULL'],
+            ['coupon_discount_amount', 'DOUBLE NULL'],
+            ['manual_discount_type', 'VARCHAR(20) NULL'],
+            ['manual_discount_value', 'DOUBLE NULL'],
+            ['manual_discount_amount', 'DOUBLE NULL'],
+        ];
+        for (const [column, definition] of cartSnapshotColumns) {
+            const existing = await conn.query(`SHOW COLUMNS FROM carts LIKE '${column}'`);
+            if (existing.length === 0) {
+                console.log(`Column carts.${column} is missing. Adding...`);
+                await conn.query(`ALTER TABLE carts ADD COLUMN ${column} ${definition}`);
+                console.log(`✅ Column carts.${column} added successfully.`);
+            } else {
+                console.log(`✅ Column carts.${column} already exists.`);
+            }
+        }
+
+        const couponIndex = await conn.query("SHOW INDEX FROM carts WHERE Key_name = 'carts_coupon_id_idx'");
+        if (couponIndex.length === 0) {
+            console.log('Index carts_coupon_id_idx is missing. Adding...');
+            await conn.query('CREATE INDEX carts_coupon_id_idx ON carts (coupon_id)');
+            console.log('✅ Index carts_coupon_id_idx added successfully.');
+        } else {
+            console.log('✅ Index carts_coupon_id_idx already exists.');
+        }
+
     } catch (err) {
         console.error('❌ Error:', err);
     } finally {

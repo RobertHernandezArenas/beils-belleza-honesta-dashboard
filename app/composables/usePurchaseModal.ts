@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useDebouncedRef } from '~/composables/useDebouncedRef'
 import type { Sale, ClientDTO, CatalogItem } from '~~/shared/types/domain'
 import type { IncomingLineItem } from '~~/shared/types/line-item'
+import { computeSaleDiscounts, couponRuleOf, manualRuleOf } from '~~/shared/utils/discounts'
 
 export function usePurchaseModal(emit: (event: 'success') => void) {
   const queryClient = useQueryClient()
@@ -16,7 +17,11 @@ export function usePurchaseModal(emit: (event: 'success') => void) {
 
   // Live totals for editing
   const tempSubtotal = computed(() => tempItems.value.reduce((acc, item) => acc + (item.unit_price * item.quantity), 0))
-  const tempTotal = computed(() => Number((tempSubtotal.value - (cart.value?.discount || 0)).toFixed(2)))
+  // Same rules the server re-applies on save: locked coupon first, then the manual discount
+  const tempTotal = computed(() => {
+    if (!cart.value) return tempSubtotal.value
+    return computeSaleDiscounts(tempSubtotal.value, { coupon: couponRuleOf(cart.value), manual: manualRuleOf(cart.value) }).total
+  })
 
   // Fetch clients for search
   const { data: clientSearchResults, isPending: isSearchingClients } = useQuery<{ data: ClientDTO[] }>({

@@ -25,6 +25,13 @@ import type { ICoupon } from '~~/shared/types/marketing'
 		status: 'activo',
 	})
 
+	// datetime-local inputs expect local wall time; toISOString() would shift it by the UTC offset
+	const toDateTimeLocal = (value: string | Date) => {
+		const d = new Date(value)
+		d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+		return d.toISOString().slice(0, 16)
+	}
+
 	const showModal = (coupon: ICoupon | null) => {
 		editingCoupon.value = coupon
 		if (coupon) {
@@ -34,8 +41,8 @@ import type { ICoupon } from '~~/shared/types/marketing'
 			form.discount_value = coupon.discount_value || 0
 			form.min_purchase = coupon.min_purchase || null
 			form.max_uses = coupon.max_uses || null
-			form.valid_from = coupon.valid_from ? new Date(coupon.valid_from).toISOString().slice(0, 16) : ''
-			form.valid_until = coupon.valid_until ? new Date(coupon.valid_until).toISOString().slice(0, 16) : ''
+			form.valid_from = coupon.valid_from ? toDateTimeLocal(coupon.valid_from) : ''
+			form.valid_until = coupon.valid_until ? toDateTimeLocal(coupon.valid_until) : ''
 			form.status = coupon.status || 'activo'
 		} else {
 			// Reset
@@ -182,7 +189,7 @@ import type { ICoupon } from '~~/shared/types/marketing'
 								aria-label="Tipo de descuento"
 								:options="[
 									{ value: 'percentage', label: 'Porcentaje (%)' },
-									{ value: 'fixed_amount', label: 'Monto Fijo (€)' },
+									{ value: 'fixed', label: 'Monto Fijo (€)' },
 								]" />
 						</div>
 
