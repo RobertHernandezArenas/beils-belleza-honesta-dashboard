@@ -2,12 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { storeToRefs } from 'pinia'
 import { useAgendaStore } from '~/stores/useAgendaStore'
 import type { BookingItem, CatalogItem, FetchError } from '~~/shared/types/domain'
+import { getEmailIneligibility } from '~~/shared/utils/email-eligibility'
 
 export interface ClientItem {
     user_id: string
     name: string
     surname: string
     phone: string
+    email?: string | null
     [key: string]: unknown
 }
 
@@ -44,6 +46,9 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         notes: '',
     })
 
+    // Confirmation email (create only). Unchecked automatically when the client can't receive it.
+    const notifyEmail = ref(true)
+
     const localError = ref('')
     const showLocalError = ref(false)
 
@@ -66,6 +71,23 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
     const { data: services } = useQuery({
         queryKey: ['services-agenda'],
         queryFn: () => $fetch<CatalogItem[]>('/api/services'),
+    })
+
+    const { data: notificationChannels } = useQuery({
+        queryKey: ['notification-channels'],
+        queryFn: () => $fetch<{ email: boolean }>('/api/notifications/status'),
+    })
+
+    const selectedClient = computed(() => clients.value?.find((c: ClientItem) => c.user_id === form.client_id) || null)
+
+    // Why the confirmation email can't be sent (null = it can). No client selected = walk-in fallback.
+    const emailBlockedReason = computed(() =>
+        getEmailIneligibility({ mailConfigured: !!notificationChannels.value?.email, client: selectedClient.value }),
+    )
+
+    const sendConfirmationEmail = computed({
+        get: () => notifyEmail.value && !emailBlockedReason.value,
+        set: (value: boolean) => { notifyEmail.value = value },
     })
 
     // Sellable bonos/packages catalog (to sell a bono within an appointment)
@@ -119,8 +141,11 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
                 })
             }
         },
-        onSuccess: () => {
-            const msg = selectedBooking.value ? 'Cita actualizada' : 'Cita programada'
+        onSuccess: (result) => {
+            const emailStatus = (result as { notification?: { email?: string } } | undefined)?.notification?.email
+            let msg = selectedBooking.value ? 'Cita actualizada' : 'Cita programada'
+            if (emailStatus === 'sent') msg += ' y confirmación enviada por email'
+            else if (emailStatus === 'failed') msg += ', pero no se pudo enviar el email de confirmación'
             emit('toast', msg, 'success')
             queryClient.invalidateQueries({ queryKey: ['bookings'] })
             emit('refresh')
@@ -136,6 +161,8 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
     })
 
     const saveBooking = () => {
+        // Decided before the walk-in fallback below, so the fallback client is never emailed
+        const notify = !!form.client_id && sendConfirmationEmail.value
         if (!form.client_id && clients.value?.length) {
             const fallback = clients.value.find((c: ClientItem) => 
                 c.name?.toLowerCase().includes('no registrado') || 
@@ -147,13 +174,14 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         if (form.items.length === 0) return emit('toast', 'Añade al menos un servicio', 'error')
         
         // Date/Time validation for NEW bookings has been removed to allow scheduling past bookings        
-        proceedSaveBooking()
+        proceedSaveBooking(notify)
     }
 
-    const proceedSaveBooking = () => {
+    const proceedSaveBooking = (notifyEmailOnCreate = false) => {
         performSave({
             ...form,
             duration: Number(form.duration),
+            ...(selectedBooking.value ? {} : { notify_email: notifyEmailOnCreate }),
         })
     }
 
@@ -190,6 +218,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
             form.start_time = prefillTime.value || '10:00'
             form.duration = 0
             form.notes = ''
+            notifyEmail.value = true
             
             // Re-apply staff auto-fill if resetting a new booking
             if (staff.value) {
@@ -222,5 +251,7 @@ export function useBookingForm(emit: (event: 'toast' | 'refresh' | 'delete', ...
         localError,
         showLocalError,
         updateDuration,
+        sendConfirmationEmail,
+        emailBlockedReason,
     }
 }

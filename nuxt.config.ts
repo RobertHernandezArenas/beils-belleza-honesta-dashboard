@@ -55,6 +55,16 @@ export default defineNuxtConfig({
 		// Salon / Issuer Info
 		salonNif: process.env.SALON_NIF || '00000000T',
 		salonName: process.env.SALON_NAME || 'Beils Belleza Honesta',
+		salonAddress: process.env.SALON_ADDRESS || '',
+		salonPhone: process.env.SALON_PHONE || '',
+
+		// Outgoing mail (SMTP). Considered configured only when host and sender are set.
+		smtpHost: process.env.SMTP_HOST || '',
+		smtpPort: process.env.SMTP_PORT || '',
+		smtpSecure: process.env.SMTP_SECURE || '',
+		smtpUser: process.env.SMTP_USER || '',
+		smtpPass: process.env.SMTP_PASS || '',
+		mailFrom: process.env.MAIL_FROM || '',
 
 		// Private keys (Server-side only)
 		aeatWsdlUrl:

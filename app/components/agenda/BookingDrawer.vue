@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CatalogItem } from '~~/shared/types/domain'
+import type { EmailIneligibleReason } from '~~/shared/utils/email-eligibility'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Trash2, X } from 'lucide-vue-next'
@@ -36,8 +37,16 @@ const {
 
     localError,
     showLocalError,
-    updateDuration
+    updateDuration,
+    sendConfirmationEmail,
+    emailBlockedReason
 } = useBookingForm(emit)
+
+const emailBlockedHints: Record<EmailIneligibleReason, string> = {
+    mail_not_configured: 'El envío de emails no está configurado.',
+    walk_in: 'Selecciona un cliente registrado para enviarle la confirmación.',
+    no_email: 'El cliente no tiene un email válido.',
+}
 
 const clientSelectorRef = ref<InstanceType<typeof BookingClientSelector> | null>(null)
 const itemSelectorRef = ref<InstanceType<typeof BookingItemSelector> | null>(null)
@@ -191,6 +200,18 @@ const morphTransition = computed(() =>
                     </div>
 
                     <div class="divider my-0 opacity-50"/>
+
+                    <!-- Notifications (new bookings only) -->
+                    <div v-if="!selectedBooking" class="flex flex-col gap-2">
+                        <span class="text-text-muted text-[10px] font-bold uppercase tracking-widest">Notificaciones</span>
+                        <label class="flex items-center gap-3" :class="emailBlockedReason ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'">
+                            <input v-model="sendConfirmationEmail" type="checkbox" class="checkbox checkbox-sm checkbox-primary" :disabled="!!emailBlockedReason" >
+                            <span class="text-xs font-bold text-text-primary">Enviar confirmación por email</span>
+                        </label>
+                        <span v-if="emailBlockedReason" class="text-text-muted pl-8 text-[10px]">{{ emailBlockedHints[emailBlockedReason] }}</span>
+                    </div>
+
+                    <div v-if="!selectedBooking" class="divider my-0 opacity-50"/>
 
                     <!-- Notes -->
                     <div class="form-control pb-8">

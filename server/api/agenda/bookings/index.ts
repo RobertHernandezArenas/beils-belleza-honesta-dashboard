@@ -1,6 +1,47 @@
 import type { IncomingLineItem } from '~~/shared/types/line-item'
 import type { Prisma } from '@prisma/client'
+import { sendBookingConfirmation, type EmailNotificationStatus } from '../../../utils/booking-email'
+import { getMailConfig, isMailConfigured, sendMail } from '../../../utils/mailer'
 
+interface CreatedBooking {
+	client_id: string
+	booking_date: Date
+	start_time: string
+	duration: number
+	staff: { name: string; surname: string | null } | null
+	booking_items: { name: string }[]
+}
+
+/** Sends the booking confirmation email. Eligibility is re-checked here (the drawer is not trusted). */
+async function notifyBookingByEmail(booking: CreatedBooking): Promise<EmailNotificationStatus> {
+	try {
+		const config = useRuntimeConfig()
+		const mailConfigured = isMailConfigured(getMailConfig())
+		const recipient = mailConfigured
+			? await prisma.user.findUnique({ where: { user_id: booking.client_id }, select: { name: true, surname: true, email: true } })
+			: null
+		const professional = booking.staff ? `${booking.staff.name} ${booking.staff.surname || ''}`.trim() : null
+
+		return await sendBookingConfirmation({
+			requested: true,
+			mailConfigured,
+			recipient,
+			send: sendMail,
+			content: {
+				salon: { name: config.salonName, address: config.salonAddress, phone: config.salonPhone },
+				clientName: recipient?.name || '',
+				bookingDate: booking.booking_date,
+				startTime: booking.start_time,
+				duration: booking.duration,
+				services: booking.booking_items.map(item => item.name),
+				professional,
+			},
+		})
+	} catch {
+		console.error('[BOOKING_EMAIL_ERROR] Could not prepare the confirmation email')
+		return 'failed'
+	}
+}
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -173,7 +214,10 @@ export default defineEventHandler(async event => {
 				},
 			})
 
-			return booking
+			// The booking is already saved: the email outcome is only reported, never an error
+			const email = body.notify_email === true ? await notifyBookingByEmail(booking) : 'skipped'
+
+			return { ...booking, notification: { email } }
 		} catch (rawError) {
 			const error = toApiError(rawError)
 			console.error('[BOOKING_CREATE_ERROR]', error)
