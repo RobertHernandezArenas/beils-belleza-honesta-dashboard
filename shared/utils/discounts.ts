@@ -94,8 +94,9 @@ export function describeSaleDiscounts(cart: CartDiscountSnapshot): { label: stri
 	const coupon = couponRuleOf(cart)
 	const hasManualSnapshot = !!normalizeDiscountKind(cart.manual_discount_type)
 
-	if (coupon && cart.coupon_discount_amount) {
-		lines.push({ label: `Cupón ${cart.coupon_code} (${formatRule(coupon)})`, amount: cart.coupon_discount_amount })
+	// Shown even at 0,00 € so the sale keeps the trace of the coupon it used
+	if (coupon) {
+		lines.push({ label: `Cupón ${cart.coupon_code} (${formatRule(coupon)})`, amount: cart.coupon_discount_amount ?? 0 })
 	}
 	if (hasManualSnapshot) {
 		const manual = manualRuleOf(cart)

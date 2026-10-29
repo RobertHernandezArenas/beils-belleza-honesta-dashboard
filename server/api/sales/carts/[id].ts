@@ -53,6 +53,14 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 404, statusMessage: 'Cart not found' })
 		}
 
+		// The coupon is locked after the sale: a different (or cleared) code is rejected, not ignored
+		if (body.coupon_code !== undefined) {
+			const normalize = (code: unknown) => (typeof code === 'string' ? code.trim().toUpperCase() : '')
+			if (normalize(body.coupon_code) !== normalize(currentCart.coupon_code)) {
+				throw createError({ statusCode: 400, statusMessage: 'El cupón de una venta no se puede cambiar' })
+			}
+		}
+
     if (currentCart.aeat_status === 'submitted') {
       // Keep a warning log but allow the change for this management dashboard
       console.warn(`Modifying a cart that was already submitted to AEAT (ID: ${id}). Consistency check required.`)

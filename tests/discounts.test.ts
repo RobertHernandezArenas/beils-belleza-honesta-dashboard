@@ -110,6 +110,19 @@ describe('describeSaleDiscounts', () => {
 		assert.deepEqual(describeSaleDiscounts({ discount: 12 }), [{ label: 'Descuento', amount: 12 }])
 		assert.deepEqual(describeSaleDiscounts({ discount: 0 }), [])
 	})
+
+	it('keeps the coupon line for traceability even when it discounted 0,00 €', () => {
+		assert.deepEqual(
+			describeSaleDiscounts({
+				discount: 0,
+				coupon_code: 'VERANO10',
+				coupon_discount_type: 'percentage',
+				coupon_discount_value: 10,
+				coupon_discount_amount: 0,
+			}),
+			[{ label: 'Cupón VERANO10 (−10%)', amount: 0 }],
+		)
+	})
 })
 
 describe('prorateDiscountByTaxRate', () => {
