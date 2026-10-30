@@ -331,25 +331,17 @@ pnpm test
 
 ## 🌐 Despliegue en Producción (Plesk / Phusion Passenger)
 
-La aplicación está diseñada para desplegarse de manera óptima en servidores VPS gestionados con Plesk / AlmaLinux / Ubuntu utilizando Phusion Passenger sobre Node.js:
+La aplicación se despliega en servidores Plesk (Linux) con Phusion Passenger sobre Node.js. El repositorio incluye `server.cjs` como puente hacia la salida compilada de Nitro.
 
-1. **Seleccionar Versión de Node.js en Plesk:** Asegurarse de que el dominio tiene asignado **Node.js 22+ o 24+**.
-2. **Archivo de Entrada del Servidor:** El repositorio incluye `server.cjs` en la raíz como puente hacia la salida compilada de Nitro:
-   ```javascript
-   import('./.output/server/index.mjs')
-   ```
-3. **Instalación y Compilación:**
-   ```bash
-   pnpm install --frozen-lockfile
-   pnpm prisma:generate
-   pnpm build
-   ```
-4. **Ejecutar Migraciones de Base de Datos y Permisos de Subida:**
-   ```bash
-   pnpm db:fix
-   pnpm uploads:migrate:apply
-   ```
-5. **Reinicio de la Aplicación:** Pulsar "Reiniciar aplicación" en el panel de Node.js de Plesk o tocar el archivo `tmp/restart.txt`.
+**Resumen del flujo:**
+
+1. Node.js 22.22.3+, 24.15+ o 26+ asignado al dominio, con archivo de inicio `server.cjs`.
+2. Variables de entorno en `/httpdocs/.env` (`JWT_SECRET` es obligatorio en producción).
+3. `pnpm install --frozen-lockfile` y `pnpm build`.
+4. `pnpm db:fix` **antes** de reiniciar, o fallan las ventas.
+5. Reiniciar la aplicación desde el panel o con `touch tmp/restart.txt`.
+
+📘 **Tutorial completo, paso a paso, con tabla de configuración, variables y solución de problemas:** [docs/tutorial-despliegue-plesk.md](docs/tutorial-despliegue-plesk.md)
 
 ---
 

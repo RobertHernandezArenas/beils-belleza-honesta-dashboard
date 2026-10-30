@@ -128,6 +128,19 @@ Esta sección desglosa las capacidades técnicas de la plataforma agrupadas por 
 A continuación se detalla la evolución técnica y funcional de la plataforma organizada por entregas sucesivas desde el inicio del proyecto:
 
 
+### Sin publicar — Cupones, Pagos de Deuda, Email de Citas & Guía de Despliegue (Octubre 2026)
+**Rango de Commits:** `c574ce5` a `36cfccd` · **Requiere:** `pnpm db:fix` antes de desplegar
+
+- **Cupones y descuentos:** cupones con código, validez y usos máximos, aplicables en TPV, en ventas a deber y con descuentos manuales en € o %. Ticket y factura muestran cada descuento; la factura reparte el descuento por tipo de IVA.
+- **Deudas:** las ventas a deber se facturan al crearlas, en una sola operación atómica. Cada cobro genera su recibo ("Pago X de N") y la factura reimpresa muestra el historial de cobros.
+- **/ventas:** cada venta aparece una vez con su estado de pago, más una fila "Cobro de deuda" por cada cobro. Los totales se separan en Facturado y Cobrado. Las consultas aceptan rango de fechas y tienen tope de 1000 filas.
+- **Pago mixto:** guarda el desglose por método y lo valida contra el total del servidor.
+- **Ticket y factura:** datos reales del salón (NIF, nombre, dirección, teléfono) desde configuración, etiquetas de todos los métodos de pago y número de factura real.
+- **Citas:** checkbox de confirmación por email al crear la cita, con Nodemailer y SMTP por variables de entorno. La cita se guarda aunque el envío falle.
+- **Seguridad:** script `pnpm admin:reset-password` para rotar la contraseña de un admin y cerrar sus sesiones.
+- **Documentación:** nuevo [tutorial de despliegue en Plesk](docs/tutorial-despliegue-plesk.md).
+
+
 ### v2.0.0 — Gran Hardening de Seguridad, Bonos Compartidos & RGPD (Octubre 2026)
 **Rango de Commits:** `a2128e0` (#253) a `14629a0` (#302) · **Total:** 50 commits
 
