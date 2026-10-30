@@ -288,21 +288,24 @@ La aplicación estará disponible en `http://localhost:3000`.
 
 ## 🧾 Operaciones Fiscales & Sincronización de Tickets
 
-Para garantizar la continuidad anual de comprobantes requerida por el reglamento de facturación, el repositorio cuenta con herramientas automatizadas de auditoría y corrección:
+Para garantizar la continuidad anual de comprobantes requerida por el reglamento de facturación, el repositorio cuenta con herramientas de auditoría y corrección. **Son migraciones puntuales: no se ejecutan en cada despliegue.** Solo se corren si la auditoría lo indica, y siempre con un respaldo completo de la base previo.
 
 ```bash
-# 1. Auditar secuencias y puntos de control cronológicos
+# 1. Auditar secuencias y puntos de control cronológicos (solo lectura)
 pnpm run tickets:verify
 
-# 2. Re-secuenciar tickets con discontinuidad (simulación previa)
+# 2. Solo si hay discontinuidades: simular la resecuenciación (no cambia nada)
 pnpm run tickets:migrate
 
-# 3. Aplicar resecuenciación en la base de datos de producción
+# 3. Solo después de revisar la simulación: aplicar la resecuenciación
 pnpm run tickets:migrate:apply
 
-# 4. Sincronizar citas de la agenda que fueron cobradas pero quedaron huérfanas
+# 4. Solo si la auditoría reporta citas huérfanas: simular y luego aplicar
+pnpm run tickets:sync-agenda
 pnpm run tickets:sync-agenda:apply
 ```
+
+Procedimiento detallado: [docs/tutorial-migracion-tickets.md](docs/tutorial-migracion-tickets.md).
 
 > 📖 **Procedimientos Operativos Detallados:**
 > - [Guía de Migración de Tickets y Conciliación con Agenda](file:///docs/tutorial-migracion-tickets.md)

@@ -106,15 +106,25 @@ pnpm db:push        # crea todo el esquema
 pnpm seed:admin     # crea el admin y muestra una contraseña aleatoria UNA sola vez
 ```
 
-**Base existente:**
+**Base existente (en cada despliegue):**
 
 ```bash
 pnpm db:fix                   # agrega lo nuevo: cupones, descuentos, payment_breakdown
-pnpm uploads:migrate          # simulación: muestra qué movería
-pnpm uploads:migrate:apply    # mueve a privado los uploads viejos de /public/uploads
 ```
 
 > **Importante:** correr `db:fix` **antes** de reiniciar la aplicación. Si arranca el código nuevo contra la base vieja, **fallan todas las ventas**.
+
+**Migraciones puntuales (no en cada despliegue):** solo si la auditoría lo indica. Hacé siempre un **respaldo completo** antes.
+
+1. **Uploads viejos en `public/uploads`:** simular con `pnpm uploads:migrate`. Si la simulación lista archivos, aplicar con `pnpm uploads:migrate:apply`. Si no hay nada, no hace falta.
+2. **Numeración de tickets:** auditar con `pnpm tickets:verify`. Si reporta saltos o duplicados:
+   ```bash
+   pnpm tickets:migrate          # simulación: no cambia nada
+   pnpm tickets:migrate:apply    # solo después de revisar la simulación
+   ```
+3. **Citas cobradas sin venta (huérfanas):** si la auditoría lo indica, `pnpm tickets:sync-agenda` simula y `pnpm tickets:sync-agenda:apply` aplica.
+
+Ver [docs/tutorial-migracion-tickets.md](tutorial-migracion-tickets.md) para el procedimiento detallado de la numeración.
 
 ## 7. Arrancar
 
