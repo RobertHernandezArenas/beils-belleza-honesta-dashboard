@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Sale } from '~~/shared/types/domain'
+import { describePayment, paymentStatusLabel, salePaymentStatus } from '~~/shared/utils/payments'
 import { Edit2, CheckCircle, Trash2, UserPlus, CreditCard, Banknote, Calendar } from 'lucide-vue-next'
 
 import { ref } from 'vue'
@@ -120,7 +121,10 @@ const formatCustomDate = (dateString: string) => {
                     <span class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg flex items-center gap-1.5">
                         <CreditCard v-if="cart.payment_method === 'card'" class="size-3.5" />
                         <Banknote v-if="cart.payment_method === 'cash'" class="size-3.5" />
-                        {{ cart.payment_method }}
+                        {{ describePayment(cart.payment_method, cart.payment_breakdown) }}
+                    </span>
+                    <span v-if="salePaymentStatus(cart)" class="bg-bg-card font-bold text-xs uppercase text-text-secondary border border-border-default px-3 py-1.5 rounded-lg">
+                        {{ paymentStatusLabel(salePaymentStatus(cart)!) }}
                     </span>
                 </div>
              </div>

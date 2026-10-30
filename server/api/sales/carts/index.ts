@@ -13,6 +13,8 @@ import {
 	priceSaleDiscounts,
 } from '../../../utils/sale-pricing'
 import { redeemCouponForSale, asCouponTx } from '../../../utils/coupons'
+import { resolvePaymentRecord } from '../../../utils/sale-payments'
+import { parseDateRange, SALES_LIST_LIMIT } from '../../../utils/date-range'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -23,15 +25,19 @@ export default defineEventHandler(async event => {
 
 		const whereClause: Prisma.CartWhereInput = {}
 		if (status) whereClause.status = status
+		const range = parseDateRange(query)
+		if (range) whereClause.created_at = range
 
 		const carts = await prisma.cart.findMany({
 			where: whereClause,
 			include: {
-				user: { select: { name: true, surname: true, email: true, avatar: true } },
+				user: { select: { name: true, surname: true, email: true, phone: true, avatar: true, document_number: true } },
 				items: true,
-				debts: true,
+				debts: { include: { payments: true } },
 			},
 			orderBy: { created_at: 'desc' },
+			// Safety net: a caller that sends no range still gets a bounded answer
+			take: SALES_LIST_LIMIT,
 		})
 
 		return carts
@@ -40,6 +46,8 @@ export default defineEventHandler(async event => {
 	if (method === 'POST') {
 		const body = await readBody(event)
 		const { user_id, items: rawItems, booking_id, ...cartData } = body
+		const paymentMethod: string = cartData.payment_method || 'cash'
+		const isDebtSale = paymentMethod === 'debt'
 
 		// Prices and tax come from the catalog, never from the request (client prices are ignored)
 		const saleLines = parseSaleLines(rawItems)
@@ -55,6 +63,11 @@ export default defineEventHandler(async event => {
 				statusCode: 400,
 				statusMessage: 'Selecciona un cliente registrado para vender un bono o paquete',
 			})
+		}
+
+		// A debt sale is owed by a registered client
+		if (isDebtSale && !user_id) {
+			throw createError({ statusCode: 400, statusMessage: 'Selecciona un cliente para dejar a deber.' })
 		}
 
 		// Wrap in transaction to ensure consistency
@@ -101,13 +114,17 @@ export default defineEventHandler(async event => {
 				: null
 			const manual = discountRequest.manual ?? null
 			const pricing = priceSaleDiscounts(subtotal, coupon?.rule ?? null, manual)
+			// A mixed payment must add up to the server total (a 400 rolls the coupon use back too)
+			const payment = resolvePaymentRecord(paymentMethod, cartData.payment_breakdown, pricing.total)
 
 			const createdCart = await tx.cart.create({
 				data: {
 					user_id: user_id || null,
 					booking_id: effectiveBookingId,
-					status: cartData.status || 'pending',
-					payment_method: cartData.payment_method || 'cash',
+					// A debt sale is invoiced like any other sale; what is owed lives in its Debt
+					status: isDebtSale ? 'completed' : cartData.status || 'pending',
+					payment_method: payment.payment_method,
+					payment_breakdown: payment.payment_breakdown,
 					notes: cartData.notes,
 					subtotal: pricing.subtotal,
 					discount: pricing.totalDiscount,
@@ -139,6 +156,19 @@ export default defineEventHandler(async event => {
 					},
 				},
 			})
+
+			// The debt is created with the sale: both exist or neither does
+			if (isDebtSale) {
+				await tx.debt.create({
+					data: {
+						user_id,
+						cart_id: createdCart.cart_id,
+						amount: pricing.total,
+						remaining: pricing.total,
+						status: pricing.total > 0 ? 'pending' : 'paid',
+					},
+				})
+			}
 
 			// Process post-creation actions for each item (deduct package sessions)
 			for (const item of items) {
@@ -267,7 +297,7 @@ export default defineEventHandler(async event => {
 		})
 
 		// Perform VeriFactu submission OUTSIDE the transaction (Risk 3.2 mitigate)
-		if (cartData.status === 'completed') {
+		if (cart.status === 'completed') {
 			try {
 				const currentUser = cart.user_id
 					? await prisma.user.findUnique({
@@ -317,7 +347,11 @@ export default defineEventHandler(async event => {
 		// Re-fetch final cart with items and user info for response
 		return await prisma.cart.findUnique({
 			where: { cart_id: cart.cart_id },
-			include: { items: true, user: { select: { name: true, surname: true, avatar: true } } },
+			include: {
+				items: true,
+				user: { select: { name: true, surname: true, avatar: true } },
+				debts: { include: { payments: true } },
+			},
 		})
 	}
 })

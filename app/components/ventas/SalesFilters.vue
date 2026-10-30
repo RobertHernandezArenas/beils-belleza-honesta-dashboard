@@ -17,6 +17,7 @@ const paymentMethodOptions = [
 	{ value: 'transfer', label: 'Transferencia' },
 	{ value: 'stripe', label: 'Stripe' },
 	{ value: 'bizum', label: 'Bizum' },
+	{ value: 'debt', label: 'A deber' },
 ]
 
 const emit = defineEmits<{

@@ -1,6 +1,9 @@
 import { ref, computed, watch } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { keepPreviousData, useQuery } from '@tanstack/vue-query'
 import type { Sale, SaleItem } from '~~/shared/types/domain'
+import { paymentMethodLabel, paymentStatusLabel, salePaymentStatus } from '~~/shared/utils/payments'
+import { salesFetchRange } from '~/utils/salesFetchRange'
+import { buildSalesLedger, type DebtPaymentRow, type LedgerEntry } from '~/utils/salesLedger'
 import { useSalesAnalytics, type SummaryTimeframe } from './useSalesAnalytics'
 import {
 	downloadSalesExportCsv,
@@ -64,11 +67,33 @@ export function useSales() {
 		}, 4000)
 	}
 
-	// Fetch sales
-	const { data: sales, isPending } = useQuery<Sale[]>({
-		queryKey: ['sales', 'completed'],
-		queryFn: () => $fetch<Sale[]>('/api/sales/carts', { query: { status: 'completed' } }),
+	// Carts (debt sales included) and debt payments inside the date range the filters need:
+	// /ventas lists sales and collections, but never downloads the whole history for a month view
+	const fetchRange = computed(() =>
+		salesFetchRange({
+			mode: filterDateMode.value,
+			single: filterDateSingle.value,
+			range: filterDateRange.value,
+			timeframe: summaryTimeframe.value,
+			year: selectedYear.value,
+		}),
+	)
+	const { data: carts, isPending: cartsPending } = useQuery<Sale[]>({
+		queryKey: ['sales', 'carts', fetchRange],
+		queryFn: () => $fetch<Sale[]>('/api/sales/carts', { query: fetchRange.value }),
+		placeholderData: keepPreviousData,
 	})
+	const { data: debtPayments, isPending: paymentsPending } = useQuery<DebtPaymentRow[]>({
+		queryKey: ['sales', 'debt-payments', fetchRange],
+		queryFn: () => $fetch<DebtPaymentRow[]>('/api/sales/debt-payments', { query: fetchRange.value }),
+		placeholderData: keepPreviousData,
+	})
+	const isPending = computed(() => cartsPending.value || paymentsPending.value)
+
+	const ledger = computed(() => buildSalesLedger(carts.value ?? [], debtPayments.value ?? []))
+	// Invoiced sales: what the KPIs, sparklines and exports work on
+	const sales = computed(() => ledger.value.invoiced)
+	const ledgerEntries = computed(() => ledger.value.entries)
 
 	// When user clicks one of the timeframe buttons, clear manual date pickers to prevent conflicting filters
 	const setTimeframe = (tf: SummaryTimeframe) => {
@@ -78,8 +103,8 @@ export function useSales() {
 	}
 
 	const filteredSales = computed(() => {
-		if (!sales.value) return []
-		return filterSalesList(sales.value, {
+		if (!ledgerEntries.value.length) return []
+		return filterSalesList(ledgerEntries.value, {
 			searchQuery: searchQuery.value,
 			filterDateMode: filterDateMode.value,
 			filterDateSingle: filterDateSingle.value,
@@ -90,7 +115,7 @@ export function useSales() {
 			selectedYear: selectedYear.value,
 			sortKey: sortKey.value,
 			sortOrder: sortOrder.value,
-		})
+		}) as LedgerEntry[]
 	})
 
 	watch([
@@ -119,6 +144,7 @@ export function useSales() {
 	const {
 		timeframeLabels,
 		summaryStats,
+		collectedStats,
 		totalSparkline,
 		totalSparklineArea,
 		countSparkline,
@@ -126,7 +152,7 @@ export function useSales() {
 		averageSparkline,
 		averageSparklineArea,
 		monthlyProjection,
-	} = useSalesAnalytics(sales, summaryTimeframe, selectedQuarter, selectedYear)
+	} = useSalesAnalytics(sales, summaryTimeframe, selectedQuarter, selectedYear, ledgerEntries)
 
 	const toggleSort = (key: 'id' | 'date' | 'payment_method' | 'total' | 'client') => {
 		if (sortKey.value === key) {
@@ -138,16 +164,32 @@ export function useSales() {
 	}
 
 	const getPaymentMethodBadge = (method: string | null | undefined) => {
-		const methods: Record<string, { label: string; class: string }> = {
-			cash: { label: 'EFECTIVO', class: 'bg-emerald-100 text-emerald-800' },
-			card: { label: 'TARJETA', class: 'bg-[#F6EFEA] text-[#9D7D62] border-[#E8DACD]' },
-			mixed: { label: 'MIXTO', class: 'bg-purple-100 text-purple-800' },
-			transfer: { label: 'TRANSFERENCIA', class: 'bg-orange-100 text-orange-800' },
-			stripe: { label: 'STRIPE', class: 'bg-indigo-100 text-indigo-800' },
-			bizum: { label: 'BIZUM', class: 'bg-sky-100 text-sky-800' },
+		const classes: Record<string, string> = {
+			cash: 'bg-emerald-100 text-emerald-800',
+			card: 'bg-[#F6EFEA] text-[#9D7D62] border-[#E8DACD]',
+			mixed: 'bg-purple-100 text-purple-800',
+			transfer: 'bg-orange-100 text-orange-800',
+			stripe: 'bg-indigo-100 text-indigo-800',
+			bizum: 'bg-sky-100 text-sky-800',
+			debt: 'bg-red-100 text-red-800',
 		}
-		const key = method || ''
-		return methods[key] || { label: key.toUpperCase(), class: 'bg-neutral text-neutral-content' }
+		const key = (method || '').toLowerCase()
+		return {
+			label: paymentMethodLabel(method).toUpperCase(),
+			class: classes[key] || 'bg-neutral text-neutral-content',
+		}
+	}
+
+	// Sales paid in installments show their payment status; everything else shows its method
+	const getPaymentBadge = (entry: LedgerEntry) => {
+		const status = entry.row_kind === 'sale' ? salePaymentStatus(entry) : null
+		if (!status) return getPaymentMethodBadge(entry.payment_method)
+		const classes = {
+			pending: 'bg-red-100 text-red-800',
+			partial: 'bg-amber-100 text-amber-800',
+			paid: 'bg-emerald-100 text-emerald-800',
+		}
+		return { label: paymentStatusLabel(status).toUpperCase(), class: classes[status.state] }
 	}
 
 	const getTotalItems = (items: SaleItem[]) => {
@@ -220,7 +262,8 @@ export function useSales() {
 		targetSales?: Sale[]
 		periodTitle?: string
 	}) => {
-		const salesToExport = targetSales || filteredSales.value
+		// Exports list sales; collections (debt payments) and not-yet-invoiced debt carts are left out
+		const salesToExport = targetSales || filteredSales.value.filter(e => e.row_kind === 'sale' && e.status === 'completed')
 		const title = periodTitle || currentPeriodTitle.value
 
 		if (!salesToExport.length) {
@@ -278,6 +321,7 @@ export function useSales() {
 		totalPages,
 		timeframeLabels,
 		summaryStats,
+		collectedStats,
 		totalSparkline,
 		totalSparklineArea,
 		countSparkline,
@@ -294,6 +338,7 @@ export function useSales() {
 		displayToast,
 		toggleSort,
 		getPaymentMethodBadge,
+		getPaymentBadge,
 		getTotalItems,
 		formatCurrency,
 		formatCustomDate,

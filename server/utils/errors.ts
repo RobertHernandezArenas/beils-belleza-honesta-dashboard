@@ -10,7 +10,7 @@ export interface ApiError {
 	statusMessage?: string
 	code?: string
 	meta?: unknown
-	data?: { statusMessage?: string }
+	data?: { statusMessage?: string; expected_total?: number }
 }
 
 // Type a caught `unknown` as ApiError WITHOUT copying it: the returned value

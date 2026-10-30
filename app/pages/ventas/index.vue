@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Sale, ModalRef } from '~~/shared/types/domain'
+import type { LedgerEntry } from '~/utils/salesLedger'
+import { printDebtPaymentReceipt, printInvoice } from '~/utils/printHelpers'
 import { FileDown } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
 import PurchaseDetailsModal from '~/components/shared/PurchaseDetailsModal.vue'
@@ -42,6 +44,7 @@ const {
 	totalPages,
 	timeframeLabels,
 	summaryStats,
+	collectedStats,
 	totalSparkline,
 	totalSparklineArea,
 	countSparkline,
@@ -55,7 +58,7 @@ const {
 	toastType,
 	showToast,
 	toggleSort,
-	getPaymentMethodBadge,
+	getPaymentBadge,
 	getTotalItems,
 	formatCurrency,
 	formatCustomDate,
@@ -72,6 +75,23 @@ const purchaseDetailsModalRef = ref<ModalRef | null>(null)
 
 const openDetails = (sale: Sale) => {
 	purchaseDetailsModalRef.value?.open?.(sale)
+}
+
+// Collection rows: reprint the receipt of that payment, or the invoice of the sale it belongs to
+const printCollectionReceipt = (entry: LedgerEntry) => {
+	if (!entry.debt || !entry.payment) return
+	const user = entry.user
+	printDebtPaymentReceipt({
+		debt: entry.debt,
+		paymentId: entry.payment.payment_id,
+		invoiceNumber: entry.source_sale?.invoice_number,
+		manualDebt: !entry.source_sale,
+		clientName: user ? `${user.name ?? ''} ${user.surname ?? ''}`.trim() : '',
+		items: entry.source_sale?.items,
+	})
+}
+const printCollectionInvoice = (entry: LedgerEntry) => {
+	if (entry.source_sale) printInvoice(entry.source_sale)
 }
 
 // Compute sum totals for historic values
@@ -192,6 +212,7 @@ const availableYears = computed(() => {
 					:timeframe-labels="timeframeLabels"
 					:summary-timeframe="summaryTimeframe"
 					:summary-stats="summaryStats"
+					:collected-stats="collectedStats"
 					:sales-count="salesCount"
 					:sales-total-sum="salesTotalSum"
 					:total-sparkline="totalSparkline"
@@ -227,10 +248,12 @@ const availableYears = computed(() => {
 					:sort-order="sortOrder"
 					:get-ticket-display="getTicketDisplay"
 					:format-custom-date="formatCustomDate"
-					:get-payment-method-badge="getPaymentMethodBadge"
+					:get-payment-badge="getPaymentBadge"
 					:get-total-items="getTotalItems"
 					:format-currency="formatCurrency"
 					@open-details="openDetails"
+					@print-receipt="printCollectionReceipt"
+					@print-invoice="printCollectionInvoice"
 					@toggle-sort="toggleSort"
 				/>
 

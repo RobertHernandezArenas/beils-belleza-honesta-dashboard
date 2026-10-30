@@ -14,6 +14,8 @@ import {
 	priceSaleDiscounts,
 } from '../../../utils/sale-pricing'
 import { couponRuleOf, manualRuleOf } from '../../../../shared/utils/discounts'
+import { parsePaymentBreakdown } from '../../../../shared/utils/payments'
+import { resolvePaymentRecord } from '../../../utils/sale-payments'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -29,7 +31,7 @@ export default defineEventHandler(async event => {
 			include: {
 				user: { select: { name: true, surname: true, email: true, phone: true } },
 				items: true,
-				debts: true,
+				debts: { include: { payments: true } },
 			},
 		})
 
@@ -81,6 +83,18 @@ export default defineEventHandler(async event => {
 		const pricing = repriced
 			? priceSaleDiscounts(pricedItems ? saleSubtotal(pricedItems) : currentCart.subtotal, couponRule, manualRule)
 			: null
+
+		// Payment: a mixed split must add up to the (possibly repriced) total. A mixed cart whose
+		// total changed without a new split loses the stale split instead of printing wrong amounts.
+		let paymentData: Prisma.CartUncheckedUpdateInput = {}
+		const nextTotal = pricing ? pricing.total : currentCart.total
+		if (body.payment_method !== undefined || body.payment_breakdown !== undefined) {
+			const method: string = body.payment_method ?? currentCart.payment_method ?? 'cash'
+			const breakdown = body.payment_breakdown ?? parsePaymentBreakdown(currentCart.payment_breakdown)
+			paymentData = resolvePaymentRecord(method, breakdown, nextTotal)
+		} else if (currentCart.payment_method === 'mixed' && nextTotal !== currentCart.total) {
+			paymentData = { payment_breakdown: null }
+		}
 
 		const updatedCart = await prisma.$transaction(async tx => {
 			let subtotal = currentCart.subtotal
@@ -215,7 +229,7 @@ export default defineEventHandler(async event => {
 			const updateData: Prisma.CartUncheckedUpdateInput = {
 				user_id: body.user_id,
 				status: body.status,
-				payment_method: body.payment_method,
+				...paymentData,
 				notes: body.notes,
 				subtotal,
 				total,

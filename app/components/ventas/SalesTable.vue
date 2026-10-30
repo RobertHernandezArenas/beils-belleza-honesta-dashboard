@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import type { Sale, SaleItem } from '~~/shared/types/domain'
-import { ArrowUp, ArrowDown, ArrowUpDown, ShoppingBag, ExternalLink } from 'lucide-vue-next'
+import type { SaleItem } from '~~/shared/types/domain'
+import type { LedgerEntry } from '~/utils/salesLedger'
+import { ArrowUp, ArrowDown, ArrowUpDown, ShoppingBag, ExternalLink, Printer, FileText } from 'lucide-vue-next'
 
 interface Props {
-	paginatedSales: Sale[]
+	paginatedSales: LedgerEntry[]
 	isPending: boolean
 	sortKey: 'id' | 'date' | 'payment_method' | 'total' | 'client'
 	sortOrder: 'asc' | 'desc'
-	getTicketDisplay: (sale: Sale) => string
+	getTicketDisplay: (sale: LedgerEntry) => string
 	formatCustomDate: (dateString: string) => string
-	getPaymentMethodBadge: (method: string) => { label: string; class: string }
+	getPaymentBadge: (sale: LedgerEntry) => { label: string; class: string }
 	getTotalItems: (items: SaleItem[]) => number
 	formatCurrency: (val: number) => string
 }
@@ -17,7 +18,7 @@ interface Props {
 defineProps<Props>()
 
 const emit = defineEmits<{
-	(e: 'open-details', sale: Sale): void
+	(e: 'open-details' | 'print-receipt' | 'print-invoice', sale: LedgerEntry): void
 	(e: 'toggle-sort', key: 'id' | 'date' | 'payment_method' | 'total' | 'client'): void
 }>()
 </script>
@@ -72,10 +73,14 @@ const emit = defineEmits<{
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-border-default/60 bg-bg-card">
-				<tr v-for="sale in paginatedSales" :key="sale.cart_id" class="hover:bg-bg-hover transition-colors cursor-pointer group" @click.stop.prevent="emit('open-details', sale)">
+				<tr v-for="sale in paginatedSales" :key="`${sale.row_kind}-${sale.cart_id}`" class="hover:bg-bg-hover transition-colors group" :class="{ 'cursor-pointer': sale.row_kind === 'sale' }" @click.stop.prevent="sale.row_kind === 'sale' && emit('open-details', sale)">
 					<td class="py-4 pl-6">
 						<div class="text-[11px] font-bold text-text-muted tracking-wider uppercase font-mono">
-							{{ getTicketDisplay(sale) }}
+							<template v-if="sale.row_kind === 'debt_payment'">
+								Cobro de deuda
+								<span class="block normal-case">{{ sale.invoice_number || 'Sin factura' }}</span>
+							</template>
+							<template v-else>{{ getTicketDisplay(sale) }}</template>
 						</div>
 					</td>
 					<td class="py-4 px-4 text-sm font-semibold text-text-muted tabular-nums">
@@ -98,12 +103,12 @@ const emit = defineEmits<{
 					</td>
 					<td class="py-4 px-4">
 						<span class="bg-bg-muted/80 text-text-secondary border border-border-default/70 text-[10px] font-extrabold px-2.5 py-1 rounded-md tracking-wider uppercase font-sans">
-							{{ getTotalItems(sale.items || []) }} items
+							{{ sale.row_kind === 'debt_payment' ? 'Cobro' : `${getTotalItems(sale.items || [])} items` }}
 						</span>
 					</td>
 					<td class="py-4 px-4 text-center">
-						<span class="text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border shadow-sm" :class="getPaymentMethodBadge(sale.payment_method || '').class">
-							{{ getPaymentMethodBadge(sale.payment_method || '').label }}
+						<span class="text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border shadow-sm" :class="getPaymentBadge(sale).class">
+							{{ getPaymentBadge(sale).label }}
 						</span>
 					</td>
 					<td class="py-4 px-4 text-right">
@@ -111,7 +116,19 @@ const emit = defineEmits<{
 							{{ formatCurrency(sale.total) }}
 						</div>
 					</td>
-					<td class="py-4 pr-6">
+					<td v-if="sale.row_kind === 'debt_payment'" class="py-4 pr-6">
+						<div class="flex items-center justify-center gap-2">
+							<button class="flex items-center gap-1.5 text-text-primary hover:text-primary transition-colors bg-bg-muted/40 hover:bg-bg-muted px-2.5 py-1.5 rounded-lg border border-border-default/30 shadow-sm" aria-label="Reimprimir recibo" title="Reimprimir recibo de cobro" @click.stop.prevent="emit('print-receipt', sale)">
+								<Printer class="size-3.5" />
+								<span class="text-xs font-bold">Recibo</span>
+							</button>
+							<button v-if="sale.source_sale" class="flex items-center gap-1.5 text-text-primary hover:text-primary transition-colors bg-bg-muted/40 hover:bg-bg-muted px-2.5 py-1.5 rounded-lg border border-border-default/30 shadow-sm" aria-label="Reimprimir factura" title="Reimprimir factura de la venta" @click.stop.prevent="emit('print-invoice', sale)">
+								<FileText class="size-3.5" />
+								<span class="text-xs font-bold">Factura</span>
+							</button>
+						</div>
+					</td>
+					<td v-else class="py-4 pr-6">
 						<button class="flex items-center justify-center gap-2 w-full text-text-primary hover:text-primary transition-colors bg-bg-muted/40 hover:bg-bg-muted px-3 py-1.5 rounded-lg border border-border-default/30 shadow-sm" aria-label="Ver Detalles">
 							<ExternalLink class="size-3.5" />
 							<span class="text-xs font-bold">Ver Detalles</span>

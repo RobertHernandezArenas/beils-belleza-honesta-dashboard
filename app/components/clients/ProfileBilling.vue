@@ -3,6 +3,7 @@ import type { ClientProfile } from '~~/shared/types/domain'
 import { Receipt, CheckCircle2, ShoppingBag, Wallet, History, AlertCircle, PieChart } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import InfoTooltip from '~/components/shared/InfoTooltip.vue'
+import { describePayment } from '~~/shared/utils/payments'
 
 const props = defineProps({
   client: { type: Object as PropType<ClientProfile>, required: true }
@@ -232,7 +233,7 @@ const chartOptions = computed(() => {
                 </span>
               </td>
               <td class="px-3 sm:px-6 py-3 sm:py-4 text-center whitespace-nowrap">
-                <span class="badge badge-ghost badge-xs sm:badge-sm font-bold uppercase">{{ cart.payment_method || (locale === 'es' ? 'PENDIENTE' : 'PENDING') }}</span>
+                <span class="badge badge-ghost badge-xs sm:badge-sm font-bold uppercase">{{ cart.payment_method ? describePayment(cart.payment_method, cart.payment_breakdown) : (locale === 'es' ? 'PENDIENTE' : 'PENDING') }}</span>
               </td>
               <td class="px-4 sm:px-8 py-3 sm:py-4 text-right whitespace-nowrap">
                 <span class="text-text-primary text-sm sm:text-base font-black tabular-nums">{{ cart.total.toFixed(2) }}€</span>

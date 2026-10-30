@@ -127,6 +127,8 @@ export interface Sale {
 	manual_discount_value?: number | null
 	manual_discount_amount?: number | null
 	payment_method?: string | null
+	// JSON text (or already parsed) split of a "mixed" payment: [{ method, amount }]
+	payment_breakdown?: string | PaymentBreakdownPart[] | null
 	notes?: string | null
 	invoice_number?: string | null
 	invoice_type?: string | null
@@ -135,7 +137,12 @@ export interface Sale {
 	updated_at?: string
 	items?: SaleItem[]
 	user?: Partial<ClientDTO> | null
-	debts?: unknown[]
+	debts?: Debt[]
+}
+
+export interface PaymentBreakdownPart {
+	method: string
+	amount: number
 }
 
 export interface ClientPackageItem {
@@ -219,6 +226,7 @@ export interface DebtPayment {
 	debt_id: string
 	amount: number
 	payment_method: string
+	payment_breakdown?: string | PaymentBreakdownPart[] | null
 	payment_date: string
 	notes?: string | null
 }

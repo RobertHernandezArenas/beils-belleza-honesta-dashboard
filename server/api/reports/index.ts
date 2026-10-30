@@ -427,6 +427,7 @@ export default defineEventHandler(async (event) => {
 		card: 'Tarjeta',
 		mixed: 'Mixto',
 		transfer: 'Transferencia',
+		debt: 'A deber', // debt sales are invoiced when created, before any payment
 	}
 
 	const methodsAggregate = completedSales.reduce(

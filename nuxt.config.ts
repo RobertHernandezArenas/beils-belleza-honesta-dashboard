@@ -72,6 +72,13 @@ export default defineNuxtConfig({
 		aeatP12CertPath: process.env.AEAT_P12_CERT_PATH,
 		aeatP12Password: process.env.AEAT_P12_PASSWORD,
 
+		// Business data printed on every ticket and invoice (the print helpers run in the browser)
+		public: {
+			salonName: process.env.SALON_NAME || 'Beils Belleza Honesta',
+			salonNif: process.env.SALON_NIF || '00000000T',
+			salonAddress: process.env.SALON_ADDRESS || '',
+			salonPhone: process.env.SALON_PHONE || '',
+		},
 	},
 
 	// Self-hosted at build time: visitors never contact Google (GDPR)

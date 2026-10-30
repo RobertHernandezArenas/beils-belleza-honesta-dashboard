@@ -1,6 +1,7 @@
 import { computed, type Ref } from 'vue'
 import type { Sale } from '~~/shared/types/domain'
 import { getQuarterDateBounds } from '~/utils/salesExportCalculations'
+import { collectedInRange, type LedgerEntry } from '~/utils/salesLedger'
 
 export type SummaryTimeframe = 'day' | 'week' | 'month' | 'quarter' | 'year' | 'all'
 
@@ -8,7 +9,8 @@ export function useSalesAnalytics(
 	sales: Ref<Sale[] | undefined>,
 	summaryTimeframe: Ref<SummaryTimeframe>,
 	selectedQuarter?: Ref<number>,
-	selectedYear?: Ref<number>
+	selectedYear?: Ref<number>,
+	ledgerEntries?: Ref<LedgerEntry[] | undefined>
 ) {
 	const getTargetQuarter = () => selectedQuarter?.value || Math.floor(new Date().getMonth() / 3) + 1
 	const getTargetYear = () => selectedYear?.value || new Date().getFullYear()
@@ -130,6 +132,13 @@ export function useSalesAnalytics(
 		}
 	})
 
+	// Money actually received in the active period (not what was invoiced)
+	const collectedStats = computed(() => {
+		const startDate = getStartOfDate(summaryTimeframe.value)
+		const endDate = getEndOfDate(summaryTimeframe.value, startDate)
+		return collectedInRange(ledgerEntries?.value ?? [], startDate, endDate)
+	})
+
 	const bucketCount = computed(() => {
 		if (summaryTimeframe.value === 'day') return 8
 		if (summaryTimeframe.value === 'week') return 7
@@ -229,6 +238,7 @@ export function useSalesAnalytics(
 	return {
 		timeframeLabels,
 		summaryStats,
+		collectedStats,
 		totalSparkline,
 		totalSparklineArea,
 		countSparkline,

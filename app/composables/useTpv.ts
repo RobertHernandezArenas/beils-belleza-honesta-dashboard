@@ -3,6 +3,7 @@ import type { Booking, ClientDTO, Sale, CatalogItem } from '~~/shared/types/doma
 import type { IncomingLineItem } from '~~/shared/types/line-item'
 import type { ICoupon } from '~~/shared/types/marketing'
 import { computeSaleDiscounts, normalizeDiscountKind, type DiscountKind } from '~~/shared/utils/discounts'
+import { breakdownDifference, breakdownFromAmounts, type PaymentPart } from '~~/shared/utils/payments'
 
 export function useTpv() {
 	const queryClient = useQueryClient()
@@ -25,6 +26,8 @@ export function useTpv() {
 	const couponCode = ref('')
 	const appliedCoupon = ref<ICoupon | null>(null)
 	const paymentMethod = ref<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('card')
+	// Amount per method while paying "Mixto"
+	const mixedAmounts = ref<Record<string, number | null>>({})
 
 	// Toast State
 	const toastMessage = ref('')
@@ -191,30 +194,18 @@ export function useTpv() {
 			user_id?: string
 			status: string
 			payment_method: string
+			payment_breakdown?: PaymentPart[]
 			coupon_code?: string
 			manual_discount_type: DiscountKind
 			manual_discount_value: number
 			items: IncomingLineItem[]
 			booking_id?: string
 		}) => {
-			const res = await $fetch<Sale>('/api/sales/carts', {
+			// A debt sale creates its Debt (and its invoice) on the server in the same request
+			return await $fetch<Sale>('/api/sales/carts', {
 				method: 'POST',
 				body: payload,
 			})
-
-			if (paymentMethod.value === 'debt' && selectedClient.value) {
-				await $fetch('/api/sales/debts', {
-					method: 'POST',
-					body: {
-						user_id: selectedClient.value.user_id,
-						cart_id: res.cart_id,
-						amount: res.total,
-						status: 'pending',
-					},
-				})
-			}
-
-			return res
 		},
 		onSuccess: () => {
 			displayToast('Venta registrada con éxito', 'success')
@@ -388,6 +379,7 @@ export function useTpv() {
 		couponCode.value = ''
 		appliedCoupon.value = null
 		paymentMethod.value = 'card'
+		mixedAmounts.value = {}
 		processedBookingId.value = null
 	}
 
@@ -454,10 +446,17 @@ export function useTpv() {
 			return
 		}
 
+		const breakdown = breakdownFromAmounts(mixedAmounts.value)
+		if (paymentMethod.value === 'mixed' && breakdownDifference(breakdown, cartTotal.value) !== 0) {
+			displayToast('El pago mixto debe sumar exactamente el total.', 'error')
+			return
+		}
+
 		processSale({
 			user_id: selectedClient.value?.user_id,
-			status: paymentMethod.value === 'debt' ? 'pending' : 'completed',
+			status: 'completed',
 			payment_method: paymentMethod.value,
+			payment_breakdown: paymentMethod.value === 'mixed' ? breakdown : undefined,
 			coupon_code: appliedCoupon.value?.code,
 			manual_discount_type: manualDiscountType.value,
 			manual_discount_value: Number(discountAmount.value) || 0,
@@ -489,6 +488,7 @@ export function useTpv() {
 		appliedCoupon,
 		validCoupons,
 		paymentMethod,
+		mixedAmounts,
 		toastMessage,
 		toastType,
 		showToast,

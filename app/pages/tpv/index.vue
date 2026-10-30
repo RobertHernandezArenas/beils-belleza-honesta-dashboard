@@ -20,6 +20,7 @@ import type { CatalogItem } from '~~/shared/types/domain'
 		appliedCoupon,
 		validCoupons,
 		paymentMethod,
+		mixedAmounts,
 		toastMessage,
 		toastType,
 		showToast,
@@ -120,6 +121,7 @@ import type { CatalogItem } from '~~/shared/types/domain'
 				v-model:manual-discount-type="manualDiscountType"
 				v-model:coupon-code="couponCode"
 				v-model:payment-method="paymentMethod"
+				v-model:mixed-amounts="mixedAmounts"
 
 				:cart-items="cartItems"
 				:selected-client="selectedClient"

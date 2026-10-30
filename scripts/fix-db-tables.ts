@@ -169,6 +169,22 @@ async function checkAndFix() {
             }
         }
 
+        // Check mixed-payment breakdown columns (JSON text with the amount per method)
+        const breakdownColumns: [string, string][] = [
+            ['carts', 'payment_breakdown'],
+            ['debt_payments', 'payment_breakdown'],
+        ];
+        for (const [table, column] of breakdownColumns) {
+            const existing = await conn.query(`SHOW COLUMNS FROM ${table} LIKE '${column}'`);
+            if (existing.length === 0) {
+                console.log(`Column ${table}.${column} is missing. Adding...`);
+                await conn.query(`ALTER TABLE ${table} ADD COLUMN ${column} TEXT NULL`);
+                console.log(`✅ Column ${table}.${column} added successfully.`);
+            } else {
+                console.log(`✅ Column ${table}.${column} already exists.`);
+            }
+        }
+
         const couponIndex = await conn.query("SHOW INDEX FROM carts WHERE Key_name = 'carts_coupon_id_idx'");
         if (couponIndex.length === 0) {
             console.log('Index carts_coupon_id_idx is missing. Adding...');

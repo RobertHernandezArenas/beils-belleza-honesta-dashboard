@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import type { Debt, FetchError } from '~~/shared/types/domain'
+import type { Debt, DebtPayment, FetchError } from '~~/shared/types/domain'
+	import { breakdownDifference, breakdownFromAmounts } from '~~/shared/utils/payments'
+	import { printDebtPaymentReceipt } from '~/utils/printHelpers'
+	import MixedBreakdownInput from '~/components/shared/MixedBreakdownInput.vue'
 	import { useQuery, useMutation } from '@tanstack/vue-query'
 	import { Landmark, Search, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 	import { useI18n } from 'vue-i18n'
 	import AppSelect from '~/components/ui/AppSelect.vue'
 
-	definePageMeta({ layout: 'default' })
+	definePageMeta({ layout: 'default' })
+
 	const { notifySalesChanged } = useRealtimeSales()
 	const { t } = useI18n()
 	const searchQuery = ref('')
@@ -18,7 +22,9 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 	const debtPaymentOptions = [
 		{ value: 'card', label: 'Tarjeta' },
 		{ value: 'cash', label: 'Efectivo' },
+		{ value: 'bizum', label: 'Bizum' },
 		{ value: 'transfer', label: 'Transferencia' },
+		{ value: 'mixed', label: 'Mixto' },
 	]
 	const filterStatus = ref('pending')
 	const toastMessage = ref('')
@@ -26,7 +32,9 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 	const showToast = ref(false)
 	const selectedDebt = ref<Debt | null>(null)
 	const paymentAmount = ref<number | null>(null)
-	const paymentMethod = ref<'card' | 'cash' | 'transfer'>('card')
+	const paymentMethod = ref('card')
+	// Amount typed per method when the payment is "Mixto"
+	const mixedAmounts = ref<Record<string, number | null>>({})
 	const paymentModalRef = ref<HTMLDialogElement | null>(null)
 
 	const queryParams = computed(() => {
@@ -52,12 +60,28 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 	})
 
 	const { mutate: updateDebt } = useMutation({
-		mutationFn: (payload: { id: string; amount: number; payment_method: string }) =>
-			$fetch(`/api/debts/${payload.id}/pay`, {
+		mutationFn: (payload: { id: string; amount: number; payment_method: string; payment_breakdown?: ReturnType<typeof breakdownFromAmounts> }) =>
+			$fetch<{ data: { debt: Debt; payment: DebtPayment } }>(`/api/debts/${payload.id}/pay`, {
 				method: 'POST',
-				body: { amount: payload.amount, payment_method: payload.payment_method },
+				body: {
+					amount: payload.amount,
+					payment_method: payload.payment_method,
+					payment_breakdown: payload.payment_breakdown,
+				},
 			}),
-		onSuccess: () => {
+		onSuccess: res => {
+			// Every payment produces its receipt (ticket de cobro)
+			const debt = selectedDebt.value
+			if (debt) {
+				printDebtPaymentReceipt({
+					debt: { amount: debt.amount, payments: res.data.debt.payments },
+					paymentId: res.data.payment.payment_id,
+					invoiceNumber: debt.cart?.invoice_number,
+					manualDebt: !debt.cart_id,
+					clientName: `${debt.user?.name ?? ''} ${debt.user?.surname ?? ''}`.trim(),
+					items: debt.cart?.items,
+				})
+			}
 			// Real-time refresh of sales/overview views (this tab + broadcast to others)
 			notifySalesChanged()
 			displayToast(t('finances.debts.messages.success'), 'success')
@@ -80,6 +104,7 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 			selectedDebt.value = null
 			paymentAmount.value = null
 			paymentMethod.value = 'card'
+			mixedAmounts.value = {}
 		}, 300)
 	}
 
@@ -92,10 +117,17 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 			return
 		}
 
+		const breakdown = breakdownFromAmounts(mixedAmounts.value)
+		if (paymentMethod.value === 'mixed' && breakdownDifference(breakdown, amount) !== 0) {
+			displayToast('El pago mixto debe sumar exactamente el importe.', 'error')
+			return
+		}
+
 		updateDebt({
 			id: selectedDebt.value.debt_id,
 			amount: amount,
 			payment_method: paymentMethod.value,
+			payment_breakdown: paymentMethod.value === 'mixed' ? breakdown : undefined,
 		})
 	}
 
@@ -307,6 +339,8 @@ import type { Debt, FetchError } from '~~/shared/types/domain'
 							size="lg"
 							aria-label="Método de pago"
 							:options="debtPaymentOptions" />
+
+						<MixedBreakdownInput v-if="paymentMethod === 'mixed'" v-model="mixedAmounts" class="mt-3" :total="Number(paymentAmount) || 0" />
 					</div>
 
 					<div class="text-text-muted mt-2 px-4 text-center text-xs font-bold tracking-wider uppercase">

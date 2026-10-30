@@ -20,7 +20,10 @@ export default defineEventHandler(async event => {
 			where: whereClause,
 			include: {
 				user: { select: { name: true, surname: true, phone: true } },
-				cart: { select: { total: true, created_at: true } },
+				payments: { orderBy: { payment_date: 'asc' } },
+				cart: {
+					select: { total: true, created_at: true, invoice_number: true, payment_method: true, items: true },
+				},
 			},
 			orderBy: { created_at: 'desc' },
 		})

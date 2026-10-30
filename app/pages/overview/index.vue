@@ -3,6 +3,7 @@ import type { IProduct } from '~~/shared/types/catalog'
 import type { Sale, Booking, ClientDTO, Debt } from '~~/shared/types/domain'
 import { useQuery } from '@tanstack/vue-query'
 import { formatCurrency } from '~/utils/format'
+import { paymentMethodLabel } from '~~/shared/utils/payments'
 import { useChartTheme } from '~/composables/useChartTheme'
 import {
 	CircleDollarSign,
@@ -709,7 +710,7 @@ const revenueTrendOptions = computed(() => {
 													}}
 												</p>
 												<span class="text-text-muted text-xs">
-													{{ timeAgo(sale.created_at) }} • {{ sale.payment_method || 'Efectivo/Tarjeta' }}
+													{{ timeAgo(sale.created_at) }} • {{ sale.payment_method ? paymentMethodLabel(sale.payment_method) : 'Efectivo/Tarjeta' }}
 												</span>
 											</div>
 										</div>

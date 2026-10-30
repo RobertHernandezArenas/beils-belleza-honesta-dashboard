@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import type { Debt, DebtPayment, SaleItem, FetchError } from '~~/shared/types/domain'
+import type { Debt, DebtPayment, FetchError } from '~~/shared/types/domain'
+import { breakdownDifference, breakdownFromAmounts, paymentMethodLabel } from '~~/shared/utils/payments'
+import { printDebtPaymentReceipt } from '~/utils/printHelpers'
+import MixedBreakdownInput from '~/components/shared/MixedBreakdownInput.vue'
 
-import { X, Receipt, CheckCircle, CreditCard, Banknote, Printer } from 'lucide-vue-next'
+import { X, Receipt, CheckCircle, CreditCard, Banknote, Printer, Smartphone, ArrowRightLeft, Wallet } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()
@@ -12,6 +15,15 @@ const modalRef = ref<HTMLDialogElement | null>(null)
 const debt = ref<Debt | null>(null)
 const amountToPay = ref<number | null>(null)
 const paymentMethod = ref('card')
+// Amount typed per method when the payment is "Mixto"
+const mixedAmounts = ref<Record<string, number | null>>({})
+const paymentOptions = [
+  { value: 'cash', icon: Banknote },
+  { value: 'card', icon: CreditCard },
+  { value: 'bizum', icon: Smartphone },
+  { value: 'transfer', icon: ArrowRightLeft },
+  { value: 'mixed', icon: Wallet },
+]
 const isProcessing = ref(false)
 
 const emit = defineEmits(['payment-success', 'toast'])
@@ -20,7 +32,8 @@ const isValidPayment = computed(() => {
   if (!amountToPay.value || amountToPay.value <= 0 || !debt.value) return false
   const safeAmount = Number(Number(amountToPay.value).toFixed(2))
   const safeRemaining = Number(Number(debt.value.remaining).toFixed(2))
-  return safeAmount <= safeRemaining
+  if (safeAmount > safeRemaining) return false
+  return paymentMethod.value !== 'mixed' || breakdownDifference(breakdownFromAmounts(mixedAmounts.value), safeAmount) === 0
 })
 
 const open = (debtData: Debt) => {
@@ -31,6 +44,7 @@ const open = (debtData: Debt) => {
   }
   amountToPay.value = 0
   paymentMethod.value = 'card'
+  mixedAmounts.value = {}
   isProcessing.value = false
   modalRef.value?.showModal()
 }
@@ -41,132 +55,19 @@ const formatAmount = () => {
   }
 }
 
-const getRemainingAfterPayment = (payment: DebtPayment) => {
-  const d = debt.value
-  if (!d?.payments) return d?.remaining ?? 0
-  const sorted = [...d.payments].sort((a, b) => new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime())
-  let currentBalance = d.amount
-  for (const p of sorted) {
-    currentBalance -= p.amount
-    if (p.payment_id === payment.payment_id) {
-      return currentBalance
-    }
-  }
-  return d.remaining
-}
-
+// Ticket de cobro of one payment (shows "Pago X de N", total paid so far and what remains)
 const printReceipt = (payment: DebtPayment) => {
-  const iframe = document.createElement('iframe')
-  iframe.style.display = 'none'
-  document.body.appendChild(iframe)
-
-  const doc = iframe.contentWindow?.document
-  if (!doc) return
-
-  const dateStr = new Date(payment.payment_date).toLocaleString()
-  const itemsHtml = debt.value?.cart?.items?.map((item: SaleItem) => `
-    <tr>
-      <td style="text-align: left;">${item.name} <br><small style="color:#666">IVA sugerido ${item.tax_rate}%</small></td>
-      <td style="text-align: center;">${item.quantity}</td>
-      <td style="text-align: right;">${item.total.toFixed(2)}€</td>
-    </tr>
-  `).join('') || `<tr><td colspan="3">Deuda manual sin ticket</td></tr>`
-
-  const paymentMethodLabel = payment.payment_method === 'cash' ? 'Efectivo' : 
-                             payment.payment_method === 'card' ? 'Tarjeta' : 
-                             payment.payment_method === 'mixed' ? 'Mixto' : 'Transferencia';
-
-  const html = `
-    <html>
-      <head>
-        <title>Recibo de Pago</title>
-        <style>
-          body { font-family: 'Courier New', monospace; padding: 20px; font-size: 12px; max-width: 320px; margin: auto; color: #000; }
-          .center { text-align: center; }
-          .bold { font-weight: bold; }
-          .divider { border-bottom: 1px dashed #000; margin: 10px 0; }
-          table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-          th, td { padding: 4px 0; }
-          th { border-bottom: 1px solid #000; text-align: center; }
-        </style>
-      </head>
-      <body>
-        <div class="center bold" style="font-size: 16px;">BEILS BELLEZA HONESTA</div>
-        <div class="center">CIF: B12345678</div>
-        <div class="divider"></div>
-        <div class="center bold">RECIBO DE PAGO DE CUOTA</div>
-        <div class="divider"></div>
-        <div><strong>Fecha:</strong> ${dateStr}</div>
-        <div><strong>Recibo:</strong> #${(payment.payment_id.split('-')[0] ?? '').toUpperCase()}</div>
-        <div class="divider"></div>
-
-        <div class="bold">Conceptos de la Deuda Original:</div>
-        <table>
-          <thead>
-            <tr>
-              <th style="text-align:left;">Concepto</th>
-              <th>Cant.</th>
-              <th style="text-align:right;">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsHtml}
-          </tbody>
-        </table>
-
-        <div class="divider"></div>
-        <table>
-          <tr>
-            <td>Deuda Total Inicial:</td>
-            <td style="text-align:right;">${(debt.value?.amount ?? 0).toFixed(2)}€</td>
-          </tr>
-          <tr class="bold" style="font-size: 14px;">
-            <td>IMPORTE RECIBIDO:</td>
-            <td style="text-align:right;">${payment.amount.toFixed(2)}€</td>
-          </tr>
-          <tr>
-            <td>Método de Pago:</td>
-            <td style="text-align:right;">${paymentMethodLabel.toUpperCase()}</td>
-          </tr>
-        </table>
-        <div class="divider"></div>
-        <div class="center">
-          <p>La deuda restante calculada es de:<br><strong style="font-size: 16px;">${getRemainingAfterPayment(payment).toFixed(2)}€</strong></p>
-        </div>
-        <div class="divider"></div>
-        <div class="center">
-          <p>¡Gracias por confiar en nosotros!</p>
-        </div>
-      </body>
-    </html>
-  `
-
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-  if (isMobile) {
-    const printWin = window.open('', '_blank')
-    if (printWin) {
-      printWin.document.open()
-      printWin.document.write(html)
-      printWin.document.close()
-      printWin.focus()
-      setTimeout(() => {
-        printWin.print()
-      }, 500)
-      return
-    }
-  }
-
-  doc.open()
-  doc.write(html)
-  doc.close()
-
-  setTimeout(() => {
-    iframe.contentWindow?.focus()
-    iframe.contentWindow?.print()
-    setTimeout(() => {
-      document.body.removeChild(iframe)
-    }, 1000)
-  }, 250)
+  const d = debt.value
+  if (!d) return
+  const user = d.user ?? d.cart?.user
+  printDebtPaymentReceipt({
+    debt: d,
+    paymentId: payment.payment_id,
+    invoiceNumber: d.cart?.invoice_number,
+    manualDebt: !d.cart_id,
+    clientName: user ? `${user.name ?? ''} ${user.surname ?? ''}`.trim() : '',
+    items: d.cart?.items,
+  })
 }
 
 const close = () => {
@@ -182,14 +83,21 @@ const processPayment = async () => {
 
   isProcessing.value = true
   try {
-    await $fetch(`/api/debts/${debt.value?.debt_id}/pay`, {
+    const res = await $fetch<{ data: { debt: Debt; payment: DebtPayment } }>(`/api/debts/${debt.value?.debt_id}/pay`, {
       method: 'POST',
       body: {
         amount: Number(amountToPay.value),
-        payment_method: paymentMethod.value
+        payment_method: paymentMethod.value,
+        payment_breakdown: paymentMethod.value === 'mixed' ? breakdownFromAmounts(mixedAmounts.value) : undefined
       }
     })
-    
+
+    // Every payment produces its receipt: print it with the payments as the server now has them
+    if (debt.value) {
+      debt.value.payments = res.data.debt.payments
+      printReceipt(res.data.payment)
+    }
+
     // Paying a debt can settle its cart (status -> completed), so refresh sales/overview live
     notifySalesChanged()
     emit('toast', 'Pago registrado correctamente', 'success')
@@ -267,14 +175,13 @@ defineExpose({ open, close })
                         <input v-model.number="amountToPay" type="number" step="0.01" :max="debt.remaining" class="input bg-bg-card border-border-subtle focus:border-primary focus:ring-primary text-text-primary w-full rounded-xl font-black shadow-sm text-lg outline-none transition-all h-14" @blur="formatAmount" >
                      </div>
 
-                     <div class="flex gap-2 pt-2">
-                        <button class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'cash' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = 'cash'">
-                          <Banknote class="size-4 mr-1" /> Efectivo
-                        </button>
-                        <button class="btn flex-1 rounded-xl h-12" :class="paymentMethod === 'card' ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = 'card'">
-                          <CreditCard class="size-4 mr-1" /> Tarjeta
+                     <div class="grid grid-cols-3 gap-2 pt-2">
+                        <button v-for="opt in paymentOptions" :key="opt.value" type="button" class="btn rounded-xl h-12 px-1" :class="paymentMethod === opt.value ? 'bg-text-secondary text-bg-app border-transparent hover:bg-text-primary' : 'bg-bg-card border-border-default text-text-secondary hover:border-text-primary'" @click="paymentMethod = opt.value">
+                          <component :is="opt.icon" class="size-4 mr-1" /> {{ paymentMethodLabel(opt.value) }}
                         </button>
                      </div>
+
+                     <MixedBreakdownInput v-if="paymentMethod === 'mixed'" v-model="mixedAmounts" :total="Number(amountToPay) || 0" />
 
                      <button :disabled="isProcessing || !isValidPayment" class="cta btn btn-primary h-14 w-full rounded-xl font-bold mt-4 shadow-lg shadow-primary/20 border-0" @click="processPayment">
                         <span class="cta-swap" :data-busy="isProcessing || undefined">
@@ -306,7 +213,7 @@ defineExpose({ open, close })
                               </button>
                               <span class="text-success text-sm font-black tabular-nums">-{{ pay.amount.toFixed(2) }}€</span>
                            </div>
-                           <span class="text-text-muted text-[9px] font-bold uppercase tracking-wider bg-bg-muted/50 px-2 py-0.5 rounded">{{ pay.payment_method }}</span>
+                           <span class="text-text-muted text-[9px] font-bold uppercase tracking-wider bg-bg-muted/50 px-2 py-0.5 rounded">{{ paymentMethodLabel(pay.payment_method) }}</span>
                         </div>
                      </div>
                   </div>

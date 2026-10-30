@@ -3,6 +3,7 @@ import type { IncomingLineItem } from '~~/shared/types/line-item'
 import type { ClientDTO } from '~~/shared/types/domain'
 import type { ICoupon } from '~~/shared/types/marketing'
 import type { DiscountKind, SaleDiscountBreakdown } from '~~/shared/utils/discounts'
+	import MixedBreakdownInput from '~/components/shared/MixedBreakdownInput.vue'
 	import {
 		User as UserIcon,
 		Trash2,
@@ -52,6 +53,8 @@ import type { DiscountKind, SaleDiscountBreakdown } from '~~/shared/utils/discou
 		return `${coupon.code} (−${value})`
 	})
 	const paymentMethod = defineModel<'cash' | 'card' | 'mixed' | 'debt' | 'bizum' | 'transfer'>('paymentMethod', { required: true })
+	// Amount typed per method when paying "Mixto"
+	const mixedAmounts = defineModel<Record<string, number | null>>('mixedAmounts', { required: true })
 </script>
 
 <template>
@@ -354,6 +357,9 @@ import type { DiscountKind, SaleDiscountBreakdown } from '~~/shared/utils/discou
 					<span class="text-[9px] font-extrabold uppercase tracking-wider">A Deber</span>
 				</button>
 			</div>
+
+			<!-- Per-method amounts of a mixed payment -->
+			<MixedBreakdownInput v-if="paymentMethod === 'mixed'" v-model="mixedAmounts" :total="cartTotal" />
 
 			<!-- Main Action Button -->
 			<button

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { SummaryTimeframe } from '~/composables/useSalesAnalytics'
 import InfoTooltip from '~/components/shared/InfoTooltip.vue'
+import { paymentMethodLabel } from '~~/shared/utils/payments'
 
 interface Props {
 	timeframeLabels: Record<string, string>
@@ -12,6 +13,10 @@ interface Props {
 		totalChange: number
 		countChange: number
 		averageChange: number
+	}
+	collectedStats: {
+		total: number
+		byMethod: { method: string; amount: number }[]
 	}
 	salesCount: number
 	salesTotalSum: number
@@ -39,11 +44,11 @@ defineProps<Props>()
 			<div class="flex justify-between items-start">
 				<div class="flex items-start gap-1">
 					<span class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
-						TOTAL<br>VENTAS {{ timeframeLabels[summaryTimeframe] }}
+						FACTURADO<br>{{ timeframeLabels[summaryTimeframe] }}
 					</span>
 					<InfoTooltip
-						title="Total Ventas"
-						what="Ingreso total bruto facturado en el periodo seleccionado."
+						title="Facturado"
+						what="Importe total de las ventas facturadas en el periodo, estén cobradas o no (las ventas a deber cuentan al crearse)."
 						why="Mide el volumen de facturación y la capacidad de generación de ingresos del centro en tiempo real."
 						how="Sumatorio del importe total de todas las operaciones y comprobantes emitidos en el periodo."
 						position="bottom"
@@ -173,6 +178,29 @@ defineProps<Props>()
 				<p class="text-[10px] text-text-muted font-medium max-w-[80%] leading-snug">
 					Superando el mes anterior en {{ Math.abs(monthlyProjection.changeVsLastMonth).toFixed(1) }}%
 				</p>
+			</div>
+		</div>
+
+		<!-- Cobrado: dinero realmente recibido en el periodo, por método -->
+		<div class="bg-bg-card border border-border-default/70 rounded-xl p-4.5 flex flex-col gap-2 shadow-[0_1px_3px_rgba(0,0,0,0.01)] sm:col-span-2 lg:col-span-4">
+			<div class="flex items-start gap-1">
+				<span class="text-[10px] font-bold text-text-muted uppercase tracking-wider leading-tight text-left">
+					COBRADO {{ timeframeLabels[summaryTimeframe] }}
+				</span>
+				<InfoTooltip
+					title="Cobrado"
+					what="Dinero realmente recibido en el periodo: ventas pagadas en el momento más los cobros de deudas (cada uno en su fecha)."
+					why="Una venta a deber se factura al crearla pero no suma aquí hasta que se cobra, así que no se cuenta dos veces."
+					how="Suma por método de pago; en los pagos mixtos se reparte según el desglose de cada método."
+					position="bottom"
+					align="start"
+				/>
+			</div>
+			<div class="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+				<h3 class="text-2xl font-black text-text-primary tabular-nums tracking-tight font-sans leading-none">{{ formatCurrency(collectedStats.total) }}</h3>
+				<span v-for="part in collectedStats.byMethod" :key="part.method" class="text-[11px] font-bold text-text-muted tabular-nums">
+					{{ paymentMethodLabel(part.method) }}: <span class="text-text-primary">{{ formatCurrency(part.amount) }}</span>
+				</span>
 			</div>
 		</div>
 	</div>

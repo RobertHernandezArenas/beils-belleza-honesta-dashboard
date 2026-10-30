@@ -67,14 +67,16 @@ const buildPrisma = () => {
 				return { count: data.length }
 			},
 		},
-		debt: { update: async () => ({}) },
+		debt: { update: async () => ({}), create: async () => ({}) },
 	})
 
 	return {
 		product: { findMany: async () => [product] },
 		service: { findMany: async () => [] },
 		package: { findMany: async () => [] },
-		cart: { findUnique: async () => db.cartRow },
+		cart: { findUnique: async () => db.cartRow, findFirst: async () => null, update: async () => ({}) },
+		user: { findUnique: async () => null },
+		sequence: { upsert: async () => ({ last_value: 1 }) },
 		// Coupons must never be read outside a transaction
 		coupon: {
 			findUnique: async () => {
@@ -103,7 +105,7 @@ before(async () => {
 	g.getQuery = () => ({})
 	g.getRouterParam = (event: Row, name: string) => event.params?.[name]
 	g.createError = createError
-	g.useRuntimeConfig = () => ({ salonNif: 'X', salonName: 'Salon' })
+	g.useRuntimeConfig = () => ({ salonNif: 'X', salonName: 'Salon', public: {} })
 	// Set before the import so server/utils/prisma.ts reuses it instead of opening a connection
 	g.prisma = buildPrisma()
 	postHandler = (await import('../server/api/sales/carts/index')).default as Handler
@@ -168,12 +170,12 @@ describe('POST /api/sales/carts with a coupon', () => {
 		assert.equal(cart.total, 90)
 	})
 
-	it('also redeems the coupon on a debt sale (pending)', async () => {
+	it('also redeems the coupon on a debt sale', async () => {
 		db.coupons = [coupon({ max_uses: 3 })]
-		const cart = await postHandler(event('POST', postBody({ payment_method: 'debt', status: 'pending' })))
+		const cart = await postHandler(event('POST', postBody({ payment_method: 'debt', user_id: 'u1' })))
 
 		assert.equal(db.coupons[0]!.current_uses, 1)
-		assert.equal(cart.status, 'pending')
+		assert.equal(cart.status, 'completed')
 		assert.equal(cart.coupon_code, 'VERANO10')
 	})
 

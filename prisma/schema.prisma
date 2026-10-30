@@ -149,6 +149,8 @@ model Cart {
   discount       Float      @default(0)
   total          Float      @default(0)
   payment_method String?    @db.VarChar(50)
+  // Per-method split of a "mixed" payment, JSON text: [{ "method": "cash", "amount": 30 }, ...]
+  payment_breakdown String? @db.Text
   notes          String?    @db.Text
   invoice_number String?    @unique @db.VarChar(50)
   invoice_type   String?    @db.VarChar(4)
@@ -244,6 +246,8 @@ model DebtPayment {
   debt_id        String   @db.Char(100)
   amount         Float
   payment_method String   @db.VarChar(50)
+  // Per-method split when payment_method is "mixed" (JSON text, same shape as carts.payment_breakdown)
+  payment_breakdown String? @db.Text
   payment_date   DateTime @default(now())
   notes          String?  @db.Text
   created_at     DateTime @default(now())
