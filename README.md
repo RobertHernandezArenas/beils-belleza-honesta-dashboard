@@ -99,6 +99,8 @@ beils-belleza-honesta-dashboard/
 └── tests/                      # Suite de pruebas unitarias y de dominio (Node Test Runner)
 ```
 
+📐 Capas del backend (handler → caso de uso → puerto ← adaptador) y guía para añadir casos de uso: [docs/arquitectura.md](docs/arquitectura.md)
+
 ---
 
 ## 📦 Módulos del Sistema
