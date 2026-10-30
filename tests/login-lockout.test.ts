@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { MAX_FAILED_ATTEMPTS, lockDurationMinutes, isLocked, lockedMessage } from '../server/utils/login-lockout'
+import { MAX_FAILED_ATTEMPTS, lockDurationMinutes, isLocked, lockedMessage, unlockedWhere } from '../server/utils/login-lockout'
 
 const NOW = new Date('2026-10-25T10:00:00Z')
 const minutesFromNow = (m: number) => new Date(NOW.getTime() + m * 60_000)
@@ -36,5 +36,19 @@ describe('lockedMessage', () => {
 	it('tells how long to wait, rounded up to whole minutes', () => {
 		assert.match(lockedMessage(minutesFromNow(14.2), NOW), /15 min/)
 		assert.match(lockedMessage(minutesFromNow(0.1), NOW), /1 min/)
+	})
+})
+
+describe('unlockedWhere', () => {
+	const matches = (lockedUntil: Date | null) => {
+		const cond = unlockedWhere(NOW) as { OR: [{ locked_until: null }, { locked_until: { lte: Date } }] }
+		if (cond.OR[0].locked_until === null && lockedUntil === null) return true
+		return !!lockedUntil && lockedUntil <= (cond.OR[1].locked_until as { lte: Date }).lte
+	}
+
+	it('matches exactly the accounts that isLocked reports as not locked', () => {
+		for (const lockedUntil of [null, minutesFromNow(-5), NOW, minutesFromNow(1), minutesFromNow(60)]) {
+			assert.equal(matches(lockedUntil), !isLocked(lockedUntil, NOW), `locked_until=${lockedUntil}`)
+		}
 	})
 })

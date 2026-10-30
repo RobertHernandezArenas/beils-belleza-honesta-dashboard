@@ -4,7 +4,7 @@ import { prisma } from '../../utils/prisma'
 import { toPublicUser } from '../../utils/public-user'
 import { signToken } from '../../utils/jwt'
 import { loginOutcome, unusablePasswordSeed, STAFF_ROLES } from '../../utils/login-policy'
-import { isLocked, lockDurationMinutes, lockedMessage } from '../../utils/login-lockout'
+import { isLocked, lockDurationMinutes, lockedMessage, unlockedWhere } from '../../utils/login-lockout'
 import { SESSION_COOKIE, sessionCookieOptions } from '../../utils/session-policy'
 
 const loginSchema = z.object({
@@ -66,8 +66,22 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: outcome.statusCode, statusMessage: outcome.message })
 		}
 
-		// Successful login clears any failed-attempt history
-		if (user!.failed_login_count > 0 || user!.locked_until) {
+		// Successful login clears any failed-attempt history. For staff the reset only applies if the
+		// account is still unlocked in the database: a lock written by concurrent failures wins, so
+		// no session is issued while the account is locked.
+		if (isStaffAccount) {
+			const cleared = await prisma.user.updateMany({
+				where: { user_id: user!.user_id, ...unlockedWhere() },
+				data: { failed_login_count: 0, locked_until: null },
+			})
+			if (cleared.count === 0) {
+				const fresh = await prisma.user.findUnique({ where: { user_id: user!.user_id }, select: { locked_until: true } })
+				throw createError({
+					statusCode: 423,
+					statusMessage: fresh?.locked_until ? lockedMessage(fresh.locked_until) : 'Cuenta bloqueada temporalmente. Inténtalo de nuevo más tarde.',
+				})
+			}
+		} else if (user!.failed_login_count > 0 || user!.locked_until) {
 			await prisma.user.update({
 				where: { user_id: user!.user_id },
 				data: { failed_login_count: 0, locked_until: null },

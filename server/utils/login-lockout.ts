@@ -21,3 +21,12 @@ export function lockedMessage(lockedUntil: Date | string, now = new Date()) {
 	const minutes = Math.max(1, Math.ceil((new Date(lockedUntil).getTime() - now.getTime()) / 60_000))
 	return `Cuenta bloqueada por ${MAX_FAILED_ATTEMPTS} intentos fallidos. Inténtalo de nuevo en ${minutes} min o contacta con un administrador.`
 }
+
+/**
+ * Prisma filter for accounts that are not locked at `now`: the exact complement of isLocked.
+ * Used as a conditional write so a lock set by a concurrent failure can't be bypassed by a
+ * request that read the account before that lock existed.
+ */
+export function unlockedWhere(now = new Date()) {
+	return { OR: [{ locked_until: null }, { locked_until: { lte: now } }] }
+}
