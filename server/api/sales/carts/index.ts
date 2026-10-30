@@ -5,7 +5,7 @@ import {
 } from '../../../utils/verifactu'
 import { createSale } from '../../../modules/sales/create-sale'
 import { createPrismaSalesRepository } from '../../../modules/sales/prisma-sales-repository'
-import { parseDateRange, SALES_LIST_LIMIT } from '../../../utils/date-range'
+import { assertWithinSalesLimit, parseDateRange, SALES_FETCH_TAKE } from '../../../utils/date-range'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -27,11 +27,11 @@ export default defineEventHandler(async event => {
 				debts: { include: { payments: true } },
 			},
 			orderBy: { created_at: 'desc' },
-			// Safety net: a caller that sends no range still gets a bounded answer
-			take: SALES_LIST_LIMIT,
+			// Safety net: one row over the limit is fetched only to detect an over-limit range
+			take: SALES_FETCH_TAKE,
 		})
 
-		return carts
+		return assertWithinSalesLimit(carts)
 	}
 
 	if (method === 'POST') {

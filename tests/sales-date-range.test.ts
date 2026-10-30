@@ -2,8 +2,23 @@
 import { describe, it, before, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { createError } from 'h3'
-import { parseDateRange, SALES_LIST_LIMIT } from '../server/utils/date-range'
+import { assertWithinSalesLimit, parseDateRange, SALES_FETCH_TAKE, SALES_LIST_LIMIT } from '../server/utils/date-range'
 import { salesFetchRange } from '../app/utils/salesFetchRange'
+
+describe('assertWithinSalesLimit', () => {
+	it('returns the rows when they fit within the limit', () => {
+		const rows = Array.from({ length: SALES_LIST_LIMIT }, (_, i) => i)
+		assert.equal(assertWithinSalesLimit(rows), rows)
+	})
+
+	it('refuses a result over the limit instead of silently cutting it', () => {
+		const rows = Array.from({ length: SALES_LIST_LIMIT + 1 }, (_, i) => i)
+		assert.throws(
+			() => assertWithinSalesLimit(rows),
+			(error: any) => error.statusCode === 400 && /más de 1000 ventas/.test(error.statusMessage),
+		)
+	})
+})
 
 describe('parseDateRange', () => {
 	it('returns undefined without from/to (blank values count as absent)', () => {
@@ -84,7 +99,7 @@ describe('GET /api/sales/carts date range', () => {
 	it('keeps working without a range, adding only the safety limit', async () => {
 		await getCarts(getEvent)
 		assert.equal(calls[0]!.where.created_at, undefined)
-		assert.equal(calls[0]!.take, SALES_LIST_LIMIT)
+		assert.equal(calls[0]!.take, SALES_FETCH_TAKE)
 	})
 
 	it('filters by created_at inside the range', async () => {
@@ -100,7 +115,7 @@ describe('GET /api/sales/debt-payments date range', () => {
 	it('is bounded even without a range', async () => {
 		await getPayments(getEvent)
 		assert.equal(calls[0]!.where, undefined)
-		assert.equal(calls[0]!.take, SALES_LIST_LIMIT)
+		assert.equal(calls[0]!.take, SALES_FETCH_TAKE)
 	})
 
 	it('filters by payment_date inside the range', async () => {

@@ -4,6 +4,23 @@ import { createError } from 'h3'
 /** Hard upper bound on rows a sales list endpoint returns, with or without a range. */
 export const SALES_LIST_LIMIT = 1000
 
+/** One row more than the limit, so an over-limit result can be detected and refused. */
+export const SALES_FETCH_TAKE = SALES_LIST_LIMIT + 1
+
+/**
+ * Totals built from a truncated list would be wrong (Facturado, Cobrado, fiscal exports),
+ * so a result over the limit is refused with a message to narrow the range, never cut.
+ */
+export function assertWithinSalesLimit<T>(rows: T[]): T[] {
+	if (rows.length > SALES_LIST_LIMIT) {
+		throw createError({
+			statusCode: 400,
+			statusMessage: `El rango tiene más de ${SALES_LIST_LIMIT} ventas. Reduce el rango de fechas.`,
+		})
+	}
+	return rows
+}
+
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
 const dateParam = z
 	.string()

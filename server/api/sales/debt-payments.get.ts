@@ -2,11 +2,11 @@
  * Every debt payment with what /ventas needs to show it as a "Cobro de deuda" row and to
  * reprint its receipt and the sale's invoice (the sale, its items and all of the debt's payments).
  */
-import { parseDateRange, SALES_LIST_LIMIT } from '../../utils/date-range'
+import { assertWithinSalesLimit, parseDateRange, SALES_FETCH_TAKE } from '../../utils/date-range'
 
 export default defineEventHandler(async event => {
 	const range = parseDateRange(getQuery(event))
-	return await prisma.debtPayment.findMany({
+	const payments = await prisma.debtPayment.findMany({
 		where: range ? { payment_date: range } : undefined,
 		include: {
 			debt: {
@@ -24,6 +24,7 @@ export default defineEventHandler(async event => {
 			},
 		},
 		orderBy: { payment_date: 'desc' },
-		take: SALES_LIST_LIMIT,
+		take: SALES_FETCH_TAKE,
 	})
+	return assertWithinSalesLimit(payments)
 })
