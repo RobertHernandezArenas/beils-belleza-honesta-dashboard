@@ -2,7 +2,7 @@
 import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { UserPlus, Save, Edit, User, CreditCard, Search, Camera, Trash2 } from 'lucide-vue-next'
+	import Icon from '~/components/shared/Icon.vue'
 	import { useI18n } from 'vue-i18n'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import AppSelect from '~/components/ui/AppSelect.vue'
@@ -393,7 +393,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
 						<div class="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
-							<User class="size-4" />
+							<Icon name="User" class="size-4" />
 						</div>
 						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Información Personal</h4>
 					</div>
@@ -485,7 +485,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
 						<div class="bg-indigo-500/10 text-indigo-600 flex size-8 items-center justify-center rounded-lg">
-							<CreditCard class="size-4" />
+							<Icon name="CreditCard" class="size-4" />
 						</div>
 						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Contacto y Comunicación</h4>
 					</div>
@@ -526,7 +526,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 				<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 					<div class="flex items-center gap-3 border-b border-border-subtle/20 pb-4">
 						<div class="bg-amber-500/10 text-amber-600 flex size-8 items-center justify-center rounded-lg">
-							<Search class="size-4" />
+							<Icon name="Search" class="size-4" />
 						</div>
 						<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Dirección y Localización</h4>
 					</div>
@@ -593,7 +593,7 @@ import type { ClientDTO, FetchError } from '~~/shared/types/domain'
 					:disabled="isPending">
 					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
-						<Save class="size-4" />
+						<Icon name="Save" class="size-4" />
 						<span class="font-black uppercase tracking-widest text-xs">
 							{{ isEditing ? t('common.save') : t('catalog.clients.newClient') }}
 						</span>

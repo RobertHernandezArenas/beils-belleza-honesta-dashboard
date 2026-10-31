@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import type { Booking, PositionedBooking } from '~~/shared/types/domain'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import {
-    Clock,
-    User as UserIcon,
-    MoreVertical,
-    CheckCircle2,
-    Pencil,
-    Trash2,
-} from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 
 const props = defineProps<{
     bookings: Booking[]
@@ -21,7 +14,7 @@ const emit = defineEmits<{
     (e: 'status', id: string, status: string): void
     (e: 'create', defaultDate: Date, defaultTime: string): void
 }>()
-
+
 
 const hourHeight = 96 // pixels per hour (matches h-24)
 const startHour = 8
@@ -325,16 +318,16 @@ onUnmounted(() => {
                                     <button
                                         tabindex="0"
                                         class="btn btn-ghost btn-xs btn-circle size-5 min-h-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <MoreVertical class="size-3" />
+                                        <Icon name="MoreVertical" class="size-3" />
                                     </button>
                                     <ul
                                         tabindex="0"
                                         class="dropdown-content menu bg-bg-card text-text-secondary border-border-default z-100 mt-1 w-36 rounded-xl border p-1 shadow-2xl">
-                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><CheckCircle2 class="text-info size-3" /> Confirmar</a></li>
-                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><CheckCircle2 class="text-success size-3" /> Finalizar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'confirmed')"><Icon name="CheckCircle2" class="text-info size-3" /> Confirmar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('status', booking.booking_id, 'completed')"><Icon name="CheckCircle2" class="text-success size-3" /> Finalizar</a></li>
                                         <div class="divider my-0 opacity-30 h-1"/>
-                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('edit', booking)"><Pencil class="size-3" /> Editar</a></li>
-                                        <li><a class="text-error text-[11px] py-1.5" @click.stop="emit('delete', booking.booking_id)"><Trash2 class="size-3" /> Eliminar</a></li>
+                                        <li><a class="text-[11px] py-1.5" @click.stop="emit('edit', booking)"><Icon name="Pencil" class="size-3" /> Editar</a></li>
+                                        <li><a class="text-error text-[11px] py-1.5" @click.stop="emit('delete', booking.booking_id)"><Icon name="Trash2" class="size-3" /> Eliminar</a></li>
                                     </ul>
                                 </div>
                             </div>

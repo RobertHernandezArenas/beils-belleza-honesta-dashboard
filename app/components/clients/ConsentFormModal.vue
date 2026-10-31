@@ -2,7 +2,7 @@
 	import type { ClientDTO, Consent, FetchError } from '~~/shared/types/domain'
 	import { z } from 'zod'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { FileCheck, Save, AlertCircle, Edit, X } from 'lucide-vue-next'
+	import Icon from '~/components/shared/Icon.vue'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 	import ClientAutocomplete from '~/components/shared/ClientAutocomplete.vue'
 	import AppSelect from '~/components/ui/AppSelect.vue'
@@ -273,7 +273,7 @@
 					:disabled="isPending">
 					<span v-if="isPending" class="loading loading-spinner loading-sm"/>
 					<template v-else>
-						<Save class="size-4" />
+						<Icon name="Save" class="size-4" />
 						<span class="font-bold tracking-wide">
 							{{ isEditing ? 'Guardar Cambios' : 'Crear Consentimiento' }}
 						</span>

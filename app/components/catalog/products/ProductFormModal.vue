@@ -2,7 +2,7 @@
 import type { FetchError } from '~~/shared/types/domain'
 import type { IProduct } from '~~/shared/types/catalog'
 	import { useMutation, useQueryClient } from '@tanstack/vue-query'
-	import { Euro, Package, ImageIcon } from 'lucide-vue-next'
+	import Icon from '~/components/shared/Icon.vue'
 	import { useModalAnimation } from '~/composables/useModalAnimation'
 
 	const modalRef = ref<HTMLDialogElement | null>(null)
@@ -163,7 +163,7 @@ import type { IProduct } from '~~/shared/types/catalog'
 						<div class="flex items-center justify-between border-b border-border-subtle/20 pb-4">
 							<div class="flex items-center gap-2">
 								<div class="bg-primary/10 text-primary flex size-7 items-center justify-center rounded-lg">
-									<Package class="size-4" />
+									<Icon name="Package" class="size-4" />
 								</div>
 								<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Información Básica</h4>
 							</div>
@@ -229,7 +229,7 @@ import type { IProduct } from '~~/shared/types/catalog'
 					<div class="space-y-6 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
 							<div class="bg-emerald-500/10 text-emerald-600 flex size-7 items-center justify-center rounded-lg">
-								<Euro class="size-4" />
+								<Icon name="Euro" class="size-4" />
 							</div>
 							<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Precios y Stock</h4>
 						</div>
@@ -287,7 +287,7 @@ import type { IProduct } from '~~/shared/types/catalog'
 					<div class="space-y-5 rounded-3xl bg-bg-card/40 p-5 ring-1 ring-border-subtle/30 shadow-xs">
 						<div class="flex items-center gap-2 border-b border-border-subtle/20 pb-4">
 							<div class="bg-indigo-500/10 text-indigo-600 flex size-7 items-center justify-center rounded-lg">
-								<ImageIcon class="size-4" />
+								<Icon name="ImageIcon" class="size-4" />
 							</div>
 							<h4 class="text-text-primary text-[10px] font-black uppercase tracking-widest">Imágenes</h4>
 						</div>

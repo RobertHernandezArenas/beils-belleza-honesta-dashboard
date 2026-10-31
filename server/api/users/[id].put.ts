@@ -1,11 +1,8 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
-import { toPublicUser } from '../../utils/public-user'
 import { requireAdmin } from '../../utils/auth'
-import { parseUserUpdate, assertKeepsAnAdmin } from '../../utils/user-admin'
-import { shouldRevokeSessions } from '../../utils/session-policy'
-import { invalidateSessionUser } from '../../utils/session-store'
-import bcrypt from 'bcryptjs'
+import { parseUserUpdate } from '../../utils/user-admin'
+import { updateUser } from '../../modules/users/update-user'
+import { createPrismaUsersRepository } from '../../modules/users/prisma-users-repository'
 
 export default defineEventHandler(async event => {
 	requireAdmin(event)
@@ -16,28 +13,10 @@ export default defineEventHandler(async event => {
 	const input = parseUserUpdate(await readBody(event))
 
 	try {
-		const current = await prisma.user.findUnique({ where: { user_id: id }, select: { role: true, status: true } })
-		if (!current) throw createError({ statusCode: 404, statusMessage: 'Usuario no encontrado' })
-
-		const activeAdmins = await prisma.user.count({ where: { role: 'ADMIN', status: 'ON' } })
-		assertKeepsAnAdmin({ current, update: input, activeAdmins })
-
-		const { password, birth_date, ...fields } = input
-		const updateData: Prisma.UserUncheckedUpdateInput = { ...fields }
-		if (password) updateData.password = await bcrypt.hash(password, 12)
-		if (birth_date) updateData.birth_date = new Date(birth_date)
-		// Role/status/password changes end the user's existing sessions
-		const revoke = shouldRevokeSessions(input)
-		if (revoke) updateData.token_version = { increment: 1 }
-
-		const updatedUser = await prisma.user.update({
-			where: { user_id: id },
-			data: updateData,
-		})
-
-		if (revoke) invalidateSessionUser(id)
-
-		return toPublicUser(updatedUser)
+		return await updateUser(
+			{ users: createPrismaUsersRepository(prisma) },
+			{ id, input },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error

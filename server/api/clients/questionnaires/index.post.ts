@@ -1,6 +1,7 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
+import { createQuestionnaire } from '../../../modules/compliance/create-questionnaire'
+import { createPrismaQuestionnairesRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 const questionnaireSchema = z.object({
 	user_id: z.string().min(1, 'El cliente es obligatorio'),
@@ -13,22 +14,10 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = questionnaireSchema.parse(body)
 
-		const createData: Prisma.QuestionnaireUncheckedCreateInput = {
-			user_id: parsedData.user_id,
-			title: parsedData.title,
-			data: JSON.stringify(parsedData.data),
-		}
-
-		const questionnaire = await prisma.questionnaire.create({
-			data: createData,
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return questionnaire
+		return await createQuestionnaire(
+			{ questionnaires: createPrismaQuestionnairesRepository(prisma) },
+			parsedData,
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error

@@ -1,6 +1,7 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
+import { updateQuestionnaire } from '../../../modules/compliance/update-questionnaire'
+import { createPrismaQuestionnairesRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 const questionnaireUpdateSchema = z.object({
 	title: z.string().min(2, 'El título es obligatorio').optional(),
@@ -17,22 +18,10 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = questionnaireUpdateSchema.parse(body)
 
-		const updateData: Prisma.QuestionnaireUncheckedUpdateInput = { ...parsedData }
-		if (parsedData.data) {
-			updateData.data = JSON.stringify(parsedData.data)
-		}
-
-		const questionnaire = await prisma.questionnaire.update({
-			where: { questionnaire_id: id },
-			data: updateData,
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return questionnaire
+		return await updateQuestionnaire(
+			{ questionnaires: createPrismaQuestionnairesRepository(prisma) },
+			{ id, data: parsedData },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

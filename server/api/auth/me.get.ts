@@ -1,4 +1,6 @@
 import { prisma } from '../../utils/prisma'
+import { getMe } from '../../modules/auth/get-me'
+import { createPrismaAuthRepository } from '../../modules/auth/prisma-auth-repository'
 
 export default defineEventHandler(async event => {
 	// The user info is already validated and decoded by server/middleware/auth.ts
@@ -11,30 +13,8 @@ export default defineEventHandler(async event => {
 		})
 	}
 
-	const user = await prisma.user.findUnique({
-		where: { user_id: decoded.userId },
-		select: {
-			user_id: true,
-			email: true,
-			name: true,
-			surname: true,
-			role: true,
-			status: true,
-			document_type: true,
-			document_number: true,
-			phone: true,
-			created_at: true,
-		},
-	})
-
-	if (!user || user.status !== 'ON') {
-		throw createError({
-			statusCode: 403,
-			statusMessage: 'Cuenta inactiva o no encontrada. Contacta con soporte admin.',
-		})
-	}
-
-	return {
-		user,
-	}
+	return await getMe(
+		{ auth: createPrismaAuthRepository(prisma) },
+		{ userId: decoded.userId },
+	)
 })

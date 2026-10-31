@@ -1,12 +1,7 @@
 import { defineEventHandler, readMultipartFormData, createError } from 'h3'
-import { writeFile, mkdir } from 'node:fs/promises'
-import { join } from 'node:path'
-import { randomUUID } from 'node:crypto'
-import sharp from 'sharp'
-import { detectFileKind, resolveUploadTarget, assertKindAllowed } from '../utils/upload-policy'
 import { uploadsRoot } from '../utils/upload-storage'
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+import { createFsFileStorageService } from '../modules/uploads/fs-file-storage-service'
+import { uploadFile, MAX_FILE_SIZE } from '../modules/uploads/upload-file'
 
 export default defineEventHandler(async event => {
 	try {
@@ -18,7 +13,7 @@ export default defineEventHandler(async event => {
 			})
 		}
 
-		// Security: Check overall payload size (Risk 1.4 & 6.1)
+		// Security: Check overall payload size
 		const totalSize = formData.reduce((acc, item) => acc + (item.data?.length || 0), 0)
 		if (totalSize > MAX_FILE_SIZE) {
 			throw createError({
@@ -38,35 +33,14 @@ export default defineEventHandler(async event => {
 
 		const field = (name: string) => formData.find(item => item.name === name)?.data.toString()
 		const category = field('category')
+		const type = field('type')
+		const subdirectory = field('subdirectory')
 
-		// Destination is allow-listed (no client-controlled paths); type comes from the bytes
-		// Private storage outside public/: files are served only to staff by /api/files
-		const target = resolveUploadTarget(uploadsRoot(), { category, type: field('type'), subdirectory: field('subdirectory') })
-		const kind = detectFileKind(file.data)
-		assertKindAllowed(kind, category)
-
-		await mkdir(target.dir, { recursive: true })
-		const baseFilename = randomUUID()
-
-		if (kind === 'pdf') {
-			const filename = `${baseFilename}.pdf`
-			await writeFile(join(target.dir, filename), file.data)
-			return { url: `${target.urlPath}/${filename}`, filename, size: file.data.length }
-		}
-
-		// Images are always re-encoded: drops any embedded payload and EXIF metadata (e.g. GPS)
-		const filename = `${baseFilename}.webp`
-		try {
-			await sharp(file.data)
-				.rotate() // apply EXIF orientation before metadata is stripped
-				.resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
-				.webp({ quality: 80 })
-				.toFile(join(target.dir, filename))
-		} catch {
-			throw createError({ statusCode: 400, statusMessage: 'La imagen está dañada o no es válida' })
-		}
-
-		return { url: `${target.urlPath}/${filename}`, filename, size: file.data.length }
+		const storage = createFsFileStorageService()
+		return await uploadFile(
+			{ storage, uploadsRoot },
+			{ fileData: file.data, category, type, subdirectory },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		console.error('Error uploading file:', error)

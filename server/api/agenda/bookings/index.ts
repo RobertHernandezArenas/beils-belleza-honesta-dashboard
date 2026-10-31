@@ -1,7 +1,10 @@
-import type { IncomingLineItem } from '~~/shared/types/line-item'
-import type { Prisma } from '@prisma/client'
+import { toApiError } from '../../../utils/errors'
 import { sendBookingConfirmation, type EmailNotificationStatus } from '../../../utils/booking-email'
 import { getMailConfig, isMailConfigured, sendMail } from '../../../utils/mailer'
+import { listBookings } from '../../../modules/bookings/list-bookings'
+import { createBooking } from '../../../modules/bookings/create-booking'
+import { createPrismaBookingsRepository } from '../../../modules/bookings/prisma-bookings-repository'
+import type { BookingsRepository } from '../../../modules/bookings/ports'
 
 interface CreatedBooking {
 	client_id: string
@@ -12,13 +15,12 @@ interface CreatedBooking {
 	booking_items: { name: string }[]
 }
 
-/** Sends the booking confirmation email. Eligibility is re-checked here (the drawer is not trusted). */
-async function notifyBookingByEmail(booking: CreatedBooking): Promise<EmailNotificationStatus> {
+async function notifyBookingByEmail(repo: BookingsRepository, booking: CreatedBooking): Promise<EmailNotificationStatus> {
 	try {
 		const config = useRuntimeConfig()
 		const mailConfigured = isMailConfigured(getMailConfig())
 		const recipient = mailConfigured
-			? await prisma.user.findUnique({ where: { user_id: booking.client_id }, select: { name: true, surname: true, email: true } })
+			? await repo.findRecipient(booking.client_id)
 			: null
 		const professional = booking.staff ? `${booking.staff.name} ${booking.staff.surname || ''}`.trim() : null
 
@@ -45,6 +47,7 @@ async function notifyBookingByEmail(booking: CreatedBooking): Promise<EmailNotif
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
+	const repo = createPrismaBookingsRepository(prisma)
 
 	if (method === 'GET') {
 		const query = getQuery(event)
@@ -54,179 +57,24 @@ export default defineEventHandler(async event => {
 		const client_id = query.client_id as string | undefined
 		const search = query.search as string | undefined
 
-		const whereClause: Prisma.BookingWhereInput = {}
-
-		if (search) {
-			whereClause.OR = [
-				{ client: { name: { contains: search } } },
-				{ client: { surname: { contains: search } } },
-				{ client: { phone: { contains: search } } },
-				{ staff: { name: { contains: search } } },
-				{ notes: { contains: search } }
-			]
-		} else if (start && end) {
-			whereClause.booking_date = {
-				gte: new Date(start),
-				lte: new Date(end),
-			}
-		}
-
-		if (staff_id) whereClause.staff_id = staff_id
-		if (client_id) whereClause.client_id = client_id
-
-		const bookings = await prisma.booking.findMany({
-			where: whereClause,
-			select: {
-				booking_id: true,
-				booking_date: true,
-				start_time: true,
-				end_time: true,
-				status: true,
-				booking_items: {
-					select: {
-						item_type: true,
-						item_id: true,
-						name: true,
-						duration: true,
-					}
-				},
-				duration: true,
-				notes: true,
-				client_id: true,
-				client: { select: { name: true, surname: true, phone: true, avatar: true } },
-				staff: { select: { name: true, surname: true } },
-				carts: {
-					select: {
-						cart_id: true,
-						status: true,
-						invoice_number: true,
-						total: true,
-					},
-				},
-			},
-			orderBy: [{ booking_date: 'asc' }, { start_time: 'asc' }],
-		})
-
-		return bookings.map(b => {
-			const hasCompletedCart = b.carts && b.carts.some(c => c.status === 'completed' || !!c.invoice_number)
-			return {
-				...b,
-				status: hasCompletedCart ? 'COMPLETADA' : b.status,
-			}
-		})
+		return await listBookings({ bookings: repo }, { start, end, staff_id, client_id, search })
 	}
 
 	if (method === 'POST') {
 		const body = await readBody(event)
-
 		try {
-			// Basic validation
-			if (!body.client_id || body.client_id === '') {
-				throw createError({ statusCode: 400, statusMessage: 'Debes seleccionar un cliente' })
-			}
-			if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
-				throw createError({ statusCode: 400, statusMessage: 'Debes añadir al menos un servicio o producto' })
-			}
-
-			// Auto-assign first ADMIN if staff_id is missing or empty
-			let staffId = body.staff_id
-			if (!staffId || staffId === '') {
-				const firstAdmin = await prisma.user.findFirst({
-					where: { role: 'ADMIN', status: 'ON' },
-					orderBy: { created_at: 'asc' }
-				})
-				if (firstAdmin) {
-					staffId = firstAdmin.user_id
-				}
-			}
-
-			// Parse as UTC date to avoid timezone offset shifts
-			const parsedDate = new Date(body.booking_date)
-			if (isNaN(parsedDate.getTime())) {
-				throw createError({ statusCode: 400, statusMessage: 'Fecha de cita inválida' })
-			}
-			const bookingDate = new Date(Date.UTC(parsedDate.getUTCFullYear(), parsedDate.getUTCMonth(), parsedDate.getUTCDate(), 0, 0, 0, 0))
-
-			// Calculate total duration from items
-			const totalDuration = body.items.reduce((acc: number, item: IncomingLineItem) => acc + (Number(item.duration) || 0), 0)
-
-			// Calculate end_time based on start_time and duration
-			const startTime = body.start_time
-			if (!startTime) {
-				throw createError({ statusCode: 400, statusMessage: 'La hora de inicio es obligatoria' })
-			}
-
-			const [hours, minutes] = startTime.split(':').map(Number)
-			if (isNaN(hours) || isNaN(minutes)) {
-				throw createError({ statusCode: 400, statusMessage: 'Formato de hora inválido' })
-			}
-
-			const dateObj = new Date()
-			dateObj.setHours(hours, minutes + totalDuration, 0)
-			const endTime = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`
-
-			// --- VALIDATION: OVERLAP CHECK ---
-			if (staffId && staffId !== '') {
-				const overlappingLabel = await prisma.booking.findFirst({
-					where: {
-						booking_date: bookingDate,
-						status: { notIn: ['CANCELADA', 'AUSENTE', 'cancelled', 'no_show'] },
-						staff_id: staffId,
-						start_time: { lt: endTime },
-						end_time: { gt: startTime }
-					}
-				})
-
-				if (overlappingLabel) {
-					throw createError({
-						statusCode: 409,
-						statusMessage: `Conflicto de Agenda: El profesional ya tiene una cita de ${overlappingLabel.start_time} a ${overlappingLabel.end_time}`
-					})
-				}
-			}
-
-			// Create the booking
-			const booking = await prisma.booking.create({
-				data: {
-					client_id: body.client_id,
-					staff_id: staffId && staffId !== '' ? staffId : null,
-					status: (body.status || 'PENDIENTE').toUpperCase(),
-					booking_date: bookingDate,
-					start_time: startTime,
-					end_time: endTime,
-					duration: totalDuration,
-					notes: body.notes || '',
-					item_type: body.items[0]?.item_type || 'SERVICE',
-					item_id: body.items[0]?.item_id || '',
-					booking_items: {
-						create: body.items.map((item: IncomingLineItem) => ({
-							item_type: item.item_type || 'SERVICE',
-							item_id: item.item_id || '',
-							name: item.name || 'Servicio',
-							duration: Number(item.duration) || 0,
-						}))
-					},
-				},
-				include: {
-					client: { select: { name: true, surname: true, phone: true, avatar: true } },
-					staff: { select: { name: true, surname: true } },
-					booking_items: true
-				},
-			})
-
-			// The booking is already saved: the email outcome is only reported, never an error
-			const email = body.notify_email === true ? await notifyBookingByEmail(booking) : 'skipped'
-
-			return { ...booking, notification: { email } }
+			return await createBooking(
+				{ bookings: repo, notifier: { notify: booking => notifyBookingByEmail(repo, booking) } },
+				body,
+			)
 		} catch (rawError) {
 			const error = toApiError(rawError)
 			console.error('[BOOKING_CREATE_ERROR]', error)
-
-			// Ensure we return a statusMessage that can be read by the frontend
-			const finalMessage = error.data?.statusMessage || error.statusMessage || error.message || 'Error interno del servidor al crear la cita'
+			const finalMessage =
+				error.data?.statusMessage || error.statusMessage || error.message || 'Error interno del servidor al crear la cita'
 			throw createError({
 				statusCode: error.statusCode || 500,
-				statusMessage: finalMessage
+				statusMessage: finalMessage,
 			})
 		}
 	}

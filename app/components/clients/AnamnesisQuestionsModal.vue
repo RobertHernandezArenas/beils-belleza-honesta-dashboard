@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, nextTick, computed } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { FileText, X, AlertCircle, Save, ShieldAlert, CheckCircle2 } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import { useModalAnimation } from '~/composables/useModalAnimation'
 import type { FetchError, Questionnaire } from '~~/shared/types/domain'
 
@@ -309,7 +309,7 @@ const { mutate: saveQuestionnaire, isPending } = useMutation({
 					:disabled="isPending"
 					@click="saveQuestionnaire()"
 				>
-					<Save class="size-4" />
+					<Icon name="Save" class="size-4" />
 					{{ isPending ? 'Guardando...' : 'Guardar Cuestionario' }}
 				</button>
 			</div>

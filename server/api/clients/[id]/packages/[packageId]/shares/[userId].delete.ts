@@ -1,6 +1,8 @@
 import { prisma } from '../../../../../../utils/prisma'
 import { requireAdmin } from '../../../../../../utils/auth'
 import { toApiError } from '../../../../../../utils/errors'
+import { revokeClientPackageShare } from '../../../../../../modules/client-packages/revoke-client-package-share'
+import { createPrismaClientPackagesRepository } from '../../../../../../modules/client-packages/prisma-client-packages-repository'
 
 /**
  * Revokes a beneficiary's access to the owner's bono. Sessions they already consumed keep
@@ -16,14 +18,10 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 400, statusMessage: 'Cliente, bono y beneficiaria requeridos' })
 		}
 
-		const { count } = await prisma.clientPackageShare.deleteMany({
-			where: { client_package_id: packageId, user_id: userId, client_package: { user_id: clientId } },
-		})
-		if (count === 0) {
-			throw createError({ statusCode: 404, statusMessage: 'Esta persona no tiene acceso a este bono' })
-		}
-
-		return { success: true }
+		return await revokeClientPackageShare(
+			{ clientPackages: createPrismaClientPackagesRepository(prisma) },
+			{ clientId, packageId, userId },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		console.error('Error revoking client package share:', error)

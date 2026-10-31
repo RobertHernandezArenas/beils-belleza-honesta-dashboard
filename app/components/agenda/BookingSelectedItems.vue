@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Scissors, Package, Trash2 } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import type { BookingItemData } from '~/composables/useBookingForm'
 
 const props = defineProps<{
@@ -74,7 +74,7 @@ v-for="(group, idx) in groupedItems" :key="idx"
                     </button>
                 </div>
                 <button type="button" :disabled="disabled" class="text-text-muted hover:text-error transition-colors p-1 opacity-50 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed" @click="removeGroup(group.indices)">
-                    <Trash2 class="size-4" />
+                    <Icon name="Trash2" class="size-4" />
                 </button>
             </div>
         </div>

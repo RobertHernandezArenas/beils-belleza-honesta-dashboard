@@ -1,37 +1,18 @@
-import type { Prisma } from '@prisma/client'
 import {
 	generateInvoiceNumber,
 	processVerifactuInvoice,
 } from '../../../utils/verifactu'
 import { createSale } from '../../../modules/sales/create-sale'
+import { listCarts } from '../../../modules/sales/list-carts'
 import { createPrismaSalesRepository } from '../../../modules/sales/prisma-sales-repository'
-import { assertWithinSalesLimit, parseDateRange, SALES_FETCH_TAKE } from '../../../utils/date-range'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
+	const repo = createPrismaSalesRepository(prisma)
 
 	if (method === 'GET') {
 		const query = getQuery(event)
-		const status = query.status as string | undefined
-
-		const whereClause: Prisma.CartWhereInput = {}
-		if (status) whereClause.status = status
-		const range = parseDateRange(query)
-		if (range) whereClause.created_at = range
-
-		const carts = await prisma.cart.findMany({
-			where: whereClause,
-			include: {
-				user: { select: { name: true, surname: true, email: true, phone: true, avatar: true, document_number: true } },
-				items: true,
-				debts: { include: { payments: true } },
-			},
-			orderBy: { created_at: 'desc' },
-			// Safety net: one row over the limit is fetched only to detect an over-limit range
-			take: SALES_FETCH_TAKE,
-		})
-
-		return assertWithinSalesLimit(carts)
+		return await listCarts({ sales: repo }, query)
 	}
 
 	if (method === 'POST') {
@@ -41,7 +22,7 @@ export default defineEventHandler(async event => {
 
 		return await createSale(
 			{
-				sales: createPrismaSalesRepository(prisma),
+				sales: repo,
 				verifactu: { generateInvoiceNumber, submit: processVerifactuInvoice },
 				issuer: { nif: config.salonNif, name: config.salonName },
 				now: () => new Date(),

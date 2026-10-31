@@ -1,29 +1,16 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
+import { listConsents } from '../../../modules/compliance/list-consents'
+import { createPrismaConsentsRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 export default defineEventHandler(async event => {
 	try {
 		const query = getQuery(event)
 		const userId = query.user_id as string | undefined
 
-		const whereClause: Prisma.ConsentWhereInput = {}
-		if (userId) {
-			whereClause.user_id = userId
-		}
-
-		const consents = await prisma.consent.findMany({
-			where: whereClause,
-			orderBy: { created_at: 'desc' },
-			// Handwritten signatures are only loaded from the client profile, never in bulk lists
-			omit: { signature_data: true },
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return consents
+		return await listConsents(
+			{ consents: createPrismaConsentsRepository(prisma) },
+			{ userId },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		throw createError({

@@ -1,21 +1,11 @@
-import type { Prisma } from '@prisma/client'
-import type { IncomingLineItem } from '~~/shared/types/line-item'
 import {
 	generateInvoiceNumber,
 	processVerifactuInvoice,
 } from '../../../utils/verifactu'
-import type { IInvoice } from '~~/shared/types/invoice'
-import {
-	parseSaleLines,
-	priceSaleLines,
-	loadSaleCatalog,
-	saleSubtotal,
-	parseSaleDiscountRequest,
-	priceSaleDiscounts,
-} from '../../../utils/sale-pricing'
-import { couponRuleOf, manualRuleOf } from '../../../../shared/utils/discounts'
-import { parsePaymentBreakdown } from '../../../../shared/utils/payments'
-import { resolvePaymentRecord } from '../../../utils/sale-payments'
+import { getCart } from '../../../modules/sales/get-cart'
+import { updateCart } from '../../../modules/sales/update-cart'
+import { deleteCart } from '../../../modules/sales/delete-cart'
+import { createPrismaSalesRepository } from '../../../modules/sales/prisma-sales-repository'
 
 export default defineEventHandler(async event => {
 	const method = event.node.req.method
@@ -25,259 +15,29 @@ export default defineEventHandler(async event => {
 		throw createError({ statusCode: 400, statusMessage: 'Cart ID is required' })
 	}
 
+	const repo = createPrismaSalesRepository(prisma)
+
 	if (method === 'GET') {
-		const cart = await prisma.cart.findUnique({
-			where: { cart_id: id },
-			include: {
-				user: { select: { name: true, surname: true, email: true, phone: true } },
-				items: true,
-				debts: { include: { payments: true } },
-			},
-		})
-
-		if (!cart) {
-			throw createError({ statusCode: 404, statusMessage: 'Cart not found' })
-		}
-
-		return cart
+		return await getCart({ sales: repo }, id)
 	}
 
 	if (method === 'PUT') {
 		const body = await readBody(event)
+		const config = useRuntimeConfig()
 
-		// Get current cart details to check status and aeat submission
-		const currentCart = await prisma.cart.findUnique({
-			where: { cart_id: id },
-			include: { items: true, user: { select: { document_number: true } } },
-		})
-
-		if (!currentCart) {
-			throw createError({ statusCode: 404, statusMessage: 'Cart not found' })
-		}
-
-		// The coupon is locked after the sale: a different (or cleared) code is rejected, not ignored
-		if (body.coupon_code !== undefined) {
-			const normalize = (code: unknown) => (typeof code === 'string' ? code.trim().toUpperCase() : '')
-			if (normalize(body.coupon_code) !== normalize(currentCart.coupon_code)) {
-				throw createError({ statusCode: 400, statusMessage: 'El cupón de una venta no se puede cambiar' })
-			}
-		}
-
-    if (currentCart.aeat_status === 'submitted') {
-      // Keep a warning log but allow the change for this management dashboard
-      console.warn(`Modifying a cart that was already submitted to AEAT (ID: ${id}). Consistency check required.`)
-    }
-
-		// Edited lines are re-priced from the catalog and the discount is bounded, before anything changes
-		let pricedItems: ReturnType<typeof priceSaleLines> | null = null
-		if (body.items !== undefined) {
-			const lines = parseSaleLines(body.items)
-			pricedItems = priceSaleLines(lines, await loadSaleCatalog(prisma, lines))
-		}
-		// The coupon is locked after the sale: its stored rule is re-applied to the new subtotal
-		// (the live coupon is never read or re-counted). The manual rule can be changed.
-		const discountRequest = parseSaleDiscountRequest(body)
-		const couponRule = couponRuleOf(currentCart)
-		const manualRule = discountRequest.manual !== undefined ? discountRequest.manual : manualRuleOf(currentCart)
-		const repriced = !!pricedItems || discountRequest.manual !== undefined
-		const pricing = repriced
-			? priceSaleDiscounts(pricedItems ? saleSubtotal(pricedItems) : currentCart.subtotal, couponRule, manualRule)
-			: null
-
-		// Payment: a mixed split must add up to the (possibly repriced) total. A mixed cart whose
-		// total changed without a new split loses the stale split instead of printing wrong amounts.
-		let paymentData: Prisma.CartUncheckedUpdateInput = {}
-		const nextTotal = pricing ? pricing.total : currentCart.total
-		if (body.payment_method !== undefined || body.payment_breakdown !== undefined) {
-			const method: string = body.payment_method ?? currentCart.payment_method ?? 'cash'
-			const breakdown = body.payment_breakdown ?? parsePaymentBreakdown(currentCart.payment_breakdown)
-			paymentData = resolvePaymentRecord(method, breakdown, nextTotal)
-		} else if (currentCart.payment_method === 'mixed' && nextTotal !== currentCart.total) {
-			paymentData = { payment_breakdown: null }
-		}
-
-		const updatedCart = await prisma.$transaction(async tx => {
-			let subtotal = currentCart.subtotal
-			let total = currentCart.total
-			let discountData: Prisma.CartUncheckedUpdateInput = {}
-			if (pricing) {
-				subtotal = pricing.subtotal
-				total = pricing.total
-				discountData = {
-					discount: pricing.totalDiscount,
-					coupon_discount_amount: couponRule ? pricing.couponAmount : null,
-					manual_discount_type: manualRule?.type ?? null,
-					manual_discount_value: manualRule?.value ?? null,
-					manual_discount_amount: manualRule ? pricing.manualAmount : null,
-				}
-			}
-
-			// 1. Handle items update if provided
-			if (pricedItems) {
-				// Clear old items
-				await tx.cartItem.deleteMany({ where: { cart_id: id } })
-
-				// Create new items (cart totals come from `pricing` above)
-				const newItems = pricedItems.map(item => {
-					const itemSubtotal = Number((item.quantity * item.unit_price).toFixed(2))
-					const itemTotal = itemSubtotal // For simplicity, mirroring POST logic: total = subtotal
-
-					return {
-						item_type: item.item_type,
-						item_id: item.item_id,
-						name: item.name,
-						quantity: item.quantity,
-						unit_price: item.unit_price,
-						tax_rate: item.tax_rate || 21.0,
-						subtotal: itemSubtotal,
-						total: itemTotal,
-					}
-				})
-
-				await tx.cartItem.createMany({
-					data: newItems.map(item => ({ ...item, cart_id: id })),
-				})
-
-				// Provision a ClientPackage for each NEWLY added bono/paquete line
-				// (item_type 'package_sale'). We compare against the cart's previous
-				// bono lines so re-saving an edit never duplicates existing bonos.
-				const provisionUserId = body.user_id ?? currentCart.user_id
-				const countPkg = (items: IncomingLineItem[]) => {
-					const m = new Map<string, number>()
-					for (const it of items || []) {
-						if ((it.item_type || '').toLowerCase() === 'package_sale') {
-							m.set(it.item_id, (m.get(it.item_id) || 0) + (Number(it.quantity) || 1))
-						}
-					}
-					return m
-				}
-				const prevPkg = countPkg(currentCart.items)
-				const nextPkg = countPkg(pricedItems)
-				if (provisionUserId) {
-					for (const [pkgId, nextCount] of nextPkg) {
-						const toCreate = nextCount - (prevPkg.get(pkgId) || 0)
-						if (toCreate <= 0) continue
-						const catalogPkg = await tx.package.findUnique({
-							where: { package_id: pkgId },
-							include: { items: true },
-						})
-						if (!catalogPkg) continue
-						const totalServiceSessions = catalogPkg.type === 'MIXTO' && catalogPkg.items?.length
-							? catalogPkg.items.filter(i => i.item_type === 'SERVICE').reduce((s, i) => s + (i.quantity || 0), 0)
-							: catalogPkg.total_sessions
-						const expiryDate = new Date()
-						expiryDate.setMonth(expiryDate.getMonth() + 6)
-						for (let n = 0; n < toCreate; n++) {
-							const cp = await tx.clientPackage.create({
-								data: {
-									user_id: provisionUserId,
-									package_id: catalogPkg.package_id,
-									total_sessions: totalServiceSessions,
-									remaining_sessions: totalServiceSessions,
-									expiry_date: expiryDate,
-									status: 'ACTIVE',
-								},
-							})
-							if (catalogPkg.items?.length) {
-								await tx.clientPackageItem.createMany({
-									data: catalogPkg.items.map(i => ({
-										client_package_id: cp.client_package_id,
-										package_item_id: i.package_item_id,
-										name: i.name,
-										item_type: i.item_type,
-										quantity_total: i.quantity,
-										quantity_remaining: i.quantity,
-										duration: i.duration,
-									})),
-								})
-							}
-						}
-					}
-				}
-			}
-
-			// 2. Handle VeriFactu context if completing
-			let verifactuData: Prisma.CartUncheckedUpdateInput = {}
-			if (body.status === 'completed' && !currentCart.invoice_number) {
-				const config = useRuntimeConfig()
-				const invoiceType = currentCart.user?.document_number ? 'F1' : 'I'
-				const invoiceNumber = await generateInvoiceNumber(invoiceType as 'F1' | 'I')
-
-				const verifactuPayload: IInvoice = {
-					id: currentCart.cart_id,
-					invoiceNumber,
-					issueDate: new Date().toISOString(),
-					issuer: {
-						nif: config.salonNif,
-						name: config.salonName,
-					},
-					totalAmount: total,
-				}
-
-				const { hash, qrUrl, aeatStatus } = await processVerifactuInvoice(verifactuPayload)
-
-				verifactuData = {
-					invoice_number: invoiceNumber,
-					invoice_type: invoiceType,
-					qr_content: qrUrl,
-					hash: hash,
-					aeat_status: aeatStatus,
-				}
-			}
-
-			// 3. Update Cart
-			const updateData: Prisma.CartUncheckedUpdateInput = {
-				user_id: body.user_id,
-				status: body.status,
-				...paymentData,
-				notes: body.notes,
-				subtotal,
-				total,
-				...discountData,
-				...verifactuData,
-			}
-
-			if (body.created_at) {
-				updateData.created_at = new Date(body.created_at)
-			} else if (body.status === 'completed' && currentCart.status !== 'completed') {
-				// Sincronizar fecha de venta con momento de cobro/completado
-				updateData.created_at = new Date()
-			}
-
-			const cart = await tx.cart.update({
-				where: { cart_id: id },
-				data: updateData,
-				include: { items: true, debts: true },
-			})
-
-			// 4. Update associated debts if total changed
-			if (cart.debts.length > 0 && repriced) {
-				for (const debt of cart.debts) {
-					// This logic assumes 1 Cart : 1 Debt relationship commonly used in POS
-					// If it was partial, we keep the paid amount and recalculate remaining
-					const paidAmount = Number((debt.amount - debt.remaining).toFixed(2))
-					const newRemaining = Number((cart.total - paidAmount).toFixed(2))
-
-					await tx.debt.update({
-						where: { debt_id: debt.debt_id },
-						data: {
-							amount: cart.total,
-							remaining: newRemaining > 0 ? newRemaining : 0,
-							status: newRemaining <= 0 ? 'paid' : paidAmount > 0 ? 'partial' : 'pending',
-						},
-					})
-				}
-			}
-
-			return cart
-		})
-
-		return updatedCart
+		return await updateCart(
+			{
+				sales: repo,
+				verifactu: { generateInvoiceNumber, submit: processVerifactuInvoice },
+				issuer: { nif: config.salonNif, name: config.salonName },
+				now: () => new Date(),
+			},
+			id,
+			body,
+		)
 	}
 
 	if (method === 'DELETE') {
-		// Because it cascades items but not debts (SetNull), check if it has debts
-		await prisma.cart.delete({ where: { cart_id: id } })
-		return { success: true }
+		return await deleteCart({ sales: repo }, id)
 	}
 })

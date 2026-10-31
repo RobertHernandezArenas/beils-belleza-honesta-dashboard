@@ -1,4 +1,6 @@
 import { prisma } from '../../../utils/prisma'
+import { deleteRevoke } from '../../../modules/compliance/delete-revoke'
+import { createPrismaRevokesRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 export default defineEventHandler(async event => {
 	try {
@@ -7,11 +9,10 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 		}
 
-		await prisma.revoke.delete({
-			where: { revoke_id: id },
-		})
-
-		return { success: true }
+		return await deleteRevoke(
+			{ revokes: createPrismaRevokesRepository(prisma) },
+			{ id },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

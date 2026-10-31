@@ -1,6 +1,7 @@
-import { getMailConfig, isMailConfigured } from '../../utils/mailer'
+import { createSystemNotificationsService } from '../../modules/notifications/system-notifications-service'
+import { getNotificationStatus } from '../../modules/notifications/get-notification-status'
 
-// Tells the dashboard which notification channels are available. Booleans only: never the SMTP settings.
-export default defineEventHandler(() => ({
-	email: isMailConfigured(getMailConfig()),
-}))
+export default defineEventHandler(() => {
+	const service = createSystemNotificationsService()
+	return getNotificationStatus({ notifications: service })
+})

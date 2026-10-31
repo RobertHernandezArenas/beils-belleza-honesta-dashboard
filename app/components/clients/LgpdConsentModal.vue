@@ -449,7 +449,7 @@ const handleEmail = () => {
 						:disabled="isSaving"
 						@click="saveConsent(true)"
 					>
-						<FileSignature class="size-4" />
+						<Icon name="FileSignature" class="size-4" />
 						Firmar y Aceptar RGPD
 					</button>
 
@@ -460,7 +460,7 @@ const handleEmail = () => {
 						:disabled="isSaving"
 						@click="saveConsent(false)"
 					>
-						<Save class="size-4" />
+						<Icon name="Save" class="size-4" />
 						Guardar Cambios
 					</button>
 				</div>

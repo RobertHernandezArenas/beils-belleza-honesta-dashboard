@@ -492,7 +492,7 @@ const handleEmail = () => {
 						:disabled="isSaving || form.selectedObjectives.length === 0"
 						@click="saveConsent(true)"
 					>
-						<FileSignature class="size-4" />
+						<Icon name="FileSignature" class="size-4" />
 						Firmar Consentimiento
 					</button>
 
@@ -503,7 +503,7 @@ const handleEmail = () => {
 						:disabled="isSaving"
 						@click="saveConsent(false)"
 					>
-						<Save class="size-4" />
+						<Icon name="Save" class="size-4" />
 						Guardar Cambios
 					</button>
 				</div>

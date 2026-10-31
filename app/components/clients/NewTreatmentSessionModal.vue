@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, nextTick, computed } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { Plus, X, AlertCircle, Save, Calendar, CheckSquare } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import { useModalAnimation } from '~/composables/useModalAnimation'
 import AppSelect from '~/components/ui/AppSelect.vue'
 import type { TreatmentZoneDTO, ClientPackage, FetchError } from '~~/shared/types/domain'
@@ -382,7 +382,7 @@ const { mutate: createSession, isPending } = useMutation({
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5"
 						:disabled="isPending"
 					>
-						<Save class="size-4" />
+						<Icon name="Save" class="size-4" />
 						{{ isPending ? 'Guardando...' : 'Registrar Sesión' }}
 					</button>
 				</div>
