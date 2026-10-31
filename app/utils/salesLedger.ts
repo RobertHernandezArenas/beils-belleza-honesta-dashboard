@@ -1,5 +1,5 @@
-import type { Debt, DebtPayment, Sale } from '../../shared/types/domain'
-import { collectedParts, receivedParts, type PaymentPart } from '../../shared/utils/payments'
+import type { Debt, DebtPayment, Sale } from '~~/shared/types/domain'
+import { collectedParts, receivedParts, type PaymentPart } from '~~/shared/utils/payments'
 
 /** A debt payment as returned by /api/sales/debt-payments (with its debt and the sold cart). */
 export type DebtPaymentRow = DebtPayment & { debt: Debt }

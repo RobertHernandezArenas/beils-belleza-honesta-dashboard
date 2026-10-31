@@ -1,5 +1,5 @@
-import type { Debt, Sale, SaleItem } from '../../shared/types/domain'
-import { describeSaleDiscounts, prorateDiscountByTaxRate } from '../../shared/utils/discounts'
+import type { Debt, Sale, SaleItem } from '~~/shared/types/domain'
+import { describeSaleDiscounts, prorateDiscountByTaxRate } from '~~/shared/utils/discounts'
 import {
 	buildDebtReceipt,
 	describePayment,
@@ -7,7 +7,7 @@ import {
 	paymentMethodLabel,
 	paymentStatusLabel,
 	salePaymentStatus,
-} from '../../shared/utils/payments'
+} from '~~/shared/utils/payments'
 
 /** Business data printed on every document (comes from public runtime config). */
 export interface SalonInfo {
