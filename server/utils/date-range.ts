@@ -8,8 +8,9 @@ export const SALES_LIST_LIMIT = 1000
 export const SALES_FETCH_TAKE = SALES_LIST_LIMIT + 1
 
 /**
- * Totals built from a truncated list would be wrong (Facturado, Cobrado, fiscal exports),
- * so a result over the limit is refused with a message to narrow the range, never cut.
+ * Totals built from a truncated list would be wrong (Cobrado, fiscal exports — Facturado
+ * is computed server-side via an aggregate, see get-sales-summary), so a result over the
+ * limit is refused with a message to narrow the range, never cut.
  */
 export function assertWithinSalesLimit<T>(rows: T[]): T[] {
 	if (rows.length > SALES_LIST_LIMIT) {

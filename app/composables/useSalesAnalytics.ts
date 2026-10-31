@@ -1,9 +1,20 @@
 import { computed, type Ref } from 'vue'
+import { keepPreviousData, useQuery } from '@tanstack/vue-query'
 import type { Sale } from '~~/shared/types/domain'
 import { getQuarterDateBounds } from '~/utils/salesExportCalculations'
 import { collectedInRange, type LedgerEntry } from '~/utils/salesLedger'
 
 export type SummaryTimeframe = 'day' | 'week' | 'month' | 'quarter' | 'year' | 'all'
+
+interface SalesSummaryPeriod {
+	total: number
+	count: number
+}
+
+interface SalesSummaryResponse {
+	current: SalesSummaryPeriod
+	previous: SalesSummaryPeriod
+}
 
 export function useSalesAnalytics(
 	sales: Ref<Sale[] | undefined>,
@@ -94,40 +105,43 @@ export function useSalesAnalytics(
 		}
 	})
 
-	const summaryStats = computed(() => {
-		const empty = { total: 0, count: 0, average: 0, totalChange: 0, countChange: 0, averageChange: 0 }
-		if (!sales.value) return empty
-
+	// Facturado/Tickets/Promedio period bounds, sent to a DB aggregate instead of summed from
+	// the fetched sales list, so the KPI stays correct past the list's row cap (SALES_LIST_LIMIT).
+	const summaryPeriodBounds = computed(() => {
 		const now = new Date()
 		const startDate = getStartOfDate(summaryTimeframe.value)
 		const endDate = getEndOfDate(summaryTimeframe.value, startDate)
 		const elapsed = Math.max(1, Math.min(now.getTime(), endDate.getTime()) - startDate.getTime())
-
-		const current = sales.value.filter((s: Sale) => {
-			const d = new Date(s.created_at)
-			return d >= startDate && d <= endDate
-		})
-
 		const { start: prevStart, end: prevEnd } = getPreviousPeriodBounds(summaryTimeframe.value, startDate, elapsed)
-		const previous = sales.value.filter((s: Sale) => {
-			const d = new Date(s.created_at)
-			return d >= prevStart && d <= prevEnd
-		})
-
-		const total = current.reduce((sum, s) => sum + s.total, 0)
-		const count = current.length
-		const average = count > 0 ? total / count : 0
-
-		const prevTotal = previous.reduce((sum, s) => sum + s.total, 0)
-		const prevCount = previous.length
-		const prevAverage = prevCount > 0 ? prevTotal / prevCount : 0
 
 		return {
-			total,
-			count,
+			from: startDate.toISOString(),
+			to: endDate.toISOString(),
+			prevFrom: prevStart.toISOString(),
+			prevTo: prevEnd.toISOString(),
+		}
+	})
+
+	const { data: salesSummary } = useQuery<SalesSummaryResponse>({
+		queryKey: ['sales', 'summary', summaryPeriodBounds],
+		queryFn: () => $fetch<SalesSummaryResponse>('/api/sales/summary', { query: summaryPeriodBounds.value }),
+		placeholderData: keepPreviousData,
+	})
+
+	const summaryStats = computed(() => {
+		const empty = { total: 0, count: 0, average: 0, totalChange: 0, countChange: 0, averageChange: 0 }
+		if (!salesSummary.value) return empty
+
+		const { current, previous } = salesSummary.value
+		const average = current.count > 0 ? current.total / current.count : 0
+		const prevAverage = previous.count > 0 ? previous.total / previous.count : 0
+
+		return {
+			total: current.total,
+			count: current.count,
 			average,
-			totalChange: pctChange(total, prevTotal),
-			countChange: pctChange(count, prevCount),
+			totalChange: pctChange(current.total, previous.total),
+			countChange: pctChange(current.count, previous.count),
 			averageChange: pctChange(average, prevAverage),
 		}
 	})

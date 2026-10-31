@@ -133,6 +133,14 @@ export function createPrismaSalesRepository(db: PrismaClient) {
 				orderBy: { created_at: 'desc' },
 				take: SALES_FETCH_TAKE,
 			}) as unknown as Promise<CartDetailRecord[]>,
+		sumCompletedSales: async range => {
+			const { _sum, _count } = await db.cart.aggregate({
+				where: { status: 'completed', ...(range ? { created_at: range } : {}) },
+				_sum: { total: true },
+				_count: true,
+			})
+			return { total: _sum.total ?? 0, count: _count }
+		},
 	}
 	return repository
 }

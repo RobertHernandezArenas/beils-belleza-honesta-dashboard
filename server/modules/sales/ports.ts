@@ -134,6 +134,11 @@ export interface ListCartsFilter {
 	created_at?: { gte?: Date; lte?: Date }
 }
 
+export interface SalesSummary {
+	total: number
+	count: number
+}
+
 /** Everything that must commit or roll back together with the sale. */
 export interface SaleUnitOfWork {
 	/** Narrow views handed to the shared coupon / bono-consumption helpers */
@@ -187,6 +192,8 @@ export interface SalesRepository<TView = unknown> extends CartInvoiceStore {
 	findCartForUpdate(cartId: string): Promise<CartDetailRecord | null>
 	deleteCart(cartId: string): Promise<void>
 	listCarts(filter: ListCartsFilter): Promise<CartDetailRecord[]>
+	/** Total and count of invoiced sales (status 'completed') in an optional date range. */
+	sumCompletedSales(range?: { gte?: Date; lte?: Date }): Promise<SalesSummary>
 }
 
 export interface InvoiceTypeSource {

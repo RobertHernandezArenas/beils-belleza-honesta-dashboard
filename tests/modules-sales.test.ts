@@ -6,6 +6,7 @@ import { getCart } from '../server/modules/sales/get-cart'
 import { deleteCart } from '../server/modules/sales/delete-cart'
 import { listCarts } from '../server/modules/sales/list-carts'
 import { updateCart } from '../server/modules/sales/update-cart'
+import { getSalesSummary } from '../server/modules/sales/get-sales-summary'
 import type { SalesRepository, SaleUnitOfWork, NewCart, NewDebt } from '../server/modules/sales/ports'
 
 /**
@@ -117,6 +118,17 @@ const buildRepository = (): SalesRepository<Row> => ({
 		store.carts = store.carts.filter(c => c.cart_id !== cartId)
 	},
 	listCarts: async () => store.carts as any,
+	sumCompletedSales: async range => {
+		const matches = store.carts.filter(c => {
+			if (c.status !== 'completed') return false
+			if (!range) return true
+			const createdAt = new Date((c as any).created_at)
+			if (range.gte && createdAt < range.gte) return false
+			if (range.lte && createdAt > range.lte) return false
+			return true
+		})
+		return { total: matches.reduce((sum, c) => sum + c.total, 0), count: matches.length }
+	},
 })
 
 const buildDeps = (): CreateSaleDeps<Row> => ({
@@ -403,5 +415,36 @@ describe('updateCart', () => {
 		const repo = buildRepository()
 		const res = await updateCart({ sales: repo }, 'cart-1', { coupon_code: 'CODE1', notes: 'Updated notes' })
 		assert.equal(res.notes, 'Updated notes')
+	})
+})
+
+describe('getSalesSummary', () => {
+	beforeEach(() => {
+		store.carts.push(
+			{ cart_id: 'in-range', status: 'completed', total: 100, created_at: '2026-03-15T10:00:00Z' } as any,
+			{ cart_id: 'out-of-range', status: 'completed', total: 9999, created_at: '2026-01-01T10:00:00Z' } as any,
+			{ cart_id: 'pending-debt', status: 'pending', total: 50, created_at: '2026-03-15T10:00:00Z' } as any,
+			{ cart_id: 'prev-period', status: 'completed', total: 40, created_at: '2026-02-10T10:00:00Z' } as any,
+		)
+	})
+
+	it('aggregates current and previous period totals from completed sales only, not the full history', async () => {
+		const repo = buildRepository()
+		const res = await getSalesSummary({ sales: repo }, {
+			from: '2026-03-01T00:00:00Z',
+			to: '2026-03-31T23:59:59Z',
+			prevFrom: '2026-02-01T00:00:00Z',
+			prevTo: '2026-02-28T23:59:59Z',
+		})
+
+		assert.deepEqual(res.current, { total: 100, count: 1 })
+		assert.deepEqual(res.previous, { total: 40, count: 1 })
+	})
+
+	it('sums every completed sale when no range is given', async () => {
+		const repo = buildRepository()
+		const res = await getSalesSummary({ sales: repo }, {})
+		assert.deepEqual(res.current, { total: 100 + 9999 + 40, count: 3 })
+		assert.deepEqual(res.previous, { total: 100 + 9999 + 40, count: 3 })
 	})
 })
