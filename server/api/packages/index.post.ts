@@ -1,36 +1,22 @@
 import { prisma } from '../../utils/prisma'
-import { parseCatalogPackage, catalogPackageSessions } from '../../utils/package-validation'
+import { parseCatalogPackage } from '../../utils/package-validation'
+import { createPackage } from '../../modules/packages/create-package'
+import { createPrismaPackagesRepository } from '../../modules/packages/prisma-packages-repository'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
 	try {
 		const input = parseCatalogPackage(await readBody(event))
-		const { name, description, type, price, service_id, items } = input
-		const calculatedSessions = catalogPackageSessions(input)
-
-		const pkg = await prisma.package.create({
-			data: {
-				name,
-				description,
-				type,
-				price,
-				total_sessions: calculatedSessions,
-				service_id,
-				status: 'activo',
-				items: items && items.length > 0 ? { create: items } : undefined
-			},
-			include: {
-				items: true
-			}
-		})
-
-		return pkg
+		return await createPackage(
+			{ packages: createPrismaPackagesRepository(prisma) },
+			input,
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		console.error('Error creating package:', error)
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error al crear el paquete'
+			statusMessage: 'Error al crear el paquete',
 		})
 	}
 })

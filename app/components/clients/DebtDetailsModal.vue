@@ -4,7 +4,7 @@ import { breakdownDifference, breakdownFromAmounts, paymentMethodLabel } from '~
 import { printDebtPaymentReceipt } from '~/utils/printHelpers'
 import MixedBreakdownInput from '~/components/shared/MixedBreakdownInput.vue'
 
-import { X, Receipt, CheckCircle, CreditCard, Banknote, Printer, Smartphone, ArrowRightLeft, Wallet } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()

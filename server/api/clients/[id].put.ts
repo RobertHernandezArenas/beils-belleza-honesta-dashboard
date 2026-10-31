@@ -1,8 +1,8 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
-import { toPublicUser } from '../../utils/public-user'
 import { z } from 'zod'
 import { requireAdmin } from '../../utils/auth'
+import { updateClient } from '../../modules/clients/update-client'
+import { createPrismaClientsRepository } from '../../modules/clients/prisma-clients-repository'
 
 const clientSchema = z.object({
 	email: z.string().email('Email inválido').optional().or(z.literal('')),
@@ -33,34 +33,14 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = clientSchema.parse(body)
 
-		if (parsedData.email === '') {
-			parsedData.email = `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
-		}
-
-		if (parsedData.email) {
-			const existingUser = await prisma.user.findFirst({
-				where: { email: parsedData.email, user_id: { not: id } },
-			})
-
-			if (existingUser) {
-				throw createError({
-					statusCode: 409,
-					statusMessage: 'El correo electrónico ya está en uso por otro cliente',
-				})
-			}
-		}
-
-		const updateData: Prisma.UserUncheckedUpdateInput = { ...parsedData }
-		if (parsedData.birth_date) {
-			updateData.birth_date = new Date(parsedData.birth_date)
-		}
-
-		const user = await prisma.user.update({
-			where: { user_id: id, role: 'CLIENT' },
-			data: updateData,
-		})
-
-		return toPublicUser(user)
+		return await updateClient(
+			{
+				clients: createPrismaClientsRepository(prisma),
+				now: () => new Date(),
+				randomInt: max => Math.floor(Math.random() * max),
+			},
+			{ id, data: parsedData },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

@@ -1,7 +1,11 @@
 import { prisma } from '../../utils/prisma'
-import { parseCatalogPackage, catalogPackageSessions } from '../../utils/package-validation'
+import { parseCatalogPackage } from '../../utils/package-validation'
+import { getPackage } from '../../modules/packages/get-package'
+import { updatePackage } from '../../modules/packages/update-package'
+import { deletePackage } from '../../modules/packages/delete-package'
+import { createPrismaPackagesRepository } from '../../modules/packages/prisma-packages-repository'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
 	const method = event.node.req.method
 	const id = getRouterParam(event, 'id')
 
@@ -9,50 +13,18 @@ export default defineEventHandler(async (event) => {
 		throw createError({ statusCode: 400, statusMessage: 'Package ID required' })
 	}
 
+	const repo = createPrismaPackagesRepository(prisma)
+
 	if (method === 'GET') {
-		const pkg = await prisma.package.findUnique({
-			where: { package_id: id },
-			include: { items: true }
-		})
-		if (!pkg) throw createError({ statusCode: 404, statusMessage: 'Paquete no encontrado' })
-		return pkg
+		return await getPackage({ packages: repo }, { id })
 	}
 
 	if (method === 'PUT') {
 		const input = parseCatalogPackage(await readBody(event))
-		const { name, description, type, price, service_id, items } = input
-		const calculatedSessions = catalogPackageSessions(input)
-
-		const updated = await prisma.$transaction(async (tx) => {
-			if (items) {
-				await tx.packageItem.deleteMany({
-					where: { package_id: id }
-				})
-			}
-
-			return await tx.package.update({
-				where: { package_id: id },
-				data: {
-					name,
-					description,
-					type,
-					price,
-					total_sessions: calculatedSessions,
-					service_id,
-					items: items ? { create: items } : undefined
-				},
-				include: { items: true }
-			})
-		})
-
-		return updated
+		return await updatePackage({ packages: repo }, { id, input })
 	}
 
 	if (method === 'DELETE') {
-		await prisma.package.update({
-			where: { package_id: id },
-			data: { status: 'inactivo' }
-		})
-		return { success: true }
+		return await deletePackage({ packages: repo }, { id })
 	}
 })

@@ -1,6 +1,7 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
+import { updateRevoke } from '../../../modules/compliance/update-revoke'
+import { createPrismaRevokesRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 const revokeUpdateSchema = z.object({
 	reason: z.string().optional().nullable(),
@@ -17,22 +18,10 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = revokeUpdateSchema.parse(body)
 
-		const updateData: Prisma.RevokeUncheckedUpdateInput = { ...parsedData }
-		if (parsedData.date_revoked) {
-			updateData.date_revoked = new Date(parsedData.date_revoked)
-		}
-
-		const revoke = await prisma.revoke.update({
-			where: { revoke_id: id },
-			data: updateData,
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return revoke
+		return await updateRevoke(
+			{ revokes: createPrismaRevokesRepository(prisma) },
+			{ id, data: parsedData },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

@@ -138,7 +138,7 @@ const handleEmail = () => {
 						class="btn btn-success btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-sm text-white"
 						@click="handleWhatsApp"
 					>
-						<MessageCircle class="size-4" />
+						<Icon name="MessageCircle" class="size-4" />
 						WhatsApp
 					</button>
 
@@ -148,7 +148,7 @@ const handleEmail = () => {
 						class="btn btn-neutral btn-sm rounded-xl font-bold uppercase tracking-wider text-xs gap-1.5 shadow-sm"
 						@click="handleEmail"
 					>
-						<Mail class="size-4" />
+						<Icon name="Mail" class="size-4" />
 						Email
 					</button>
 

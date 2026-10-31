@@ -1,31 +1,21 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
+import { listQuestionnaires } from '../../../modules/compliance/list-questionnaires'
+import { createPrismaQuestionnairesRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 export default defineEventHandler(async event => {
 	try {
 		const query = getQuery(event)
 		const userId = query.user_id as string | undefined
 
-		const whereClause: Prisma.QuestionnaireWhereInput = {}
-		if (userId) {
-			whereClause.user_id = userId
-		}
-
-		const questionnaires = await prisma.questionnaire.findMany({
-			where: whereClause,
-			orderBy: { created_at: 'desc' },
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return questionnaires
-	} catch {
+		return await listQuestionnaires(
+			{ questionnaires: createPrismaQuestionnairesRepository(prisma) },
+			{ userId },
+		)
+	} catch (rawError) {
+		const error = toApiError(rawError)
 		throw createError({
 			statusCode: 500,
-			statusMessage: 'Error al obtener cuestionarios',
+			statusMessage: error.message || 'Error al obtener cuestionarios',
 		})
 	}
 })

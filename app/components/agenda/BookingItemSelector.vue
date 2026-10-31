@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CatalogItem } from '~~/shared/types/domain'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { Search, Plus, Package, Sparkles, Scissors, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 
 const props = defineProps<{
     services: CatalogItem[] | undefined

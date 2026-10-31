@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Booking } from '~~/shared/types/domain'
 import { ref } from 'vue'
-import { Scissors, User as UserIcon, Gift, X } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 
 const isOpen = ref(false)
 const selectedDate = ref(new Date())

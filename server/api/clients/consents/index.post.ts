@@ -1,6 +1,8 @@
 import { prisma } from '../../../utils/prisma'
 import { toApiError } from '../../../utils/errors'
 import { z } from 'zod'
+import { createConsent } from '../../../modules/compliance/create-consent'
+import { createPrismaConsentsRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 const consentSchema = z.object({
 	user_id: z.string().min(1, 'El cliente es obligatorio'),
@@ -17,59 +19,10 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const parsedData = consentSchema.parse(body)
 
-		const signedDate = parsedData.signed_date ? new Date(parsedData.signed_date) : new Date()
-
-		if (parsedData.consent_type) {
-			const consent = await prisma.consent.upsert({
-				where: {
-					unique_user_consent: {
-						user_id: parsedData.user_id,
-						consent_type: parsedData.consent_type
-					}
-				},
-				create: {
-					user_id: parsedData.user_id,
-					consent_type: parsedData.consent_type,
-					status: parsedData.status,
-					signed_date: signedDate,
-					signature_data: parsedData.signature_data || null,
-					document_url: parsedData.document_url || null,
-					notes: parsedData.notes || null,
-				},
-				update: {
-					status: parsedData.status,
-					signed_date: signedDate,
-					signature_data: parsedData.signature_data !== undefined ? parsedData.signature_data : undefined,
-					document_url: parsedData.document_url || null,
-					notes: parsedData.notes || null,
-				},
-				include: {
-					user: {
-						select: { user_id: true, name: true, surname: true, email: true },
-					},
-				},
-			})
-			return consent
-		}
-
-		const consent = await prisma.consent.create({
-			data: {
-				user_id: parsedData.user_id,
-				consent_type: null,
-				status: parsedData.status,
-				signed_date: signedDate,
-				signature_data: parsedData.signature_data || null,
-				document_url: parsedData.document_url || null,
-				notes: parsedData.notes || null,
-			},
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return consent
+		return await createConsent(
+			{ consents: createPrismaConsentsRepository(prisma) },
+			parsedData,
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error

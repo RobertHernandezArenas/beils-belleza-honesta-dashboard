@@ -1,6 +1,7 @@
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
-import { assertCanDeleteUser } from '../../utils/user-admin'
+import { deleteUser } from '../../modules/users/delete-user'
+import { createPrismaUsersRepository } from '../../modules/users/prisma-users-repository'
 
 export default defineEventHandler(async event => {
 	const actor = requireAdmin(event)
@@ -8,16 +9,10 @@ export default defineEventHandler(async event => {
 	if (!id) throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 
 	try {
-		const target = await prisma.user.findUnique({ where: { user_id: id }, select: { user_id: true, role: true } })
-		if (!target) throw createError({ statusCode: 404, statusMessage: 'Usuario no encontrado' })
-
-		const activeAdmins = await prisma.user.count({ where: { role: 'ADMIN', status: 'ON' } })
-		assertCanDeleteUser({ actorId: actor.userId, target, activeAdmins })
-
-		await prisma.user.delete({
-			where: { user_id: id },
-		})
-		return { success: true, message: 'Usuario eliminado' }
+		return await deleteUser(
+			{ users: createPrismaUsersRepository(prisma) },
+			{ actorId: actor.userId, id },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error

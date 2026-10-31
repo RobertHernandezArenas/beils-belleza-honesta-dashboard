@@ -1,17 +1,14 @@
+import { createPrismaClientsRepository } from '../../../modules/clients/prisma-clients-repository'
+import { getClientGiftcards } from '../../../modules/clients/get-client-giftcards'
+
 export default defineEventHandler(async event => {
-	const method = event.node.req.method
-
-	if (method === 'GET') {
-		const id = getRouterParam(event, 'id')
-
-		if (!id) {
-			throw createError({
-				statusCode: 400,
-				statusMessage: 'Client ID is required',
-			})
-		}
-
-		// TODO: Implement giftcards when added to Prisma schema
-		return []
+	const id = getRouterParam(event, 'id')
+	if (!id) {
+		throw createError({
+			statusCode: 400,
+			statusMessage: 'Client ID is required',
+		})
 	}
+	const repo = createPrismaClientsRepository(prisma)
+	return await getClientGiftcards({ clients: repo }, id)
 })

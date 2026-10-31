@@ -75,22 +75,29 @@ let query: Row
 const g = globalThis as Record<string, unknown>
 let getCarts: (e: unknown) => Promise<any>
 let getPayments: (e: unknown) => Promise<any>
+let getSummary: (e: unknown) => Promise<any>
+let aggregateResult: Row
 
 before(async () => {
 	g.defineEventHandler = (fn: unknown) => fn
 	g.getQuery = () => query
 	g.createError = createError
 	g.prisma = {
-		cart: { findMany: async (args: Row) => (calls.push(args), []) },
+		cart: {
+			findMany: async (args: Row) => (calls.push(args), []),
+			aggregate: async (args: Row) => (calls.push(args), aggregateResult),
+		},
 		debtPayment: { findMany: async (args: Row) => (calls.push(args), []) },
 	}
 	getCarts = (await import('../server/api/sales/carts/index')).default as any
 	getPayments = (await import('../server/api/sales/debt-payments.get')).default as any
+	getSummary = (await import('../server/api/sales/summary.get')).default as any
 })
 
 beforeEach(() => {
 	calls = []
 	query = {}
+	aggregateResult = { _sum: { total: 0 }, _count: 0 }
 })
 
 const getEvent = { node: { req: { method: 'GET' } } }
@@ -123,5 +130,28 @@ describe('GET /api/sales/debt-payments date range', () => {
 		await getPayments(getEvent)
 		assert.equal(calls[0]!.where.payment_date.gte.toISOString(), '2026-03-01T00:00:00.000Z')
 		assert.equal(calls[0]!.where.payment_date.lte.toISOString(), '2026-03-31T23:59:59.999Z')
+	})
+})
+
+describe('GET /api/sales/summary', () => {
+	it('aggregates completed sales only, for both the current and the previous period', async () => {
+		query = { from: '2026-03-01', to: '2026-03-31', prevFrom: '2026-02-01', prevTo: '2026-02-28' }
+		aggregateResult = { _sum: { total: 1234.5 }, _count: 7 }
+		const res = await getSummary(getEvent)
+
+		assert.equal(calls.length, 2)
+		assert.equal(calls[0]!.where.status, 'completed')
+		assert.equal(calls[0]!.where.created_at.gte.toISOString(), '2026-03-01T00:00:00.000Z')
+		assert.equal(calls[0]!.where.created_at.lte.toISOString(), '2026-03-31T23:59:59.999Z')
+		assert.equal(calls[1]!.where.created_at.gte.toISOString(), '2026-02-01T00:00:00.000Z')
+		assert.equal(calls[1]!.where.created_at.lte.toISOString(), '2026-02-28T23:59:59.999Z')
+		assert.deepEqual(res, { current: { total: 1234.5, count: 7 }, previous: { total: 1234.5, count: 7 } })
+	})
+
+	it('treats a missing sum as 0 instead of null, and works without any range', async () => {
+		aggregateResult = { _sum: { total: null }, _count: 0 }
+		const res = await getSummary(getEvent)
+		assert.equal(calls[0]!.where.created_at, undefined)
+		assert.deepEqual(res, { current: { total: 0, count: 0 }, previous: { total: 0, count: 0 } })
 	})
 })

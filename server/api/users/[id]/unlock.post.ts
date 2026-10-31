@@ -1,5 +1,7 @@
 import { prisma } from '../../../utils/prisma'
 import { requireAdmin } from '../../../utils/auth'
+import { unlockUser } from '../../../modules/users/unlock-user'
+import { createPrismaUsersRepository } from '../../../modules/users/prisma-users-repository'
 
 /** Clears a login lockout (3 failed attempts) so the user can sign in again right away. */
 export default defineEventHandler(async event => {
@@ -7,11 +9,8 @@ export default defineEventHandler(async event => {
 	const id = getRouterParam(event, 'id')
 	if (!id) throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 
-	const { count } = await prisma.user.updateMany({
-		where: { user_id: id },
-		data: { failed_login_count: 0, locked_until: null },
-	})
-	if (count === 0) throw createError({ statusCode: 404, statusMessage: 'Usuario no encontrado' })
-
-	return { success: true }
+	return await unlockUser(
+		{ users: createPrismaUsersRepository(prisma) },
+		{ id },
+	)
 })

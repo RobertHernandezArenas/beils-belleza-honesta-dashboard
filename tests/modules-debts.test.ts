@@ -2,11 +2,16 @@
 import { describe, it, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { payDebt, type PayDebtDeps } from '../server/modules/debts/pay-debt'
+import { listDebts } from '../server/modules/debts/list-debts'
+import { createDebt } from '../server/modules/debts/create-debt'
+import { getDebt } from '../server/modules/debts/get-debt'
+import { updateDebt } from '../server/modules/debts/update-debt'
+import { deleteDebt } from '../server/modules/debts/delete-debt'
+import { listDebtPayments } from '../server/modules/debts/list-debt-payments'
 import type { DebtsRepository, DebtUnitOfWork } from '../server/modules/debts/ports'
 
 /**
- * The payDebt use case against plain in-memory ports: no globals, no Prisma, no Nuxt.
- * The fake transaction only commits when the callback resolves, like the real one.
+ * The debt use cases against plain in-memory ports: no globals, no Prisma, no Nuxt.
  */
 
 type Row = Record<string, any>
@@ -63,6 +68,30 @@ const buildRepository = (): DebtsRepository => ({
 	markInvoiceError: async cartId => {
 		store.invoiceErrors.push(cartId)
 	},
+	listDebts: async () => store.debts as any,
+	findCartForDebt: async cartId => {
+		const cart = store.carts.find(c => c.cart_id === cartId)
+		return cart ? { user_id: cart.user_id ?? cart.user?.user_id ?? null, total: cart.total } : null
+	},
+	createDebt: async data => {
+		const created = { debt_id: `debt-${store.debts.length + 1}`, created_at: new Date(), ...data }
+		store.debts.push(created)
+		return created as any
+	},
+	findDebtById: async id => (store.debts.find(d => d.debt_id === id) as any) ?? null,
+	findDebtAmount: async id => {
+		const debt = store.debts.find(d => d.debt_id === id)
+		return debt ? { amount: debt.amount } : null
+	},
+	updateDebt: async (id, data) => {
+		const debt = store.debts.find(d => d.debt_id === id)
+		if (debt) Object.assign(debt, data)
+		return debt as any
+	},
+	deleteDebt: async id => {
+		store.debts = store.debts.filter(d => d.debt_id !== id)
+	},
+	listDebtPayments: async () => store.payments as any,
 })
 
 const buildDeps = (debts = buildRepository()): PayDebtDeps => ({
@@ -193,5 +222,80 @@ describe('payDebt', () => {
 		store.debts[0]!.status = 'paid'
 		store.debts[0]!.remaining = 0
 		assert.equal((await rejection(() => payDebt(buildDeps(), pay()))).statusCode, 400)
+	})
+})
+
+describe('listDebts', () => {
+	it('lists all debts', async () => {
+		const res = await listDebts({ debts: buildRepository() }, {})
+		assert.equal(res.length, 1)
+	})
+})
+
+describe('createDebt', () => {
+	it('creates debt for a client', async () => {
+		const res = await createDebt({ debts: buildRepository() }, { user_id: 'u1', amount: 50 })
+		assert.equal(res.amount, 50)
+		assert.equal(res.status, 'pending')
+	})
+
+	it('throws 404 if ticket/cart not found', async () => {
+		const err = await rejection(() => createDebt({ debts: buildRepository() }, { user_id: 'u1', cart_id: 'cart-missing' }))
+		assert.equal(err.statusCode, 404)
+		assert.equal(err.statusMessage, 'Ticket no encontrado')
+	})
+})
+
+describe('getDebt', () => {
+	it('throws 400 if debt ID is missing', async () => {
+		const err = await rejection(() => getDebt({ debts: buildRepository() }, ''))
+		assert.equal(err.statusCode, 400)
+		assert.equal(err.statusMessage, 'Debt ID is required')
+	})
+
+	it('throws 404 if debt not found', async () => {
+		const err = await rejection(() => getDebt({ debts: buildRepository() }, 'non-existent'))
+		assert.equal(err.statusCode, 404)
+		assert.equal(err.statusMessage, 'Debt not found')
+	})
+
+	it('returns debt if found', async () => {
+		const res = await getDebt({ debts: buildRepository() }, 'debt-1')
+		assert.equal(res.debt_id, 'debt-1')
+	})
+})
+
+describe('updateDebt', () => {
+	it('updates debt remaining and status', async () => {
+		const res = await updateDebt({ debts: buildRepository() }, 'debt-1', { remaining: 50, notes: 'partial' })
+		assert.equal(res.remaining, 50)
+		assert.equal(res.notes, 'partial')
+	})
+
+	it('marks debt as paid if remaining <= 0', async () => {
+		const res = await updateDebt({ debts: buildRepository() }, 'debt-1', { remaining: 0 })
+		assert.equal(res.remaining, 0)
+		assert.equal(res.status, 'paid')
+	})
+
+	it('throws 400 if remaining exceeds amount', async () => {
+		const err = await rejection(() => updateDebt({ debts: buildRepository() }, 'debt-1', { remaining: 200 }))
+		assert.equal(err.statusCode, 400)
+		assert.equal(err.statusMessage, 'El saldo pendiente no puede superar el importe de la deuda')
+	})
+})
+
+describe('deleteDebt', () => {
+	it('deletes debt and returns success', async () => {
+		const res = await deleteDebt({ debts: buildRepository() }, 'debt-1')
+		assert.deepEqual(res, { success: true })
+		assert.equal(store.debts.length, 0)
+	})
+})
+
+describe('listDebtPayments', () => {
+	it('returns payments list within limit', async () => {
+		const res = await listDebtPayments({ debts: buildRepository() }, {})
+		assert.equal(res.length, 0)
 	})
 })

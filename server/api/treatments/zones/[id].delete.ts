@@ -1,6 +1,8 @@
 import { prisma } from '../../../utils/prisma'
 import { requireAdmin } from '../../../utils/auth'
 import { toApiError } from '../../../utils/errors'
+import { deleteZone } from '../../../modules/treatments/delete-zone'
+import { createPrismaTreatmentsRepository } from '../../../modules/treatments/prisma-treatments-repository'
 
 export default defineEventHandler(async event => {
 	try {
@@ -10,17 +12,16 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 400, statusMessage: 'ID de zona requerido' })
 		}
 
-		await prisma.treatmentZone.delete({
-			where: { zone_id: zoneId }
-		})
-
-		return { success: true, message: 'Zona eliminada correctamente' }
+		return await deleteZone(
+			{ treatments: createPrismaTreatmentsRepository(prisma) },
+			{ zoneId },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 500,
-			statusMessage: error.message || 'Error al eliminar zona de tratamiento'
+			statusMessage: error.message || 'Error al eliminar zona de tratamiento',
 		})
 	}
 })

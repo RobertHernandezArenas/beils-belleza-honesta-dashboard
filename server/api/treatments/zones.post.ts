@@ -2,6 +2,8 @@ import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
 import { toApiError } from '../../utils/errors'
 import { z } from 'zod'
+import { createZone } from '../../modules/treatments/create-zone'
+import { createPrismaTreatmentsRepository } from '../../modules/treatments/prisma-treatments-repository'
 
 const createZoneSchema = z.object({
 	user_id: z.string().min(1, 'El cliente es obligatorio'),
@@ -20,30 +22,16 @@ export default defineEventHandler(async event => {
 		const body = await readBody(event)
 		const validated = createZoneSchema.parse(body)
 
-		const zone = await prisma.treatmentZone.create({
-			data: {
-				user_id: validated.user_id,
-				treatment_type: validated.treatment_type,
-				zone_name: validated.zone_name.trim(),
-				phototype: validated.phototype?.trim() || null,
-				hair_thickness: validated.hair_thickness?.trim() || null,
-				hair_color: validated.hair_color?.trim() || null,
-				hair_density: validated.hair_density?.trim() || null,
-				notes: validated.notes?.trim() || null,
-				status: 'ACTIVE'
-			},
-			include: {
-				sessions: true
-			}
-		})
-
-		return zone
+		return await createZone(
+			{ treatments: createPrismaTreatmentsRepository(prisma) },
+			validated,
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error
 		throw createError({
 			statusCode: 400,
-			statusMessage: error.message || 'Datos inválidos al crear zona de tratamiento'
+			statusMessage: error.message || 'Datos inválidos al crear zona de tratamiento',
 		})
 	}
 })

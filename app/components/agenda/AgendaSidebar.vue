@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAgendaStore } from '~/stores/useAgendaStore'
-import { ChevronLeft, ChevronRight, Search, Users, CircleDot, Plus } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import { storeToRefs } from 'pinia'
 
 const store = useAgendaStore()
@@ -86,7 +86,7 @@ const monthName = computed(() => {
             <button 
                 class="flex w-full items-center justify-center gap-2 rounded-xl bg-text-primary text-bg-card h-12 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
                 @click="store.openBookingDrawer(null, selectedDate)">
-                <Plus class="size-4" />
+                <Icon name="Plus" class="size-4" />
                 <span class="text-xs font-bold uppercase tracking-widest">Nueva Cita</span>
             </button>
         </div>
@@ -97,10 +97,10 @@ const monthName = computed(() => {
                 <span class="text-xs font-bold uppercase tracking-wider text-text-primary">{{ monthName }}</span>
                 <div class="flex gap-1">
                     <button class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary" @click="prevMonth">
-                        <ChevronLeft class="size-4" />
+                        <Icon name="ChevronLeft" class="size-4" />
                     </button>
                     <button class="p-1 hover:bg-bg-muted rounded-lg transition-colors text-text-muted hover:text-text-primary" @click="nextMonth">
-                        <ChevronRight class="size-4" />
+                        <Icon name="ChevronRight" class="size-4" />
                     </button>
                 </div>
             </div>

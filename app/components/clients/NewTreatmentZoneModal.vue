@@ -2,7 +2,7 @@
 import { ref, reactive, watch, nextTick } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { z } from 'zod'
-import { Plus, X, AlertCircle, Save, Sparkles } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import { useModalAnimation } from '~/composables/useModalAnimation'
 import AppSelect from '~/components/ui/AppSelect.vue'
 import type { TreatmentType, FetchError } from '~~/shared/types/domain'
@@ -270,7 +270,7 @@ const { mutate: createZone, isPending } = useMutation({
 						class="btn btn-primary btn-sm rounded-xl font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5"
 						:disabled="isPending || !form.zone_name"
 					>
-						<Save class="size-4" />
+						<Icon name="Save" class="size-4" />
 						{{ isPending ? 'Guardando...' : 'Crear Zona' }}
 					</button>
 				</div>

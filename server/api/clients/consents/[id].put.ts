@@ -1,7 +1,7 @@
-import type { Prisma } from '@prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { z } from 'zod'
-import { assertConsentMutable } from '../../../utils/consent-policy'
+import { updateConsent } from '../../../modules/compliance/update-consent'
+import { createPrismaConsentsRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 const consentUpdateSchema = z.object({
 	document_url: z.string().url('La URL del documento debe ser válida').optional(),
@@ -17,29 +17,13 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 		}
 
-		const existing = await prisma.consent.findUnique({ where: { consent_id: id }, select: { status: true } })
-		if (!existing) throw createError({ statusCode: 404, statusMessage: 'Consentimiento no encontrado' })
-		assertConsentMutable(existing.status)
-
 		const body = await readBody(event)
 		const parsedData = consentUpdateSchema.parse(body)
 
-		const updateData: Prisma.ConsentUncheckedUpdateInput = { ...parsedData }
-		if (parsedData.signed_date) {
-			updateData.signed_date = new Date(parsedData.signed_date)
-		}
-
-		const consent = await prisma.consent.update({
-			where: { consent_id: id },
-			data: updateData,
-			include: {
-				user: {
-					select: { user_id: true, name: true, surname: true, email: true },
-				},
-			},
-		})
-
-		return consent
+		return await updateConsent(
+			{ consents: createPrismaConsentsRepository(prisma) },
+			{ id, data: parsedData },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

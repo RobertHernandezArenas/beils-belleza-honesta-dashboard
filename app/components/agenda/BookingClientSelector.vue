@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { Search } from 'lucide-vue-next'
+import Icon from '~/components/shared/Icon.vue'
 import type { ClientItem } from '~/composables/useBookingForm'
 
 const props = defineProps<{

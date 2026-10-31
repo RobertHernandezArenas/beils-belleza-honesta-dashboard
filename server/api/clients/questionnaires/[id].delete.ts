@@ -1,4 +1,6 @@
 import { prisma } from '../../../utils/prisma'
+import { deleteQuestionnaire } from '../../../modules/compliance/delete-questionnaire'
+import { createPrismaQuestionnairesRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 export default defineEventHandler(async event => {
 	try {
@@ -7,11 +9,10 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 		}
 
-		await prisma.questionnaire.delete({
-			where: { questionnaire_id: id },
-		})
-
-		return { success: true }
+		return await deleteQuestionnaire(
+			{ questionnaires: createPrismaQuestionnairesRepository(prisma) },
+			{ id },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

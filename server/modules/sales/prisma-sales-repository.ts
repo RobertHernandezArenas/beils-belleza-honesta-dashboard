@@ -2,7 +2,8 @@ import type { PrismaClient } from '@prisma/client'
 import { loadSaleCatalog } from '../../utils/sale-pricing'
 import { asCouponTx } from '../../utils/coupons'
 import { asConsumptionTx } from '../../utils/package-consumption'
-import type { OwnPackageQuery, SalesRepository, SaleUnitOfWork } from './ports'
+import { SALES_FETCH_TAKE } from '../../utils/date-range'
+import type { CartDetailRecord, OwnPackageQuery, SalesRepository, SaleUnitOfWork } from './ports'
 
 type Tx = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0]
 
@@ -29,6 +30,16 @@ const unitOfWork = (tx: Tx): SaleUnitOfWork => ({
 
 	createCart: ({ items, ...cart }) => tx.cart.create({ data: { ...cart, items: { create: items } } }),
 	createDebt: debt => tx.debt.create({ data: debt }),
+
+	deleteCartItems: cartId => tx.cartItem.deleteMany({ where: { cart_id: cartId } }),
+	createCartItems: items => tx.cartItem.createMany({ data: items }),
+	updateCart: (cartId, data) =>
+		tx.cart.update({
+			where: { cart_id: cartId },
+			data,
+			include: { items: true, debts: true },
+		}) as unknown as Promise<CartDetailRecord>,
+	updateDebt: (debtId, data) => tx.debt.update({ where: { debt_id: debtId }, data }),
 
 	findClientPackageItem: id =>
 		tx.clientPackageItem.findUnique({ where: { client_package_item_id: id } }).catch(() => null),
@@ -74,7 +85,7 @@ const usableOwnPackage = (userId: string, now: Date) => ({
 
 /** Prisma adapter of SalesRepository. Receives the client so callers decide which one (and tests can fake it). */
 export function createPrismaSalesRepository(db: PrismaClient) {
-	const repository = {
+	const repository: SalesRepository<unknown> = {
 		loadCatalog: lines => loadSaleCatalog(db, lines),
 		transaction: work => db.$transaction(tx => work(unitOfWork(tx))),
 		findUserDocument: userId =>
@@ -91,6 +102,45 @@ export function createPrismaSalesRepository(db: PrismaClient) {
 					debts: { include: { payments: true } },
 				},
 			}),
-	} satisfies SalesRepository<unknown>
+		findCartById: cartId =>
+			db.cart.findUnique({
+				where: { cart_id: cartId },
+				include: {
+					user: { select: { name: true, surname: true, email: true, phone: true } },
+					items: true,
+					debts: { include: { payments: true } },
+				},
+			}) as unknown as Promise<CartDetailRecord | null>,
+		findCartForUpdate: cartId =>
+			db.cart.findUnique({
+				where: { cart_id: cartId },
+				include: { items: true, user: { select: { document_number: true } } },
+			}) as unknown as Promise<CartDetailRecord | null>,
+		deleteCart: async cartId => {
+			await db.cart.delete({ where: { cart_id: cartId } })
+		},
+		listCarts: ({ status, created_at }) =>
+			db.cart.findMany({
+				where: {
+					...(status ? { status } : {}),
+					...(created_at ? { created_at } : {}),
+				},
+				include: {
+					user: { select: { name: true, surname: true, email: true, phone: true, avatar: true, document_number: true } },
+					items: true,
+					debts: { include: { payments: true } },
+				},
+				orderBy: { created_at: 'desc' },
+				take: SALES_FETCH_TAKE,
+			}) as unknown as Promise<CartDetailRecord[]>,
+		sumCompletedSales: async range => {
+			const { _sum, _count } = await db.cart.aggregate({
+				where: { status: 'completed', ...(range ? { created_at: range } : {}) },
+				_sum: { total: true },
+				_count: true,
+			})
+			return { total: _sum.total ?? 0, count: _count }
+		},
+	}
 	return repository
 }

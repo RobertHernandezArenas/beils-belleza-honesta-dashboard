@@ -73,6 +73,72 @@ export interface OwnPackageQuery {
 	now: Date
 }
 
+export interface CartItemRecord {
+	cart_item_id?: string
+	cart_id?: string
+	item_type: string
+	item_id: string
+	name: string
+	quantity: number
+	unit_price: number
+	tax_rate?: number
+	subtotal: number
+	total: number
+	[column: string]: unknown
+}
+
+export interface CartDetailRecord {
+	cart_id: string
+	user_id: string | null
+	booking_id?: string | null
+	status: string
+	payment_method: string | null
+	payment_breakdown: string | null
+	notes: string | null
+	subtotal: number
+	discount: number
+	total: number
+	coupon_code: string | null
+	coupon_discount_type?: string | null
+	coupon_discount_value?: number | null
+	coupon_discount_amount?: number | null
+	manual_discount_type?: string | null
+	manual_discount_value?: number | null
+	manual_discount_amount?: number | null
+	invoice_number?: string | null
+	invoice_type?: string | null
+	aeat_status?: string | null
+	created_at?: Date | string
+	items: CartItemRecord[]
+	user?: {
+		name?: string | null
+		surname?: string | null
+		email?: string | null
+		phone?: string | null
+		document_number?: string | null
+		avatar?: string | null
+	} | null
+	debts?: {
+		debt_id: string
+		amount: number
+		remaining: number
+		status: string
+		payments?: unknown[]
+		[column: string]: unknown
+	}[]
+	[column: string]: unknown
+}
+
+export interface ListCartsFilter {
+	status?: string
+	created_at?: { gte?: Date; lte?: Date }
+}
+
+export interface SalesSummary {
+	total: number
+	count: number
+}
+
 /** Everything that must commit or roll back together with the sale. */
 export interface SaleUnitOfWork {
 	/** Narrow views handed to the shared coupon / bono-consumption helpers */
@@ -84,6 +150,11 @@ export interface SaleUnitOfWork {
 
 	createCart(cart: NewCart): Promise<CreatedCart>
 	createDebt(debt: NewDebt): Promise<unknown>
+
+	deleteCartItems(cartId: string): Promise<unknown>
+	createCartItems(items: (NewCartItem & { cart_id: string })[]): Promise<unknown>
+	updateCart(cartId: string, data: Record<string, unknown>): Promise<CartDetailRecord>
+	updateDebt(debtId: string, data: { amount: number; remaining: number; status: string }): Promise<unknown>
 
 	findClientPackageItem(id: string): Promise<{ client_package_item_id: string } | null>
 	findClientPackage(id: string): Promise<{ client_package_id: string } | null>
@@ -117,6 +188,12 @@ export interface SalesRepository<TView = unknown> extends CartInvoiceStore {
 	findUserDocument(userId: string): Promise<InvoiceTypeSource | null>
 	/** Final cart (items, user, debts) returned to the caller */
 	findCartView(cartId: string): Promise<TView>
+	findCartById(cartId: string): Promise<CartDetailRecord | null>
+	findCartForUpdate(cartId: string): Promise<CartDetailRecord | null>
+	deleteCart(cartId: string): Promise<void>
+	listCarts(filter: ListCartsFilter): Promise<CartDetailRecord[]>
+	/** Total and count of invoiced sales (status 'completed') in an optional date range. */
+	sumCompletedSales(range?: { gte?: Date; lte?: Date }): Promise<SalesSummary>
 }
 
 export interface InvoiceTypeSource {

@@ -1,9 +1,9 @@
 import { prisma } from '../../utils/prisma'
-import { toPublicUser } from '../../utils/public-user'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { requireAdmin } from '../../utils/auth'
-import { unusablePasswordSeed } from '../../utils/login-policy'
+import { createClient } from '../../modules/clients/create-client'
+import { createPrismaClientsRepository } from '../../modules/clients/prisma-clients-repository'
 
 const clientSchema = z.object({
 	email: z.string().email('Email inválido').optional().or(z.literal('')),
@@ -26,46 +26,19 @@ const clientSchema = z.object({
 
 export default defineEventHandler(async event => {
 	try {
-		// Only admins can create clients
 		requireAdmin(event)
 		const body = await readBody(event)
 		const parsedData = clientSchema.parse(body)
 
-		if (!parsedData.email) {
-			parsedData.email = `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
-		}
-
-		const existingUser = await prisma.user.findUnique({
-			where: { email: parsedData.email },
-		})
-
-		if (existingUser) {
-			throw createError({
-				statusCode: 409,
-				statusMessage: 'El correo electrónico ya está registrado',
-			})
-		}
-
-		// Clients are CRM records, not accounts: store a random, never-disclosed password hash
-		// (login also rejects the CLIENT role). Never use a shared default password here.
-		const hashedPassword = await bcrypt.hash(unusablePasswordSeed(), 12)
-
-		const email = parsedData.email || `sin-correo-${Date.now()}-${Math.floor(Math.random() * 1000)}@cliente.local`
-
-		const user = await prisma.user.create({
-			data: {
-				...parsedData,
-				email,
-				surname: parsedData.surname || '',
-				phone: parsedData.phone || '',
-				user_id: parsedData.user_id || undefined,
-				birth_date: new Date(parsedData.birth_date),
-				password: hashedPassword,
-				role: 'CLIENT',
+		return await createClient(
+			{
+				clients: createPrismaClientsRepository(prisma),
+				hashPassword: pass => bcrypt.hash(pass, 12),
+				now: () => new Date(),
+				randomInt: max => Math.floor(Math.random() * max),
 			},
-		})
-
-		return toPublicUser(user)
+			parsedData,
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error

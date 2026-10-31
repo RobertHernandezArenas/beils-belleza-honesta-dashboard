@@ -1,5 +1,6 @@
 import { prisma } from '../../../utils/prisma'
-import { assertConsentMutable } from '../../../utils/consent-policy'
+import { deleteConsent } from '../../../modules/compliance/delete-consent'
+import { createPrismaConsentsRepository } from '../../../modules/compliance/prisma-compliance-repository'
 
 export default defineEventHandler(async event => {
 	try {
@@ -8,15 +9,10 @@ export default defineEventHandler(async event => {
 			throw createError({ statusCode: 400, statusMessage: 'ID requerido' })
 		}
 
-		const existing = await prisma.consent.findUnique({ where: { consent_id: id }, select: { status: true } })
-		if (!existing) throw createError({ statusCode: 404, statusMessage: 'Consentimiento no encontrado' })
-		assertConsentMutable(existing.status)
-
-		await prisma.consent.delete({
-			where: { consent_id: id },
-		})
-
-		return { success: true }
+		return await deleteConsent(
+			{ consents: createPrismaConsentsRepository(prisma) },
+			{ id },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.code === 'P2025') {

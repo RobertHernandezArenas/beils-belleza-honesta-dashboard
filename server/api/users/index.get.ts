@@ -1,7 +1,7 @@
-import type { Role } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import { requireAdmin } from '../../utils/auth'
-import { maskDocument } from '../../utils/privacy'
+import { listUsers } from '../../modules/users/list-users'
+import { createPrismaUsersRepository } from '../../modules/users/prisma-users-repository'
 
 export default defineEventHandler(async event => {
 	try {
@@ -11,29 +11,10 @@ export default defineEventHandler(async event => {
 		const rawRoles = (query.roles as string) || (query.role as string) || ''
 		const roles = rawRoles ? rawRoles.split(',').map(r => r.trim()).filter(Boolean) : []
 
-		const users = await prisma.user.findMany({
-			where: roles.length > 0 ? {
-				role: { in: roles as Role[] }
-			} : {},
-			orderBy: { created_at: 'desc' },
-			select: {
-				user_id: true,
-				name: true,
-				surname: true,
-				email: true,
-				role: true,
-				status: true,
-				document_type: true,
-				document_number: true,
-				avatar: true,
-				locked_until: true,
-			},
-		})
-		// Mask documents and return
-		return users.map(u => ({
-			...u,
-			document_number: maskDocument(u.document_number),
-		}))
+		return await listUsers(
+			{ users: createPrismaUsersRepository(prisma) },
+			{ roles: roles.length > 0 ? roles : undefined },
+		)
 	} catch (rawError) {
 		const error = toApiError(rawError)
 		if (error.statusCode) throw error
