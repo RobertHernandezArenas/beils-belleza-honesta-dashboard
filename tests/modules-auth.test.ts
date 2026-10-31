@@ -4,6 +4,7 @@ import { describe, it, before, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
 import bcrypt from 'bcryptjs'
 import type { AuthRepository, AuthUserRecord } from '../server/modules/auth/ports'
+import { MAX_FAILED_ATTEMPTS } from '../server/utils/login-lockout'
 
 let authUsersStore: AuthUserRecord[]
 let login: any
@@ -108,6 +109,25 @@ describe('Auth Module - Hexagonal Architecture', () => {
 			(err: any) => err.statusCode === 423 && err.statusMessage.includes('bloqueada'),
 		)
 		assert.ok(authUsersStore[0].locked_until)
+	})
+
+	it('bounds concurrent wrong-password attempts to the lock threshold instead of racing past it', async () => {
+		const repo = buildAuthRepo()
+
+		// 20 concurrent wrong-password requests against the same account: without
+		// serialization, all 20 could run bcrypt before the 3rd failure's lock lands.
+		const results = await Promise.allSettled(
+			Array.from({ length: 20 }, () => login({ auth: repo }, { email: 'admin@beils.com', password: 'WrongPassword' })),
+		)
+
+		assert.equal(authUsersStore[0].failed_login_count, MAX_FAILED_ATTEMPTS)
+		assert.ok(authUsersStore[0].locked_until)
+
+		// The 1st and 2nd failures get 401 (wrong password); the 3rd locks the account and
+		// returns 423 directly, as does every attempt after it.
+		const statusCodes = results.map(r => (r.status === 'rejected' ? (r.reason as { statusCode: number }).statusCode : 'ok'))
+		assert.equal(statusCodes.filter(c => c === 401).length, MAX_FAILED_ATTEMPTS - 1)
+		assert.equal(statusCodes.filter(c => c === 423).length, 20 - (MAX_FAILED_ATTEMPTS - 1))
 	})
 
 	it('login refuses locked account with 423 before checking password', async () => {

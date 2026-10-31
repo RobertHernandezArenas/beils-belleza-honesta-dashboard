@@ -4,6 +4,7 @@ import { toPublicUser } from '../../utils/public-user'
 import { signToken } from '../../utils/jwt'
 import { loginOutcome, unusablePasswordSeed, STAFF_ROLES } from '../../utils/login-policy'
 import { isLocked, lockDurationMinutes, lockedMessage } from '../../utils/login-lockout'
+import { createKeyedMutex } from '../../utils/keyed-mutex'
 import type { AuthRepository } from './ports'
 
 const DUMMY_HASH = bcrypt.hashSync(unusablePasswordSeed(), 12)
@@ -13,7 +14,17 @@ export interface LoginDeps {
 	now?: () => Date
 }
 
+// Serializes attempts per email: without this, many concurrent requests for the same
+// account all read "not locked" and all get to run bcrypt against the real password
+// before any of them finishes incrementing the counter and writing the lock. Keying by
+// email (not by resolved user) also serializes unknown-email attempts, which is harmless.
+const loginMutex = createKeyedMutex()
+
 export async function login(deps: LoginDeps, { email, password }: { email: string; password: string }) {
+	return loginMutex(email, () => attemptLogin(deps, { email, password }))
+}
+
+async function attemptLogin(deps: LoginDeps, { email, password }: { email: string; password: string }) {
 	const user = await deps.auth.findByEmail(email)
 	const isStaffAccount = !!user && (STAFF_ROLES as readonly string[]).includes(user.role)
 
